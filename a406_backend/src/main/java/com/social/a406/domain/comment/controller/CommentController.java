@@ -24,4 +24,9 @@ public class CommentController {
             @AuthenticationPrincipal UserDetails userDetails) {
         return commentService.addComment(boardId, commentRequest, userDetails);
     }
+
+    @GetMapping
+    public List<CommentResponse> getCommentsByBoard(@PathVariable Long boardId) {
+        return commentService.getCommentsByBoard(boardId);
+    }
 }
