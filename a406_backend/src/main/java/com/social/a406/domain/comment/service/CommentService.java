@@ -42,6 +42,12 @@ public class CommentService {
         return mapToResponse(savedComment);
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentResponse> getCommentsByBoard(Long boardId) {
+        List<Comment> comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtAsc(boardId);
+        return comments.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
     private CommentResponse mapToResponse(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())
