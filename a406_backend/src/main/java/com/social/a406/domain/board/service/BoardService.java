@@ -33,6 +33,13 @@ public class BoardService {
         return mapToResponseDto(savedBoard);
     }
 
+    @Transactional(readOnly = true)
+    public BoardResponse getBoardById(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+        return mapToResponseDto(board);
+    }
+
     private BoardResponse mapToResponseDto(Board board) {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
