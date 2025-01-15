@@ -23,4 +23,9 @@ public class BoardController {
             @AuthenticationPrincipal UserDetails userDetails) {
         return boardService.createBoard(boardRequest, userDetails);
     }
+
+    @GetMapping("/{boardId}")
+    public BoardResponse getBoard(@PathVariable Long boardId) {
+        return boardService.getBoardById(boardId);
+    }
 }
