@@ -48,6 +48,22 @@ public class CommentService {
         return comments.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional
+    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
+        User user = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
+
+        if (!comment.getUser().equals(user)) {
+            throw new SecurityException("User not authorized to update this comment");
+        }
+
+        comment.updateContent(commentRequest.getContent());
+        return mapToResponse(comment);
+    }
+
     private CommentResponse mapToResponse(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())
