@@ -64,6 +64,21 @@ public class CommentService {
         return mapToResponse(comment);
     }
 
+    @Transactional
+    public void deleteComment(Long commentId, UserDetails userDetails) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
+
+        User user = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+
+        if (!comment.getUser().equals(user)) {
+            throw new SecurityException("User not authorized to delete this comment");
+        }
+
+        commentRepository.delete(comment);
+    }
+
     private CommentResponse mapToResponse(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())

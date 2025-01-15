@@ -37,4 +37,11 @@ public class CommentController {
             @AuthenticationPrincipal UserDetails userDetails) {
         return commentService.updateComment(commentId, commentRequest, userDetails);
     }
+
+    @DeleteMapping("/{commentId}")
+    public void deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        commentService.deleteComment(commentId, userDetails);
+    }
 }
