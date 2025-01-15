@@ -28,4 +28,12 @@ public class BoardController {
     public BoardResponse getBoard(@PathVariable Long boardId) {
         return boardService.getBoardById(boardId);
     }
+
+    @PutMapping("/{boardId}")
+    public BoardResponse updateBoard(
+            @PathVariable Long boardId,
+            @RequestBody BoardRequest boardRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return boardService.updateBoard(boardId, boardRequest, userDetails);
+    }
 }

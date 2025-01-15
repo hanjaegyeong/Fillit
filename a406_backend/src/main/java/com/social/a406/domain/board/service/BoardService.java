@@ -40,6 +40,23 @@ public class BoardService {
         return mapToResponseDto(board);
     }
 
+    @Transactional
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
+        User user = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+
+        if (!board.getUser().equals(user)) {
+            throw new SecurityException("User not authorized to update this board");
+        }
+
+        board.updateContent(boardRequest.getContent());
+
+        return mapToResponseDto(board);
+    }
+
     private BoardResponse mapToResponseDto(Board board) {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
