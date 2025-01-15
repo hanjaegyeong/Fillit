@@ -29,4 +29,12 @@ public class CommentController {
     public List<CommentResponse> getCommentsByBoard(@PathVariable Long boardId) {
         return commentService.getCommentsByBoard(boardId);
     }
+
+    @PutMapping("/{commentId}")
+    public CommentResponse updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequest commentRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return commentService.updateComment(commentId, commentRequest, userDetails);
+    }
 }
