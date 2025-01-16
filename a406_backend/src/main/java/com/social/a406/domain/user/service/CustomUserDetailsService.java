@@ -40,4 +40,20 @@ public class CustomUserDetailsService implements UserDetailsService {
                 authorities
         );
     }
+
+    public UserDetails loadSocialUserBySocialId(String socialId) throws UsernameNotFoundException{
+        Optional<User> user = userRepository.findBySocialId(socialId);
+
+        if(user.isEmpty()){
+            throw new UsernameNotFoundException("User not found with socialId "+socialId);
+        }
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return new org.springframework.security.core.userdetails.User(
+                user.get().getSocialId(),
+                "oauth",
+                authorities
+        );
+    }
 }
