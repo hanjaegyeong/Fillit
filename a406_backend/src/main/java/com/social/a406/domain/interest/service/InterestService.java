@@ -46,9 +46,11 @@ public class InterestService {
                 .collect(Collectors.toList());
     }
 
-    public List<InterestResponse> getUserInterests(Long userId) {
-        // 유저-관심사 매핑 데이터 가져오기
-        List<UserInterest> userInterests = userInterestRepository.findByUser_UserId(userId);
+    public List<InterestResponse> getUserInterests(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
+
+        List<UserInterest> userInterests = userInterestRepository.findByUser_UserId(user.getUserId());
 
         // UserInterest -> UserInterestResponse로 변환
         return userInterests.stream()
