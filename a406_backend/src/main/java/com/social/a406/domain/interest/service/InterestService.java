@@ -39,4 +39,10 @@ public class InterestService {
 
         userInterestRepository.saveAll(userInterests);
     }
+
+    public List<InterestResponse> getAllInterests() {
+        return interestRepository.findAll().stream()
+                .map(interest -> new InterestResponse(interest.getInterestId(), interest.getContent()))
+                .collect(Collectors.toList());
+    }
 }

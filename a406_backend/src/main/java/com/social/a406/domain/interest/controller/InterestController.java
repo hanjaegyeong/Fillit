@@ -20,4 +20,9 @@ public class InterestController {
     public void addUserInterests(@PathVariable Long userId, @RequestBody List<String> interestContents) {
         interestService.addUserInterests(userId, interestContents);
     }
+
+    @GetMapping
+    public List<InterestResponse> getAllInterests() {
+        return interestService.getAllInterests();
+    }
 }
