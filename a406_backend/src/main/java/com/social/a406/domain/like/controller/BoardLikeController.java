@@ -20,4 +20,9 @@ public class BoardLikeController {
     public void likeBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetails userDetails) {
         boardLikeService.addLike(userDetails.getUsername(), boardId);
     }
+
+    @DeleteMapping
+    public void unlikeBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetails userDetails) {
+        boardLikeService.removeLike(userDetails.getUsername(), boardId);
+    }
 }
