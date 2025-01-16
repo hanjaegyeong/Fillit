@@ -55,4 +55,21 @@ public class CommentLikeService {
 
         comment.decreaseLikeCount();
     }
+
+    @Transactional(readOnly = true)
+    public List<LikedUserResponse> getUsersWhoLikedComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+        return commentLikeRepository.findByComment(comment).stream()
+                .map(like -> {
+                    User user = like.getUser();
+                    return new LikedUserResponse(
+                            user.getLoginId(),
+                            user.getNickname(),
+                            user.getProfileImageUrl()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }

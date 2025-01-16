@@ -25,4 +25,9 @@ public class CommentLikeController {
     public void unlikeComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
         commentLikeService.removeLike(userDetails.getUsername(), commentId);
     }
+
+    @GetMapping
+    public List<LikedUserResponse> getUsersWhoLikedComment(@PathVariable Long commentId) {
+        return commentLikeService.getUsersWhoLikedComment(commentId);
+    }
 }
