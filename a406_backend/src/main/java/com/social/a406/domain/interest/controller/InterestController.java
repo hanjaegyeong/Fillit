@@ -1,10 +1,9 @@
 package com.social.a406.domain.interest.controller;
 
 import com.social.a406.domain.interest.dto.InterestResponse;
-import com.social.a406.domain.interest.entity.Interest;
-import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.service.InterestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +30,11 @@ public class InterestController {
     @GetMapping("/{userId}")
     public List<InterestResponse> getUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
         return interestService.getUserInterests(userDetails.getUsername());
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUserInterests(@PathVariable Long userId) {
+        interestService.deleteAllUserInterests(userId);
+        return ResponseEntity.noContent().build();
     }
 }

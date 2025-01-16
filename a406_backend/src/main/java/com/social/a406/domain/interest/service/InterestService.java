@@ -7,6 +7,7 @@ import com.social.a406.domain.interest.repository.InterestRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +60,14 @@ public class InterestService {
                         userInterest.getInterest().getContent()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteAllUserInterests(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        // 해당 유저의 모든 관심사 매핑 삭제
+        userInterestRepository.deleteByUser_UserId(userId);
     }
 }
