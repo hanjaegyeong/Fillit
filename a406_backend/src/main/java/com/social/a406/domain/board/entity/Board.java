@@ -50,4 +50,16 @@ public class Board {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    // 좋아요 증가
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    // 좋아요 감소
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 }
