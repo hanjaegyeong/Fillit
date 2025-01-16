@@ -25,4 +25,9 @@ public class InterestController {
     public List<InterestResponse> getAllInterests() {
         return interestService.getAllInterests();
     }
+
+    @GetMapping("/{userId}")
+    public List<InterestResponse> getUserInterests(@PathVariable Long userId) {
+        return interestService.getUserInterests(userId);
+    }
 }
