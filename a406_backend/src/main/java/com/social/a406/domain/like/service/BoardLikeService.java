@@ -39,4 +39,20 @@ public class BoardLikeService {
 
         board.increaseLikeCount();
     }
+
+    @Transactional
+    public void removeLike(String loginId, Long boardId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+
+        BoardLike like = boardLikeRepository.findByUserAndBoard(user, board)
+                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+
+        boardLikeRepository.delete(like);
+
+        board.decreaseLikeCount();
+    }
 }
