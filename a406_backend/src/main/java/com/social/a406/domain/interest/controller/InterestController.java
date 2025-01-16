@@ -5,6 +5,8 @@ import com.social.a406.domain.interest.entity.Interest;
 import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.service.InterestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public class InterestController {
     }
 
     @GetMapping("/{userId}")
-    public List<InterestResponse> getUserInterests(@PathVariable Long userId) {
-        return interestService.getUserInterests(userId);
+    public List<InterestResponse> getUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
+        return interestService.getUserInterests(userDetails.getUsername());
     }
 }
