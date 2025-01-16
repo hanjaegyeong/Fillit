@@ -55,4 +55,21 @@ public class BoardLikeService {
 
         board.decreaseLikeCount();
     }
+
+    @Transactional(readOnly = true)
+    public List<LikedUserResponse> getUsersWhoLikedBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+
+        return boardLikeRepository.findByBoard(board).stream()
+                .map(like -> {
+                    User user = like.getUser();
+                    return new LikedUserResponse(
+                            user.getLoginId(),
+                            user.getNickname(),
+                            user.getProfileImageUrl()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }

@@ -25,4 +25,9 @@ public class BoardLikeController {
     public void unlikeBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetails userDetails) {
         boardLikeService.removeLike(userDetails.getUsername(), boardId);
     }
+
+    @GetMapping
+    public List<LikedUserResponse> getUsersWhoLikedBoard(@PathVariable Long boardId) {
+        return boardLikeService.getUsersWhoLikedBoard(boardId);
+    }
 }
