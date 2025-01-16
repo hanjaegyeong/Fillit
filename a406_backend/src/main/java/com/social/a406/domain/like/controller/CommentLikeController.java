@@ -20,4 +20,9 @@ public class CommentLikeController {
     public void likeComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
         commentLikeService.addLike(userDetails.getUsername(), commentId);
     }
+
+    @DeleteMapping
+    public void unlikeComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+        commentLikeService.removeLike(userDetails.getUsername(), commentId);
+    }
 }

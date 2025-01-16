@@ -39,4 +39,20 @@ public class CommentLikeService {
 
         comment.increaseLikeCount();
     }
+
+    @Transactional
+    public void removeLike(String loginId, Long commentId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+        CommentLike like = commentLikeRepository.findByUserAndComment(user, comment)
+                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+
+        commentLikeRepository.delete(like);
+
+        comment.decreaseLikeCount();
+    }
 }
