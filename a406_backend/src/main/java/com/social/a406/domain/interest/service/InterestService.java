@@ -45,4 +45,17 @@ public class InterestService {
                 .map(interest -> new InterestResponse(interest.getInterestId(), interest.getContent()))
                 .collect(Collectors.toList());
     }
+
+    public List<InterestResponse> getUserInterests(Long userId) {
+        // 유저-관심사 매핑 데이터 가져오기
+        List<UserInterest> userInterests = userInterestRepository.findByUser_UserId(userId);
+
+        // UserInterest -> UserInterestResponse로 변환
+        return userInterests.stream()
+                .map(userInterest -> new InterestResponse(
+                        userInterest.getInterest().getInterestId(),
+                        userInterest.getInterest().getContent()
+                ))
+                .collect(Collectors.toList());
+    }
 }
