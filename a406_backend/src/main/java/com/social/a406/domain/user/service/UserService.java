@@ -22,6 +22,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CharacterRepository characterRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
@@ -131,6 +132,23 @@ public class UserService {
                     .birthDate(u.getBirthDate() != null ? u.getBirthDate().toString() : null)
                     .build();
         }
+
+        // 캐릭터 조회
+        Optional<Character> character = characterRepository.findByNickname(nickname);
+        if (character.isPresent()) {
+            Character c = character.get();
+            return UserCharacterResponse.builder()
+                    .type("ai")
+                    .id(c.getId())
+                    .name(c.getName())
+                    .nickname(c.getNickname())
+                    .profileImageUrl(c.getProfileImageUrl())
+                    .introduction(c.getIntroduction())
+                    .birthDate(c.getBirthDate() != null ? c.getBirthDate().toString() : null)
+                    .build();
+        }
+
+        // 유저 또는 캐릭터가 없을 경우 예외 처리
         throw new IllegalArgumentException("User or Character not found for nickname: " + nickname);
     }
 }
