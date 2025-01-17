@@ -22,7 +22,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CharacterRepository characterRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
@@ -115,5 +114,23 @@ public class UserService {
             log.warn("Invalid password for user: {}", userDetails.getUsername());
             throw new RuntimeException("Invalid password");
         }
+    }
+
+    public UserCharacterResponse getUserInfoByNickname(String nickname) {
+        // 실제 유저 조회
+        Optional<User> user = userRepository.findByNickname(nickname);
+        if (user.isPresent()) {
+            User u = user.get();
+            return UserCharacterResponse.builder()
+                    .type("user")
+                    .id(u.getId())
+                    .name(u.getName())
+                    .nickname(u.getNickname())
+                    .profileImageUrl(u.getProfileImageUrl())
+                    .introduction(u.getIntroduction())
+                    .birthDate(u.getBirthDate() != null ? u.getBirthDate().toString() : null)
+                    .build();
+        }
+        throw new IllegalArgumentException("User or Character not found for nickname: " + nickname);
     }
 }
