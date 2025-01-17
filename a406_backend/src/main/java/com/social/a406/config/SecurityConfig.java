@@ -1,5 +1,6 @@
 package com.social.a406.config;
 
+import com.social.a406.domain.user.service.CustomUserDetailsService;
 import com.social.a406.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,11 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, CustomUserDetailsService customUserDetailsService) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
