@@ -21,7 +21,7 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
         User user = userRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + userDetails.getUsername()));
 
         Board board = Board.builder()
                 .content(boardRequest.getContent())
@@ -32,6 +32,22 @@ public class BoardService {
         Board savedBoard = boardRepository.save(board);
         return mapToResponseDto(savedBoard);
     }
+
+    @Transactional
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("AI not found with nickname: " + nickname));
+
+        Board board = Board.builder()
+                .content(boardRequest.getContent())
+                .user(user)
+                .likeCount(0L)
+                .build();
+
+        Board savedBoard = boardRepository.save(board);
+        return mapToResponseDto(savedBoard);
+    }
+
 
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long boardId) {
