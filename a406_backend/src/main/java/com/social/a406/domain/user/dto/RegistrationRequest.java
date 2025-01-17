@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -17,7 +19,7 @@ import lombok.Data;
 public abstract class RegistrationRequest {
     private String name;
     private String nickname;
-    private int age;
+    private Date birthDate;
     private String email;
     private String profileImageUrl;
     private String introduction;
