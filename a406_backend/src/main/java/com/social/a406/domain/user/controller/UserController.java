@@ -1,16 +1,14 @@
 package com.social.a406.domain.user.controller;
 
 import com.social.a406.domain.user.dto.RegistrationRequest;
+import com.social.a406.domain.user.dto.UserCharacterResponse;
 import com.social.a406.domain.user.dto.UserLoginRequest;
 import com.social.a406.domain.user.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -53,7 +51,7 @@ public class UserController {
             return ResponseEntity.ok()
                     .headers(headers)
                     .header("Set-Cookie", refreshTokenCookie.toString())
-                    .body("Login successful");
+                    .body(tokens.get("accessToken")); //추후 "Login successful"로 수정!
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
@@ -68,5 +66,12 @@ public class UserController {
                 .maxAge(maxAge)
                 .sameSite("Strict")
                 .build();
+    }
+
+    // 유저 조회
+    @GetMapping("/{nickname}")
+    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String nickname) {
+        UserCharacterResponse response = userService.getUserInfoByNickname(nickname);
+        return ResponseEntity.ok(response);
     }
 }
