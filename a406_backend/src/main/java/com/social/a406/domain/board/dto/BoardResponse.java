@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class BoardResponse {
     private Long boardId;
     private String content;
-    private String loginId;
+    private String nickname;
     private Long likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
