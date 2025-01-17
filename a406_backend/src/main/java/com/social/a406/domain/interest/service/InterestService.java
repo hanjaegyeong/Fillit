@@ -51,7 +51,7 @@ public class InterestService {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
 
-        List<UserInterest> userInterests = userInterestRepository.findByUser_UserId(user.getUserId());
+        List<UserInterest> userInterests = userInterestRepository.findByUser_Id(user.getId());
 
         // UserInterest -> UserInterestResponse로 변환
         return userInterests.stream()
@@ -68,6 +68,6 @@ public class InterestService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
 
         // 해당 유저의 모든 관심사 매핑 삭제
-        userInterestRepository.deleteByUser_UserId(user.getUserId());
+        userInterestRepository.deleteByUser_Id(user.getId());
     }
 }
