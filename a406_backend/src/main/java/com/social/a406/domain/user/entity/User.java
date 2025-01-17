@@ -27,10 +27,16 @@ public class User {
     @Column(updatable = false, nullable = false, unique = true)
     private String id; // UUID를 PK로 사용
 
+    @Column(nullable = true) //생성형 AI의 경우 null
     private String loginId;
-    private String password;
+
+    @Column(nullable = true)
+    private String password; //생성형 AI의 경우 null
+
     private String name;
-    private String nickname;
+
+    @Column(nullable = false, unique = true)
+    private String nickname; //nickname은 null 불가 && 중복 불가
 
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
@@ -42,6 +48,9 @@ public class User {
 
     private String socialDomain; // 이후 ENUM으로 변경
     private String socialId; // 소셜로그인 ID
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String mainPrompt; // 생성형 AI 메인 프롬프트
 
     @CreatedDate
     private LocalDateTime createdAt;
