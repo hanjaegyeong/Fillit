@@ -1,9 +1,7 @@
 package com.social.a406.domain.user.service;
 
-import com.social.a406.domain.user.dto.RegistrationRequest;
-import com.social.a406.domain.user.dto.SocialUserRegistrationRequest;
-import com.social.a406.domain.user.dto.UserLoginRequest;
-import com.social.a406.domain.user.dto.UserRegistrationRequest;
+import com.social.a406.domain.character.repository.CharacterRepository;
+import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.JwtTokenUtil;
@@ -12,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.social.a406.domain.character.entity.Character;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,8 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CharacterRepository characterRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailsService customUserDetailsService;
@@ -85,7 +87,7 @@ public class UserService {
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginRequest.getLoginId());
+        UserDetails userDetails = customUserDetailsService.loadUserByLoginId(userLoginRequest.getLoginId());
 
         // 사용자 검증
         validateUser(userDetails, userLoginRequest.getPassword());
