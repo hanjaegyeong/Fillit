@@ -65,7 +65,6 @@ public class BoardLikeService {
                 .map(like -> {
                     User user = like.getUser();
                     return new LikedUserResponse(
-                            user.getLoginId(),
                             user.getNickname(),
                             user.getProfileImageUrl()
                     );
