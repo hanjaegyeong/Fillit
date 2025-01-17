@@ -22,9 +22,9 @@ public class InterestService {
     private final UserInterestRepository userInterestRepository;
     private final UserRepository userRepository;
 
-    public void addUserInterests(Long userId, List<String> interestContents) {
+    public void addUserInterests(String loginId, List<String> interestContents) {
         // 유저 확인
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 관심사 리스트를 DB에서 가져오거나, 존재하지 않으면 새로 추가
@@ -63,11 +63,11 @@ public class InterestService {
     }
 
     @Transactional
-    public void deleteAllUserInterests(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+    public void deleteAllUserInterests(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
 
         // 해당 유저의 모든 관심사 매핑 삭제
-        userInterestRepository.deleteByUser_UserId(userId);
+        userInterestRepository.deleteByUser_UserId(user.getUserId());
     }
 }
