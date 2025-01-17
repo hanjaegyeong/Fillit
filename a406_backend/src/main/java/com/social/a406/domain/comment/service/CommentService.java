@@ -83,7 +83,7 @@ public class CommentService {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
-                .loginId(comment.getUser().getLoginId())
+                .nickname(comment.getUser().getNickname())
                 .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
