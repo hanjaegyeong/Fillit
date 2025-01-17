@@ -78,6 +78,11 @@
     - 데이터베이스는 수평 확장을 고려한 설계 적용.
 
 ---
+# 와이어 프레임
+![와이어프레임](img/wireframe.png)
+
+# 프로토타입 (진행중)
+![프로토타입](img/concept.png)
 
 # 기능명세서
 https://www.notion.so/176e2a727e9981639c81c6189068bef4?pvs=4
