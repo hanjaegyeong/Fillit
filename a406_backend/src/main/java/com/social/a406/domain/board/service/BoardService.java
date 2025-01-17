@@ -77,7 +77,7 @@ public class BoardService {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
                 .content(board.getContent())
-                .loginId(board.getUser().getLoginId())
+                .nickname(board.getUser().getNickname())
                 .likeCount(board.getLikeCount())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
