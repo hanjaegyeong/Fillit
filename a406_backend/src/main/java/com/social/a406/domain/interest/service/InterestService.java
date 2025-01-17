@@ -22,9 +22,9 @@ public class InterestService {
     private final UserInterestRepository userInterestRepository;
     private final UserRepository userRepository;
 
-    public void addUserInterests(String loginId, List<String> interestContents) {
+    public void addUserInterests(String nickname, List<String> interestContents) {
         // 유저 확인
-        User user = userRepository.findByLoginId(loginId)
+        User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 관심사 리스트를 DB에서 가져오거나, 존재하지 않으면 새로 추가
@@ -47,9 +47,9 @@ public class InterestService {
                 .collect(Collectors.toList());
     }
 
-    public List<InterestResponse> getUserInterests(String loginId) {
-        User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
+    public List<InterestResponse> getUserInterests(String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + nickname));
 
         List<UserInterest> userInterests = userInterestRepository.findByUser_Id(user.getId());
 
@@ -63,9 +63,9 @@ public class InterestService {
     }
 
     @Transactional
-    public void deleteAllUserInterests(String loginId) {
-        User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
+    public void deleteAllUserInterests(String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + nickname));
 
         // 해당 유저의 모든 관심사 매핑 삭제
         userInterestRepository.deleteByUser_Id(user.getId());
