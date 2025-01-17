@@ -26,7 +26,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse addComment(Long boardId, CommentRequest commentRequest, UserDetails userDetails) {
-        User user = userRepository.findByLoginId(userDetails.getUsername())
+        User user = userRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Board board = boardRepository.findById(boardId)
@@ -50,7 +50,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
-        User user = userRepository.findByLoginId(userDetails.getUsername())
+        User user = userRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Comment comment = commentRepository.findById(commentId)
@@ -69,7 +69,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
 
-        User user = userRepository.findByLoginId(userDetails.getUsername())
+        User user = userRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         if (!comment.getUser().equals(user)) {
