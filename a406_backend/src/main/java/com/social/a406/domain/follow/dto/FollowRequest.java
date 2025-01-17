@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 public class FollowRequest {
 
-    // loginId로 받기
-    private String followeeId; // 팔로우 대상자 loginId
+    // NicName으로 받기
+    private String followeeNickName; // 팔로우 대상자 loginId
 
     // 생성자, Getter, Setter
-    public FollowRequest(String followeeId) {
-        this.followeeId = followeeId;
+    public FollowRequest(String followeeNickName) {
+        this.followeeNickName = followeeNickName;
     }
 
 }
