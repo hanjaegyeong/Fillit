@@ -38,6 +38,21 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 
+    public UserDetails loadUserByLoginId(String loginId) throws UsernameNotFoundException {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new CustomUserDetails(
+                user.getId(),
+                user.getNickname(),
+                user.getPassword(),
+                authorities
+        );
+    }
+
     public UserDetails loadSocialUserBySocialId(String socialId) throws UsernameNotFoundException {
         User user = userRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with socialId: " + socialId));
