@@ -17,9 +17,9 @@ public class InterestController {
 
     private final InterestService interestService;
 
-    @PostMapping("/{userId}")
-    public void addUserInterests(@PathVariable Long userId, @RequestBody List<String> interestContents) {
-        interestService.addUserInterests(userId, interestContents);
+    @PostMapping
+    public void addUserInterests(@AuthenticationPrincipal UserDetails userDetails, @RequestBody List<String> interestContents) {
+        interestService.addUserInterests(userDetails.getUsername(), interestContents);
     }
 
     @GetMapping
@@ -27,14 +27,14 @@ public class InterestController {
         return interestService.getAllInterests();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user")
     public List<InterestResponse> getUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
         return interestService.getUserInterests(userDetails.getUsername());
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserInterests(@PathVariable Long userId) {
-        interestService.deleteAllUserInterests(userId);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
+        interestService.deleteAllUserInterests(userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 }
