@@ -116,4 +116,39 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
     }
+
+    public UserCharacterResponse getUserInfoByNickname(String nickname) {
+        // 실제 유저 조회
+        Optional<User> user = userRepository.findByNickname(nickname);
+        if (user.isPresent()) {
+            User u = user.get();
+            return UserCharacterResponse.builder()
+                    .type("user")
+                    .id(u.getId())
+                    .name(u.getName())
+                    .nickname(u.getNickname())
+                    .profileImageUrl(u.getProfileImageUrl())
+                    .introduction(u.getIntroduction())
+                    .birthDate(u.getBirthDate() != null ? u.getBirthDate().toString() : null)
+                    .build();
+        }
+
+        // 캐릭터 조회
+        Optional<Character> character = characterRepository.findByNickname(nickname);
+        if (character.isPresent()) {
+            Character c = character.get();
+            return UserCharacterResponse.builder()
+                    .type("ai")
+                    .id(c.getId())
+                    .name(c.getName())
+                    .nickname(c.getNickname())
+                    .profileImageUrl(c.getProfileImageUrl())
+                    .introduction(c.getIntroduction())
+                    .birthDate(c.getBirthDate() != null ? c.getBirthDate().toString() : null)
+                    .build();
+        }
+
+        // 유저 또는 캐릭터가 없을 경우 예외 처리
+        throw new IllegalArgumentException("User or Character not found for nickname: " + nickname);
+    }
 }
