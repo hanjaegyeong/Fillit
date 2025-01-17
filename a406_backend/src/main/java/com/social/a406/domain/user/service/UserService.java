@@ -1,6 +1,5 @@
 package com.social.a406.domain.user.service;
 
-import com.social.a406.domain.character.repository.CharacterRepository;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -10,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.social.a406.domain.character.entity.Character;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +20,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CharacterRepository characterRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
@@ -118,37 +115,30 @@ public class UserService {
     }
 
     public UserCharacterResponse getUserInfoByNickname(String nickname) {
-        // 실제 유저 조회
-        Optional<User> user = userRepository.findByNickname(nickname);
-        if (user.isPresent()) {
-            User u = user.get();
+        // UserRepository에서 닉네임으로 사용자 조회
+        Optional<User> userOptional = userRepository.findByNickname(nickname);
+
+        // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             return UserCharacterResponse.builder()
-                    .type("user")
-                    .id(u.getId())
-                    .name(u.getName())
-                    .nickname(u.getNickname())
-                    .profileImageUrl(u.getProfileImageUrl())
-                    .introduction(u.getIntroduction())
-                    .birthDate(u.getBirthDate() != null ? u.getBirthDate().toString() : null)
+                    .type(user.getLoginId() == null && user.getPassword() == null ? "ai" : "user")
+                    .id(user.getId())
+                    .name(user.getName())
+                    .nickname(user.getNickname())
+                    .profileImageUrl(user.getProfileImageUrl())
+                    .introduction(user.getIntroduction())
+                    .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
                     .build();
         }
 
-        // 캐릭터 조회
-        Optional<Character> character = characterRepository.findByNickname(nickname);
-        if (character.isPresent()) {
-            Character c = character.get();
-            return UserCharacterResponse.builder()
-                    .type("ai")
-                    .id(c.getId())
-                    .name(c.getName())
-                    .nickname(c.getNickname())
-                    .profileImageUrl(c.getProfileImageUrl())
-                    .introduction(c.getIntroduction())
-                    .birthDate(c.getBirthDate() != null ? c.getBirthDate().toString() : null)
-                    .build();
-        }
+        // 닉네임에 해당하는 사용자가 없을 경우 예외 발생
+        throw new IllegalArgumentException("User or AI not found for nickname: " + nickname);
+    }
 
-        // 유저 또는 캐릭터가 없을 경우 예외 처리
-        throw new IllegalArgumentException("User or Character not found for nickname: " + nickname);
+    public User getUserByNickname(String nickname) {
+        // UserRepository에서 닉네임으로 사용자 조회
+        return userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("User or AI not found for nickname: " + nickname));
     }
 }
