@@ -45,36 +45,35 @@ public class UserService {
             throw new IllegalArgumentException("Login ID already exists");
         }
 
-        User newUser = new User();
-        newUser.setLoginId(request.getLoginId());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setName(request.getName());
-        newUser.setNickname(request.getNickname());
-        newUser.setAge(request.getAge());
-        newUser.setEmail(request.getEmail());
-        newUser.setProfileImageUrl(request.getProfileImageUrl());
-        newUser.setIntroduction(request.getIntroduction());
+        User newUser = User.builder()
+                .loginId(request.getLoginId())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .nickname(request.getNickname())
+                .email(request.getEmail())
+                .profileImageUrl(request.getProfileImageUrl())
+                .introduction(request.getIntroduction())
+                .build();
 
         userRepository.save(newUser);
         log.info("User registered successfully: {}", request.getLoginId());
     }
 
     private void handleSocialUserRegistration(SocialUserRegistrationRequest request) {
-        // UserRepository의 existsBySocialDomainAndSocialId 메서드 호출
         if (userRepository.existsBySocialDomainAndSocialId(request.getSocialDomain(), request.getSocialId())) {
             log.warn("Registration failed. Social ID already exists: {} {}", request.getSocialDomain(), request.getSocialId());
             throw new IllegalArgumentException("Social ID already exists");
         }
 
-        User newUser = new User();
-        newUser.setSocialDomain(request.getSocialDomain());
-        newUser.setSocialId(request.getSocialId());
-        newUser.setName(request.getName());
-        newUser.setNickname(request.getNickname());
-        newUser.setAge(request.getAge());
-        newUser.setEmail(request.getEmail());
-        newUser.setProfileImageUrl(request.getProfileImageUrl());
-        newUser.setIntroduction(request.getIntroduction());
+        User newUser = User.builder()
+                .socialDomain(request.getSocialDomain())
+                .socialId(request.getSocialId())
+                .name(request.getName())
+                .nickname(request.getNickname())
+                .email(request.getEmail())
+                .profileImageUrl(request.getProfileImageUrl())
+                .introduction(request.getIntroduction())
+                .build();
 
         userRepository.save(newUser);
         log.info("Social user registered successfully: {} {}", request.getSocialDomain(), request.getSocialId());
@@ -86,7 +85,6 @@ public class UserService {
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
-
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginRequest.getLoginId());
 
         // 사용자 검증
