@@ -20,7 +20,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
-        User user = userRepository.findByLoginId(userDetails.getUsername())
+        User user = userRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Board board = Board.builder()
@@ -42,7 +42,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
-        User user = userRepository.findByLoginId(userDetails.getUsername())
+        User user = userRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Board board = boardRepository.findById(boardId)

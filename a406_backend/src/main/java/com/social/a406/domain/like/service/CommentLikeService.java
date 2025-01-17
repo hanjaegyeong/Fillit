@@ -23,8 +23,8 @@ public class CommentLikeService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addLike(String loginId, Long commentId) {
-        User user = userRepository.findByLoginId(loginId)
+    public void addLike(String nickname, Long commentId) {
+        User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Comment comment = commentRepository.findById(commentId)
@@ -41,8 +41,8 @@ public class CommentLikeService {
     }
 
     @Transactional
-    public void removeLike(String loginId, Long commentId) {
-        User user = userRepository.findByLoginId(loginId)
+    public void removeLike(String nickname, Long commentId) {
+        User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Comment comment = commentRepository.findById(commentId)
