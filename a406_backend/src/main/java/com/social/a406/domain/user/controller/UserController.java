@@ -22,6 +22,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    // refresh token 수명 : 7일
+    private final int refreshTokenMaxage = 7 * 24 * 60 * 60;
+
     // 회원가입
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest registrationRequest) {
@@ -46,7 +49,7 @@ public class UserController {
             headers.set("Authorization", "Bearer " + tokens.get("accessToken"));
 
             // Refresh Token은 쿠키에 세팅
-            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), 7 * 24 * 60 * 60);
+            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), refreshTokenMaxage);
 
             return ResponseEntity.ok()
                     .headers(headers)

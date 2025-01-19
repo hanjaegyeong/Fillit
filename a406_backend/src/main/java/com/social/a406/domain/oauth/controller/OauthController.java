@@ -2,6 +2,9 @@ package com.social.a406.domain.oauth.controller;
 
 import com.social.a406.domain.oauth.dto.OauthResponse;
 import com.social.a406.domain.oauth.dto.OauthUserInfo;
+import com.social.a406.domain.oauth.service.GoogleOauthService;
+import com.social.a406.domain.oauth.service.KakaoOauthService;
+import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +21,20 @@ import java.util.Map;
 public class OauthController {
 
     private final OauthService oauthService;
+    private final KakaoOauthService kakaoOauthService;
+    private final GoogleOauthService googleOauthService;
+    private final NaverOauthService naverOauthService;
 
     @Autowired
-    public OauthController(OauthService oauthService) {
+    public OauthController(OauthService oauthService, KakaoOauthService kakaoOauthService, GoogleOauthService googleOauthService, NaverOauthService naverOauthService) {
         this.oauthService = oauthService;
+        this.kakaoOauthService = kakaoOauthService;
+        this.googleOauthService = googleOauthService;
+        this.naverOauthService = naverOauthService;
     }
+
+    // refresh token 수명 : 7일
+    private final int refreshTokenMaxage = 7 * 24 * 60 * 60;
 
     @PostMapping("/login")
     public ResponseEntity<String> SocialLoginUser(@RequestBody SocialLoginRequest socialLoginRequest) {
@@ -34,7 +46,7 @@ public class OauthController {
             headers.set("Authorization", "Bearer " + tokens.get("accessToken"));
 
             // Refresh Token은 쿠키에 세팅
-            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), 7 * 24 * 60 * 60);
+            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), refreshTokenMaxage);
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -61,8 +73,8 @@ public class OauthController {
             @RequestParam("access_token") String code
     ) {
         // 프론트 개발 후 사용
-//        final OauthToken token = oauthService.getKakaoToken(code);
-        final OauthUserInfo userInfo = oauthService.getKakaoInfo(code);
+//        final OauthToken token = kakaoOauthService.getKakaoToken(code);
+        final OauthUserInfo userInfo = kakaoOauthService.getKakaoInfo(code);
 
         final OauthResponse kakaoResponse = OauthResponse.of(userInfo.socialId(),
                                                              userInfo.socialDomain());
@@ -74,8 +86,8 @@ public class OauthController {
             @RequestParam("access_token") String code
     ) {
         // 프론트 개발 후 사용
-//        final OauthToken token = oauthService.getGoogleToken(code);
-        final OauthUserInfo userInfo = oauthService.getGoogleInfo(code);
+//        final OauthToken token = googleOauthService.getGoogleToken(code);
+        final OauthUserInfo userInfo = googleOauthService.getGoogleInfo(code);
 
         final OauthResponse googleResponse = OauthResponse.of(userInfo.socialId(),
                                                               userInfo.socialDomain());
@@ -87,8 +99,8 @@ public class OauthController {
             @RequestParam("access_token") String code
     ) {
         // 프론트 개발 후 사용
-//        final OauthToken token = oauthService.getNaverToken(code);
-        final OauthUserInfo userInfo = oauthService.getNaverInfo(code);
+//        final OauthToken token = naverOauthService.getNaverToken(code);
+        final OauthUserInfo userInfo = naverOauthService.getNaverInfo(code);
 
         final OauthResponse naverResponse = OauthResponse.of(userInfo.socialId(),
                                                              userInfo.socialDomain());
