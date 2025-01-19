@@ -4,6 +4,7 @@ import com.social.a406.domain.user.dto.RegistrationRequest;
 import com.social.a406.domain.user.dto.UserCharacterResponse;
 import com.social.a406.domain.user.dto.UserLoginRequest;
 import com.social.a406.domain.user.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -22,8 +23,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    // refresh token 수명 : 7일
-    private final int refreshTokenMaxage = 7 * 24 * 60 * 60;
+    // refresh token 수명
+    @Value("${refresh.token.max-age}")
+    private int refreshTokenMaxage;
 
     // 회원가입
     @PostMapping("/register")

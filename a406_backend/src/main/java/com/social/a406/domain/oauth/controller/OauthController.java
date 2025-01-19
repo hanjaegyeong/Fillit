@@ -8,6 +8,7 @@ import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -33,8 +34,9 @@ public class OauthController {
         this.naverOauthService = naverOauthService;
     }
 
-    // refresh token 수명 : 7일
-    private final int refreshTokenMaxage = 7 * 24 * 60 * 60;
+    // refresh token 수명
+    @Value("${refresh.token.max-age}")
+    private int refreshTokenMaxage;
 
     @PostMapping("/login")
     public ResponseEntity<String> SocialLoginUser(@RequestBody SocialLoginRequest socialLoginRequest) {
