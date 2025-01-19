@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.oauth.dto.OauthToken;
 import com.social.a406.domain.oauth.dto.OauthUserInfo;
-import com.social.a406.domain.user.service.CustomUserDetailsService;
-import com.social.a406.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
