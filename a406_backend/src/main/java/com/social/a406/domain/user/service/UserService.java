@@ -44,6 +44,11 @@ public class UserService {
             throw new IllegalArgumentException("Login ID already exists");
         }
 
+        if (userRepository.existsByNickname(request.getNickname())) {
+            log.warn("Registration failed. Nickname duplicate: {}", request.getNickname());
+            throw new IllegalArgumentException("Nickname duplicate");
+        }
+
         User newUser = User.builder()
                 .loginId(request.getLoginId())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -63,6 +68,11 @@ public class UserService {
         if (userRepository.existsBySocialDomainAndSocialId(request.getSocialDomain(), request.getSocialId())) {
             log.warn("Registration failed. Social ID already exists: {} {}", request.getSocialDomain(), request.getSocialId());
             throw new IllegalArgumentException("Social ID already exists");
+        }
+
+        if (userRepository.existsByNickname(request.getNickname())) {
+            log.warn("Registration failed. Nickname duplicate: {}", request.getNickname());
+            throw new IllegalArgumentException("Nickname duplicate");
         }
 
         User newUser = User.builder()
