@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsBySocialDomainAndSocialId(String socialDomain, String socialId); // 소셜 로그인 중복 체크
 
+    boolean existsByNickname(String nickname);
 }
