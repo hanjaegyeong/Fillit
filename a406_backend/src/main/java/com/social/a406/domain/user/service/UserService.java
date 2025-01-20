@@ -51,6 +51,7 @@ public class UserService {
                 .nickname(request.getNickname())
                 .email(request.getEmail())
                 .profileImageUrl(request.getProfileImageUrl())
+                .birthDate(request.getBirthDate())
                 .introduction(request.getIntroduction())
                 .build();
 
@@ -71,6 +72,7 @@ public class UserService {
                 .nickname(request.getNickname())
                 .email(request.getEmail())
                 .profileImageUrl(request.getProfileImageUrl())
+                .birthDate(request.getBirthDate())
                 .introduction(request.getIntroduction())
                 .build();
 
