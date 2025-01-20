@@ -73,6 +73,19 @@ public class BoardService {
         return mapToResponseDto(board);
     }
 
+    @Transactional(readOnly = true)
+    public String getBoardContentById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(Board::getContent)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+    }
+
+    public String getBoardAuthorNicknameById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(board -> board.getUser().getNickname())
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+    }
+
     private BoardResponse mapToResponseDto(Board board) {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
