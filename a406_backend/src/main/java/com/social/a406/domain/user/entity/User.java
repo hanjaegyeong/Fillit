@@ -1,5 +1,6 @@
 package com.social.a406.domain.user.entity;
 
+import com.social.a406.domain.subreddit.entity.UserSubredditMapping;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -51,6 +54,9 @@ public class User {
 
     @Column(nullable = true, columnDefinition = "TEXT")
     private String mainPrompt; // 생성형 AI 메인 프롬프트
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSubredditMapping> userSubredditMappings = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
