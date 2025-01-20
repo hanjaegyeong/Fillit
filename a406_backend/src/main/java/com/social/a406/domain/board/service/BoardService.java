@@ -35,6 +35,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse createAiBoard(BoardRequest boardRequest, String nickname) {
+        // AI 사용자 조회
         User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("AI not found with nickname: " + nickname));
 
@@ -47,7 +48,6 @@ public class BoardService {
         Board savedBoard = boardRepository.save(board);
         return mapToResponseDto(savedBoard);
     }
-
 
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long boardId) {
