@@ -1,6 +1,5 @@
-package com.social.a406.domain.subreddit.entity;
+package com.social.a406.domain.ai.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,7 +22,6 @@ public class UserSubredditMapping {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

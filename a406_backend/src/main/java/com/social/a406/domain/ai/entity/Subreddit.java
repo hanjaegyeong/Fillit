@@ -1,4 +1,4 @@
-package com.social.a406.domain.subreddit.entity;
+package com.social.a406.domain.ai.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

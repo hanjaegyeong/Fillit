@@ -1,6 +1,6 @@
 package com.social.a406.domain.user.entity;
 
-import com.social.a406.domain.subreddit.entity.UserSubredditMapping;
+import com.social.a406.domain.ai.entity.UserSubredditMapping;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;

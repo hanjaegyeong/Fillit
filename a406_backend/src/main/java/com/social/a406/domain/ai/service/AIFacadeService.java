@@ -1,5 +1,6 @@
 package com.social.a406.domain.ai.service;
 
+import com.social.a406.domain.ai.entity.Subreddit;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
@@ -17,6 +18,7 @@ public class AIFacadeService {
     private final AIService aiService;
     private final BoardService boardService;
     private final CommentService commentService;
+    private final SubredditService subredditService;
 
     private static final String COMMENT_PROMPT = "Please write a reply to this post.";
 
@@ -49,5 +51,23 @@ public class AIFacadeService {
         String boardContent = boardService.getBoardContentById(boardId);
         String boardAuthorNickname = boardService.getBoardAuthorNicknameById(boardId);
         return String.format("User nickname: %s, Content: %s\n%s", boardAuthorNickname, boardContent, COMMENT_PROMPT);
+    }
+
+    public BoardResponse generateBoardUsingSubredditHotPost(String nickname, String apiKey) {
+        // 특정 유저의 랜덤 서브레딧 가져오기
+        Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(nickname);
+        String subredditName = randomSubreddit.getName();
+
+        // 핫 게시글 데이터 가져오기
+        String hotPostData = subredditService.getRandomHotPost(subredditName);
+
+        // 프롬프트 생성
+        String prompt = String.format(
+                "Let's dive into the subreddit '%s'. Here's a hot post:\n\n%s\n\nWrite an engaging article inspired by this topic.",
+                subredditName, hotPostData
+        );
+
+        // 게시글 생성 및 저장
+        return generateAndSaveBoard(nickname, apiKey, prompt);
     }
 }
