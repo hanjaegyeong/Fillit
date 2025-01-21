@@ -1,9 +1,9 @@
-package com.social.a406.domain.hotissue.service;
+package com.social.a406.domain.ai.service;
 
-import com.social.a406.domain.hotissue.entity.Category;
-import com.social.a406.domain.hotissue.entity.Youtube;
-import com.social.a406.domain.hotissue.repository.CategoryRepository;
-import com.social.a406.domain.hotissue.repository.YoutubeRepository;
+import com.social.a406.domain.ai.entity.Youtube;
+import com.social.a406.domain.ai.entity.YoutubeCategory;
+import com.social.a406.domain.ai.repository.YoutubeCategoryRepository;
+import com.social.a406.domain.ai.repository.YoutubeRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,12 +22,12 @@ public class YoutubeService {
 
     private final RestTemplate restTemplate;
     private final YoutubeRepository youtubeRepository;
-    private final CategoryRepository categoryRepository;
+    private final YoutubeCategoryRepository youtubeCategoryRepository;
 
-    public YoutubeService(RestTemplate restTemplate, YoutubeRepository youtubeRepository, CategoryRepository categoryRepository) {
+    public YoutubeService(RestTemplate restTemplate, YoutubeRepository youtubeRepository, YoutubeCategoryRepository youtubeCategoryRepository) {
         this.restTemplate = restTemplate;
         this.youtubeRepository = youtubeRepository;
-        this.categoryRepository = categoryRepository;
+        this.youtubeCategoryRepository = youtubeCategoryRepository;
     }
 
     @Value("${youtube.api.url}")
@@ -35,15 +36,15 @@ public class YoutubeService {
     private String API_KEY;
 
     private final int DESCRIPTION_MAX_LENGTH = 950;
+    private final int MAX_RESULT = 10;
 
-
-    public List<Youtube> getPopularVideos(int maxResults) {
+    public Youtube getRandomPopularVideos() {
         // API 요청 URL 생성
         String url = UriComponentsBuilder.fromHttpUrl(YOUTUBE_API_URL)
                 .queryParam("part", "snippet,topicDetails")
                 .queryParam("chart", "mostPopular")
                 .queryParam("regionCode", "US")
-                .queryParam("maxResults", maxResults)
+                .queryParam("maxResults", MAX_RESULT)
                 .queryParam("key", API_KEY)
                 .toUriString();
 
@@ -56,10 +57,16 @@ public class YoutubeService {
                 .peek(youtubeRepository::save)      // 저장
                 .collect(Collectors.toList());
 
-        return youtubeList;
+        // 리스트에서 랜덤한 요소 선택
+        if (!youtubeList.isEmpty()) {
+            Random random = new Random();
+            return youtubeList.get(random.nextInt(youtubeList.size()));
+        } else {
+            throw new RuntimeException("No videos found.");
+        }
     }
 
-    // YouTube 엔티티 생성 로직 분리
+    // 크롤링 데이터 Youtube 엔티티로 변환
     private Youtube convertToYoutubeEntity(Map<String, Object> item) {
         String description = extractDescription((String) item.get("description"));
         String categoryId = (String) item.get("categoryId");
@@ -76,19 +83,10 @@ public class YoutubeService {
                 .build();
         String prompt = generatePrompt(youtube);
 
-        return Youtube.builder()
-                .url((String) item.get("url"))
-                .publishedAt((String) item.get("publishedAt"))
-                .description(description)
-                .title((String) item.get("title"))
-                .topicCategory((String) item.get("topicCategory"))
-                .category(categoryName)
-                .channelTitle((String) item.get("channelTitle"))
-                .prompt(prompt)
-                .build();
+        return new Youtube(youtube, prompt);
     }
 
-    // 설명(description) 문자열 처리 분리
+    // 설명(description) 문자열 처리
     private String extractDescription(String description) {
         if (description == null) return null;
 
@@ -149,16 +147,16 @@ public class YoutubeService {
 
     private String getCategoryNameById(Integer categoryId) {
         // 카테고리 ID로 categoryName 조회
-        Category category = categoryRepository.findByCategoryId(categoryId);
-        if (category != null) {
-            return category.getName();
+        YoutubeCategory youtubeCategory = youtubeCategoryRepository.findByCategoryId(categoryId);
+        if (youtubeCategory != null) {
+            return youtubeCategory.getName();
         } else {
             return "Unknown";  // 카테고리가 없다면 "Unknown"을 반환
         }
     }
 
     // Method to generate the social media post prompt
-    private String generatePrompt(Youtube youtube) {
+    String generatePrompt(Youtube youtube) {
         String title = youtube.getTitle();
         String url = youtube.getUrl();
         String description = youtube.getDescription();
@@ -171,9 +169,4 @@ public class YoutubeService {
                 category, title, url, description, topicCategory, category, channelTitle);
     }
 
-    public String getYoutubePrompt(Long id) {
-        Youtube youtube = youtubeRepository.getYoutubeById(id);
-
-        return youtube.getPrompt();
-    }
 }
