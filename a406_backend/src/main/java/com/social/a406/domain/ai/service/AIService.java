@@ -19,11 +19,10 @@ public class AIService {
 
     private static final String PROMPT_SUFFIX = "Please respond within 500 characters.";
 
+    // gemini-1.5-flash 모델 생성형AI API 호출
     public String generateContent(String nickname, String apiKey, String additionalPrompt) {
-        // 사용자(AI) 정보 조회
         User ai = userService.getUserByNickname(nickname);
 
-        // 프롬프트 생성
         String finalPrompt = ai.getMainPrompt() + " " + additionalPrompt + " " + PROMPT_SUFFIX;
 
         // API 호출 준비
@@ -36,10 +35,10 @@ public class AIService {
         // API 호출
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-        // 응답 파싱 및 콘텐츠 반환
         return parseGeneratedContent(response.getBody());
     }
 
+    // 생성형 API 응답의 content만 파싱
     private String parseGeneratedContent(String responseBody) {
         try {
             JsonNode rootNode = objectMapper.readTree(responseBody);
