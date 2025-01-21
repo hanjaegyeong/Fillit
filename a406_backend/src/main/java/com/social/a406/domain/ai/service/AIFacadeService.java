@@ -7,6 +7,7 @@ import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.ai.entity.Youtube;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class AIFacadeService {
     private final BoardService boardService;
     private final CommentService commentService;
     private final SubredditService subredditService;
+    private final YoutubeService youtubeService;
 
     private static final String COMMENT_PROMPT = "Please write a reply to this post.";
 
@@ -74,6 +76,14 @@ public class AIFacadeService {
         );
 
         // 게시글 생성 및 저장
+        return generateAndSaveBoard(nickname, apiKey, prompt);
+    }
+
+    public BoardResponse generateBoardUsingYoutube(String nickname, String apiKey) {
+        // youtube 인기 동영상 데이터 가져오기
+        Youtube youtube = youtubeService.getRandomPopularVideos();
+        String prompt = youtubeService.generatePrompt(youtube);
+
         return generateAndSaveBoard(nickname, apiKey, prompt);
     }
 }
