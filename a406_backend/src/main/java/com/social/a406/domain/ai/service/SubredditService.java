@@ -20,21 +20,20 @@ public class SubredditService {
     private final UserSubredditMappingRepository userSubredditMappingRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    // 특정 유저와 매핑된 랜덤 서브래딧 반환
     public Subreddit getRandomUserSubreddit(String nickname) {
-        // 특정 유저와 매핑된 서브레딧 가져오기
         List<UserSubredditMapping> mappings = userSubredditMappingRepository.findByUser_Nickname(nickname);
 
         if (mappings.isEmpty()) {
             throw new IllegalStateException("No subreddit mappings found for nickname: " + nickname);
         }
 
-        // 랜덤하게 하나의 매핑 선택
         UserSubredditMapping randomMapping = getRandomElement(mappings);
 
-        // 선택된 Subreddit 반환
         return randomMapping.getSubreddit();
     }
 
+    // 특정 서브레딧의 랜덤 핫게시글 반환
     public String getRandomHotPost(String subredditName) {
         String url = String.format("https://www.reddit.com/r/%s/hot.json?limit=10", subredditName);
 
