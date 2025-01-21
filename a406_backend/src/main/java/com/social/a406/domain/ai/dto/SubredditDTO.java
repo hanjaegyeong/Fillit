@@ -1,4 +1,4 @@
-package com.social.a406.domain.subreddit.dto;
+package com.social.a406.domain.ai.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

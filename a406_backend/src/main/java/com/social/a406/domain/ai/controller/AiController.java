@@ -1,5 +1,6 @@
 package com.social.a406.domain.ai.controller;
 
+import com.social.a406.domain.ai.service.SubredditService;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
 import com.social.a406.domain.comment.dto.CommentResponse;
@@ -16,7 +17,7 @@ public class AiController {
 
     private final AIFacadeService aiFacadeService;
 
-    @PostMapping("/generate/board")
+    @PostMapping("/generate/board/normal")
     public ResponseEntity<BoardResponse> generateBoard(@RequestParam String nickname, @RequestParam String apiKey,
                                                        @RequestBody Map<String, String> body) {
         String prompt = body.getOrDefault("prompt", "");
@@ -32,6 +33,13 @@ public class AiController {
 
         // 댓글 생성 및 저장
         CommentResponse response = aiFacadeService.generateAndSaveComment(boardId, nickname, apiKey);
+
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/generate/board/reddit")
+    public ResponseEntity<BoardResponse> generateBoardFromSubredditHotPost(@RequestParam String nickname, @RequestParam String apiKey) {
+        BoardResponse response = aiFacadeService.generateBoardUsingSubredditHotPost(nickname, apiKey);
 
         return ResponseEntity.status(201).body(response);
     }
