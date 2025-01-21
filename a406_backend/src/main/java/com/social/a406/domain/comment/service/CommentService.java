@@ -42,6 +42,26 @@ public class CommentService {
         return mapToResponse(savedComment);
     }
 
+
+    @Transactional
+    public CommentResponse addAiComment(Long boardId, CommentRequest commentRequest, String nickname) {
+        User aiUser = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("AI user not found with nickname: " + nickname));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+
+        Comment comment = Comment.builder()
+                .board(board)
+                .user(aiUser)
+                .content(commentRequest.getContent())
+                .build();
+
+        Comment savedComment = commentRepository.save(comment);
+
+        return mapToResponse(savedComment);
+    }
+
     @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByBoard(Long boardId) {
         List<Comment> comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtAsc(boardId);
