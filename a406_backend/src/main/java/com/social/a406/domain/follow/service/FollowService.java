@@ -64,7 +64,7 @@ public class FollowService {
         return userRepository.findByLoginId(loginId);
     }
 
-    // nickㅜame으로 userId 찾기
+    // nickName으로 userId 찾기
     public Optional<User> findByNickname(String Nickname) {
         return userRepository.findByNickname(Nickname);
     }

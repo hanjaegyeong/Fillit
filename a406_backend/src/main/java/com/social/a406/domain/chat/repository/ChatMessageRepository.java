@@ -1,0 +1,22 @@
+package com.social.a406.domain.chat.repository;
+import com.social.a406.domain.chat.entity.ChatMessage;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+    List<ChatMessage> findByChatRoomId(Long chatRoomId); // 특정 채팅방의 모든 메시지 조회
+
+    // 채팅방 ID를 기반으로 가장 최근 메시지의 ID를 찾는 메서드
+    @Query("SELECT MAX(m.chatMessageId.messageId) FROM ChatMessage m WHERE m.chatMessageId.chatRoomId = :chatRoomId")
+    Long findLastMessageIdByChatRoomId(@Param("chatRoomId") Long chatRoomId);
+
+    //
+    @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.chatParticipants.chatRoom.id = :chatRoomId AND m.chatMessageId.messageId > :lastReadMessageId AND m.chatParticipants.user.id != :userId")
+    Long countByChatRoomIdAndMessageIdGreaterThanExcludeUser(@Param("chatRoomId") Long chatRoomId, @Param("lastReadMessageId") Long lastReadMessageId, @Param("userId") String userId);
+
+    @Query("SELECT MAX(cm.chatMessageId.messageId) FROM ChatMessage cm WHERE cm.chatParticipants.chatRoom.id = :chatRoomId AND cm.chatParticipants.user.id != :userId")
+    Long findLastMessageIdByChatRoomIdAndNotUserId(@Param("chatRoomId") Long chatRoomId, @Param("userId") String userId);
+}
