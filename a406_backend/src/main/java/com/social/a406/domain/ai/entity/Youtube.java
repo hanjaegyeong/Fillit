@@ -1,4 +1,4 @@
-package com.social.a406.domain.hotissue.entity;
+package com.social.a406.domain.ai.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "hotissue_youtube")
+@Table(name = "youtube")
 public class Youtube {
 
     @Id
@@ -28,7 +28,7 @@ public class Youtube {
 
     @Builder
     public Youtube(String url, String publishedAt, String description, String title,
-                        String topicCategory, String category, String channelTitle, String prompt) {
+                   String topicCategory, String category, String channelTitle, String prompt) {
         this.url = url;
         this.publishedAt = publishedAt;
         this.description = description;

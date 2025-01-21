@@ -44,4 +44,11 @@ public class AiController {
 
         return ResponseEntity.status(201).body(response);
     }
+
+    @GetMapping("/generate/board/youtube")
+    public ResponseEntity<BoardResponse> generateBoardFromYoutube(@RequestParam String nickname, @RequestParam String apiKey){
+        BoardResponse response = aiFacadeService.generateBoardUsingYoutube(nickname, apiKey);
+
+        return ResponseEntity.status(201).body(response);
+    }
 }

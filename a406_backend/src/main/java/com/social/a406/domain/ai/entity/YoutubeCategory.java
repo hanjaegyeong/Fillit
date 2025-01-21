@@ -1,7 +1,6 @@
-package com.social.a406.domain.hotissue.entity;
+package com.social.a406.domain.ai.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Table(name = "categories_youtube")
-public class Category {
+public class YoutubeCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,11 +16,4 @@ public class Category {
 
     private String name;
     private int categoryId; // categoryId 값
-
-    // 생성자
-    @Builder
-    public Category(String name, int categoryId) {
-        this.name = name;
-        this.categoryId = categoryId;
-    }
 }
