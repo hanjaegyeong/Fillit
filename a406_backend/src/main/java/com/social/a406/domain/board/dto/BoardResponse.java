@@ -12,6 +12,12 @@ public class BoardResponse {
     private String content;
     private String nickname;
     private Long likeCount;
+
+    private Double x;
+    private Double y;
+    private String keyword;
+    private Integer pageNumber;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
