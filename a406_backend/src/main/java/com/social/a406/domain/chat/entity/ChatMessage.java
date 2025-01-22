@@ -1,5 +1,6 @@
 package com.social.a406.domain.chat.entity;
 
+import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,13 +18,14 @@ public class ChatMessage {
     @EmbeddedId
     private ChatMessageId chatMessageId;
 
-    @MapsId("chatParticipantsId") // 복합키를 ChatParticipants에 매핑
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "chat_room_id", referencedColumnName = "chatRoomId"),
-            @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    })
-    private ChatParticipants chatParticipants;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @MapsId("chatRoomId")
+    @ManyToOne
+    @JoinColumn(name = "chatRoomId")
+    private ChatRoom chatRoom;
 
     @Column(name = "content")
     private String messageContent;
