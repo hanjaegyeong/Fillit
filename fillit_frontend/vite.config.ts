@@ -11,8 +11,8 @@ export default defineConfig({
       injectRegister: false,
 
       manifest: {
-        name: 'fillit_frontend',
-        short_name: 'fillit',
+        name: 'Fillit',
+        short_name: 'Fillit',
         description: 'SNS for english learning',
         theme_color: '#ffffff',
         icons: [
