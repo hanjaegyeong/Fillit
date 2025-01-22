@@ -108,6 +108,8 @@ public class VoiceReplyService {
             // Voice 객체 생성 및 DB에 저장
             VoiceReply voiceReply = voiceReplyRepository.save(new VoiceReply(voice, user, fileUrl));
 
+            generateVoiceReplyNotification(voiceReply);
+
             return "Success to store the file";
         } catch (IOException e) {
             throw new RuntimeException("Failed to store the file", e);
