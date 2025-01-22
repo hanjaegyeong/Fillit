@@ -18,7 +18,7 @@ import java.util.Date;
 })
 public abstract class RegistrationRequest {
     private String name;
-    private String nickname;
+    private String personalId;
     private Date birthDate;
     private String email;
     private String introduction;

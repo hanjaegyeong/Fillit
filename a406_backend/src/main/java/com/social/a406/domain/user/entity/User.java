@@ -39,7 +39,7 @@ public class User {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String nickname; //nickname은 null 불가 && 중복 불가
+    private String personalId; // @뒤에 들어가는 유저id, null 불가 && 중복 불가
 
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
@@ -67,12 +67,12 @@ public class User {
     private boolean isDeleted; // 계정 삭제 여부
 
     @Builder
-    public User(String loginId, String password, String name, String nickname, Date birthDate, String email, String profileImageUrl,
+    public User(String loginId, String password, String name, String personalId, Date birthDate, String email, String profileImageUrl,
                 String introduction, String socialDomain, String socialId, boolean isDeleted) {
         this.loginId = loginId;
         this.password = password;
         this.name = name;
-        this.nickname = nickname;
+        this.personalId = personalId;
         this.birthDate = birthDate;
         this.email = email;
         this.profileImageUrl = profileImageUrl;

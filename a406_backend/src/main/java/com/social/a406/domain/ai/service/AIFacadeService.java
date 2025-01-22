@@ -26,22 +26,22 @@ public class AIFacadeService {
     private static final String COMMENT_PROMPT = "Please write a reply to this post.";
 
     // 게시글 생성&저장
-    public BoardResponse generateAndSaveBoard(String nickname, String prompt) {
-        String generatedContent = aiService.generateContent(nickname, prompt);
-        return saveGeneratedBoard(generatedContent, nickname);
+    public BoardResponse generateAndSaveBoard(String personalId, String prompt) {
+        String generatedContent = aiService.generateContent(personalId, prompt);
+        return saveGeneratedBoard(generatedContent, personalId);
     }
 
     // 댓글 생성&저장
-    public CommentResponse generateAndSaveComment(Long boardId, String nickname) {
+    public CommentResponse generateAndSaveComment(Long boardId, String personalId) {
         String finalPrompt = buildCommentPrompt(boardId);
-        String generatedContent = aiService.generateContent(nickname, finalPrompt);
-        return saveGeneratedComment(boardId, generatedContent, nickname);
+        String generatedContent = aiService.generateContent(personalId, finalPrompt);
+        return saveGeneratedComment(boardId, generatedContent, personalId);
     }
 
     // 게시글 저장
-    private BoardResponse saveGeneratedBoard(String content, String nickname) {
+    private BoardResponse saveGeneratedBoard(String content, String personalId) {
         BoardRequest boardRequest = createBoardRequest(content);
-        return boardService.createAiBoard(boardRequest, nickname);
+        return boardService.createAiBoard(boardRequest, personalId);
     }
 
     private BoardRequest createBoardRequest(String content) {
@@ -67,37 +67,37 @@ public class AIFacadeService {
     }
 
     // 댓글 저장
-    private CommentResponse saveGeneratedComment(Long boardId, String content, String nickname) {
+    private CommentResponse saveGeneratedComment(Long boardId, String content, String personalId) {
         CommentRequest commentRequest = CommentRequest.builder()
                 .content(content)
                 .build();
-        return commentService.addAiComment(boardId, commentRequest, nickname);
+        return commentService.addAiComment(boardId, commentRequest, personalId);
     }
 
     // 댓글 프롬프트 생성
     private String buildCommentPrompt(Long boardId) {
         String boardContent = boardService.getBoardContentById(boardId);
-        String boardAuthorNickname = boardService.getBoardAuthorNicknameById(boardId);
-        return String.format("User nickname: %s, Content: %s\n%s", boardAuthorNickname, boardContent, COMMENT_PROMPT);
+        String boardAuthorpersonalId = boardService.getBoardAuthorpersonalIdById(boardId);
+        return String.format("User personalId: %s, Content: %s\n%s", boardAuthorpersonalId, boardContent, COMMENT_PROMPT);
     }
 
     // 서브레딧 핫게시글 기반 게시글 생성
-    public BoardResponse generateBoardUsingSubredditHotPost(String nickname) {
-        Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(nickname); // 해당 유저의 랜덤 서브레딧
+    public BoardResponse generateBoardUsingSubredditHotPost(String personalId) {
+        Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(personalId); // 해당 유저의 랜덤 서브레딧
         String subredditName = randomSubreddit.getName();
 
         String hotPostData = subredditService.getRandomHotPost(subredditName); // 해당 서브레딧의 랜덤 핫게시글
 
         String prompt = subredditService.generatePrompt(subredditName, hotPostData); // 프롬프트 생성
 
-        return generateAndSaveBoard(nickname, prompt);
+        return generateAndSaveBoard(personalId, prompt);
     }
 
     // 유튜브 인기 동영상 기반 게시글 생성
-    public BoardResponse generateBoardUsingYoutube(String nickname) {
+    public BoardResponse generateBoardUsingYoutube(String personalId) {
         Youtube youtube = youtubeService.getRandomPopularVideos();
         String prompt = youtubeService.generatePrompt(youtube);
 
-        return generateAndSaveBoard(nickname, prompt);
+        return generateAndSaveBoard(personalId, prompt);
     }
 }

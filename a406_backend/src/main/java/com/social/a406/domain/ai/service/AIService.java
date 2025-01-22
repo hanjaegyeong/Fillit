@@ -24,8 +24,8 @@ public class AIService {
     private String geminiApiKey;
 
     // gemini-1.5-flash 모델 생성형AI API 호출
-    public String generateContent(String nickname, String additionalPrompt) {
-        User ai = userService.getUserByNickname(nickname);
+    public String generateContent(String personalId, String additionalPrompt) {
+        User ai = userService.getUserByPersonalId(personalId);
 
         String finalPrompt = ai.getMainPrompt() + " " + additionalPrompt + " " + PROMPT_SUFFIX;
 

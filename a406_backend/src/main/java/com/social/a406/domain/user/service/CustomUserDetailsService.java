@@ -23,16 +23,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
-        User user = userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with nickname: " + nickname));
+    public UserDetails loadUserByUsername(String personalId) throws UsernameNotFoundException {
+        User user = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with personalId: " + personalId));
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new CustomUserDetails(
                 user.getId(),  // User 고유 식별자
-                user.getNickname(), // 닉네임으로 식별
+                user.getPersonalId(), // 닉네임으로 식별
                 user.getPassword(),
                 authorities
         );
@@ -47,7 +47,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new CustomUserDetails(
                 user.getId(),
-                user.getNickname(),
+                user.getPersonalId(),
                 user.getPassword(),
                 authorities
         );
@@ -62,7 +62,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new CustomUserDetails(
                 user.getId(),
-                user.getNickname(),
+                user.getPersonalId(),
                 "oauth", // 소셜 로그인은 비밀번호가 없으므로 대체 문자열 사용
                 authorities
         );

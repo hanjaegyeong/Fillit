@@ -76,9 +76,9 @@ public class UserController {
     }
 
     // 유저 조회
-    @GetMapping("/{nickname}")
-    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String nickname) {
-        UserCharacterResponse response = userService.getUserInfoByNickname(nickname);
+    @GetMapping("/{personalId}")
+    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String personalId) {
+        UserCharacterResponse response = userService.getUserInfoByPersonalId(personalId);
         return ResponseEntity.ok(response);
     }
 }
