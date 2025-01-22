@@ -2,11 +2,11 @@ package com.social.a406.domain.chat.entity;
 
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
+@Getter
 @NoArgsConstructor
 @Table(name = "chat_participants")
 public class ChatParticipants {
@@ -15,14 +15,14 @@ public class ChatParticipants {
     private ChatParticipantsId chatParticipantsId;
 
     @ManyToOne
-    @MapsId("userId")
-    @JoinColumn(name = "user_id")
-    private User user;
+    @MapsId("chatRoomId")
+    @JoinColumn(name = "chatRoomId" )
+    private ChatRoom chatRoom;
 
     @ManyToOne
-    @MapsId("chatRoomId")
-    @JoinColumn(name = "chat_room_id" )
-    private ChatRoom chatRoom;
+    @MapsId("userId")
+    @JoinColumn(name = "Id")
+    private User user;
 
     private Long lastReadMessageId;
 
