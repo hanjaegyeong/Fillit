@@ -1,6 +1,5 @@
 package com.social.a406.domain.chat.entity;
 
-import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,13 +18,11 @@ public class ChatMessage {
     private ChatMessageId chatMessageId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @MapsId("chatRoomId")
-    @ManyToOne
-    @JoinColumn(name = "chatRoomId")
-    private ChatRoom chatRoom;
+    @JoinColumns({
+            @JoinColumn(name = "chat_room_id", referencedColumnName = "chatRoomId"), // 복합키 필드 참조
+            @JoinColumn(name = "user_id", referencedColumnName = "userId")            // ChatParticipants의 복합키 필드
+    })
+    private ChatParticipants chatParticipants;
 
     @Column(name = "content")
     private String messageContent;

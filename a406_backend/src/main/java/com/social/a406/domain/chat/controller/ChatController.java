@@ -58,7 +58,7 @@ public class ChatController {
             chatRoom = Optional.ofNullable(chatService.createChatRoom(userId, otherId));
         }
         // 채팅메세지 목록 보여주기
-        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoom.get().getId());
+        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoom.get().getChatRoomId());
         return ResponseEntity.ok(messages);
     }
 

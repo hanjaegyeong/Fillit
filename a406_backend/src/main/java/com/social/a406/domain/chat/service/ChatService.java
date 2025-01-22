@@ -39,11 +39,11 @@ public class ChatService {
         String userId = request.getUserId();
 
         // 채팅참여 정보 가져오기
-        ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
+        ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoom_ChatRoomIdAndUserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
 
         //해당 채팅방 내 마지막 메세지 찾기
-        Long lastMessageId = chatMessageRepository.findLastMessageIdByChatRoomId(chatRoomId);
+        Long lastMessageId = chatMessageRepository.findLastMessageIdByChatRoom_ChatRoomId(chatRoomId);
         Long nextMessageId = lastMessageId == null ? 1 : lastMessageId + 1; // chatMessageId에 1씩 더 증가시켜서 저장하기
 
         // 메시지 저장
@@ -55,7 +55,7 @@ public class ChatService {
         chatMessageRepository.save(newMessage);
 
         // 채팅방 마지막 메시지 정보 업데이트
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+        ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
         chatRoom.setLastMessageContent(newMessage.getMessageContent());
         chatRoom.setLastMessageTime(newMessage.getCreateAt());
@@ -67,7 +67,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatMessage> getMessagesByChatRoomId(Long chatRoomId) {
         // 특정 채팅방의 모든 메시지 조회
-        return chatMessageRepository.findByChatRoomId(chatRoomId);
+        return chatMessageRepository.findByChatRoom_ChatRoomId(chatRoomId);
     }
 
     // 채팅방 생성 / 삭제
@@ -108,16 +108,16 @@ public class ChatService {
         return participants.stream().map(participant -> {
             ChatRoom chatRoom = participant.getChatRoom();
             Long lastReadMessageId = participant.getLastReadMessageId();
-            Long unreadMessagesCount = chatMessageRepository.countByChatRoomIdAndMessageIdGreaterThanExcludeUser(chatRoom.getId(), lastReadMessageId, userId);
+            Long unreadMessagesCount = chatMessageRepository.countByChatRoomIdAndMessageIdGreaterThanExcludeUser(chatRoom.getChatRoomId(), lastReadMessageId, userId);
 
             // 상대방 정보를 리포지토리에서 바로 가져옴
-            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatRoomIdAndUserId(chatRoom.getId(), userId)
+            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatRoom_ChatRoomIdAndUserId(chatRoom.getChatRoomId(), userId)
                     .orElse(null);  // 상대방 정보가 없는 경우 null 처리
 
             String otherUserName = otherParticipant != null ? otherParticipant.getUser().getName() : "Unknown";
 
             ChatRoomResponse response = new ChatRoomResponse();
-            response.setChatRoomId(chatRoom.getId());
+            response.setChatRoomId(chatRoom.getChatRoomId());
             response.setLastMessageContent(chatRoom.getLastMessageContent());
             response.setLastMessageTime(chatRoom.getLastMessageTime());
             response.setOtherUser(otherUserName);
@@ -131,7 +131,7 @@ public class ChatService {
     @Transactional
     public void updateLastReadMessage(String userId, Long chatRoomId) {
         // ChatParticipants 엔티티 찾기
-        ChatParticipants participant = chatParticipantsRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
+        ChatParticipants participant = chatParticipantsRepository.findByChatRoom_ChatRoomIdAndUserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));
 
         Long messageId = chatMessageRepository.findLastMessageIdByChatRoomIdAndNotUserId(chatRoomId, userId);
@@ -141,7 +141,7 @@ public class ChatService {
 
     // 해당 채팅방 가져오기
     public Optional<ChatRoom> getChatRoomByChatRoomId(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId);
+        return chatRoomRepository.findByChatRoomId(chatRoomId);
     }
 
     public Optional<User> findByNickname(String nickname){
