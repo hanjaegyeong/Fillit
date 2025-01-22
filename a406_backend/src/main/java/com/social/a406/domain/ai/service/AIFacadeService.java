@@ -10,6 +10,7 @@ import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.ai.entity.Youtube;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.Random;
 
 // 각 서비스 조율해주는 Facade 서비스
 @Service
@@ -39,11 +40,32 @@ public class AIFacadeService {
 
     // 게시글 저장
     private BoardResponse saveGeneratedBoard(String content, String nickname) {
-        BoardRequest boardRequest = BoardRequest.builder()
-                .content(content)
-                .build();
+        BoardRequest boardRequest = createBoardRequest(content);
         return boardService.createAiBoard(boardRequest, nickname);
     }
+
+    private BoardRequest createBoardRequest(String content) {
+        return BoardRequest.builder()
+                .content(content)
+                .x(generateRandomDouble(0, 10)) // 좌표 0 ~ 10 사이 랜덤값
+                .y(generateRandomDouble(0, 10))
+                .pageNumber(generateRandomInt(0, 5)) // 페이지넘버 0 ~ 5 사이 랜덤값
+                .keyword(generateKeyword(content)) // 키워드는 게시글 맨 앞 5글자까지
+                .build();
+    }
+
+    private double generateRandomDouble(double min, double max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    private int generateRandomInt(int min, int max) {
+        return (int) (Math.random() * (max - min + 1)) + min;
+    }
+
+    private String generateKeyword(String content) {
+        return content.length() >= 5 ? content.substring(0, 5) : content;
+    }
+
 
     // 댓글 저장
     private CommentResponse saveGeneratedComment(Long boardId, String content, String nickname) {
