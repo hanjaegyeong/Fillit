@@ -7,4 +7,9 @@ import lombok.Data;
 @Builder
 public class BoardRequest {
     private String content;
+    
+    private Double x;
+    private Double y;
+    private String keyword;
+    private Integer pageNumber;
 }
