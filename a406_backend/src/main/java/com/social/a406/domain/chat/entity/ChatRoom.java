@@ -15,7 +15,7 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long chatRoomId;
 
     private String lastMessageContent;
 

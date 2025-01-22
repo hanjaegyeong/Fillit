@@ -7,11 +7,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findByChatRoomId(Long chatRoomId); // 특정 채팅방의 모든 메시지 조회
+    List<ChatMessage> findByChatRoom_ChatRoomId(Long chatRoomId); // 특정 채팅방의 모든 메시지 조회
 
     // 채팅방 ID를 기반으로 가장 최근 메시지의 ID를 찾는 메서드
-    @Query("SELECT MAX(m.chatMessageId.messageId) FROM ChatMessage m WHERE m.chatMessageId.chatRoomId = :chatRoomId")
-    Long findLastMessageIdByChatRoomId(@Param("chatRoomId") Long chatRoomId);
+    @Query("SELECT 1")
+    Long findLastMessageIdByChatRoom_ChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     //
     @Query("SELECT 1")
