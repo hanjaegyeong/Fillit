@@ -17,13 +17,17 @@ import java.time.LocalDateTime;
 public class ChatMessage {
 
     @EmbeddedId
+    @AttributeOverrides({
+            @AttributeOverride(name = "chatRoomId", column = @Column(name = "chatRoomId")),
+            @AttributeOverride(name = "messageId", column = @Column(name = "messageId"))
+    })
     private ChatMessageId chatMessageId;
 
-    @MapsId("chatRoomId")
+//    @MapsId("chatRoomId")
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "chatRoomId", referencedColumnName = "chatRoomId"), // 복합키 필드 참조
-            @JoinColumn(name = "userId", referencedColumnName = "userId")            // ChatParticipants의 복합키 필드
+            @JoinColumn(name = "chatRoomId", referencedColumnName = "chatRoomId", insertable = false, updatable = false), // 복합키 필드 참조
+            @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false)            // ChatParticipants의 복합키 필드
     })
     private ChatParticipants chatParticipants;
 
