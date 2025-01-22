@@ -49,7 +49,7 @@ public class ChatService {
         // 메시지 저장
         ChatMessage newMessage = new ChatMessage();
         newMessage.setChatMessageId(new ChatMessageId(chatRoomId, nextMessageId));
-        newMessage.setChatParticipants(chatParticipants);
+//        newMessage.setChatRoom(chatParticipants);
         newMessage.setMessageContent(request.getMessageContent());
         newMessage.setCreateAt(LocalDateTime.now());
         chatMessageRepository.save(newMessage);
@@ -90,7 +90,8 @@ public class ChatService {
 
         // 참여자를 매핑 테이블에 추가
         for (String Id : participantIds) {
-            User user = userRepository.findById(Id)
+            User user = userRepository.findById
+                            (Id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with Id: " + Id));
             ChatParticipants participant = new ChatParticipants();
             participant.setChatRoom(chatRoom);
@@ -107,16 +108,16 @@ public class ChatService {
         return participants.stream().map(participant -> {
             ChatRoom chatRoom = participant.getChatRoom();
             Long lastReadMessageId = participant.getLastReadMessageId();
-            Long unreadMessagesCount = chatMessageRepository.countByChatRoomIdAndMessageIdGreaterThanExcludeUser(chatRoom.getChatRoomId(), lastReadMessageId, userId);
+            Long unreadMessagesCount = chatMessageRepository.countByChatRoomIdAndMessageIdGreaterThanExcludeUser(chatRoom.getId(), lastReadMessageId, userId);
 
             // 상대방 정보를 리포지토리에서 바로 가져옴
-            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatRoomIdAndUserId(chatRoom.getChatRoomId(), userId)
+            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatRoomIdAndUserId(chatRoom.getId(), userId)
                     .orElse(null);  // 상대방 정보가 없는 경우 null 처리
 
             String otherUserName = otherParticipant != null ? otherParticipant.getUser().getName() : "Unknown";
 
             ChatRoomResponse response = new ChatRoomResponse();
-            response.setChatRoomId(chatRoom.getChatRoomId());
+            response.setChatRoomId(chatRoom.getId());
             response.setLastMessageContent(chatRoom.getLastMessageContent());
             response.setLastMessageTime(chatRoom.getLastMessageTime());
             response.setOtherUser(otherUserName);
@@ -140,7 +141,7 @@ public class ChatService {
 
     // 해당 채팅방 가져오기
     public Optional<ChatRoom> getChatRoomByChatRoomId(Long chatRoomId) {
-        return chatRoomRepository.findByChatRoomId(chatRoomId);
+        return chatRoomRepository.findById(chatRoomId);
     }
 
     public Optional<User> findByNickname(String nickname){

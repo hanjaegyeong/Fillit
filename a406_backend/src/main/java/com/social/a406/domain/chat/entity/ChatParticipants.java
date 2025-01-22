@@ -21,8 +21,9 @@ public class ChatParticipants {
 
     @ManyToOne
     @MapsId("chatRoomId")
-    @JoinColumn(name = "chat_room_id", referencedColumnName = "chatRoomId")
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
     private Long lastReadMessageId;
 }
+

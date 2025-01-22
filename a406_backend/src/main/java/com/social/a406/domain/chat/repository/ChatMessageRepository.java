@@ -14,9 +14,9 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     Long findLastMessageIdByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     //
-    @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.chatParticipants.chatRoom.id = :chatRoomId AND m.chatMessageId.messageId > :lastReadMessageId AND m.chatParticipants.user.id != :userId")
+    @Query("SELECT 1")
     Long countByChatRoomIdAndMessageIdGreaterThanExcludeUser(@Param("chatRoomId") Long chatRoomId, @Param("lastReadMessageId") Long lastReadMessageId, @Param("userId") String userId);
 
-    @Query("SELECT MAX(cm.chatMessageId.messageId) FROM ChatMessage cm WHERE cm.chatParticipants.chatRoom.id = :chatRoomId AND cm.chatParticipants.user.id != :userId")
+    @Query("SELECT 1")
     Long findLastMessageIdByChatRoomIdAndNotUserId(@Param("chatRoomId") Long chatRoomId, @Param("userId") String userId);
 }

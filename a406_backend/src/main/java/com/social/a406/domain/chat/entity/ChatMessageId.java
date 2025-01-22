@@ -18,4 +18,3 @@ public class ChatMessageId implements Serializable {
     public ChatMessageId(Long chatRoomId, Long nextMessageId) {
     }
 }
-
