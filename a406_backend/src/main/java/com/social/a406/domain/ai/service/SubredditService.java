@@ -67,6 +67,13 @@ public class SubredditService {
         }
     }
 
+    public String generatePrompt(String subredditName, String hotPostData) {
+        return String.format(
+                "Let's dive into the subreddit '%s'. Here's a hot post:\n\n%s\n\nWrite an engaging article inspired by this topic.",
+                subredditName, hotPostData
+        );
+    }
+
     private <T> T getRandomElement(List<T> list) {
         Random random = new Random();
         return list.get(random.nextInt(list.size()));
