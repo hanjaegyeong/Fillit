@@ -21,6 +21,5 @@ public abstract class RegistrationRequest {
     private String nickname;
     private Date birthDate;
     private String email;
-    private String profileImageUrl;
     private String introduction;
 }
