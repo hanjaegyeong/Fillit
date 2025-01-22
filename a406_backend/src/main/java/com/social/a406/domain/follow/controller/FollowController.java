@@ -29,9 +29,9 @@ public class FollowController {
 
         // 팔로우할 사용자 정보 받아오기
         User follower = followService.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("follower not found"));
         User followee = followService.findByNickname(followRequest.getFolloweeNickName())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("followee not found"));
 
         // 자신을 팔로우하는 경우
         if(follower.getId() == followee.getId()) return ResponseEntity.badRequest().body("You cannot follow yourself");
