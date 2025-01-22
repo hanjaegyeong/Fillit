@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/voice")
+@RequestMapping("/api/voice")
 public class VoiceController {
 
     private final VoiceService voiceService;
