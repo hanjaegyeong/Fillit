@@ -1,3 +1,6 @@
+# 기능 명세서
+https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE4nE/edit?gid=0#gid=0
+
 # 요구사항 명세서
 
 ## **1. 시스템 개요**
@@ -84,6 +87,4 @@
 # 프로토타입 (진행중)
 ![프로토타입](img/concept.png)
 
-# 기능명세서
-https://www.notion.so/176e2a727e9981639c81c6189068bef4?pvs=4
-기술적 요구사항, 사용자 흐름 추가 필요
+
