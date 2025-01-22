@@ -27,7 +27,7 @@ public class CommentService {
     @Transactional
     public CommentResponse addComment(Long boardId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
@@ -71,7 +71,7 @@ public class CommentService {
     @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
@@ -90,7 +90,7 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
 
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
 
         if (!comment.getUser().equals(user)) {
             throw new SecurityException("User not authorized to delete this comment");

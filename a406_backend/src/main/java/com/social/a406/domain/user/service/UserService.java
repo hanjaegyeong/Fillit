@@ -53,8 +53,8 @@ public class UserService {
     }
 
     private void handleNormalUserRegistration(UserRegistrationRequest request, MultipartFile file) {
-        if (existsByLoginId(request.getLoginId())) {
-            log.warn("Registration failed. Login ID already exists: {}", request.getLoginId());
+        if (existsByEmail(request.getEmail())) {
+            log.warn("Registration failed. Login ID already exists: {}", request.getEmail());
             throw new IllegalArgumentException("Login ID already exists");
         }
 
@@ -67,18 +67,17 @@ public class UserService {
             profileImageUrl = saveProfileImageAtS3(file);
         }
         User newUser = User.builder()
-                .loginId(request.getLoginId())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .personalId(request.getPersonalId())
-                .email(request.getEmail())
                 .profileImageUrl(profileImageUrl)
                 .birthDate(request.getBirthDate())
                 .introduction(request.getIntroduction())
                 .build();
 
         userRepository.save(newUser);
-        log.info("User registered successfully: {}", request.getLoginId());
+        log.info("User registered successfully: {}", request.getEmail());
     }
 
     private void handleSocialUserRegistration(SocialUserRegistrationRequest request, MultipartFile file) {
@@ -112,12 +111,12 @@ public class UserService {
     }
 
     // 사용자 존재 여부 확인
-    public boolean existsByLoginId(String loginId) {
-        return userRepository.existsByLoginId(loginId);
+    public boolean existsByEmail(String Email) {
+        return userRepository.existsByEmail(Email);
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
-        UserDetails userDetails = customUserDetailsService.loadUserByLoginId(userLoginRequest.getLoginId());
+        UserDetails userDetails = customUserDetailsService.loadUserByEmail(userLoginRequest.getEmail());
 
         // 사용자 검증
         validateUser(userDetails, userLoginRequest.getPassword());
@@ -155,7 +154,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             return UserCharacterResponse.builder()
-                    .type(user.getLoginId() == null && user.getPassword() == null ? "ai" : "user")
+                    .type(user.getEmail() == null && user.getPassword() == null ? "ai" : "user")
                     .id(user.getId())
                     .name(user.getName())
                     .personalId(user.getPersonalId())

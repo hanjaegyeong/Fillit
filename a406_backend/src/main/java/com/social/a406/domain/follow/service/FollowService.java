@@ -59,9 +59,9 @@ public class FollowService {
         return userList;
     }
 
-    // loginId로 userId 찾기
-    public Optional<User> findByLoginId(String loginId) {
-        return userRepository.findByLoginId(loginId);
+    // email로 userId 찾기
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     // personalId로 userId 찾기
