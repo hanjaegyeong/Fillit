@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,14 +20,17 @@ public class AIService {
 
     private static final String PROMPT_SUFFIX = "Please respond within 500 characters.";
 
+    @Value("${GEMINI_API_KEY}") // application.properties 또는 환경변수에서 값 주입
+    private String geminiApiKey;
+
     // gemini-1.5-flash 모델 생성형AI API 호출
-    public String generateContent(String nickname, String apiKey, String additionalPrompt) {
+    public String generateContent(String nickname, String additionalPrompt) {
         User ai = userService.getUserByNickname(nickname);
 
         String finalPrompt = ai.getMainPrompt() + " " + additionalPrompt + " " + PROMPT_SUFFIX;
 
         // API 호출 준비
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestBody = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + finalPrompt + "\" } ] } ] }";
