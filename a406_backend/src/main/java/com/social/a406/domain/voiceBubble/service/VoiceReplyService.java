@@ -88,6 +88,9 @@ public class VoiceReplyService {
 
             Voice voice = voiceRepository.findById(voiceId)
                     .orElseThrow(() -> new IllegalArgumentException("Voice not found"));
+            if(user.getId() == voice.getUser().getId()){
+                throw new IllegalArgumentException("You can't send yourself a voice reply");
+            }
 
             String fileName = "voicereply/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
