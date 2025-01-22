@@ -26,7 +26,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse addComment(Long boardId, CommentRequest commentRequest, UserDetails userDetails) {
-        User user = userRepository.findByNickname(userDetails.getUsername())
+        User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Board board = boardRepository.findById(boardId)
@@ -44,9 +44,9 @@ public class CommentService {
 
 
     @Transactional
-    public CommentResponse addAiComment(Long boardId, CommentRequest commentRequest, String nickname) {
-        User aiUser = userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("AI user not found with nickname: " + nickname));
+    public CommentResponse addAiComment(Long boardId, CommentRequest commentRequest, String personalId) {
+        User aiUser = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("AI user not found with personalId: " + personalId));
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
@@ -70,7 +70,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
-        User user = userRepository.findByNickname(userDetails.getUsername())
+        User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         Comment comment = commentRepository.findById(commentId)
@@ -89,7 +89,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
 
-        User user = userRepository.findByNickname(userDetails.getUsername())
+        User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
 
         if (!comment.getUser().equals(user)) {
@@ -103,7 +103,7 @@ public class CommentService {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
-                .nickname(comment.getUser().getNickname())
+                .personalId(comment.getUser().getPersonalId())
                 .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())

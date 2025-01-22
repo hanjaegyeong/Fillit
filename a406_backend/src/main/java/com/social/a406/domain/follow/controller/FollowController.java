@@ -28,9 +28,9 @@ public class FollowController {
         (@AuthenticationPrincipal UserDetails userDetails, @RequestBody FollowRequest followRequest) {
 
         // 팔로우할 사용자 정보 받아오기
-        User follower = followService.findByNickname(userDetails.getUsername())
+        User follower = followService.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        User followee = followService.findByNickname(followRequest.getFolloweeNickName())
+        User followee = followService.findByPersonalId(followRequest.getFolloweePersonalId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 자신을 팔로우하는 경우
@@ -55,9 +55,9 @@ public class FollowController {
     public ResponseEntity<String> unfollowUser
         (@AuthenticationPrincipal UserDetails userDetails, @RequestBody FollowRequest followRequest) {
         // 언팔로우할 사용자 정보 받아오기
-        User follower = followService.findByNickname(userDetails.getUsername())
+        User follower = followService.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        User followee = followService.findByNickname(followRequest.getFolloweeNickName())
+        User followee = followService.findByPersonalId(followRequest.getFolloweePersonalId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 언팔로우 기능 실행
@@ -72,9 +72,9 @@ public class FollowController {
 
     // 팔로워 가져오기
     @GetMapping("/getfollower")
-    public ResponseEntity<?> getFollowerlistById(@RequestParam String nickName) {
+    public ResponseEntity<?> getFollowerlistById(@RequestParam String personalId) {
 
-        User user = followService.findByNickname(nickName)
+        User user = followService.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<Follow> followerList = followService.getFollowerList(user);
@@ -88,8 +88,8 @@ public class FollowController {
 
     // 팔로잉 가져오기
     @GetMapping("/getfollowee")
-    public ResponseEntity<?> getFolloweelistById(@RequestParam String nickName) {
-        User user = followService.findByNickname(nickName)
+    public ResponseEntity<?> getFolloweelistById(@RequestParam String personalId) {
+        User user = followService.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<Follow> followeeList = followService.getFolloweeList(user);

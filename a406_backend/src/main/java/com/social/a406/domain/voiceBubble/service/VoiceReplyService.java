@@ -2,7 +2,6 @@ package com.social.a406.domain.voiceBubble.service;
 
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
-import com.social.a406.domain.voiceBubble.dto.VoiceReplyRequest;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
@@ -85,10 +84,10 @@ public class VoiceReplyService {
         System.out.println("Deleted file from S3: " + fileKey);
     }
 
-    public String saveVoiceReply(MultipartFile file, String nickname, Long voiceId) {
+    public String saveVoiceReply(MultipartFile file, String personalId, Long voiceId) {
         try {
             // 유저 존재 여부 확인
-            User user = userRepository.findByNickname(nickname)
+            User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             Voice voice = voiceRepository.findById(voiceId)
