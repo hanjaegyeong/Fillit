@@ -38,9 +38,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 
-    public UserDetails loadUserByLoginId(String loginId) throws UsernameNotFoundException {
-        User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
+    public UserDetails loadUserByEmail(String Email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(Email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with Email: " + Email));
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
