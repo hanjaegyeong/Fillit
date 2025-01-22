@@ -24,7 +24,7 @@ public class NotificationController {
     @GetMapping//GET /api/notification?page=0&size=10&sort=createdAt,desc
     public ResponseEntity<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal UserDetails userDetails,
                                                                            @RequestParam(defaultValue = "10") int size,
-                                                                           @RequestParam(required = false) Long cursorId) {
+                                                                           @RequestParam(required = false, defaultValue = "0") Long cursorId) {
         Pageable pageable = PageRequest.of(0, size);
         List<Notification> notifications = notificationService.getNotifications(userDetails, cursorId, pageable);
 
