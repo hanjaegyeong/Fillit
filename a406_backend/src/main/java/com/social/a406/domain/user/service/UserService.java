@@ -7,6 +7,8 @@ import com.social.a406.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -174,6 +173,19 @@ public class UserService {
         // UserRepository에서 닉네임으로 사용자 조회
         return userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("User or AI not found for nickname: " + nickname));
+    }
+
+    public String getRandomUserWithMainPrompt() {
+        // 한 개의 결과만 가져오기
+        Pageable pageable = PageRequest.of(0, 1);
+        List<User> users = userRepository.findUsersWithMainPrompt(pageable);
+
+        if (users.isEmpty()) {
+            throw new RuntimeException("No user with mainPrompt found");
+        }
+
+        // 첫 번째 사용자 반환
+        return users.get(0).getNickname();
     }
 
     //이미지 저장
