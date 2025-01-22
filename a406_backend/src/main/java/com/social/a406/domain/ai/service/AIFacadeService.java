@@ -25,15 +25,15 @@ public class AIFacadeService {
     private static final String COMMENT_PROMPT = "Please write a reply to this post.";
 
     // 게시글 생성&저장
-    public BoardResponse generateAndSaveBoard(String nickname, String apiKey, String prompt) {
-        String generatedContent = aiService.generateContent(nickname, apiKey, prompt);
+    public BoardResponse generateAndSaveBoard(String nickname, String prompt) {
+        String generatedContent = aiService.generateContent(nickname, prompt);
         return saveGeneratedBoard(generatedContent, nickname);
     }
 
     // 댓글 생성&저장
-    public CommentResponse generateAndSaveComment(Long boardId, String nickname, String apiKey) {
+    public CommentResponse generateAndSaveComment(Long boardId, String nickname) {
         String finalPrompt = buildCommentPrompt(boardId);
-        String generatedContent = aiService.generateContent(nickname, apiKey, finalPrompt);
+        String generatedContent = aiService.generateContent(nickname, finalPrompt);
         return saveGeneratedComment(boardId, generatedContent, nickname);
     }
 
@@ -61,7 +61,7 @@ public class AIFacadeService {
     }
 
     // 서브레딧 핫게시글 기반 게시글 생성
-    public BoardResponse generateBoardUsingSubredditHotPost(String nickname, String apiKey) {
+    public BoardResponse generateBoardUsingSubredditHotPost(String nickname) {
         // 특정 유저의 랜덤 서브레딧 가져오기
         Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(nickname);
         String subredditName = randomSubreddit.getName();
@@ -76,14 +76,14 @@ public class AIFacadeService {
         );
 
         // 게시글 생성 및 저장
-        return generateAndSaveBoard(nickname, apiKey, prompt);
+        return generateAndSaveBoard(nickname, prompt);
     }
 
-    public BoardResponse generateBoardUsingYoutube(String nickname, String apiKey) {
+    public BoardResponse generateBoardUsingYoutube(String nickname) {
         // youtube 인기 동영상 데이터 가져오기
         Youtube youtube = youtubeService.getRandomPopularVideos();
         String prompt = youtubeService.generatePrompt(youtube);
 
-        return generateAndSaveBoard(nickname, apiKey, prompt);
+        return generateAndSaveBoard(nickname, prompt);
     }
 }
