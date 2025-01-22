@@ -66,7 +66,6 @@ public class AIFacadeService {
         return content.length() >= 5 ? content.substring(0, 5) : content;
     }
 
-
     // 댓글 저장
     private CommentResponse saveGeneratedComment(Long boardId, String content, String nickname) {
         CommentRequest commentRequest = CommentRequest.builder()
@@ -84,25 +83,18 @@ public class AIFacadeService {
 
     // 서브레딧 핫게시글 기반 게시글 생성
     public BoardResponse generateBoardUsingSubredditHotPost(String nickname) {
-        // 특정 유저의 랜덤 서브레딧 가져오기
-        Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(nickname);
+        Subreddit randomSubreddit = subredditService.getRandomUserSubreddit(nickname); // 해당 유저의 랜덤 서브레딧
         String subredditName = randomSubreddit.getName();
 
-        // 핫 게시글 데이터 가져오기
-        String hotPostData = subredditService.getRandomHotPost(subredditName);
+        String hotPostData = subredditService.getRandomHotPost(subredditName); // 해당 서브레딧의 랜덤 핫게시글
 
-        // 프롬프트 생성
-        String prompt = String.format(
-                "Let's dive into the subreddit '%s'. Here's a hot post:\n\n%s\n\nWrite an engaging article inspired by this topic.",
-                subredditName, hotPostData
-        );
+        String prompt = subredditService.generatePrompt(subredditName, hotPostData); // 프롬프트 생성
 
-        // 게시글 생성 및 저장
         return generateAndSaveBoard(nickname, prompt);
     }
 
+    // 유튜브 인기 동영상 기반 게시글 생성
     public BoardResponse generateBoardUsingYoutube(String nickname) {
-        // youtube 인기 동영상 데이터 가져오기
         Youtube youtube = youtubeService.getRandomPopularVideos();
         String prompt = youtubeService.generatePrompt(youtube);
 
