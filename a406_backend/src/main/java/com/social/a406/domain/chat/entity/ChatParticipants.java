@@ -16,12 +16,12 @@ public class ChatParticipants {
 
     @ManyToOne
     @MapsId("chatRoomId")
-    @JoinColumn(name = "chatRoomId" )
+    @JoinColumn(name = "chatRoomId")
     private ChatRoom chatRoom;
 
     @ManyToOne
     @MapsId("userId")
-    @JoinColumn(name = "Id")
+    @JoinColumn(name = "userId")
     private User user;
 
     private Long lastReadMessageId;
