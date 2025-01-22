@@ -22,6 +22,10 @@ public class NotificationService {
     private final UserRepository userRepository;
 
     public Notification createNotification(User receiver, User sender, NotificationType type, Long referenceId){
+        if(receiver.equals(sender)){
+            throw new IllegalArgumentException("You can't send yourself a notification");
+        }
+
         Notification notification = Notification.builder()
                 .receiver(receiver)
                 .sender(sender)
