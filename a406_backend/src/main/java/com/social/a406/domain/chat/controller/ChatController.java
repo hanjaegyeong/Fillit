@@ -27,7 +27,7 @@ public class ChatController {
     }
 
 
-    // 메세지 저장 -user검증 필요?
+    // 메세지 저장
     @PostMapping("/messages")
     public ResponseEntity<ChatMessage> saveMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ChatMessageRequest request) {
         User user = chatService.findByNickname(userDetails.getUsername())
@@ -85,6 +85,17 @@ public class ChatController {
         return ResponseEntity.ok(chatRooms);
     }
 
+//    // 마지막 메세지 읽음처리
+//    @PatchMapping("/rooms/read")
+//    public ResponseEntity<?> ReadMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId){
+//        User user = chatService.findByNickname(userDetails.getUsername())
+//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+//        String userId = user.getId();
+//
+//        ChatParticipants participants = chatService.updateLastReadMessage( userId, chatRoomId);
+//
+//        return ResponseEntity.ok(participants);
+//    }
 
 }
 

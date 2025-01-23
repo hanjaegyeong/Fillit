@@ -1,60 +1,91 @@
-//package com.social.a406.domain.chat.websocket;
-//
-//import com.social.a406.domain.chat.service.ChatService;
-//import com.social.a406.util.JwtTokenUtil;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.server.ServerHttpRequest;
-//import org.springframework.http.server.ServerHttpResponse;
-//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.core.context.SecurityContextHolder;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.stereotype.Component;
-//import org.springframework.web.socket.WebSocketHandler;
-//import org.springframework.web.socket.server.HandshakeInterceptor;
-//
-//import java.util.Map;
-//
-//@Component
-//public class ChatHandshakeInterceptor implements HandshakeInterceptor {
-//    @Autowired
-//    private JwtTokenUtil jwtTokenUtil;
-//
-//    @Autowired
-//    private UserDetailsService userDetailsService;
-//
-//    @Autowired
-//    private ChatService chatService;
-//
-//    @Override
-//    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-//                                   WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-//        String token = request.getHeaders().getFirst("Authorization");
-//        if (token != null && token.startsWith("Bearer ")) {
-//            token = token.substring(7);
-//            String username = jwtTokenUtil.extractUsername(token); //nickname 추출
-//
-//            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//                String userId = chatService.findByNickname(username).get().getId(); //userId 저장
-//
-//                if (jwtTokenUtil.validateToken(token, userDetails)) {
-//                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                    // 웹소켓 세션에는 WebAuthenticationDetailsSource 사용이 불가능하므로, 세션에 사용자 정보를 직접 설정
-//                    attributes.put("userId", userId);
-//                    return true;
-//                }
-//            }
-//        }
-//        response.setStatusCode(org.springframework.http.HttpStatus.FORBIDDEN); // 유효하지 않은 접근에는 403 Forbidden 응답
-//        return false; // 인증 실패 시 핸드셰이크 방지
-//    }
-//
-//
-//    @Override
-//    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-//                               WebSocketHandler wsHandler, Exception ex) {
-//        // 핸드셰이크 완료 후 추가 작업 (필요할 경우)
-//    }
-//}
+package com.social.a406.domain.chat.websocket;
+
+import com.social.a406.domain.chat.service.ChatService;
+import com.social.a406.util.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import java.util.Map;
+import java.util.Optional;
+
+@Component
+public class ChatHandshakeInterceptor implements HandshakeInterceptor {
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private ChatService chatService;
+
+    @Override
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                   WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+// 1. Authorization 헤더에서 JWT 추출
+        String token = request.getHeaders().getFirst("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            return false; // 인증 실패
+        }
+        token = token.substring(7); // "Bearer " 제거
+
+        try {
+            // 2. JWT에서 사용자 정보 추출
+            String username = jwtTokenUtil.extractUsername(token); // nickName
+            if (username == null) {
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                return false;
+            }
+
+            // 3. UserDetails 로드 및 JWT 검증
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (!jwtTokenUtil.validateToken(token, userDetails)) {
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                return false;
+            }
+
+            // 4. 사용자 정보 WebSocketSession에 저장
+            String userId = chatService.findByNickname(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + username))
+                    .getId();
+            attributes.put("userId", userId);
+
+            // 5. chatRoomId를 요청에서 추출하여 session에 저장
+            String query = request.getURI().getQuery(); // e.g., "chatRoomId=3"
+
+            // chatRoomId 추출
+            Long chatRoomId = Optional.ofNullable(query)
+                    .filter(q -> q.startsWith("chatRoomId="))
+                    .map(q -> Long.parseLong(q.split("=")[1]))
+                    .orElse(null);
+
+            // 검증 및 저장 (chatRoomId가 없거나 userId와 맞는 chatRoomId가 아닌경우)
+            if (chatRoomId == null || !chatService.isParticipantInChatRoom(userId, chatRoomId)) {
+                response.setStatusCode(HttpStatus.BAD_REQUEST);
+                return false; // chatRoomId가 없거나 유효하지 않은 경우
+            }
+
+            attributes.put("chatRoomId", chatRoomId);
+
+            return true; // 인증 성공 및 chatRoomId 설정 완료
+        } catch (Exception e) {
+            // 예외 발생 시 403 응답
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            return false;
+        }
+    }
+
+    @Override
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                               WebSocketHandler wsHandler, Exception ex) {
+        // 핸드셰이크 완료 후 추가 작업 (필요할 경우)
+    }
+}
