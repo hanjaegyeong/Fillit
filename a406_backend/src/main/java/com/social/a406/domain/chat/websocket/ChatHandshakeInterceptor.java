@@ -29,7 +29,10 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-// 1. Authorization 헤더에서 JWT 추출
+
+        System.out.println("Interceptor Starting");
+
+        // 1. Authorization 헤더에서 JWT 추출
         String token = request.getHeaders().getFirst("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             response.setStatusCode(HttpStatus.FORBIDDEN);
@@ -75,6 +78,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 
             attributes.put("chatRoomId", chatRoomId);
 
+            System.out.println("WebSocketHandShake Success! ChatRoomId:" +chatRoomId);
             return true; // 인증 성공 및 chatRoomId 설정 완료
         } catch (Exception e) {
             // 예외 발생 시 403 응답
