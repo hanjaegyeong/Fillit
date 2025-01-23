@@ -42,7 +42,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 
         try {
             // 2. JWT에서 사용자 정보 추출
-            String username = jwtTokenUtil.extractUsername(token); // nickName
+            String username = jwtTokenUtil.extractUsername(token); // personalId
             if (username == null) {
                 response.setStatusCode(HttpStatus.FORBIDDEN);
                 return false;
@@ -56,8 +56,8 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             }
 
             // 4. 사용자 정보 WebSocketSession에 저장
-            String userId = chatService.findByNickname(username)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + username))
+            String userId = chatService.findByPersonalId(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + username))
                     .getId();
             attributes.put("userId", userId);
 
