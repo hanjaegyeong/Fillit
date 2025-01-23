@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -75,6 +78,33 @@ public class BoardService {
     private Board findBoardById(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+    }
+
+    // 랜덤 게시글 조회
+    public Long getRandomBoardId() {
+        List<Long> boardIds = boardRepository.findAllBoardIds();
+
+        if (boardIds.isEmpty()) {
+            System.err.println("No boards available for random selection.");
+            return null;
+        }
+
+        Random random = new Random();
+        return boardIds.get(random.nextInt(boardIds.size()));
+    }
+
+    // 본인 게시글 / 댓글 단 게시글 제외 랜덤 게시글 조회
+    public Long getRandomAvailableBoardIdExcludingUser(String personalId) {
+        List<Long> availableBoardIds = boardRepository.findAvailableBoardIdsExcludingUser(personalId);
+
+        if (availableBoardIds.isEmpty()) {
+            System.err.println("No available boards for random selection.");
+            return null; // 조건에 맞는 게시글이 없을 경우
+        }
+
+        // 랜덤 게시글 선택
+        Random random = new Random();
+        return availableBoardIds.get(random.nextInt(availableBoardIds.size()));
     }
 
     // 게시글 생성 유틸 메서드

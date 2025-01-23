@@ -2,6 +2,7 @@ package com.social.a406.domain.ai.controller;
 
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
+import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class AiController {
 
     private final AIFacadeService aiFacadeService;
     private final UserService userService;
+    private final BoardService boardService;
 
     // 일반 AI 게시글 생성
     @PostMapping("/generate/board/normal")
@@ -40,6 +42,22 @@ public class AiController {
         return ResponseEntity.status(201).body(response);
     }
 
+    // 랜덤 게시글에 랜덤 AI 댓글 생성
+    @GetMapping("/generate/random/comment")
+    public ResponseEntity<CommentResponse> generateRandomAiComment() {
+        String randomPersonalId = userService.getRandomUserWithMainPrompt();
+
+        // 본인 댓글 단 게시글 / 본인 게시글 제외한 랜덤 게시글 ID 가져오기
+        Long randomBoardId = boardService.getRandomAvailableBoardIdExcludingUser(randomPersonalId);
+        if (randomBoardId == null) {
+            return ResponseEntity.status(404).body(null); // 사용할 수 있는 게시글이 없는 경우
+        }
+
+        CommentResponse response = aiFacadeService.generateAndSaveComment(randomBoardId, randomPersonalId);
+
+        return ResponseEntity.status(201).body(response);
+    }
+
     // 레딧 AI 게시글 생성
     @GetMapping("/generate/board/reddit")
     public ResponseEntity<BoardResponse> generateBoardFromSubredditHotPost(@RequestParam String personalId) {
@@ -57,19 +75,18 @@ public class AiController {
     }
 
     // AI 기반 게시글 생성 컨트롤러
-    @GetMapping("/generate/board")
+    @GetMapping("/generate/random/board")
     public ResponseEntity<BoardResponse> generateBoard() {
-        // 랜덤 사용자 가져오기
-        String personalId = userService.getRandomUserWithMainPrompt();
+        String randomPersonalId = userService.getRandomUserWithMainPrompt();
 
         // 랜덤으로 subreddit 또는 youtube 중 선택
         boolean useSubreddit = new Random().nextBoolean();
 
         BoardResponse response;
         if (useSubreddit) {
-            response = aiFacadeService.generateBoardUsingSubredditHotPost(personalId);
+            response = aiFacadeService.generateBoardUsingSubredditHotPost(randomPersonalId);
         } else {
-            response = aiFacadeService.generateBoardUsingYoutube(personalId);
+            response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
         }
 
         return ResponseEntity.status(201).body(response);

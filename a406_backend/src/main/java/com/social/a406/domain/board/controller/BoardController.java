@@ -3,7 +3,7 @@ package com.social.a406.domain.board.controller;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
-import com.social.a406.domain.scheduler.service.AiScheduler;
+import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
