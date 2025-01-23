@@ -75,7 +75,7 @@ public class ChatService {
     // 채팅방 입장
     // 채팅방 입장전 권한 사전검증 - userId와 chatRoomId로 chatParticipants 존재 확인
     public boolean isParticipantInChatRoom (String userId, Long chatRoomId){
-        return chatParticipantsRepository.findByChatParticipantsId_UserIdAndChatParticipantsId_ChatRoomId(userId, chatRoomId).isPresent();
+        return chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId).isPresent();
     }
 
     // 채팅 메세지 가져오기
@@ -147,24 +147,26 @@ public class ChatService {
             return response;
         }).collect(Collectors.toList());
     }
-//
-//    // 채팅참여 테이블, 메세지 읽음 처리
-//    @Transactional
-//    public void updateLastReadMessage(String userId, Long chatRoomId) {
-//        // ChatParticipants 엔티티 찾기
-//        ChatParticipants participant = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
-//                .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));
-//
-//        Long messageId = chatMessageRepository.findLastMessageIdByChatMessageId_ChatRoomIdAndNotUserId(chatRoomId, userId);
-//        // 마지막으로 읽은 메시지 ID 업데이트 -- 상대방 기준으로 업데이트해야함
-//        participant.setLastReadMessageId(messageId);
-//    }
-//
-//    // 해당 채팅방 가져오기
-//    public Optional<ChatRoom> getChatRoomByChatRoomId(Long chatRoomId) {
-//        return chatRoomRepository.findByChatRoomId(chatRoomId);
-//    }
-//
+
+    // 채팅참여 테이블, 메세지 읽음 처리
+    @Transactional
+    public ChatParticipants updateLastReadMessage(String userId, Long chatRoomId) {
+        // ChatParticipants 엔티티 찾기
+        ChatParticipants participant = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));
+        // 가장 최근의 상대방 메세지 찾기
+        Long messageId = chatMessageRepository.findLastMessageIdByChatMessageId_ChatRoomIdAndNotUserId(chatRoomId, userId);
+        // 마지막으로 읽은 메시지 ID 업데이트 - 상대방 기준으로 업데이트해야함
+        participant.updateLastReadMessageId(messageId);
+
+        return participant;
+    }
+
+    // 해당 채팅방 가져오기
+    public Optional<ChatRoom> getChatRoomByChatRoomId(Long chatRoomId) {
+        return chatRoomRepository.findByChatRoomId(chatRoomId);
+    }
+
     public Optional<User> findByNickname(String nickname){
         return userRepository.findByNickname(nickname);
     };

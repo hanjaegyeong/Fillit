@@ -37,6 +37,10 @@ public class ChatParticipants {
         this.lastReadMessageId = lastReadMessageId;
     }
 
+    public void updateLastReadMessageId(Long messageId) {
+        this.lastReadMessageId = messageId;
+    }
+
     // 복합키 필드 접근 메서드
     public Long getChatRoomId() {
         return chatParticipantsId.getChatRoomId();
