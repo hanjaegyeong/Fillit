@@ -30,8 +30,8 @@ public class ChatController {
     // 메세지 저장
     @PostMapping("/messages")
     public ResponseEntity<ChatMessage> saveMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ChatMessageRequest request) {
-        User user = chatService.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+        User user = chatService.findByPersonalId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
         String userId = user.getId();
 
         ChatMessage message = chatService.saveMessageAndUpdateRoom(userId, request);
@@ -41,8 +41,8 @@ public class ChatController {
     //채팅방 입장 - 메세지 목록 가져오기
     @GetMapping("/rooms/messages")
     public ResponseEntity<?> getMessagesByChatRoomId(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId) {
-        User user = chatService.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+        User user = chatService.findByPersonalId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
         String userId = user.getId();
 
         // 접근권한 검증
@@ -56,12 +56,12 @@ public class ChatController {
 
     //채팅방 입장 (프로필에서) - 채팅방 유무 검증 후 없으면 채팅방 생성하기
     @PostMapping("/rooms/messages")
-    public ResponseEntity<ChatRoom> getMessagesOnPorfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherNickname) {
+    public ResponseEntity<ChatRoom> getMessagesOnPorfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherPersonalId) {
 
-        User user = chatService.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
-        User other = chatService.findByNickname(otherNickname)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + otherNickname));
+        User user = chatService.findByPersonalId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
+        User other = chatService.findByPersonalId(otherPersonalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + otherPersonalId));
         String userId = user.getId();
         String otherId = other.getId();
 
@@ -77,8 +77,8 @@ public class ChatController {
     // 채팅방 목록 가져오기
     @GetMapping("/rooms/list")
     public ResponseEntity<List<ChatRoomResponse>> getChatRoomsForUser(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = chatService.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+        User user = chatService.findByPersonalId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
         String userId = user.getId();
 
         List<ChatRoomResponse> chatRooms = chatService.getChatRoomsForUser(userId);
@@ -88,8 +88,8 @@ public class ChatController {
 //    // 마지막 메세지 읽음처리
 //    @PatchMapping("/rooms/read")
 //    public ResponseEntity<?> ReadMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId){
-//        User user = chatService.findByNickname(userDetails.getUsername())
-//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+//        User user = chatService.findByPersonalId(userDetails.getUsername())
+//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
 //        String userId = user.getId();
 //
 //        ChatParticipants participants = chatService.updateLastReadMessage( userId, chatRoomId);

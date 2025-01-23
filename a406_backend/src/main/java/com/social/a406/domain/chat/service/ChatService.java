@@ -60,9 +60,6 @@ public class ChatService {
                 .build();
         chatMessageRepository.save(newMessage);
 
-        System.out.println("/n/n/n/n/n"+newMessage.getCreateAt()+"/n/n/n/n" );
-
-
         // 채팅방 마지막 메시지 정보 업데이트
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
@@ -167,8 +164,8 @@ public class ChatService {
         return chatRoomRepository.findByChatRoomId(chatRoomId);
     }
 
-    public Optional<User> findByNickname(String nickname){
-        return userRepository.findByNickname(nickname);
+    public Optional<User> findByPersonalId(String personalId){
+        return userRepository.findByPersonalId(personalId);
     };
 
 }
