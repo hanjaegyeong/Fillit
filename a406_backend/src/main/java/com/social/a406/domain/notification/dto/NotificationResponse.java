@@ -10,8 +10,8 @@ public record NotificationResponse(
         Long referenceId
 ) {
     public NotificationResponse(Notification notification){
-        this(notification.getReceiver().getNickname(),
-                notification.getSender().getNickname(),
+        this(notification.getReceiver().getPersonalId(),
+                notification.getSender().getPersonalId(),
                 notification.getType(),
                 notification.getReferenceId());
     }
