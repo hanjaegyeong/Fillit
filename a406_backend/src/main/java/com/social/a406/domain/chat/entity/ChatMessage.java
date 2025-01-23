@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Getter
 @Setter
@@ -39,8 +40,8 @@ public class ChatMessage {
 //    @Column(name = "content")
     private String messageContent;
 
-    @CreatedDate
 //    @Column(name = "create")
+    @CreatedDate
     private LocalDateTime createAt;
 
     @Builder

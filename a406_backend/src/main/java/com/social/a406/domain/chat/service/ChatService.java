@@ -1,6 +1,7 @@
 package com.social.a406.domain.chat.service;
 
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
+import com.social.a406.domain.chat.dto.ChatRoomResponse;
 import com.social.a406.domain.chat.entity.ChatMessage;
 import com.social.a406.domain.chat.entity.ChatParticipants;
 import com.social.a406.domain.chat.entity.ChatRoom;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -58,6 +60,9 @@ public class ChatService {
                 .build();
         chatMessageRepository.save(newMessage);
 
+        System.out.println("/n/n/n/n/n"+newMessage.getCreateAt()+"/n/n/n/n" );
+
+
         // 채팅방 마지막 메시지 정보 업데이트
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
@@ -67,7 +72,7 @@ public class ChatService {
         return newMessage;
     }
 
-
+    // 채팅방 입장
     // 채팅방 입장전 권한 사전검증 - userId와 chatRoomId로 chatParticipants 존재 확인
     public boolean isParticipantInChatRoom (String userId, Long chatRoomId){
         return chatParticipantsRepository.findByChatParticipantsId_UserIdAndChatParticipantsId_ChatRoomId(userId, chatRoomId).isPresent();
@@ -115,31 +120,33 @@ public class ChatService {
         }
         return chatRoom;
     }
-//
-//    // 채팅방 목록 가져오기
-//    public List<ChatRoomResponse> getChatRoomsForUser(String userId) {
-//        List<ChatParticipants> participants = chatParticipantsRepository.findByChatParticipantsId_UserId(userId);
-//        return participants.stream().map(participant -> {
-//            ChatRoom chatRoom = participant.getChatRoom();
-//            Long lastReadMessageId = participant.getLastReadMessageId();
-//            Long unreadMessagesCount = chatMessageRepository.countByChatMessageId_ChatRoomIdAndChatMessageId_MessageIdGreaterThanExcludeUser(chatRoom.getChatRoomId(), lastReadMessageId, userId);
-//
-//            // 상대방 정보를 리포지토리에서 바로 가져옴
-//            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoom.getChatRoomId(), userId)
-//                    .orElse(null);  // 상대방 정보가 없는 경우 null 처리
-//
-//            String otherUserName = otherParticipant != null ? otherParticipant.getUser().getName() : "Unknown";
-//
-//            ChatRoomResponse response = new ChatRoomResponse();
-//            response.setChatRoomId(chatRoom.getChatRoomId());
-//            response.setLastMessageContent(chatRoom.getLastMessageContent());
-//            response.setLastMessageTime(chatRoom.getLastMessageTime());
-//            response.setOtherUser(otherUserName);
-//            response.setUnReadMessageCount(unreadMessagesCount.intValue());
-//
-//            return response;
-//        }).collect(Collectors.toList());
-//    }
+
+    // 채팅방 목록 가져오기
+    public List<ChatRoomResponse> getChatRoomsForUser(String userId) {
+        List<ChatParticipants> participants = chatParticipantsRepository.findByChatParticipantsId_UserId(userId);
+        return participants.stream().map(participant -> {
+            ChatRoom chatRoom = participant.getChatRoom();
+            Long lastReadMessageId = participant.getLastReadMessageId();
+            
+            // 마지막으로 읽은 메세지 Id로 안읽은 메세지 수 찾기
+            Long unreadMessagesCount = chatMessageRepository.countUnreadMessagesExcludeUser(chatRoom.getChatRoomId(), lastReadMessageId, userId);
+
+            // 상대방 정보를 리포지토리에서 바로 가져옴
+            ChatParticipants otherParticipant = chatParticipantsRepository.findOtherParticipantByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoom.getChatRoomId(), userId)
+                    .orElse(null);  // 상대방 정보가 없는 경우 null 처리
+            String otherUserName = otherParticipant != null ? otherParticipant.getUser().getName() : "Unknown";
+
+            ChatRoomResponse response = ChatRoomResponse.builder()
+                    .chatRoomId(chatRoom.getChatRoomId())
+                    .lastMessageContent(chatRoom.getLastMessageContent())
+                    .lastMessageTime(chatRoom.getLastMessageTime())
+                    .otherUser(otherUserName)
+                    .unReadMessageCount(unreadMessagesCount.intValue())
+                    .build();
+
+            return response;
+        }).collect(Collectors.toList());
+    }
 //
 //    // 채팅참여 테이블, 메세지 읽음 처리
 //    @Transactional
