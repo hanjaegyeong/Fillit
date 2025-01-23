@@ -1,14 +1,15 @@
 package com.social.a406.domain.voiceBubble.service;
 
+import com.social.a406.domain.notification.entity.NotificationType;
+import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
-import com.social.a406.domain.voiceBubble.dto.VoiceReplyRequest;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,20 +24,14 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class VoiceReplyService {
 
     private final VoiceReplyRepository voiceReplyRepository;
     private final UserRepository userRepository;
     private final VoiceRepository voiceRepository;
     private final S3Client s3Client;
-
-    @Autowired
-    public VoiceReplyService(VoiceReplyRepository voiceReplyRepository, UserRepository userRepository, VoiceRepository voiceRepository, S3Client s3Client) {
-        this.voiceReplyRepository = voiceReplyRepository;
-        this.userRepository = userRepository;
-        this.voiceRepository = voiceRepository;
-        this.s3Client = s3Client;
-    }
+    private final NotificationService notificationService;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -93,6 +88,9 @@ public class VoiceReplyService {
 
             Voice voice = voiceRepository.findById(voiceId)
                     .orElseThrow(() -> new IllegalArgumentException("Voice not found"));
+            if(user.getId() == voice.getUser().getId()){
+                throw new IllegalArgumentException("You can't send yourself a voice reply");
+            }
 
             String fileName = "voicereply/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -113,9 +111,20 @@ public class VoiceReplyService {
             // Voice 객체 생성 및 DB에 저장
             VoiceReply voiceReply = voiceReplyRepository.save(new VoiceReply(voice, user, fileUrl));
 
+            generateVoiceReplyNotification(voiceReply);
+
             return "Success to store the file";
         } catch (IOException e) {
             throw new RuntimeException("Failed to store the file", e);
         }
+    }
+
+    private void generateVoiceReplyNotification(VoiceReply voiceReply){
+        // 음성 답장
+        User receiver = voiceReply.getVoice().getUser();
+        User sender = voiceReply.getUser();
+        Long referenceId = voiceReply.getVoice().getId();
+        notificationService.createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
+        System.out.println("Generate notification about voice reply");
     }
 }
