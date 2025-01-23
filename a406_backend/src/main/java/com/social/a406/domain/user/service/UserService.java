@@ -1,5 +1,6 @@
 package com.social.a406.domain.user.service;
 
+import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserInterestRepository userInterestRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
@@ -185,6 +188,53 @@ public class UserService {
 
         // 첫 번째 사용자 반환
         return users.get(0).getPersonalId();
+    }
+
+    // 동일한 관심사 가진 랜덤 AI유저 조회
+    public String getRandomUserWithMatchingInterest(String personalId) {
+        // 관심사 전체 조회
+        List<Long> interestIds = getInterestIdsByPersonalId(personalId);
+
+        // 관심사와 일치하는 사용자 목록 조회
+        List<String> userPersonalIds = getUserPersonalIdsByInterestIds(interestIds);
+
+        // 랜덤 사용자 선택
+        return selectRandomUser(userPersonalIds);
+    }
+
+    // 해당 personalId 유저의 모든 관심사 조회
+    private List<Long> getInterestIdsByPersonalId(String personalId) {
+        List<Long> interestIds = userInterestRepository.findInterestIdsByPersonalId(personalId);
+
+        if (interestIds.isEmpty()) {
+            System.err.println("No interests found for user with personalId: " + personalId);
+        }
+
+        return interestIds;
+    }
+
+    // 관심사 ID 목록으로 사용자 ID 목록 조회
+    private List<String> getUserPersonalIdsByInterestIds(List<Long> interestIds) {
+        if (interestIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> userPersonalIds = userInterestRepository.findUserPersonalIdsByInterestIdsAndNonNullPrompt(interestIds);
+
+        if (userPersonalIds.isEmpty()) {
+            System.err.println("No suitable users found for the given interests.");
+        }
+
+        return userPersonalIds;
+    }
+
+    // 랜덤 사용자 선택
+    private String selectRandomUser(List<String> userPersonalIds) {
+        if (userPersonalIds.isEmpty()) {
+            return null;
+        }
+
+        return userPersonalIds.get(ThreadLocalRandom.current().nextInt(userPersonalIds.size()));
     }
 
     //이미지 저장
