@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,8 +27,8 @@ public class ChatController {
     /*
     refactor 목록
     1. Interceptor: 웹소켓에서 채팅방에 접근권한 있는 유저인지 db에서 체크
-    2. controller - 메세지 저장시 권한 맞는 유저인지 체크 - request에 nickName 정보를 담지말고 그냥 jwt에서 확인?
-                  - 채팅방 접근시 권한 맞는 유저인지 체크
+    2. controller - 메세지 저장시 권한 맞는 유저인지 체크 - request에 nickName 정보를 담지말고 그냥 jwt에서 확인? o
+                  - 채팅방 접근시 권한 맞는 유저인지 체크 o
      */
 
     // 메세지 저장 -user검증 필요?
@@ -41,13 +42,22 @@ public class ChatController {
         return ResponseEntity.ok(message);
     }
 
-//    //채팅방 입장 (채팅 목록에서) - 메세지 목록 가져오기 - user검증 필요?
-//    @GetMapping("/rooms/{chatRoomId}/messages")
-//    public ResponseEntity<List<ChatMessage>> getMessagesByChatRoomId(@PathVariable Long chatRoomId) {
-//        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoomId);
-//        return ResponseEntity.ok(messages);
-//    }
-//
+    //채팅방 입장 - 메세지 목록 가져오기
+    @GetMapping("/rooms/messages")
+    public ResponseEntity<?> getMessagesByChatRoomId(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId) {
+        User user = chatService.findByNickname(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + userDetails.getUsername()));
+        String userId = user.getId();
+
+        // 접근권한 검증
+        if(!chatService.isParticipantInChatRoom(userId, chatRoomId)){
+            return ResponseEntity.badRequest().body("You do not have permission to access this chat room: " + userId + ", " + chatRoomId);
+        }
+
+        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoomId);
+        return ResponseEntity.ok(messages);
+    }
+
     //채팅방 입장 (프로필에서) - 채팅방 유무 검증 후 없으면 채팅방 생성하기
     @PostMapping("/rooms/messages")
     public ResponseEntity<ChatRoom> getMessagesOnPorfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherNickname) {
