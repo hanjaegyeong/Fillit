@@ -35,10 +35,6 @@ public class ChatService {
     public ChatMessage saveMessageAndUpdateRoom(String userId, ChatMessageRequest request) {
 
         Long chatRoomId = request.getChatRoomId();
-//        String nickName = request.getNickName();
-//        User user = userRepository.findByNickname(nickName)
-//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with NickName: " + nickName));
-//        String userId = user.getId();
 
         // 채팅참여 정보 가져오기
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
@@ -71,13 +67,20 @@ public class ChatService {
         return newMessage;
     }
 
-//    // 채팅 메세지 가져오기
-//    @Transactional(readOnly = true)
-//    public List<ChatMessage> getMessagesByChatRoomId(Long chatRoomId) {
-//        // 특정 채팅방의 모든 메시지 조회
-//        return chatMessageRepository.findByChatMessageId_ChatRoomId(chatRoomId);
-//    }
-//
+
+    // 채팅방 입장전 권한 사전검증 - userId와 chatRoomId로 chatParticipants 존재 확인
+    public boolean isParticipantInChatRoom (String userId, Long chatRoomId){
+        return chatParticipantsRepository.findByChatParticipantsId_UserIdAndChatParticipantsId_ChatRoomId(userId, chatRoomId).isPresent();
+    }
+
+    // 채팅 메세지 가져오기
+    @Transactional(readOnly = true)
+    public List<ChatMessage> getMessagesByChatRoomId(Long chatRoomId) {
+        // 특정 채팅방의 모든 메시지 조회 - MessageId 기준 내림차순으로 (가장 최근 메세지부터)
+        return chatMessageRepository.findByChatMessageId_ChatRoomIdOrderByChatMessageId_MessageIdDesc(chatRoomId);
+    }
+
+
     // 채팅방 생성 / 삭제
     // 두 사용자로 채팅방 찾기
     public Optional<ChatRoom> findRoomByParticipants(String userId, String otherId) {
@@ -107,10 +110,6 @@ public class ChatService {
                     .user(user)
                     .lastReadMessageId(null)
                     .build();
-
-            System.out.println("ChatParticipants ID: " + participant.getChatParticipantsId());
-            System.out.println("ChatParticipants ChatRoom ID: " + participant.getChatParticipantsId().getChatRoomId());
-            System.out.println("ChatParticipants User ID: " + participant.getChatParticipantsId().getUserId());
 
             chatParticipantsRepository.save(participant); // 매핑관계 저장
         }

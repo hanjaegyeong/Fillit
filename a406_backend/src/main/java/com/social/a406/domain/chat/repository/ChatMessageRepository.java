@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findByChatMessageId_ChatRoomId(Long chatRoomId); // 특정 채팅방의 모든 메시지 조회
+
+    //채팅방ID로 채팅메세지 전부 가져오는 메서드
+    List<ChatMessage> findByChatMessageId_ChatRoomIdOrderByChatMessageId_MessageIdDesc(Long chatRoomId);
 
     // 채팅방 ID를 기반으로 가장 최근 메시지의 ID를 찾는 메서드
     @Query("SELECT MAX(cm.chatMessageId.messageId) " +
