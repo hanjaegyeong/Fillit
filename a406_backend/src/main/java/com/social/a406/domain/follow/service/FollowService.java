@@ -3,6 +3,8 @@ package  com.social.a406.domain.follow.service;
 
 import  com.social.a406.domain.follow.entity.Follow;
 import  com.social.a406.domain.follow.repository.FollowRepository;
+import com.social.a406.domain.notification.entity.NotificationType;
+import com.social.a406.domain.notification.service.NotificationService;
 import  com.social.a406.domain.user.entity.User;
 
 import  com.social.a406.domain.user.repository.UserRepository;
@@ -17,10 +19,12 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository) {
+    public FollowService(FollowRepository followRepository, UserRepository userRepository, NotificationService notificationService) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public Optional<Follow> findByFollowerAndFollowee (User follower, User followee) {
@@ -33,6 +37,9 @@ public class FollowService {
         follow.setFollowee(followee);
         follow.setCreatedAt(LocalDateTime.now());
         Follow saveFollow =  followRepository.save(follow); // save는 기본이라 repository에 따로 안써도 되나?
+
+        generateFollowNotification(saveFollow); // 팔로우 알림 생성
+
         return saveFollow != null;
     }
 
@@ -59,15 +66,20 @@ public class FollowService {
         return userList;
     }
 
-    // loginId로 userId 찾기
-    public Optional<User> findByLoginId(String loginId) {
-        return userRepository.findByLoginId(loginId);
+    // email로 userId 찾기
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    // nickName으로 userId 찾기
-    public Optional<User> findByNickname(String Nickname) {
-        return userRepository.findByNickname(Nickname);
+    // personalId로 userId 찾기
+    public Optional<User> findByPersonalId(String personalId) {
+        return userRepository.findByPersonalId(personalId);
     }
 
+    private void generateFollowNotification(Follow follow){
+        // referenceId -> followId
+        notificationService.createNotification(follow.getFollowee(), follow.getFollower(), NotificationType.FOLLOW, follow.getFollowId());
+        System.out.println("Generate notification about follow");
+    }
 
 }

@@ -32,6 +32,22 @@ public class Board {
 //    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
 //    private List<Comment> comments = new ArrayList<>();
 
+    // x 좌표
+    @Column(nullable = false)
+    private Double x;
+
+    // y 좌표
+    @Column(nullable = false)
+    private Double y;
+
+    // 키워드 (최대 8자 제한)
+    @Column(length = 8)
+    private String keyword;
+
+    // 페이지 번호
+    @Column(nullable = false)
+    private Integer pageNumber;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -41,10 +57,14 @@ public class Board {
     private boolean isDeleted;
 
     @Builder
-    public Board(String content, User user, Long likeCount) {
+    public Board(String content, User user, Long likeCount, Double x, Double y, String keyword, Integer pageNumber) {
         this.content = content;
         this.user = user;
         this.likeCount = likeCount == null ? 0L : likeCount;
+        this.x = x;
+        this.y = y;
+        this.keyword = keyword;
+        this.pageNumber = pageNumber;
     }
 
     public void updateContent(String content) {

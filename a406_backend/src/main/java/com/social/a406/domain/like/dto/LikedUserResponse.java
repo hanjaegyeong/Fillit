@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LikedUserResponse {
-    private String loginId;         // 로그인 ID
-    private String nickname;        // 닉네임
+    private String personalId;        // personalId
     private String profileImageUrl; // 프로필 이미지 URL
 }

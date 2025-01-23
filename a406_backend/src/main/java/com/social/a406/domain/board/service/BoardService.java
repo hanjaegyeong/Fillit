@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -18,51 +21,123 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
+    // 게시글 생성
     @Transactional
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
-        User user = userRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
+        User user = findUserBypersonalId(userDetails.getUsername());
+        Board board = buildBoard(boardRequest, user);
+        return mapToResponseDto(boardRepository.save(board));
+    }
 
-        Board board = Board.builder()
+    // AI 게시글 생성
+    @Transactional
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
+        User aiUser = findUserBypersonalId(aiPersonalId);
+        Board board = buildBoard(boardRequest, aiUser);
+        return mapToResponseDto(boardRepository.save(board));
+    }
+
+    // 게시글 단건 조회
+    @Transactional(readOnly = true)
+    public BoardResponse getBoardById(Long boardId) {
+        Board board = findBoardById(boardId);
+        return mapToResponseDto(board);
+    }
+
+    // 게시글 수정
+    @Transactional
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
+        User user = findUserBypersonalId(userDetails.getUsername());
+        Board board = findBoardById(boardId);
+
+        validateBoardOwnership(board, user);
+
+        board.updateContent(boardRequest.getContent());
+        return mapToResponseDto(board);
+    }
+
+    // 게시글 내용 조회
+    @Transactional(readOnly = true)
+    public String getBoardContentById(Long boardId) {
+        return findBoardById(boardId).getContent();
+    }
+
+    // 게시글 작성자 닉네임 조회
+    @Transactional(readOnly = true)
+    public String getBoardAuthorpersonalIdById(Long boardId) {
+        return findBoardById(boardId).getUser().getPersonalId();
+    }
+
+    // 유저 조회 유틸 메서드
+    private User findUserBypersonalId(String personalId) {
+        return userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
+    }
+
+    // 게시글 조회 유틸 메서드
+    private Board findBoardById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+    }
+
+    // 랜덤 게시글 조회
+    public Long getRandomBoardId() {
+        List<Long> boardIds = boardRepository.findAllBoardIds();
+
+        if (boardIds.isEmpty()) {
+            System.err.println("No boards available for random selection.");
+            return null;
+        }
+
+        Random random = new Random();
+        return boardIds.get(random.nextInt(boardIds.size()));
+    }
+
+    // 본인 게시글 / 댓글 단 게시글 제외 랜덤 게시글 조회
+    public Long getRandomAvailableBoardIdExcludingUser(String personalId) {
+        List<Long> availableBoardIds = boardRepository.findAvailableBoardIdsExcludingUser(personalId);
+
+        if (availableBoardIds.isEmpty()) {
+            System.err.println("No available boards for random selection.");
+            return null; // 조건에 맞는 게시글이 없을 경우
+        }
+
+        // 랜덤 게시글 선택
+        Random random = new Random();
+        return availableBoardIds.get(random.nextInt(availableBoardIds.size()));
+    }
+
+    // 게시글 생성 유틸 메서드
+    private Board buildBoard(BoardRequest boardRequest, User user) {
+        return Board.builder()
                 .content(boardRequest.getContent())
                 .user(user)
                 .likeCount(0L)
+                .x(boardRequest.getX())
+                .y(boardRequest.getY())
+                .keyword(boardRequest.getKeyword())
+                .pageNumber(boardRequest.getPageNumber())
                 .build();
-
-        Board savedBoard = boardRepository.save(board);
-        return mapToResponseDto(savedBoard);
     }
 
-    @Transactional(readOnly = true)
-    public BoardResponse getBoardById(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
-        return mapToResponseDto(board);
-    }
-
-    @Transactional
-    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
-        User user = userRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + userDetails.getUsername()));
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
-
+    // 게시글 소유권 검증
+    private void validateBoardOwnership(Board board, User user) {
         if (!board.getUser().equals(user)) {
-            throw new SecurityException("User not authorized to update this board");
+            throw new SecurityException("User is not authorized to update this board");
         }
-
-        board.updateContent(boardRequest.getContent());
-
-        return mapToResponseDto(board);
     }
 
+    // Board 엔티티를 Response DTO로 변환
     private BoardResponse mapToResponseDto(Board board) {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
                 .content(board.getContent())
-                .loginId(board.getUser().getLoginId())
+                .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
+                .x(board.getX())
+                .y(board.getY())
+                .keyword(board.getKeyword())
+                .pageNumber(board.getPageNumber())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
