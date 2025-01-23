@@ -2,7 +2,6 @@ package com.social.a406.domain.chat.entity;
 
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "chat_participants",
         indexes = @Index(name = "idx_chat_room_user", columnList = "chat_room_id, user_id") // snake_case 사용
 )
