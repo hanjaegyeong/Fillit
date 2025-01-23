@@ -28,8 +28,8 @@ public class BoardService {
 
     // AI 게시글 생성
     @Transactional
-    public BoardResponse createAiBoard(BoardRequest boardRequest, String aipersonalId) {
-        User aiUser = findUserBypersonalId(aipersonalId);
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
+        User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
         return mapToResponseDto(boardRepository.save(board));
     }
