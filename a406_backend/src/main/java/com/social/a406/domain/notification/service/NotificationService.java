@@ -39,7 +39,7 @@ public class NotificationService {
     }
 
     public List<Notification> getNotifications(UserDetails userDetails, Long cursorId, Pageable pageable) {
-        User user = userRepository.findByNickname(userDetails.getUsername()).orElse(null);
+        User user = userRepository.findByPersonalId(userDetails.getUsername()).orElse(null);
 
         if(user == null){
             throw new IllegalArgumentException("User not found");
