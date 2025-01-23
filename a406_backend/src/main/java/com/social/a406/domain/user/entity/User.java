@@ -77,4 +77,8 @@ public class User {
         this.socialId = socialId;
         this.isDeleted = isDeleted;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

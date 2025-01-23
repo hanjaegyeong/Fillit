@@ -1,9 +1,12 @@
 package com.social.a406.domain.user.service;
 
 import com.social.a406.domain.user.dto.*;
+import com.social.a406.domain.user.entity.EmailVerifyCode;
 import com.social.a406.domain.user.entity.User;
+import com.social.a406.domain.user.repository.EmailVerifyCodeRepository;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.JwtTokenUtil;
+import com.social.a406.util.VerifyEmailUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -32,6 +36,8 @@ public class UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailsService customUserDetailsService;
     private final S3Client s3Client;
+    private final EmailVerifyCodeRepository emailVerifyCodeRepository;
+    private final VerifyEmailUtil verifyEmailUtil;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -248,5 +254,63 @@ public class UserService {
                 .build());
 
         System.out.println("Deleted file from S3: " + fileKey);
+    }
+
+    // 비밀번호 변경 - 이메일 코드 보내기
+    public String sendEmailCode(EmailRequest emailRequest){
+        User user = checkEmailAndPersonalId(emailRequest);
+
+        //이메일 전송 로직
+        String verifyCode = VerifyEmailUtil.generateVerificationCode();
+        saveVerifyCode(user, verifyCode);
+
+        verifyEmailUtil.sendEmail(user.getEmail(), verifyCode);
+
+        return "";
+    }
+
+    public User checkEmailAndPersonalId(EmailRequest emailRequest){
+        User userEmail = userRepository.findByEmail(emailRequest.getEmail()).orElseThrow(
+                ()->new IllegalArgumentException("User Not found with email : " + emailRequest.getEmail())
+        );
+        User userPersonalId = userRepository.findByPersonalId(emailRequest.getPersonalId()).orElseThrow(
+                () -> new IllegalArgumentException("User Not found with personalId : " + emailRequest.getPersonalId())
+        );
+
+        if(userEmail != userPersonalId){
+            throw new RuntimeException("Not matched email ans personalId");
+        }
+        return userEmail;
+    }
+
+    public void saveVerifyCode(User user, String verifyCode){
+        EmailVerifyCode emailVerifyCode = EmailVerifyCode.builder()
+                .user(user)
+                .verifyCode(verifyCode)
+                .build();
+        emailVerifyCodeRepository.save(emailVerifyCode);
+    }
+
+    // 비밀번호 변경 - 이메일 코드 인증
+    public String verifyEmailcode(EmailVerifyRequest emailVerifyRequest) {
+        User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("User Not found with email : " + emailVerifyRequest.getEmail())
+        );
+        final boolean isValidVerifyCode = emailVerifyCodeRepository.findByUserId(user.getId(), emailVerifyRequest.getCode(), LocalDateTime.now());
+        if (isValidVerifyCode) {
+            return "Email verification successful!!";
+        } else {
+            throw new IllegalArgumentException("Email verification fail!!");
+        }
+    }
+
+    //비밀번호 변경
+    public String changeUserPassword(UserPasswordRequset userPasswordRequest) {
+        User user = userRepository.findByEmail(userPasswordRequest.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("User Not found with email : " + userPasswordRequest.getEmail())
+        );
+        user.updatePassword(passwordEncoder.encode(userPasswordRequest.getPassword()));
+        userRepository.save(user);
+        return "Password change success!!";
     }
 }
