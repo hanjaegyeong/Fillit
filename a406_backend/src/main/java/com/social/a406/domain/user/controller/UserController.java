@@ -1,14 +1,14 @@
 package com.social.a406.domain.user.controller;
 
-import com.social.a406.domain.user.dto.RegistrationRequest;
-import com.social.a406.domain.user.dto.UserCharacterResponse;
-import com.social.a406.domain.user.dto.UserLoginRequest;
+import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -22,11 +22,16 @@ public class UserController {
         this.userService = userService;
     }
 
+    // refresh token 수명
+    @Value("${refresh.token.max-age}")
+    private int refreshTokenMaxage;
+
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<String> registerUser(@RequestPart("regist") RegistrationRequest registrationRequest,
+                                               @RequestPart(value = "profileImage", required = false) MultipartFile file) {
         try {
-            userService.registerUser(registrationRequest);
+            userService.registerUser(registrationRequest, file);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -46,7 +51,7 @@ public class UserController {
             headers.set("Authorization", "Bearer " + tokens.get("accessToken"));
 
             // Refresh Token은 쿠키에 세팅
-            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), 7 * 24 * 60 * 60);
+            ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), refreshTokenMaxage);
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -69,9 +74,33 @@ public class UserController {
     }
 
     // 유저 조회
-    @GetMapping("/{nickname}")
-    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String nickname) {
-        UserCharacterResponse response = userService.getUserInfoByNickname(nickname);
+    @GetMapping("/{personalId}")
+    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String personalId) {
+        UserCharacterResponse response = userService.getUserInfoByPersonalId(personalId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 비밀번호 변경 - 이메일 코드 전송
+    @PostMapping("/email/send")
+    public ResponseEntity<String> sendEmailCode(@RequestBody EmailRequest emailRequest){
+        String response = userService.sendEmailCode(emailRequest);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // 비밀번호 변경 - 이메일 코드 확인
+    @PostMapping("/email/verify")
+    public ResponseEntity<String> verifyEmailCode(@RequestBody EmailVerifyRequest emailVerifyRequest){
+        String response = userService.verifyEmailcode(emailVerifyRequest);
+
+        return ResponseEntity.ok(response);
+    }
+
+    //비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity<String> changeUserPassword(@RequestBody UserPasswordRequset userPasswordRequest){
+        String response = userService.changeUserPassword(userPasswordRequest);
+
         return ResponseEntity.ok(response);
     }
 }

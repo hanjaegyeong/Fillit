@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class CommentResponse {
     private Long commentId;
     private String content;
-    private String loginId;
+    private String personalId;
     private Long likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -10,8 +10,14 @@ import java.time.LocalDateTime;
 public class BoardResponse {
     private Long boardId;
     private String content;
-    private String loginId;
+    private String personalId;
     private Long likeCount;
+
+    private Double x;
+    private Double y;
+    private String keyword;
+    private Integer pageNumber;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
