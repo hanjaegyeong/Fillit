@@ -29,10 +29,10 @@ public class AiController {
     }
 
     // 특정 게시글에 AI 댓글 생성
-    @PostMapping("/generate/comment")
+    @GetMapping("/generate/comment")
     public ResponseEntity<CommentResponse> generateComment(
             @RequestParam Long boardId,
-            @RequestParam String personalId // AI 댓글 작성자
+            @RequestParam String personalId // 댓글 작성 AI
             ) {
 
         CommentResponse response = aiFacadeService.generateAndSaveComment(boardId, personalId);
