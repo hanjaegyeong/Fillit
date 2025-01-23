@@ -314,9 +314,7 @@ public class UserService {
         String verifyCode = VerifyEmailUtil.generateVerificationCode();
         saveVerifyCode(user, verifyCode);
 
-        verifyEmailUtil.sendEmail(user.getEmail(), verifyCode);
-
-        return "";
+        return verifyEmailUtil.sendEmail(user.getEmail(), verifyCode);
     }
 
     public User checkEmailAndPersonalId(EmailRequest emailRequest){
