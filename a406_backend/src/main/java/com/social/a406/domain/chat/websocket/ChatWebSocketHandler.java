@@ -81,7 +81,7 @@
 //
 //    private void leaveChatRoom(WebSocketSession session, Long chatRoomId) {
 //        WebSocketSessionList sessionList = webSocketListHashMap.get(chatRoomId);
-//        chatService.updateLastReadMessage((String) session.getAttributes().get("userId"), chatRoomId);
+////        chatService.updateLastReadMessage((String) session.getAttributes().get("userId"), chatRoomId);
 //        if (sessionList != null) {
 //            sessionList.getWebSocketSessions().remove(session);
 //            if (sessionList.getWebSocketSessions().isEmpty()) {
