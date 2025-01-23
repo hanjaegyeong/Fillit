@@ -4,12 +4,12 @@ import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 
 public record VoiceReplyResponse(
         Long id,
-        String nickname,
+        String personalId,
         String profileImageUrl,
         String audioUrl
 
 ) {
     public VoiceReplyResponse(VoiceReply reply) {
-        this(reply.getId(), reply.getUser().getNickname(), reply.getUser().getProfileImageUrl(), reply.getAudioUrl());
+        this(reply.getId(), reply.getUser().getPersonalId(), reply.getUser().getProfileImageUrl(), reply.getAudioUrl());
     }
 }

@@ -21,11 +21,11 @@ public class SubredditService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     // 특정 유저와 매핑된 랜덤 서브래딧 반환
-    public Subreddit getRandomUserSubreddit(String nickname) {
-        List<UserSubredditMapping> mappings = userSubredditMappingRepository.findByUser_Nickname(nickname);
+    public Subreddit getRandomUserSubreddit(String personalId) {
+        List<UserSubredditMapping> mappings = userSubredditMappingRepository.findByUser_PersonalId(personalId);
 
         if (mappings.isEmpty()) {
-            throw new IllegalStateException("No subreddit mappings found for nickname: " + nickname);
+            throw new IllegalStateException("No subreddit mappings found for personalId: " + personalId);
         }
 
         UserSubredditMapping randomMapping = getRandomElement(mappings);

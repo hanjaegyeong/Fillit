@@ -66,14 +66,14 @@ public class FollowService {
         return userList;
     }
 
-    // loginId로 userId 찾기
-    public Optional<User> findByLoginId(String loginId) {
-        return userRepository.findByLoginId(loginId);
+    // email로 userId 찾기
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    // nickname으로 userId 찾기
-    public Optional<User> findByNickname(String Nickname) {
-        return userRepository.findByNickname(Nickname);
+    // personalId로 userId 찾기
+    public Optional<User> findByPersonalId(String personalId) {
+        return userRepository.findByPersonalId(personalId);
     }
 
     private void generateFollowNotification(Follow follow){
@@ -81,6 +81,5 @@ public class FollowService {
         notificationService.createNotification(follow.getFollowee(), follow.getFollower(), NotificationType.FOLLOW, follow.getFollowId());
         System.out.println("Generate notification about follow");
     }
-
 
 }

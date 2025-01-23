@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByLoginId(String loginId);
+    Optional<User> findByEmail(String email);
 
     Optional<User> findBySocialId(String socialId);
 
-    Optional<User> findByNickname(String nickname);
+    Optional<User> findByPersonalId(String personalId);
 
-    boolean existsByLoginId(String loginId); // 일반 로그인 ID 중복 체크
+    boolean existsByEmail(String email); // 이메일 중복 체크 시
 
-    boolean existsBySocialDomainAndSocialId(String socialDomain, String socialId); // 소셜 로그인 중복 체크
+    boolean existsBySocialDomainAndSocialId(String socialDomain, String socialId); // 소셜 로그인 중복 체크 시
 
-    boolean existsByNickname(String nickname);
+    boolean existsByPersonalId(String personalId);
 
     @Query("SELECT u FROM User u WHERE u.mainPrompt IS NOT NULL ORDER BY FUNCTION('RAND')")
     List<User> findUsersWithMainPrompt(Pageable pageable);

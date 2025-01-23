@@ -53,32 +53,31 @@ public class UserService {
     }
 
     private void handleNormalUserRegistration(UserRegistrationRequest request, MultipartFile file) {
-        if (existsByLoginId(request.getLoginId())) {
-            log.warn("Registration failed. Login ID already exists: {}", request.getLoginId());
+        if (existsByEmail(request.getEmail())) {
+            log.warn("Registration failed. Login ID already exists: {}", request.getEmail());
             throw new IllegalArgumentException("Login ID already exists");
         }
 
-        if (userRepository.existsByNickname(request.getNickname())) {
-            log.warn("Registration failed. Nickname duplicate: {}", request.getNickname());
-            throw new IllegalArgumentException("Nickname duplicate");
+        if (userRepository.existsByPersonalId(request.getPersonalId())) {
+            log.warn("Registration failed. personalId duplicate: {}", request.getPersonalId());
+            throw new IllegalArgumentException("personalId duplicate");
         }
         String profileImageUrl = null;
         if(file != null) {
             profileImageUrl = saveProfileImageAtS3(file);
         }
         User newUser = User.builder()
-                .loginId(request.getLoginId())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
-                .nickname(request.getNickname())
-                .email(request.getEmail())
+                .personalId(request.getPersonalId())
                 .profileImageUrl(profileImageUrl)
                 .birthDate(request.getBirthDate())
                 .introduction(request.getIntroduction())
                 .build();
 
         userRepository.save(newUser);
-        log.info("User registered successfully: {}", request.getLoginId());
+        log.info("User registered successfully: {}", request.getEmail());
     }
 
     private void handleSocialUserRegistration(SocialUserRegistrationRequest request, MultipartFile file) {
@@ -87,9 +86,9 @@ public class UserService {
             throw new IllegalArgumentException("Social ID already exists");
         }
 
-        if (userRepository.existsByNickname(request.getNickname())) {
-            log.warn("Registration failed. Nickname duplicate: {}", request.getNickname());
-            throw new IllegalArgumentException("Nickname duplicate");
+        if (userRepository.existsByPersonalId(request.getPersonalId())) {
+            log.warn("Registration failed. personalId duplicate: {}", request.getPersonalId());
+            throw new IllegalArgumentException("personalId duplicate");
         }
 
         String profileImageUrl = null;
@@ -100,7 +99,7 @@ public class UserService {
                 .socialDomain(request.getSocialDomain())
                 .socialId(request.getSocialId())
                 .name(request.getName())
-                .nickname(request.getNickname())
+                .personalId(request.getPersonalId())
                 .email(request.getEmail())
                 .profileImageUrl(profileImageUrl)
                 .birthDate(request.getBirthDate())
@@ -112,12 +111,12 @@ public class UserService {
     }
 
     // 사용자 존재 여부 확인
-    public boolean existsByLoginId(String loginId) {
-        return userRepository.existsByLoginId(loginId);
+    public boolean existsByEmail(String Email) {
+        return userRepository.existsByEmail(Email);
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
-        UserDetails userDetails = customUserDetailsService.loadUserByLoginId(userLoginRequest.getLoginId());
+        UserDetails userDetails = customUserDetailsService.loadUserByEmail(userLoginRequest.getEmail());
 
         // 사용자 검증
         validateUser(userDetails, userLoginRequest.getPassword());
@@ -147,18 +146,18 @@ public class UserService {
         }
     }
 
-    public UserCharacterResponse getUserInfoByNickname(String nickname) {
+    public UserCharacterResponse getUserInfoByPersonalId(String personalId) {
         // UserRepository에서 닉네임으로 사용자 조회
-        Optional<User> userOptional = userRepository.findByNickname(nickname);
+        Optional<User> userOptional = userRepository.findByPersonalId(personalId);
 
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             return UserCharacterResponse.builder()
-                    .type(user.getLoginId() == null && user.getPassword() == null ? "ai" : "user")
+                    .type(user.getEmail() == null && user.getPassword() == null ? "ai" : "user")
                     .id(user.getId())
                     .name(user.getName())
-                    .nickname(user.getNickname())
+                    .personalId(user.getPersonalId())
                     .profileImageUrl(user.getProfileImageUrl())
                     .introduction(user.getIntroduction())
                     .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
@@ -166,13 +165,13 @@ public class UserService {
         }
 
         // 닉네임에 해당하는 사용자가 없을 경우 예외 발생
-        throw new IllegalArgumentException("User or AI not found for nickname: " + nickname);
+        throw new IllegalArgumentException("User or AI not found for personalId: " + personalId);
     }
 
-    public User getUserByNickname(String nickname) {
+    public User getUserByPersonalId(String personalId) {
         // UserRepository에서 닉네임으로 사용자 조회
-        return userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("User or AI not found for nickname: " + nickname));
+        return userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("User or AI not found for personalId: " + personalId));
     }
 
     public String getRandomUserWithMainPrompt() {
@@ -185,7 +184,7 @@ public class UserService {
         }
 
         // 첫 번째 사용자 반환
-        return users.get(0).getNickname();
+        return users.get(0).getPersonalId();
     }
 
     //이미지 저장
@@ -238,7 +237,7 @@ public class UserService {
 
     // 이미지 삭제
     // S3 파일 삭제
-    private void deleteProfilImageFromS3(String audioUrl) {
+    private void deleteProfileImageFromS3(String audioUrl) {
         // S3 버킷 내에서 삭제하려는 파일의 키(파일 경로) 추출
         String fileKey = audioUrl.substring(audioUrl.indexOf("profile/"));  // 'profile/'부터 시작하는 경로 추출
 

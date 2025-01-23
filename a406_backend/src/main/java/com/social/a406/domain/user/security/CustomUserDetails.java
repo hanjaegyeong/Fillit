@@ -10,20 +10,20 @@ public class CustomUserDetails implements UserDetails {
 
     @Getter
     private final String id; // User 고유 식별자
-    private final String nickname; // 닉네임
+    private final String personalId; // 닉네임
     private final String password; // 비밀번호 (암호화된 값)
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String id, String nickname, String password, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String id, String personalId, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.nickname = nickname;
+        this.personalId = personalId;
         this.password = password;
         this.authorities = authorities;
     }
 
     @Override
     public String getUsername() {
-        return nickname; // 닉네임 반환
+        return personalId; // personalId 반환
     }
 
     @Override

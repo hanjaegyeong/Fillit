@@ -28,7 +28,7 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
-    // JWT에서 사용자 이름 추출 (해당 앱에선 loginId 추출)
+    // JWT에서 사용자 이름 추출 (해당 앱에선 email 추출)
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject); //토큰 발급 시(아래 generateToken() 매서드) setSubject에 세팅한 값으로 claim 설정됨
     }
