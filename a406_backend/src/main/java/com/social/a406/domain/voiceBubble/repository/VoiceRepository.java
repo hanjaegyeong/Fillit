@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VoiceRepository extends JpaRepository<Voice, Long> {
-    List<Voice> findAllByUserNickname(String nickname);
-    Optional<Voice> findByUserNickname(String nickname);
+    List<Voice> findAllByUserPersonalId(String personalId);
+    Optional<Voice> findByUserPersonalId(String personalId);
     Optional<Voice> findById(Long voiceId);
     List<Voice> findAllByUserIdInOrderByCreatedAtDesc(List<User> users);
 }

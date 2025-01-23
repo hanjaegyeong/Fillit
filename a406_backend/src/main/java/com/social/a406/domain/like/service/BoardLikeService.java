@@ -23,8 +23,8 @@ public class BoardLikeService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addLike(String nickname, Long boardId) {
-        User user = userRepository.findByNickname(nickname)
+    public void addLike(String personalId, Long boardId) {
+        User user = userRepository.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Board board = boardRepository.findById(boardId)
@@ -41,8 +41,8 @@ public class BoardLikeService {
     }
 
     @Transactional
-    public void removeLike(String nickname, Long boardId) {
-        User user = userRepository.findByNickname(nickname)
+    public void removeLike(String personalId, Long boardId) {
+        User user = userRepository.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Board board = boardRepository.findById(boardId)
@@ -65,7 +65,7 @@ public class BoardLikeService {
                 .map(like -> {
                     User user = like.getUser();
                     return new LikedUserResponse(
-                            user.getNickname(),
+                            user.getPersonalId(),
                             user.getProfileImageUrl()
                     );
                 })

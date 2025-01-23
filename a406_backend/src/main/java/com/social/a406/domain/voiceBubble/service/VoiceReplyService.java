@@ -80,10 +80,10 @@ public class VoiceReplyService {
         System.out.println("Deleted file from S3: " + fileKey);
     }
 
-    public String saveVoiceReply(MultipartFile file, String nickname, Long voiceId) {
+    public String saveVoiceReply(MultipartFile file, String personalId, Long voiceId) {
         try {
             // 유저 존재 여부 확인
-            User user = userRepository.findByNickname(nickname)
+            User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             Voice voice = voiceRepository.findById(voiceId)

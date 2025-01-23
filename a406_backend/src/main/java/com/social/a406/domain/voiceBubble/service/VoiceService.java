@@ -45,10 +45,10 @@ public class VoiceService {
     private String region;
 
     // 음성 스토리 업로드
-    public String saveVoice(MultipartFile file, String nickname) {
+    public String saveVoice(MultipartFile file, String personalId) {
         try {
             // 유저 존재 여부 확인
-            User user = userRepository.findByNickname(nickname)
+            User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             String fileName = "voice/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -78,8 +78,8 @@ public class VoiceService {
     }
 
     // 팔로워들 음성 스토리 리스트 가져오기
-    public List<Voice> findFollwerVoices(String nickname) {
-        User user = userRepository.findByNickname(nickname).orElse(null);
+    public List<Voice> findFollwerVoices(String personalId) {
+        User user = userRepository.findByPersonalId(personalId).orElse(null);
         List<Follow> followers = followRepository.findByFollower(user);
         List<User> users = followers.stream().map(follow -> follow.getFollower())  // follower의 follower를 가져옴
                 .collect(Collectors.toList());
@@ -113,13 +113,13 @@ public class VoiceService {
         System.out.println("Deleted file from S3: " + fileKey);
     }
 
-    public Voice findVoice(String nickname) {
-        Voice voice = voiceRepository.findByUserNickname(nickname).orElse(null);
+    public Voice findVoice(String personalId) {
+        Voice voice = voiceRepository.findByUserPersonalId(personalId).orElse(null);
 
         if(voice != null){
             return voice;
         }else{
-            throw new IllegalArgumentException("Voice not found for user with nickname: " + nickname);
+            throw new IllegalArgumentException("Voice not found for user with personalId: " + personalId);
         }
     }
 

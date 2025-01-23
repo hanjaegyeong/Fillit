@@ -21,15 +21,15 @@ public class BoardService {
     // 게시글 생성
     @Transactional
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
-        User user = findUserByNickname(userDetails.getUsername());
+        User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
         return mapToResponseDto(boardRepository.save(board));
     }
 
     // AI 게시글 생성
     @Transactional
-    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiNickname) {
-        User aiUser = findUserByNickname(aiNickname);
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String aipersonalId) {
+        User aiUser = findUserBypersonalId(aipersonalId);
         Board board = buildBoard(boardRequest, aiUser);
         return mapToResponseDto(boardRepository.save(board));
     }
@@ -44,7 +44,7 @@ public class BoardService {
     // 게시글 수정
     @Transactional
     public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
-        User user = findUserByNickname(userDetails.getUsername());
+        User user = findUserBypersonalId(userDetails.getUsername());
         Board board = findBoardById(boardId);
 
         validateBoardOwnership(board, user);
@@ -61,14 +61,14 @@ public class BoardService {
 
     // 게시글 작성자 닉네임 조회
     @Transactional(readOnly = true)
-    public String getBoardAuthorNicknameById(Long boardId) {
-        return findBoardById(boardId).getUser().getNickname();
+    public String getBoardAuthorpersonalIdById(Long boardId) {
+        return findBoardById(boardId).getUser().getPersonalId();
     }
 
     // 유저 조회 유틸 메서드
-    private User findUserByNickname(String nickname) {
-        return userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with nickname: " + nickname));
+    private User findUserBypersonalId(String personalId) {
+        return userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
     }
 
     // 게시글 조회 유틸 메서드
@@ -102,7 +102,7 @@ public class BoardService {
         return BoardResponse.builder()
                 .boardId(board.getBoardId())
                 .content(board.getContent())
-                .nickname(board.getUser().getNickname())
+                .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
                 .x(board.getX())
                 .y(board.getY())

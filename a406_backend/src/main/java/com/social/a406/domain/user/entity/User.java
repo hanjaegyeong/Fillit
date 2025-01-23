@@ -30,22 +30,19 @@ public class User {
     @Column(updatable = false, nullable = false, unique = true)
     private String id; // UUID를 PK로 사용
 
-    @Column(nullable = true) //생성형 AI의 경우 null
-    private String loginId;
+    private String email; //생성형 AI의 경우 null
 
-    @Column(nullable = true)
     private String password; //생성형 AI의 경우 null
 
-    private String name;
+    private String name; // 찢어진 종이로 표시되는 유저 이름
 
     @Column(nullable = false, unique = true)
-    private String nickname; //nickname은 null 불가 && 중복 불가
+    private String personalId; // @뒤에 들어가는 유저id, null 불가 && 중복 불가
 
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
     private Date birthDate; // 생년월일
 
-    private String email;
     private String profileImageUrl;
     private String introduction; // 한 줄 소개
 
@@ -67,12 +64,11 @@ public class User {
     private boolean isDeleted; // 계정 삭제 여부
 
     @Builder
-    public User(String loginId, String password, String name, String nickname, Date birthDate, String email, String profileImageUrl,
+    public User(String password, String name, String personalId, Date birthDate, String email, String profileImageUrl,
                 String introduction, String socialDomain, String socialId, boolean isDeleted) {
-        this.loginId = loginId;
         this.password = password;
         this.name = name;
-        this.nickname = nickname;
+        this.personalId = personalId;
         this.birthDate = birthDate;
         this.email = email;
         this.profileImageUrl = profileImageUrl;
