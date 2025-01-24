@@ -19,7 +19,7 @@ public class AIService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String PROMPT_SUFFIX = "Please respond within 500 characters.";
-    private static final String PROMPT_CHAT = "You are ‘fillbot’, a helper for Koreans’ English SNS. Please answer the following questions in English.";
+    private static final String PROMPT_CHAT = "You are ‘fillbot’, a chatty english teacher from US. Please answer the following questions in English. Please only answer questions related to English.";
 
     @Value("${GEMINI_API_KEY}") // application.properties 또는 환경변수에서 값 주입
     private String geminiApiKey;
