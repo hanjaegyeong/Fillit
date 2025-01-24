@@ -10,7 +10,7 @@ import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.repository.ChatRoomRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,16 +20,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService {
 
-    @Autowired
-    private ChatMessageRepository chatMessageRepository;
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
-    @Autowired
-    private ChatParticipantsRepository chatParticipantsRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantsRepository chatParticipantsRepository;
+    private final UserRepository userRepository;
 
 
     // 채팅 저장
@@ -46,8 +43,19 @@ public class ChatService {
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
 
+        //해당 채팅방 내 마지막 메세지 찾기
+        Optional<Long> lastMessageId = chatMessageRepository.findLastMessageIdByChatMessageId_ChatRoomId(chatRoomId);
+        Long nextMessageId; // 메세지 아이디
+        if(lastMessageId.isPresent()){
+            nextMessageId = lastMessageId.get() + 1;
+        }
+        else{
+            nextMessageId = 1L;
+        }
+
         // 메시지 저장
         ChatMessage newMessage = ChatMessage.builder()
+                .messageId(nextMessageId)
                 .chatParticipants(chatParticipants)
                 .messageContent(request.getMessageContent())
                 .build();
@@ -58,7 +66,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
         chatRoom.updateLastMessageContent(newMessage.getMessageContent());
 //        chatRoomRepository.save(chatRoom); 더티체킹하기때문에 따로 해줄 필요 x
-
         return newMessage;
     }
 
@@ -77,7 +84,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatMessage> getMessagesByChatRoomId(Long chatRoomId) {
         // 특정 채팅방의 모든 메시지 조회 - MessageId 기준 내림차순으로 (가장 최근 메세지부터)
-        return chatMessageRepository.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId);
+        return chatMessageRepository.findByChatMessageId_ChatRoomIdOrderByChatMessageId_MessageIdDesc(chatRoomId);
     }
 
 
