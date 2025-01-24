@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class AiChatResponse {
-    private String message;
+    private final String message;
 
     public AiChatResponse(String message){
         this.message = message;
