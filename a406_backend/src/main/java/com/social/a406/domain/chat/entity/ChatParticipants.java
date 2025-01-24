@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "chat_participants",
+@Table(
         indexes = @Index(name = "idx_chat_room_user", columnList = "chat_room_id, user_id") // snake_case 사용
 )
 public class ChatParticipants {
