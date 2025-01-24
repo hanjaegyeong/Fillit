@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        GITLAB_CREDENTIALS_ID = credentials('gitlab-credentials-id')
         GIT_BRANCH = 'dev_back'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
         DOCKER_IMAGE_NAME = 'fillit'
@@ -14,7 +13,11 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    git branch: "${GIT_BRANCH}", credentialsId: "${GITLAB_CREDENTIALS_ID}", url: "${GITLAB_REPO_URL}"
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id', usernameVariable: 'GITLAB_USERNAME', passwordVariable: 'GITLAB_PASSWORD')]) {
+                        git branch: "${GIT_BRANCH}",
+                            credentialsId: 'gitlab-credentials-id',
+                            url: "${GITLAB_REPO_URL}"
+                    }
                 }
             }
         }
