@@ -25,12 +25,14 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'chmod +x ./gradlew'
-                    withCredentials([string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY')]) {
-                        sh """
-                            ./gradlew clean build \
-                            -Djwt.secret-key=$JWT_SECRET_KEY
-                        """
+                    dir('a406_backend') { // gradlew 파일이 있는 디렉터리로 이동
+                        sh 'chmod +x ./gradlew'
+                        withCredentials([string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY')]) {
+                            sh """
+                                ./gradlew clean build \
+                                -Djwt.secret-key=$JWT_SECRET_KEY
+                            """
+                        }
                     }
                 }
             }
