@@ -1,4 +1,4 @@
-package com.social.a406.domain.ai.dto;
+package com.social.a406.domain.chatBot.dto;
 
 import lombok.Getter;
 
