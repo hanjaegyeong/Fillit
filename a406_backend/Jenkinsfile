@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    environment {
+        GITLAB_CREDENTIALS_ID = credentials('gitlab-credentials-id')  // Jenkins에 저장된 자격증명 ID
+        GIT_BRANCH = 'dev_back'
+        GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        DOCKER_IMAGE_NAME = 'fillit'
+        DOCKER_CONTAINER_NAME = 'fillit-container'
+        DOCKER_PORT = '8081'
+    }
+
+    triggers {
+        GITLABPush()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: "${GIT_BRANCH}", credentialsId: "${GITLAB_CREDENTIALS_ID}", url: "${GITLAB_REPO_URL}"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'chmod +x ./gradlew'
+                    withCredentials([string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY')]) {
+                        sh """
+                            ./gradlew clean build \
+                            -Djwt.secret-key=$JWT_SECRET_KEY
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                    docker build -t ${DOCKER_IMAGE_NAME}:latest -t ${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} .
+                    """
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                withCredentials([string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY')]) {
+                    script {
+                        sh """
+                        docker stop ${DOCKER_CONTAINER_NAME} || true
+                        docker rm ${DOCKER_CONTAINER_NAME} || true
+                        docker run -d -p ${DOCKER_PORT}:${DOCKER_PORT} --name ${DOCKER_CONTAINER_NAME} \
+                            -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                            ${DOCKER_IMAGE_NAME}:latest
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
