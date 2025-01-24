@@ -63,25 +63,25 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             return; // 메시지 처리 중단
         }
 
-        String userId = (String) session.getAttributes().get("userId");
+        String personalId = (String) session.getAttributes().get("personalId");
 
         switch (chatMessageRequest.getType()) {
             case ENTER: // 일단 비워둠
                 break;
             case LEAVE:
-                leaveChatRoom(userId, session, chatRoomId);
+                leaveChatRoom(personalId, session, chatRoomId);
                 break;
             case TEXT:
-                sendMessageToChatRoom(userId, chatMessageRequest);
+                sendMessageToChatRoom(personalId, chatMessageRequest);
                 break;
         }
     }
 
 
-    private void sendMessageToChatRoom(String userId, ChatMessageRequest chatMessageRequest) throws IOException {
+    private void sendMessageToChatRoom(String personalId, ChatMessageRequest chatMessageRequest) throws IOException {
         WebSocketSessionList sessionList = webSocketListHashMap.get(chatMessageRequest.getChatRoomId());
         // 채팅 메세지 저장
-        chatService. saveMessageAndUpdateRoom(userId, chatMessageRequest);
+        chatService. saveMessageAndUpdateRoom(personalId, chatMessageRequest);
 
         if (sessionList != null) {
             TextMessage textMessage = new TextMessage(chatMessageRequest.getMessageContent());
@@ -93,12 +93,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
-    private void leaveChatRoom(String userId, WebSocketSession session, Long chatRoomId) {
+    private void leaveChatRoom(String personalId, WebSocketSession session, Long chatRoomId) {
         WebSocketSessionList sessionList = webSocketListHashMap.get(chatRoomId);
 
         // 나갈 때 마지막 메시지 읽음 처리
-        chatService.updateLastReadMessage(userId, chatRoomId);
+        chatService.updateLastReadMessage(personalId, chatRoomId);
 
         if (sessionList != null) {
             sessionList.getWebSocketSessions().remove(session);
@@ -107,16 +106,15 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 System.out.println("Chat room " + chatRoomId + " is now empty and removed.");
             }
         }
-        System.out.println("User " + userId + " left chat room: " + session.getId());
+        System.out.println("User " + personalId + " left chat room: " + session.getId());
     }
-
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         // 연결 종료 시 세션 제거 로직
-        String userId = (String) session.getAttributes().get("userId");
+        String personalId = (String) session.getAttributes().get("personalId");
         Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
-        leaveChatRoom(userId ,session, chatRoomId);
+        leaveChatRoom(personalId ,session, chatRoomId);
         System.out.println("Disconnected: " + session.getId());
     }
 }

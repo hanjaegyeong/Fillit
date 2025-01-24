@@ -30,47 +30,42 @@ public class ChatController {
     // 메세지 저장
     @PostMapping("/messages")
     public ResponseEntity<ChatMessage> saveMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ChatMessageRequest request) {
-        User user = chatService.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
-        String userId = user.getId();
-
-        ChatMessage message = chatService.saveMessageAndUpdateRoom(userId, request);
+        String personalId = userDetails.getUsername();
+        ChatMessage message = chatService.saveMessageAndUpdateRoom(personalId, request);
         return ResponseEntity.ok(message);
     }
 
     //채팅방 입장 - 메세지 목록 가져오기
     @GetMapping("/rooms/messages")
     public ResponseEntity<?> getMessagesByChatRoomId(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId) {
-        User user = chatService.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
-        String userId = user.getId();
-
         // 접근권한 검증
-        if(!chatService.isParticipantInChatRoom(userId, chatRoomId)){
-            return ResponseEntity.badRequest().body("You do not have permission to access this chat room: " + userId + ", " + chatRoomId);
+        if(!chatService.isParticipantInChatRoom(userDetails.getUsername(), chatRoomId)){
+            return ResponseEntity.badRequest().body("You do not have permission to access this chat room: " + userDetails.getUsername() + ", " + chatRoomId);
         }
-
+        // 메세지 목록 가져오기
         List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoomId);
         return ResponseEntity.ok(messages);
     }
 
     //채팅방 입장 (프로필에서) - 채팅방 유무 검증 후 없으면 채팅방 생성하기
     @PostMapping("/rooms/messages")
-    public ResponseEntity<ChatRoom> getMessagesOnPorfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherPersonalId) {
+    public ResponseEntity<ChatRoom> getMessagesOnProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherPersonalId) {
 
-        User user = chatService.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
+        String personalId = userDetails.getUsername();
+        User user = chatService.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
         User other = chatService.findByPersonalId(otherPersonalId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + otherPersonalId));
+
         String userId = user.getId();
         String otherId = other.getId();
 
         Optional<ChatRoom> chatRoom = chatService.findRoomByParticipants(userId, otherId);
+
         if(!chatRoom.isPresent()) { // 비어있으면 채팅방 생성
             chatRoom = Optional.ofNullable(chatService.createChatRoom(userId, otherId));
         }
-        // 채팅메세지 목록 보여주기
-//        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoom.get().getChatRoomId());
+
         return ResponseEntity.ok(chatRoom.get());
     }
 

@@ -34,7 +34,11 @@ public class ChatService {
 
     // 채팅 저장
     @Transactional
-    public ChatMessage saveMessageAndUpdateRoom(String userId, ChatMessageRequest request) {
+    public ChatMessage saveMessageAndUpdateRoom(String personalId, ChatMessageRequest request) {
+
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
 
         Long chatRoomId = request.getChatRoomId();
 
@@ -42,19 +46,8 @@ public class ChatService {
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
 
-        //해당 채팅방 내 마지막 메세지 찾기
-        Optional<Long> lastMessageId = chatMessageRepository.findLastMessageIdByChatMessageId_ChatRoomId(chatRoomId);
-        Long nextMessageId; // 메세지 아이디
-        if(lastMessageId.isPresent()){
-            nextMessageId = lastMessageId.get() + 1;
-        }
-        else{
-            nextMessageId = 1L;
-        }
-
         // 메시지 저장
         ChatMessage newMessage = ChatMessage.builder()
-                .messageId(nextMessageId)
                 .chatParticipants(chatParticipants)
                 .messageContent(request.getMessageContent())
                 .build();
@@ -70,8 +63,13 @@ public class ChatService {
     }
 
     // 채팅방 입장
-    // 채팅방 입장전 권한 사전검증 - userId와 chatRoomId로 chatParticipants 존재 확인
-    public boolean isParticipantInChatRoom (String userId, Long chatRoomId){
+    // 채팅방 입장전 권한 사전검증 - personalId와 chatRoomId로 chatParticipants 존재 확인
+    public boolean isParticipantInChatRoom (String personalId, Long chatRoomId){
+        //userId 찾기
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
+
         return chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId).isPresent();
     }
 
@@ -79,7 +77,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatMessage> getMessagesByChatRoomId(Long chatRoomId) {
         // 특정 채팅방의 모든 메시지 조회 - MessageId 기준 내림차순으로 (가장 최근 메세지부터)
-        return chatMessageRepository.findByChatMessageId_ChatRoomIdOrderByChatMessageId_MessageIdDesc(chatRoomId);
+        return chatMessageRepository.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId);
     }
 
 
@@ -103,6 +101,14 @@ public class ChatService {
         // 참여자 목록 생성 (userId와 otherId를 포함)
         List<String> participantIds = Arrays.asList(new String[]{userId, otherId});
 
+        // 매핑만들기
+        createChatParticipants(chatRoom, participantIds);
+
+        return chatRoom;
+    }
+
+    //매핑관계만들기
+    public void createChatParticipants(ChatRoom chatRoom, List<String> participantIds){
         // 참여자를 매핑 테이블에 추가
         for (String Id : participantIds) {
             User user = userRepository.findById(Id)
@@ -115,7 +121,6 @@ public class ChatService {
 
             chatParticipantsRepository.save(participant); // 매핑관계 저장
         }
-        return chatRoom;
     }
 
     // 채팅방 목록 가져오기
@@ -147,7 +152,12 @@ public class ChatService {
 
     // 채팅참여 테이블, 메세지 읽음 처리
     @Transactional
-    public ChatParticipants updateLastReadMessage(String userId, Long chatRoomId) {
+    public ChatParticipants updateLastReadMessage(String personalId, Long chatRoomId) {
+        //userId 찾기
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
+
         // ChatParticipants 엔티티 찾기
         ChatParticipants participant = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));

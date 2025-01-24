@@ -23,6 +23,6 @@ public class WebSocketSessionMap {
                 return entry.getKey();
             }
         }
-        throw new IllegalArgumentException("채팅방 세션을 찾을 수 없습니다.");
+        throw new IllegalArgumentException("Could not found the chatroom session.");
     }
 }
