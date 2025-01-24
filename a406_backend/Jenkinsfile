@@ -2,16 +2,12 @@ pipeline {
     agent any
 
     environment {
-        GITLAB_CREDENTIALS_ID = credentials('gitlab-credentials-id')  // Jenkins에 저장된 자격증명 ID
+        GITLAB_CREDENTIALS_ID = credentials('gitlab-credentials-id')
         GIT_BRANCH = 'dev_back'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
         DOCKER_IMAGE_NAME = 'fillit'
         DOCKER_CONTAINER_NAME = 'fillit-container'
         DOCKER_PORT = '8081'
-    }
-
-    triggers {
-        GITLABPush()
     }
 
     stages {
