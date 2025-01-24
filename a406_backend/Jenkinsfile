@@ -29,7 +29,7 @@ pipeline {
                         sh 'chmod +x ./gradlew'
                         withCredentials([string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY')]) {
                             sh """
-                                ./gradlew clean build -i \
+                                ./gradlew clean build \
                                 -Djwt.secret-key=$JWT_SECRET_KEY
                             """
                         }
