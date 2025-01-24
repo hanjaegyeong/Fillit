@@ -1,7 +1,5 @@
 package com.social.a406.domain.ai.controller;
 
-import com.social.a406.domain.ai.dto.AiChatRequest;
-import com.social.a406.domain.ai.dto.AiChatResponse;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
 import com.social.a406.domain.board.service.BoardService;
@@ -92,13 +90,5 @@ public class AiController {
         }
 
         return ResponseEntity.status(201).body(response);
-    }
-
-    // AI 챗봇
-    @PostMapping("/chat")
-    public ResponseEntity<AiChatResponse> generateChat(@RequestBody AiChatRequest aiChatRequest){
-        String chat = aiFacadeService.generateChat(aiChatRequest.getMessage());
-        AiChatResponse response = new AiChatResponse(chat);
-        return ResponseEntity.ok(response);
     }
 }
