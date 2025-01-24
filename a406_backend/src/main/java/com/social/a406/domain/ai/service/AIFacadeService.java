@@ -99,9 +99,4 @@ public class AIFacadeService {
 
         return generateAndSaveBoard(personalId, prompt);
     }
-
-    //AI 쳇봇 답장 생성
-    public String generateChat(String message){
-        return aiService.generateChat(message);
-    }
 }
