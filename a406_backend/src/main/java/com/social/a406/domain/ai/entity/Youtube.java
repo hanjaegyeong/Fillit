@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "youtube")
 public class Youtube {
 
     @Id
@@ -17,18 +16,25 @@ public class Youtube {
 
     private String url;
     private String publishedAt;
+
     @Column(length = 1000)
     private String description;
+
     private String title;
     private String topicCategory;
-    private String category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private YoutubeCategory category;
+
     private String channelTitle;
+
     @Column(length = 2000)
     private String prompt;
 
     @Builder
     public Youtube(String url, String publishedAt, String description, String title,
-                   String topicCategory, String category, String channelTitle, String prompt) {
+                   String topicCategory, YoutubeCategory category, String channelTitle, String prompt) {
         this.url = url;
         this.publishedAt = publishedAt;
         this.description = description;
@@ -50,3 +56,4 @@ public class Youtube {
         this.prompt = prompt;
     }
 }
+
