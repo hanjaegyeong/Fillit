@@ -10,7 +10,6 @@ import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.ai.entity.Youtube;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.Random;
 
 // 각 서비스 조율해주는 Facade 서비스
 @Service
@@ -103,7 +102,6 @@ public class AIFacadeService {
 
     //AI 쳇봇 답장 생성
     public String generateChat(String message){
-        String response = aiService.generateChat(message);
-        return response;
+        return aiService.generateChat(message);
     }
 }
