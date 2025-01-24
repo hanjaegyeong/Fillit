@@ -38,6 +38,8 @@ public class YoutubeService {
     private final int DESCRIPTION_MAX_LENGTH = 950;
     private final int MAX_RESULT = 10;
 
+    private final String PROMPT = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
+
     public Youtube getRandomPopularVideos() {
         // API 요청 URL 생성
         String url = UriComponentsBuilder.fromHttpUrl(YOUTUBE_API_URL)
@@ -71,14 +73,14 @@ public class YoutubeService {
         String description = extractDescription((String) item.get("description"));
         String categoryId = (String) item.get("categoryId");
         Integer categoryIdInt = Integer.parseInt(categoryId);
-        String categoryName = getCategoryNameById(categoryIdInt);
+        YoutubeCategory category = getCategoryNameById(categoryIdInt);
         Youtube youtube = Youtube.builder()
                 .url((String) item.get("url"))
                 .publishedAt((String) item.get("publishedAt"))
                 .description(description)
                 .title((String) item.get("title"))
                 .topicCategory((String) item.get("topicCategory"))
-                .category(categoryName)
+                .category(category)
                 .channelTitle((String) item.get("channelTitle"))
                 .build();
         String prompt = generatePrompt(youtube);
@@ -145,13 +147,13 @@ public class YoutubeService {
         }
     }
 
-    private String getCategoryNameById(Integer categoryId) {
+    private YoutubeCategory getCategoryNameById(Integer categoryId) {
         // 카테고리 ID로 categoryName 조회
         YoutubeCategory youtubeCategory = youtubeCategoryRepository.findByCategoryId(categoryId);
         if (youtubeCategory != null) {
-            return youtubeCategory.getName();
+            return youtubeCategory;
         } else {
-            return "Unknown";  // 카테고리가 없다면 "Unknown"을 반환
+            throw new IllegalArgumentException("Category not found!");  // 카테고리가 없다면 "Unknown"을 반환
         }
     }
 
@@ -160,12 +162,12 @@ public class YoutubeService {
         String title = youtube.getTitle();
         String url = youtube.getUrl();
         String description = youtube.getDescription();
-        String category = youtube.getCategory();
+        YoutubeCategory category = youtube.getCategory();
         String topicCategory = youtube.getTopicCategory();
         String channelTitle = youtube.getChannelTitle();
 
         // Construct the prompt
-        return String.format("Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]",
+        return String.format(PROMPT,
                 category, title, url, description, topicCategory, category, channelTitle);
     }
 

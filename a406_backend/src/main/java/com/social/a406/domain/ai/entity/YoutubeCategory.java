@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "categories_youtube")
 public class YoutubeCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int categoryId; // categoryId 값
 
     private String name;
-    private int categoryId; // categoryId 값
 }
