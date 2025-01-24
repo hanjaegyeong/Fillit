@@ -1,4 +1,4 @@
-const SearchPage = () => {
+const Search = () => {
   return (
     <div>
       <h1>Search</h1>
@@ -6,4 +6,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage;
+export default Search;
