@@ -19,6 +19,7 @@ public class AIService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String PROMPT_SUFFIX = "Please respond within 500 characters.";
+    private static final String PROMPT_CHAT = "You are ‘fillbot’, a helper for Koreans’ English SNS. Please answer the following questions in English.";
 
     @Value("${GEMINI_API_KEY}") // application.properties 또는 환경변수에서 값 주입
     private String geminiApiKey;
@@ -28,6 +29,22 @@ public class AIService {
         User ai = userService.getUserByPersonalId(personalId);
 
         String finalPrompt = ai.getMainPrompt() + " " + additionalPrompt + " " + PROMPT_SUFFIX;
+
+        // API 호출 준비
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestBody = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + finalPrompt + "\" } ] } ] }";
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+        // API 호출
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+        return parseGeneratedContent(response.getBody());
+    }
+
+    public String generateChat(String message){
+        String finalPrompt = PROMPT_CHAT + " " + message + " " + PROMPT_SUFFIX;
 
         // API 호출 준비
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
