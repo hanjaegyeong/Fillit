@@ -1,4 +1,4 @@
-const VoicePage = () => {
+const Voice = () => {
   return (
     <div>
       <h1>Voice</h1>
@@ -6,4 +6,4 @@ const VoicePage = () => {
   );
 };
 
-export default VoicePage;
+export default Voice;
