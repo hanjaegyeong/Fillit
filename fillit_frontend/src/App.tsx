@@ -1,21 +1,25 @@
 import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import MessagePage from './pages/MessagePage';
-import ProfilePage from './pages/ProfilePage';
-import SearchPage from './pages/SearchPage';
-import VoicePage from './pages/VoicePage';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Message from './pages/Message';
+import Profile from './pages/Profile';
+import Search from './pages/Search';
+import Voice from './pages/Voice';
+import NavBar from './components/common/NavBar';
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/message" element={<MessagePage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/search" element={<SearchPage />} />
-      <Route path="/voice" element={<VoicePage />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/message" element={<Message />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/voice" element={<Voice />} />
+      </Routes>
+      <NavBar />
+    </>
   );
 };
 

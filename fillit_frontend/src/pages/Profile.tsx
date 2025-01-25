@@ -1,4 +1,4 @@
-const ProfilePage = () => {
+const Profile = () => {
   return (
     <div>
       <h1>Profile</h1>
@@ -6,4 +6,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default Profile;
