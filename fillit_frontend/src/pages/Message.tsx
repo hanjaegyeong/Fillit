@@ -1,4 +1,4 @@
-const MessagePage = () => {
+const Message = () => {
   return (
     <div>
       <h1>Message</h1>
@@ -6,4 +6,4 @@ const MessagePage = () => {
   );
 };
 
-export default MessagePage;
+export default Message;
