@@ -5,17 +5,21 @@ import Message from './pages/Message';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Voice from './pages/Voice';
+import NavBar from './components/common/NavBar';
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/message" element={<Message />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/search" element={<Search />} />
-      <Route path="/voice" element={<Voice />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/message" element={<Message />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/voice" element={<Voice />} />
+      </Routes>
+      <NavBar />
+    </>
   );
 };
 
