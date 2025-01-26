@@ -1,6 +1,6 @@
-import profileBubble from '../assets/icons/profile-bubble.svg';
-import playIcon from '../assets/icons/play.svg';
-import voiceWrapper from '../assets/icons/voice-wrapper.svg';
+import profileBubble from '@/assets/icons/profile-bubble.svg';
+import playIcon from '@/assets/icons/play.svg';
+import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
 
 interface VoiceBubbleItemProps {
   name: string;

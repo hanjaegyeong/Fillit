@@ -21,7 +21,10 @@ export const BubbleBackground = () => {
         alt="bubble3"
         className="absolute w-[391px] h-[587px] right-0 bottom-0"
       />
-      <div>
+      <div className="relative">
+        <h4 className="text-xl mb-2 absolute top-[80px] left-1/2 transform -translate-x-1/2 z-10 text-center w-full">
+          Voice Replies
+        </h4>
         <img
           src={replyBar}
           alt="replyBar"

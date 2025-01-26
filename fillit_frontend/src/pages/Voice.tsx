@@ -1,5 +1,5 @@
 import { BubbleBackground } from '../components/decorations/BubbleBackground';
-import VoiceBubbleList from '../components/VoiceBubbleList';
+import VoiceBubbleList from '../components/Voice/VoiceBubbleList';
 import MicBack from '../assets/icons/mic-back.svg';
 import Mic from '../assets/icons/mic.svg';
 
