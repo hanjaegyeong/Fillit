@@ -5,7 +5,7 @@ import replyBar from '/src/assets/icons/reply-bar.svg';
 
 export const BubbleBackground = () => {
   return (
-    <div>
+    <div className="absolute inset-0 z-[-1]">
       <img
         src={bubble1}
         alt="bubble1"
@@ -21,11 +21,13 @@ export const BubbleBackground = () => {
         alt="bubble3"
         className="absolute w-[391px] h-[587px] right-0 bottom-0"
       />
-      <img
-        src={replyBar}
-        alt="replyBar"
-        className="absolute w-[95%] full h-auto top-[116px] left-1/2 transform -translate-x-1/2"
-      />
+      <div>
+        <img
+          src={replyBar}
+          alt="replyBar"
+          className="absolute w-[95%] h-auto top-[116px] left-1/2 transform -translate-x-1/2"
+        />
+      </div>
     </div>
   );
 };
