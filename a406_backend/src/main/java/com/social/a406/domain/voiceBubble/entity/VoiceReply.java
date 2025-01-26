@@ -18,10 +18,10 @@ public class VoiceReply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long voiceReplyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voice_id", nullable = false)
+    @JoinColumn(name = "voice_voice_id", nullable = false)
     private Voice voice;
 
     @ManyToOne(fetch = FetchType.LAZY)

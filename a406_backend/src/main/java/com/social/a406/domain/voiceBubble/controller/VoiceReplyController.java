@@ -1,9 +1,6 @@
 package com.social.a406.domain.voiceBubble.controller;
 
-import com.social.a406.domain.user.service.UserService;
-import com.social.a406.domain.voiceBubble.dto.VoiceReplyRequest;
 import com.social.a406.domain.voiceBubble.dto.VoiceReplyResponse;
-import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.service.VoiceReplyService;
@@ -25,7 +22,7 @@ public class VoiceReplyController {
     private final VoiceService voiceService;
 
     @Autowired
-    public VoiceReplyController(VoiceReplyService voiceReplyService, VoiceService voiceService, UserService userService) {
+    public VoiceReplyController(VoiceReplyService voiceReplyService, VoiceService voiceService) {
         this.voiceReplyService = voiceReplyService;
         this.voiceService = voiceService;
     }
@@ -41,11 +38,11 @@ public class VoiceReplyController {
 
 
     //답장 조회
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<VoiceReplyResponse>> findVoiceReply(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
 
-        List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getId());
+        List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getVoiceId());
 
         List<VoiceReplyResponse> responses = voiceReplies.stream()
                 .map(VoiceReplyResponse::new)
