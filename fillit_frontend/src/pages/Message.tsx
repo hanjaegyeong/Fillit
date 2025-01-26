@@ -1,8 +1,11 @@
+import Header from '@/components/common/Header';
+
 const Message = () => {
   return (
-    <div>
+    <>
+      <Header left="home" right="notification" />
       <h1>Message</h1>
-    </div>
+    </>
   );
 };
 

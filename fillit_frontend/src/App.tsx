@@ -1,11 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Message from './pages/Message';
-import Profile from './pages/Profile';
-import Search from './pages/Search';
-import Voice from './pages/Voice';
-import NavBar from './components/common/NavBar';
+import Home from '@/pages/Home';
+import Login from '@/pages/Login';
+import Message from '@/pages/Message';
+import Profile from '@/pages/Profile';
+import Search from '@/pages/Search';
+import Voice from '@/pages/Voice';
+import Notification from '@/pages/Notification';
+import NavBar from '@/components/common/NavBar';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/search" element={<Search />} />
         <Route path="/voice" element={<Voice />} />
+        <Route path="/notification" element={<Notification />} />
       </Routes>
       <NavBar />
     </>
