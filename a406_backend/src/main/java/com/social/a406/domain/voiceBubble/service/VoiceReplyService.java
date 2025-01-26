@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -40,13 +41,12 @@ public class VoiceReplyService {
     private String region;
 
     public List<VoiceReply> findVoiceReplies(Long voiceId) {
-        List<VoiceReply> voiceReplies = voiceReplyRepository.findByVoiceId(voiceId);
 
-        return voiceReplies;
+        return voiceReplyRepository.findByVoiceVoiceId(voiceId);
     }
 
     public VoiceReply findVoiceReply(Long voiceReplyId) {
-        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyById(voiceReplyId).orElse(null);
+        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElse(null);
 
         if(voiceReply != null){
             return voiceReply;
@@ -56,7 +56,7 @@ public class VoiceReplyService {
     }
 
     public void deleteVoiceReply(Long voiceReplyId) {
-        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyById(voiceReplyId).orElseGet(null);
+        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElseGet(null);
 
         if(voiceReply != null){
             deleteFromS3(voiceReply.getAudioUrl());
@@ -86,9 +86,9 @@ public class VoiceReplyService {
             User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            Voice voice = voiceRepository.findById(voiceId)
+            Voice voice = voiceRepository.findByVoiceId(voiceId)
                     .orElseThrow(() -> new IllegalArgumentException("Voice not found"));
-            if(user.getId() == voice.getUser().getId()){
+            if(Objects.equals(user.getId(), voice.getUser().getId())){
                 throw new IllegalArgumentException("You can't send yourself a voice reply");
             }
 
@@ -107,7 +107,7 @@ public class VoiceReplyService {
                     file.getInputStream(), file.getSize()));
 
             String fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
-
+            System.out.println(voice.getVoiceId());
             // Voice 객체 생성 및 DB에 저장
             VoiceReply voiceReply = voiceReplyRepository.save(new VoiceReply(voice, user, fileUrl));
 
@@ -123,7 +123,7 @@ public class VoiceReplyService {
         // 음성 답장
         User receiver = voiceReply.getVoice().getUser();
         User sender = voiceReply.getUser();
-        Long referenceId = voiceReply.getVoice().getId();
+        Long referenceId = voiceReply.getVoice().getVoiceId();
         notificationService.createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
         System.out.println("Generate notification about voice reply");
     }
