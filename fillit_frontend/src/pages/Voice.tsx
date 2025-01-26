@@ -1,7 +1,11 @@
+import { BubbleBackground } from '../components/decorations/BubbleBackground';
+import VoiceBubbleList from '../components/VoiceBubbleList';
+
 const Voice = () => {
   return (
-    <div>
-      <h1>Voice</h1>
+    <div className="relative w-full h-screen overflow-hidden">
+      <BubbleBackground />
+      <VoiceBubbleList />
     </div>
   );
 };
