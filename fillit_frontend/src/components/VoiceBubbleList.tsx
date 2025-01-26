@@ -5,8 +5,11 @@ const VoiceBubbleList = () => {
   const items = [
     { name: 'Alex', nickname: '@chocolate' },
     { name: 'George', nickname: '@gowithout' },
-    { name: 'Samantha', nickname: '@flowerpower' },
-    { name: 'Elizabeth', nickname: '@queenbee' },
+    { name: 'Karen', nickname: '@potato153' },
+    { name: 'Alex', nickname: '@chocolate2' },
+    { name: 'Alex', nickname: '@chocolate3' },
+    { name: 'George', nickname: '@gowithout2' },
+    { name: 'Karen', nickname: '@potato154' },
   ];
 
   return (
@@ -14,20 +17,25 @@ const VoiceBubbleList = () => {
       className="flex flex-col items-center"
       style={{
         position: 'absolute',
-        top: '50%',
-        transform: 'translateY(-55%)',
+        top: '55%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
         width: '100%',
-        padding: '0 20px', // 양옆 여백
+        maxWidth: '346px',
+        maxHeight: 'calc(100vh - 43%)',
+        overflow: 'hidden',
       }}
     >
-      <h4 className="text-xl ">Voice Bubbles</h4>
-      {items.map((item) => (
-        <VoiceBubbleItem
-          key={item.nickname}
-          name={item.name}
-          nickname={item.nickname}
-        />
-      ))}
+      <h4 className="text-xl mb-2">Voice Bubbles</h4>
+      <div className="w-full overflow-y-auto">
+        {items.map((item) => (
+          <VoiceBubbleItem
+            key={item.nickname}
+            name={item.name}
+            nickname={item.nickname}
+          />
+        ))}
+      </div>
     </div>
   );
 };
