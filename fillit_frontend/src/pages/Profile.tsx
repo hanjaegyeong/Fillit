@@ -1,8 +1,11 @@
+import Header from '@/components/common/Header';
+
 const Profile = () => {
   return (
-    <div>
+    <>
+      <Header left="home" right="menu" />
       <h1>Profile</h1>
-    </div>
+    </>
   );
 };
 

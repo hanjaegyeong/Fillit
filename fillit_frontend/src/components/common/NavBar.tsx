@@ -1,44 +1,51 @@
-import homeInactiveIcon from '@/assets/icons/home-outline.svg';
-import homeActiveIcon from '@/assets/icons/home-fill.svg';
-import voiceInactiveIcon from '@/assets/icons/voice-outline.svg';
-import voiceActiveIcon from '@/assets/icons/voice-fill.svg';
-import searchInactiveIcon from '@/assets/icons/search-outline.svg';
-import searchActiveIcon from '@/assets/icons/search-fill.svg';
-import messageInactiveIcon from '@/assets/icons/message-outline.svg';
-import messageActiveIcon from '@/assets/icons/message-fill.svg';
-import myPageInactiveIcon from '@/assets/icons/mypage-outline.svg';
-import myPageActiveIcon from '@/assets/icons/mypage-fill.svg';
+import {
+  HomeInactiveIcon,
+  HomeActiveIcon,
+  VoiceInactiveIcon,
+  VoiceActiveIcon,
+  SearchInactiveIcon,
+  SearchActiveIcon,
+  MessageInactiveIcon,
+  MessageActiveIcon,
+  MyPageInactiveIcon,
+  MyPageActiveIcon,
+} from '@/assets/assets';
 import NavBarItem from './NavBarItem';
 import { useLocation } from 'react-router-dom';
 
 const navItems = [
   {
-    inactiveIcon: homeInactiveIcon,
-    activeIcon: homeActiveIcon,
+    navItemId: 'home',
+    inactiveIcon: HomeInactiveIcon,
+    activeIcon: HomeActiveIcon,
     alt: 'home icon',
     to: '/',
   },
   {
-    inactiveIcon: voiceInactiveIcon,
-    activeIcon: voiceActiveIcon,
+    navItemId: 'voice',
+    inactiveIcon: VoiceInactiveIcon,
+    activeIcon: VoiceActiveIcon,
     alt: 'voice icon',
     to: '/voice',
   },
   {
-    inactiveIcon: searchInactiveIcon,
-    activeIcon: searchActiveIcon,
+    navItemId: 'search',
+    inactiveIcon: SearchInactiveIcon,
+    activeIcon: SearchActiveIcon,
     alt: 'search icon',
     to: '/search',
   },
   {
-    inactiveIcon: messageInactiveIcon,
-    activeIcon: messageActiveIcon,
+    navItemId: 'message',
+    inactiveIcon: MessageInactiveIcon,
+    activeIcon: MessageActiveIcon,
     alt: 'message icon',
     to: '/message',
   },
   {
-    inactiveIcon: myPageInactiveIcon,
-    activeIcon: myPageActiveIcon,
+    navItemId: 'myPage',
+    inactiveIcon: MyPageInactiveIcon,
+    activeIcon: MyPageActiveIcon,
     alt: 'myPage icon',
     to: '/profile',
   },
@@ -53,9 +60,9 @@ const NavBar = () => {
   ) : (
     <nav className="fixed z-1 h-24 bottom-0 w-full bg-white border-t">
       <div className="flex justify-around">
-        {navItems.map((item, index) => (
+        {navItems.map((item) => (
           <NavBarItem
-            key={index}
+            key={item.navItemId}
             inactiveIcon={item.inactiveIcon}
             activeIcon={item.activeIcon}
             alt={item.alt}
