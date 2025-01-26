@@ -26,7 +26,7 @@ const VoiceBubbleList = () => {
         overflow: 'hidden',
       }}
     >
-      <h4 className="text-xl mb-2">Voice Bubbles</h4>
+      <h4 className="text-xl mb-1">Voice Bubbles</h4>
       <div className="w-full overflow-y-auto">
         {items.map((item) => (
           <VoiceBubbleItem
