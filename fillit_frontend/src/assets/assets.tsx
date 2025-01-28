@@ -23,6 +23,17 @@ import GoogleIcon from '@/assets/icons/google.svg';
 import NaverIcon from '@/assets/icons/naver.svg';
 import KakaoIcon from '@/assets/icons/kakao.svg';
 
+// voice
+import micBack from '@/assets/icons/mic-back.svg';
+import mic from '@/assets/icons/mic.svg';
+import playIcon from '@/assets/icons/play.svg';
+import profileBubble from '@/assets/icons/profile-bubble.svg';
+import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
+import bubble1 from '@/assets/images/bubble1.png';
+import bubble2 from '@/assets/images/bubble2.png';
+import bubble3 from '@/assets/images/bubble3.png';
+import replyBar from '@/assets/icons/reply-bar.svg';
+
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -43,4 +54,13 @@ export {
   GoogleIcon,
   NaverIcon,
   KakaoIcon,
+  micBack,
+  mic,
+  playIcon,
+  profileBubble,
+  voiceWrapper,
+  bubble1,
+  bubble2,
+  bubble3,
+  replyBar,
 };
