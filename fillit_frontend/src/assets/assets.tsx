@@ -18,6 +18,11 @@ import NotificationOnIcon from '@/assets/icons/notification-on.svg';
 import NotificationOffIcon from '@/assets/icons/notification-off.svg';
 import RegistIcon from '@/assets/icons/regist.svg';
 
+// social login
+import GoogleIcon from '@/assets/icons/google.svg';
+import NaverIcon from '@/assets/icons/naver.svg';
+import KakaoIcon from '@/assets/icons/kakao.svg';
+
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -35,4 +40,7 @@ export {
   NotificationOnIcon,
   NotificationOffIcon,
   RegistIcon,
+  GoogleIcon,
+  NaverIcon,
+  KakaoIcon,
 };
