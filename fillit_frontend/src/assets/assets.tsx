@@ -26,7 +26,8 @@ import KakaoIcon from '@/assets/icons/kakao.svg';
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
 import mic from '@/assets/icons/mic.svg';
-import micBig from '@/assets/icons/mic-big.svg';
+import micBig from '@/assets/images/mic-big.png';
+import pressedMic from '@/assets/images/mic-pressed.png';
 import playIcon from '@/assets/icons/play.svg';
 import playIcon2 from '@/assets/icons/play2.svg';
 import profileBubble from '@/assets/icons/profile-bubble.svg';
@@ -64,6 +65,7 @@ export {
   micBack,
   mic,
   micBig,
+  pressedMic,
   playIcon,
   playIcon2,
   profileBubble,
