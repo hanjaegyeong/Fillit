@@ -13,7 +13,7 @@ const VoiceBaseModal = ({
   children,
   isOpen,
   onClose,
-  contentGap = 'gap-4',
+  contentGap = 'gap-8',
 }: BaseModalProps) => {
   const [isVisibleState, setIsVisibleState] = useState(true);
 
@@ -63,11 +63,11 @@ const VoiceBaseModal = ({
 
             {/* 컨텐츠 영역 */}
             <motion.div
-              className={`relative flex flex-col items-center ${contentGap} translate-y-[60%] z-10`}
+              className={`relative flex flex-col items-center ${contentGap} translate-y-[40%] z-10`}
               onClick={(e) => e.stopPropagation()}
-              initial={{ y: '80%', scale: 0.9, opacity: 0 }}
-              animate={{ y: '60%', scale: 1, opacity: 1 }}
-              exit={{ y: '80%', scale: 0.9, opacity: 0 }}
+              initial={{ y: '60%', scale: 0.9, opacity: 0 }}
+              animate={{ y: '40%', scale: 1, opacity: 1 }}
+              exit={{ y: '60%', scale: 0.9, opacity: 0 }}
               transition={{
                 duration: 0.4,
                 ease: 'easeOut',
