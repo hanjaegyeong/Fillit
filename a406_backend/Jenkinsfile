@@ -57,47 +57,45 @@ pipeline {
                         string(credentialsId: 'EC2_SERVER_URL', variable: 'EC2_SERVER_URL')
                     ]) {
                         dir('a406_backend') {
-                            withEnv([
-                                "JWT_SECRET_KEY=${JWT_SECRET_KEY}",
-                                "DB_URL=${DB_URL}",
-                                "DB_USERNAME=${DB_USERNAME}",
-                                "DB_PASSWORD=${DB_PASSWORD}",
-                                "MAIL_PASSWORD=${MAIL_PASSWORD}",
-                                "GOOGLE_ACCESS_TOKEN_API=${GOOGLE_ACCESS_TOKEN_API}",
-                                "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}",
-                                "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}",
-                                "GOOGLE_GET_USER_INFO_API=${GOOGLE_GET_USER_INFO_API}",
-                                "GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}",
-                                "GOOGLE_SCOPE=${GOOGLE_SCOPE}",
-                                "KAKAO_ACCESS_TOKEN_API=${KAKAO_ACCESS_TOKEN_API}",
-                                "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}",
-                                "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}",
-                                "KAKAO_GET_USER_INFO_API=${KAKAO_GET_USER_INFO_API}",
-                                "KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}",
-                                "NAVER_ACCESS_TOKEN_API=${NAVER_ACCESS_TOKEN_API}",
-                                "NAVER_CLIENT_ID=${NAVER_CLIENT_ID}",
-                                "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}",
-                                "NAVER_GET_USER_INFO_API=${NAVER_GET_USER_INFO_API}",
-                                "NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}",
-                                "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
-                                "AWS_REGION=${AWS_REGION}",
-                                "AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}",
-                                "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}",
-                                "YOUTUBE_API_KEY=${YOUTUBE_API_KEY}",
-                                "YOUTUBE_API_URL=${YOUTUBE_API_URL}",
-                                "GEMINI_API_KEY=${GEMINI_API_KEY}",
-                                "EC2_SERVER_URL=${EC2_SERVER_URL}"
-                            ]) {
-                                sh 'chmod +x ./gradlew'
-                                sh """
-                                    ./gradlew clean build \
-                                    -Djwt.secret-key=${JWT_SECRET_KEY} \
-                                    -Dspring.datasource.url=${DB_URL} \
-                                    -Dspring.datasource.username=${DB_USERNAME} \
-                                    -Dspring.datasource.password=${DB_PASSWORD} \
-                                    -Dspring.mail.password=${MAIL_PASSWORD}
-                                """
-                            }
+                            sh """
+                                export JWT_SECRET_KEY=${JWT_SECRET_KEY}
+                                export DB_URL=${DB_URL}
+                                export DB_USERNAME=${DB_USERNAME}
+                                export DB_PASSWORD=${DB_PASSWORD}
+                                export MAIL_PASSWORD=${MAIL_PASSWORD}
+                                export GOOGLE_ACCESS_TOKEN_API=${GOOGLE_ACCESS_TOKEN_API}
+                                export GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+                                export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+                                export GOOGLE_GET_USER_INFO_API=${GOOGLE_GET_USER_INFO_API}
+                                export GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+                                export GOOGLE_SCOPE=${GOOGLE_SCOPE}
+                                export KAKAO_ACCESS_TOKEN_API=${KAKAO_ACCESS_TOKEN_API}
+                                export KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+                                export KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+                                export KAKAO_GET_USER_INFO_API=${KAKAO_GET_USER_INFO_API}
+                                export KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+                                export NAVER_ACCESS_TOKEN_API=${NAVER_ACCESS_TOKEN_API}
+                                export NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+                                export NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+                                export NAVER_GET_USER_INFO_API=${NAVER_GET_USER_INFO_API}
+                                export NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}
+                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                                export AWS_REGION=${AWS_REGION}
+                                export AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                                export YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+                                export YOUTUBE_API_URL=${YOUTUBE_API_URL}
+                                export GEMINI_API_KEY=${GEMINI_API_KEY}
+                                export EC2_SERVER_URL=${EC2_SERVER_URL}
+
+                                chmod +x ./gradlew
+                                ./gradlew clean build \
+                                    -Djwt.secret-key=\$JWT_SECRET_KEY \
+                                    -Dspring.datasource.url=\$DB_URL \
+                                    -Dspring.datasource.username=\$DB_USERNAME \
+                                    -Dspring.datasource.password=\$DB_PASSWORD \
+                                    -Dspring.mail.password=\$MAIL_PASSWORD
+                            """
                         }
                     }
                 }
