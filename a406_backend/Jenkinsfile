@@ -88,6 +88,7 @@ pipeline {
                                 "GEMINI_API_KEY=${GEMINI_API_KEY}",
                                 "EC2_SERVER_URL=${EC2_SERVER_URL}"
                             ]) {
+                                sh 'chmod +x ./gradlew'
                                 sh """
                                     ./gradlew clean build \
                                     -Djwt.secret-key=\$JWT_SECRET_KEY \
