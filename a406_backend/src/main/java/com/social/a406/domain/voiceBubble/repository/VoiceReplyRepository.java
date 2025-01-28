@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VoiceReplyRepository extends JpaRepository<VoiceReply, Long> {
-    Optional<VoiceReply> findVoiceReplyById(Long voiceReplyId);
-    List<VoiceReply> findByVoiceId(Long voiceId);
-    void deleteVoiceRepliesByVoiceId(Long voiceId);
+    Optional<VoiceReply> findVoiceReplyByVoiceReplyId(Long voiceReplyId);
+    List<VoiceReply> findByVoiceVoiceId(Long voiceId);
 }
