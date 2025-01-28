@@ -57,15 +57,46 @@ pipeline {
                         string(credentialsId: 'EC2_SERVER_URL', variable: 'EC2_SERVER_URL')
                     ]) {
                         dir('a406_backend') {
-                            sh 'chmod +x ./gradlew'
-                            sh """
-                                ./gradlew clean build \
-                                -Djwt.secret-key=${JWT_SECRET_KEY} \
-                                -Dspring.datasource.url=${DB_URL} \
-                                -Dspring.datasource.username=${DB_USERNAME} \
-                                -Dspring.datasource.password=${DB_PASSWORD} \
-                                -Dspring.mail.password=${MAIL_PASSWORD}
-                            """
+                            withEnv([
+                                "JWT_SECRET_KEY=${JWT_SECRET_KEY}",
+                                "DB_URL=${DB_URL}",
+                                "DB_USERNAME=${DB_USERNAME}",
+                                "DB_PASSWORD=${DB_PASSWORD}",
+                                "MAIL_PASSWORD=${MAIL_PASSWORD}",
+                                "GOOGLE_ACCESS_TOKEN_API=${GOOGLE_ACCESS_TOKEN_API}",
+                                "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}",
+                                "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}",
+                                "GOOGLE_GET_USER_INFO_API=${GOOGLE_GET_USER_INFO_API}",
+                                "GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}",
+                                "GOOGLE_SCOPE=${GOOGLE_SCOPE}",
+                                "KAKAO_ACCESS_TOKEN_API=${KAKAO_ACCESS_TOKEN_API}",
+                                "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}",
+                                "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}",
+                                "KAKAO_GET_USER_INFO_API=${KAKAO_GET_USER_INFO_API}",
+                                "KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}",
+                                "NAVER_ACCESS_TOKEN_API=${NAVER_ACCESS_TOKEN_API}",
+                                "NAVER_CLIENT_ID=${NAVER_CLIENT_ID}",
+                                "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}",
+                                "NAVER_GET_USER_INFO_API=${NAVER_GET_USER_INFO_API}",
+                                "NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}",
+                                "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
+                                "AWS_REGION=${AWS_REGION}",
+                                "AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}",
+                                "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}",
+                                "YOUTUBE_API_KEY=${YOUTUBE_API_KEY}",
+                                "YOUTUBE_API_URL=${YOUTUBE_API_URL}",
+                                "GEMINI_API_KEY=${GEMINI_API_KEY}",
+                                "EC2_SERVER_URL=${EC2_SERVER_URL}"
+                            ]) {
+                                sh """
+                                    ./gradlew clean build \
+                                    -Djwt.secret-key=\$JWT_SECRET_KEY \
+                                    -Dspring.datasource.url=\$DB_URL \
+                                    -Dspring.datasource.username=\$DB_USERNAME \
+                                    -Dspring.datasource.password=\$DB_PASSWORD \
+                                    -Dspring.mail.password=\$MAIL_PASSWORD
+                                """
+                            }
                         }
                     }
                 }
@@ -116,41 +147,73 @@ pipeline {
                         string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_API_KEY'),
                         string(credentialsId: 'EC2_SERVER_URL', variable: 'EC2_SERVER_URL')
                     ]) {
-                        sh """
-                        docker stop ${DOCKER_CONTAINER_NAME} || true
-                        docker rm ${DOCKER_CONTAINER_NAME} || true
-                        docker run -d -p ${DOCKER_PORT}:8080 --name ${DOCKER_CONTAINER_NAME} \
-                            -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-                            -e DB_URL=${DB_URL} \
-                            -e DB_USERNAME=${DB_USERNAME} \
-                            -e DB_PASSWORD=${DB_PASSWORD} \
-                            -e MAIL_PASSWORD=${MAIL_PASSWORD} \
-                            -e GOOGLE_ACCESS_TOKEN_API=${GOOGLE_ACCESS_TOKEN_API} \
-                            -e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
-                            -e GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
-                            -e GOOGLE_GET_USER_INFO_API=${GOOGLE_GET_USER_INFO_API} \
-                            -e GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI} \
-                            -e GOOGLE_SCOPE=${GOOGLE_SCOPE} \
-                            -e KAKAO_ACCESS_TOKEN_API=${KAKAO_ACCESS_TOKEN_API} \
-                            -e KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
-                            -e KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} \
-                            -e KAKAO_GET_USER_INFO_API=${KAKAO_GET_USER_INFO_API} \
-                            -e KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI} \
-                            -e NAVER_ACCESS_TOKEN_API=${NAVER_ACCESS_TOKEN_API} \
-                            -e NAVER_CLIENT_ID=${NAVER_CLIENT_ID} \
-                            -e NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET} \
-                            -e NAVER_GET_USER_INFO_API=${NAVER_GET_USER_INFO_API} \
-                            -e NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI} \
-                            -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                            -e AWS_REGION=${AWS_REGION} \
-                            -e AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME} \
-                            -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                            -e YOUTUBE_API_KEY=${YOUTUBE_API_KEY} \
-                            -e YOUTUBE_API_URL=${YOUTUBE_API_URL} \
-                            -e GEMINI_API_KEY=${GEMINI_API_KEY} \
-                            -e EC2_SERVER_URL=${EC2_SERVER_URL} \
-                            ${DOCKER_IMAGE_NAME}:latest
-                        """
+                        withEnv([
+                            "JWT_SECRET_KEY=${JWT_SECRET_KEY}",
+                            "DB_URL=${DB_URL}",
+                            "DB_USERNAME=${DB_USERNAME}",
+                            "DB_PASSWORD=${DB_PASSWORD}",
+                            "MAIL_PASSWORD=${MAIL_PASSWORD}",
+                            "GOOGLE_ACCESS_TOKEN_API=${GOOGLE_ACCESS_TOKEN_API}",
+                            "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}",
+                            "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}",
+                            "GOOGLE_GET_USER_INFO_API=${GOOGLE_GET_USER_INFO_API}",
+                            "GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}",
+                            "GOOGLE_SCOPE=${GOOGLE_SCOPE}",
+                            "KAKAO_ACCESS_TOKEN_API=${KAKAO_ACCESS_TOKEN_API}",
+                            "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}",
+                            "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}",
+                            "KAKAO_GET_USER_INFO_API=${KAKAO_GET_USER_INFO_API}",
+                            "KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}",
+                            "NAVER_ACCESS_TOKEN_API=${NAVER_ACCESS_TOKEN_API}",
+                            "NAVER_CLIENT_ID=${NAVER_CLIENT_ID}",
+                            "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}",
+                            "NAVER_GET_USER_INFO_API=${NAVER_GET_USER_INFO_API}",
+                            "NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}",
+                            "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
+                            "AWS_REGION=${AWS_REGION}",
+                            "AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}",
+                            "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}",
+                            "YOUTUBE_API_KEY=${YOUTUBE_API_KEY}",
+                            "YOUTUBE_API_URL=${YOUTUBE_API_URL}",
+                            "GEMINI_API_KEY=${GEMINI_API_KEY}",
+                            "EC2_SERVER_URL=${EC2_SERVER_URL}"
+                        ]) {
+                            sh """
+                            docker stop ${DOCKER_CONTAINER_NAME} || true
+                            docker rm ${DOCKER_CONTAINER_NAME} || true
+                            docker run -d -p ${DOCKER_PORT}:8080 --name ${DOCKER_CONTAINER_NAME} \
+                                -e JWT_SECRET_KEY=\$JWT_SECRET_KEY \
+                                -e DB_URL=\$DB_URL \
+                                -e DB_USERNAME=\$DB_USERNAME \
+                                -e DB_PASSWORD=\$DB_PASSWORD \
+                                -e MAIL_PASSWORD=\$MAIL_PASSWORD \
+                                -e GOOGLE_ACCESS_TOKEN_API=\$GOOGLE_ACCESS_TOKEN_API \
+                                -e GOOGLE_CLIENT_ID=\$GOOGLE_CLIENT_ID \
+                                -e GOOGLE_CLIENT_SECRET=\$GOOGLE_CLIENT_SECRET \
+                                -e GOOGLE_GET_USER_INFO_API=\$GOOGLE_GET_USER_INFO_API \
+                                -e GOOGLE_REDIRECT_URI=\$GOOGLE_REDIRECT_URI \
+                                -e GOOGLE_SCOPE=\$GOOGLE_SCOPE \
+                                -e KAKAO_ACCESS_TOKEN_API=\$KAKAO_ACCESS_TOKEN_API \
+                                -e KAKAO_CLIENT_ID=\$KAKAO_CLIENT_ID \
+                                -e KAKAO_CLIENT_SECRET=\$KAKAO_CLIENT_SECRET \
+                                -e KAKAO_GET_USER_INFO_API=\$KAKAO_GET_USER_INFO_API \
+                                -e KAKAO_REDIRECT_URI=\$KAKAO_REDIRECT_URI \
+                                -e NAVER_ACCESS_TOKEN_API=\$NAVER_ACCESS_TOKEN_API \
+                                -e NAVER_CLIENT_ID=\$NAVER_CLIENT_ID \
+                                -e NAVER_CLIENT_SECRET=\$NAVER_CLIENT_SECRET \
+                                -e NAVER_GET_USER_INFO_API=\$NAVER_GET_USER_INFO_API \
+                                -e NAVER_REDIRECT_URI=\$NAVER_REDIRECT_URI \
+                                -e AWS_ACCESS_KEY_ID=\$AWS_ACCESS_KEY_ID \
+                                -e AWS_REGION=\$AWS_REGION \
+                                -e AWS_S3_BUCKET_NAME=\$AWS_S3_BUCKET_NAME \
+                                -e AWS_SECRET_ACCESS_KEY=\$AWS_SECRET_ACCESS_KEY \
+                                -e YOUTUBE_API_KEY=\$YOUTUBE_API_KEY \
+                                -e YOUTUBE_API_URL=\$YOUTUBE_API_URL \
+                                -e GEMINI_API_KEY=\$GEMINI_API_KEY \
+                                -e EC2_SERVER_URL=\$EC2_SERVER_URL \
+                                ${DOCKER_IMAGE_NAME}:latest
+                            """
+                        }
                     }
                 }
             }
