@@ -36,9 +36,9 @@ import bubble2 from '@/assets/images/bubble2.png';
 import bubble3 from '@/assets/images/bubble3.png';
 import bubble4 from '@/assets/images/bubble4.png';
 import replyBar from '@/assets/icons/reply-bar.svg';
-import modalVoice from '@/assets/icons/modal-voice.svg';
 import soundWave from '@/assets/icons/sound-wave.svg';
-import speaker from '@/assets/icons/speaker.svg';
+import speaker from '@/assets/images/speaker.png';
+import pressedSpeaker from '@/assets/images/speaker-pressed.png';
 import sound from '@/assets/icons/sound.svg';
 
 export {
@@ -73,8 +73,8 @@ export {
   bubble3,
   bubble4,
   replyBar,
-  modalVoice,
   soundWave,
   speaker,
+  pressedSpeaker,
   sound,
 };
