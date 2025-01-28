@@ -1,3 +1,3 @@
-const ReplyList = () => {};
+const VoiceReplyList = () => {};
 
-export default ReplyList;
+export default VoiceReplyList;

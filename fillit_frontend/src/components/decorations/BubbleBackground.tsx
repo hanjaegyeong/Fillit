@@ -1,7 +1,4 @@
-import bubble1 from '/src/assets/images/bubble1.png';
-import bubble2 from '/src/assets/images/bubble2.png';
-import bubble3 from '/src/assets/images/bubble3.png';
-import replyBar from '/src/assets/icons/reply-bar.svg';
+import { bubble1, bubble2, bubble3, replyBar } from '@/assets/assets';
 
 export const BubbleBackground = () => {
   return (
