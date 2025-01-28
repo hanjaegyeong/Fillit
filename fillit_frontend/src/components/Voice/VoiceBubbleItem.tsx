@@ -2,10 +2,15 @@ import { profileBubble, playIcon, voiceWrapper } from '@/assets/assets';
 
 interface VoiceBubbleItemProps {
   name: string;
-  nickname: string;
+  personal_id: string;
+  onPlayClick: () => void;
 }
 
-const VoiceBubbleItem = ({ name, nickname }: VoiceBubbleItemProps) => {
+const VoiceBubbleItem = ({
+  name,
+  personal_id,
+  onPlayClick,
+}: VoiceBubbleItemProps) => {
   return (
     <div
       className="flex items-center bg-no-repeat bg-cover bg-center shadow-md rounded-xl p-4"
@@ -30,10 +35,13 @@ const VoiceBubbleItem = ({ name, nickname }: VoiceBubbleItemProps) => {
       {/* 텍스트 */}
       <div className="flex-1">
         <p className="font-bold text-lg truncate">{name}</p>
-        <p className="text-gray-500 text-sm truncate">{nickname}</p>
+        <p className="text-gray-500 text-sm truncate">@{personal_id}</p>
       </div>
       {/* 플레이버튼 */}
-      <button className="flex items-center justify-center w-10 h-10 bg-transparent rounded-full">
+      <button
+        onClick={onPlayClick}
+        className="flex items-center justify-center w-10 h-10 bg-transparent rounded-full"
+      >
         <img src={playIcon} alt="play" className="w-6 h-6" />
       </button>
     </div>

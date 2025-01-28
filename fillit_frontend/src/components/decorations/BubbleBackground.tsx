@@ -1,4 +1,4 @@
-import { bubble1, bubble2, bubble3, replyBar } from '@/assets/assets';
+import { bubble1, bubble2, bubble3 } from '@/assets/assets';
 
 export const BubbleBackground = () => {
   return (
@@ -22,11 +22,6 @@ export const BubbleBackground = () => {
         <h4 className="text-xl mb-2 absolute top-[50px] left-1/2 transform -translate-x-1/2 z-10 text-center w-full">
           Voice Replies
         </h4>
-        <img
-          src={replyBar}
-          alt="replyBar"
-          className="absolute w-[95%] h-auto top-[90px] left-1/2 transform -translate-x-1/2"
-        />
       </div>
     </div>
   );
