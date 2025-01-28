@@ -26,7 +26,9 @@ import KakaoIcon from '@/assets/icons/kakao.svg';
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
 import mic from '@/assets/icons/mic.svg';
+import micBig from '@/assets/icons/mic-big.svg';
 import playIcon from '@/assets/icons/play.svg';
+import playIcon2 from '@/assets/icons/play2.svg';
 import profileBubble from '@/assets/icons/profile-bubble.svg';
 import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
 import bubble1 from '@/assets/images/bubble1.png';
@@ -36,6 +38,8 @@ import bubble4 from '@/assets/images/bubble4.png';
 import replyBar from '@/assets/icons/reply-bar.svg';
 import modalVoice from '@/assets/icons/modal-voice.svg';
 import soundWave from '@/assets/icons/sound-wave.svg';
+import speaker from '@/assets/icons/speaker.svg';
+import sound from '@/assets/icons/sound.svg';
 
 export {
   HomeInactiveIcon,
@@ -59,7 +63,9 @@ export {
   KakaoIcon,
   micBack,
   mic,
+  micBig,
   playIcon,
+  playIcon2,
   profileBubble,
   voiceWrapper,
   bubble1,
@@ -69,4 +75,6 @@ export {
   replyBar,
   modalVoice,
   soundWave,
+  speaker,
+  sound,
 };
