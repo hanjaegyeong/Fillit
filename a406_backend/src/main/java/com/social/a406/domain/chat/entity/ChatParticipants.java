@@ -27,7 +27,8 @@ public class ChatParticipants {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long lastReadMessageId;
+    @Column(nullable = false)
+    private Long lastReadMessageId = 0L;
 
     @Builder
     public ChatParticipants(ChatRoom chatRoom, User user, Long lastReadMessageId) {
