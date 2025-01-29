@@ -40,8 +40,7 @@ const VoiceBubbleList = () => {
           {items.map((item) => (
             <VoiceBubbleItem
               key={item.personal_id}
-              name={item.name}
-              personal_id={item.personal_id}
+              {...item}
               onPlayClick={() => handlePlayClick(item.personal_id)}
             />
           ))}

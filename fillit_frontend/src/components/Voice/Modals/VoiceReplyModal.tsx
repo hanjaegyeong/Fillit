@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { sound, playIcon2, soundWave } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
+import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceReplyModalProps {
-  replyData:
+  voiceData:
     | {
         id: string;
         user_id: string;
@@ -15,24 +15,22 @@ interface VoiceReplyModalProps {
 }
 
 const VoiceReplyModal = ({
-  replyData,
+  voiceData,
   isOpen,
   onClose,
 }: VoiceReplyModalProps) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
+    isModalOpen: isOpen,
+  });
 
-  if (!replyData) return null;
-
-  const handlePlayClick = () => {
-    setIsPlaying(!isPlaying);
-  };
+  if (!voiceData) return null;
 
   return (
     <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-          29"
+          {currentDuration}"
         </div>
 
         {/* 프로필 이미지 */}
@@ -47,7 +45,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${replyData.user_id}`}
+            src={`https://i.pravatar.cc/150?u=${voiceData.user_id}`}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -59,7 +57,7 @@ const VoiceReplyModal = ({
 
         {/* 재생 버튼 */}
         <motion.button
-          onClick={handlePlayClick}
+          onClick={handlePlay}
           className="w-[46px] h-[47px]"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

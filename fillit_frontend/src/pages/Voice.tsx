@@ -11,13 +11,8 @@ const Voice = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
 
-  const handleMicClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  const handleMicClick = () => setIsModalOpen(true);
+  const handleModalClose = () => setIsModalOpen(false);
 
   const handleRecordComplete = () => {
     setHasRecordedVoice(true);

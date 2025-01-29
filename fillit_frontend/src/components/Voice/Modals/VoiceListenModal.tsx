@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { sound, playIcon2, soundWave, profileBubble } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import { useNavigate } from 'react-router-dom';
 import VoiceButton from '@/components/common/Button/VoiceButton';
+import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceListenModalProps {
   voiceData:
@@ -21,24 +21,19 @@ const VoiceListenModal = ({
   isOpen,
   onClose,
 }: VoiceListenModalProps) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
   const navigate = useNavigate();
+  const { isPlaying, isFinished, currentDuration, handlePlay } =
+    useVoiceControl({
+      isModalOpen: isOpen,
+    });
 
   if (!voiceData) return null;
 
   const handleClick = () => {
     if (isFinished) {
-      navigate('/voice/reply', {
-        state: { voiceData },
-      });
+      navigate('/voice/reply', { state: { voiceData } });
     } else {
-      setIsPlaying(!isPlaying);
-      // 임시로 3초 후에 재생 완료되도록 설정
-      setTimeout(() => {
-        setIsPlaying(false);
-        setIsFinished(true);
-      }, 3000);
+      handlePlay();
     }
   };
 
@@ -47,7 +42,7 @@ const VoiceListenModal = ({
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-          29"
+          {currentDuration}"
         </div>
 
         {/* 프로필 이미지 */}
