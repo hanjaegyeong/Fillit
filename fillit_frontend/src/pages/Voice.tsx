@@ -24,6 +24,11 @@ const Voice = () => {
     setIsModalOpen(false);
   };
 
+  const handleDeleteComplete = () => {
+    setHasRecordedVoice(false);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Header left="home" right="notification" />
@@ -52,7 +57,11 @@ const Voice = () => {
             </div>
           </button>
           {hasRecordedVoice ? (
-            <VoiceManageModal isOpen={isModalOpen} onClose={handleModalClose} />
+            <VoiceManageModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              onDeleteComplete={handleDeleteComplete}
+            />
           ) : (
             <VoiceRecordModal
               isOpen={isModalOpen}

@@ -47,53 +47,57 @@ const VoiceRecordModal = ({
 
   return (
     <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
-      {/* Duration */}
-      <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-        {duration.toString().padStart(2, '0')}"
-      </div>
+      <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
+        {/* Duration */}
+        <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
+          {duration}"
+        </div>
 
-      {/* 마이크 이미지 */}
-      <div className="relative">
-        <motion.img
-          src={isRecording ? pressedMic : micBig}
-          alt="microphone"
-          className="w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] md:w-[220px] md:h-[220px] cursor-pointer"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          onClick={handleMicClick}
-        />
-      </div>
+        {/* 마이크 이미지 */}
+        <div className="relative">
+          <motion.img
+            src={isRecording ? pressedMic : micBig}
+            alt="microphone"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-[120px] h-[160px] sm:w-[120px] sm:h-[160px] md:w-[140px] md:h-[180px] cursor-pointer"
+            onClick={handleMicClick}
+          />
+        </div>
 
-      {/* Sound Wave 또는 버튼들 */}
-      {isRecordingComplete ? (
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="flex gap-[85px]">
-            <VoiceButton
-              onClick={handleReRecord}
-              text="Re-Record"
-              color="#D68DE1"
+        {/* Sound Wave 또는 버튼들 */}
+        <div className="mt-4">
+          {isRecordingComplete ? (
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <div className="flex gap-[85px]">
+                <VoiceButton
+                  onClick={handleReRecord}
+                  text="Re-Record"
+                  color="#D68DE1"
+                />
+                <VoiceButton onClick={handleSubmit} text="Submit" />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.img
+              src={soundWave}
+              alt="sound wave"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isRecording ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="w-[121px] h-7"
             />
-            <VoiceButton onClick={handleSubmit} text="Submit" />
-          </div>
-        </motion.div>
-      ) : (
-        <motion.img
-          src={soundWave}
-          alt="sound wave"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isRecording ? 1 : 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="w-[121px] h-7"
-        />
-      )}
+          )}
+        </div>
+      </div>
     </VoiceBaseModal>
   );
 };
