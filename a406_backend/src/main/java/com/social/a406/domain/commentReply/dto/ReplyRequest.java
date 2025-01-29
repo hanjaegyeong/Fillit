@@ -6,5 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class ReplyRequest {
+//    private Comment comment;
     private String content;
 }
