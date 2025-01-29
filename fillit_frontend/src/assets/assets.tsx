@@ -41,6 +41,7 @@ import soundWave from '@/assets/icons/sound-wave.svg';
 import speaker from '@/assets/images/speaker.png';
 import pressedSpeaker from '@/assets/images/speaker-pressed.png';
 import sound from '@/assets/icons/sound.svg';
+import caution from '@/assets/icons/caution.svg';
 
 export {
   HomeInactiveIcon,
@@ -79,4 +80,5 @@ export {
   speaker,
   pressedSpeaker,
   sound,
+  caution,
 };
