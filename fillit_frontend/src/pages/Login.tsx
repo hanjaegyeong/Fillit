@@ -15,7 +15,7 @@ const Login = () => {
         </a>
       </div>
       <BasicButton />
-      <a className="text-xs font-light" href="/Find">
+      <a className="text-xs font-light" href="/find">
         Find ID / Password
       </a>
       <SocialLogin />
