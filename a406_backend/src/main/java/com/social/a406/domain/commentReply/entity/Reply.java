@@ -3,6 +3,8 @@ package com.social.a406.domain.commentReply.entity;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,12 +16,14 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-public class CommentReply {
+public class Reply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reply_id;
+    private Long replyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
@@ -40,6 +44,10 @@ public class CommentReply {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public void updateReplyContent (String content) {
+        this.content = content;
+    }
 
 
 }
