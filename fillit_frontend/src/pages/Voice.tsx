@@ -1,28 +1,72 @@
 import Header from '@/components/common/Header';
 import { BubbleBackground } from '../components/decorations/BubbleBackground';
 import VoiceBubbleList from '../components/Voice/VoiceBubbleList';
-import MicBack from '../assets/icons/mic-back.svg';
-import Mic from '../assets/icons/mic.svg';
+import { micBack, mic } from '../assets/assets';
+import VoiceReplyList from '@/components/Voice/VoiceReplyList';
+import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
+import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
+import { useState } from 'react';
 
 const Voice = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
+
+  const handleMicClick = () => setIsModalOpen(true);
+  const handleModalClose = () => setIsModalOpen(false);
+
+  const handleRecordComplete = () => {
+    setHasRecordedVoice(true);
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteComplete = () => {
+    setHasRecordedVoice(false);
+    setIsModalOpen(false);
+  };
+
   return (
-    <>
+    <div className="h-screen flex flex-col overflow-hidden">
       <Header left="home" right="notification" />
-      <div className="relative w-full h-screen overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <BubbleBackground />
         <VoiceBubbleList />
+        <VoiceReplyList />
         <div className="fixed bottom-28 right-4 z-50">
-          <button className="relative w-16 h-16">
-            <div className="absolute inset-0 w-20 h-20 -translate-x-2 -translate-y-2">
-              <img src={MicBack} alt="mic-back" className="w-full h-full" />
+          <button
+            onClick={handleMicClick}
+            className="relative w-[72px] h-[72px]"
+          >
+            <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
+              <img
+                src={micBack}
+                alt="mic-back"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <img src={Mic} alt="mic" className="w-16 h-16" />
+              <img
+                src={mic}
+                alt="mic"
+                className="w-[72px] h-[72px] object-contain"
+              />
             </div>
           </button>
+          {hasRecordedVoice ? (
+            <VoiceManageModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              onDeleteComplete={handleDeleteComplete}
+            />
+          ) : (
+            <VoiceRecordModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              onRecordComplete={handleRecordComplete}
+            />
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
