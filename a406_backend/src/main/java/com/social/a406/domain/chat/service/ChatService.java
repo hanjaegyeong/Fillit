@@ -123,7 +123,7 @@ public class ChatService {
             ChatParticipants participant = ChatParticipants.builder()
                     .chatRoom(chatRoom)
                     .user(user)
-                    .lastReadMessageId(null)
+                    .lastReadMessageId(0L)
                     .build();
 
             chatParticipantsRepository.save(participant); // 매핑관계 저장
@@ -134,7 +134,7 @@ public class ChatService {
     public List<ChatRoomResponse> getChatRoomsForUser(String userId) {
         List<ChatParticipants> participants = chatParticipantsRepository.findByChatParticipantsId_UserId(userId);
         return participants.stream().map(participant -> {
-            ChatRoom chatRoom = participant.getChatRoom();
+            ChatRoom chatRoom = participant.getChatRoom(); // 얘도 위험함!!
             Long lastReadMessageId = participant.getLastReadMessageId();
             
             // 마지막으로 읽은 메세지 Id로 안읽은 메세지 수 찾기
@@ -152,6 +152,9 @@ public class ChatService {
                     .otherUser(otherUserName)
                     .unReadMessageCount(unreadMessagesCount.intValue())
                     .build();
+
+            System.out.println("unReadMsg: "+unreadMessagesCount);
+            System.out.println("lastReadMsg: "+lastReadMessageId);
 
             return response;
         }).collect(Collectors.toList());
