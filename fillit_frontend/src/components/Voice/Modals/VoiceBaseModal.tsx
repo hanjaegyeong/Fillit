@@ -6,15 +6,9 @@ interface BaseModalProps {
   children: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
-  contentGap?: string;
 }
 
-const VoiceBaseModal = ({
-  children,
-  isOpen,
-  onClose,
-  contentGap = 'gap-8',
-}: BaseModalProps) => {
+const VoiceBaseModal = ({ children, isOpen, onClose }: BaseModalProps) => {
   const [isVisibleState, setIsVisibleState] = useState(true);
 
   useEffect(() => {
@@ -63,7 +57,7 @@ const VoiceBaseModal = ({
 
             {/* 컨텐츠 영역 */}
             <motion.div
-              className={`relative flex flex-col items-center ${contentGap} translate-y-[40%] z-10`}
+              className="relative flex flex-col items-center translate-y-[40%] z-10"
               onClick={(e) => e.stopPropagation()}
               initial={{ y: '60%', scale: 0.9, opacity: 0 }}
               animate={{ y: '40%', scale: 1, opacity: 1 }}
