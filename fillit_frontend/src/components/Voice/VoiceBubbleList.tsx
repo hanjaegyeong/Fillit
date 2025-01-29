@@ -36,7 +36,7 @@ const VoiceBubbleList = () => {
     <>
       <div className="absolute top-[200px] left-1/2 -translate-x-1/2 w-[88%] max-w-[346px]">
         <h4 className="text-xl mb-4 text-center">Voice Bubbles</h4>
-        <div className="w-full overflow-y-auto max-h-[calc(100vh-400px)]">
+        <div className="w-full overflow-y-auto max-h-[calc(100vh-400px)] hide-scrollbar">
           {items.map((item) => (
             <VoiceBubbleItem
               key={item.personal_id}
