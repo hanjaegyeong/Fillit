@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { micBig, pressedMic, soundWave } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
+import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceRecordModalProps {
   isOpen: boolean;
@@ -15,32 +15,30 @@ const VoiceRecordModal = ({
   onClose,
   onRecordComplete,
 }: VoiceRecordModalProps) => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [isRecordingComplete, setIsRecordingComplete] = useState(false);
-  const [duration, setDuration] = useState(0);
+  const {
+    isPlaying: isRecording,
+    isFinished: isRecordingComplete,
+    currentDuration,
+    handleRecord,
+    reset,
+  } = useVoiceControl({
+    isModalOpen: isOpen,
+    onComplete: () => {
+      // 녹음 완료 후 처리
+    },
+  });
 
   const handleMicClick = () => {
     if (!isRecording && !isRecordingComplete) {
-      setIsRecording(true);
-      console.log('Recording started...');
-
-      // 임시로 3초 후에 녹음 종료
-      setTimeout(() => {
-        setIsRecording(false);
-        setIsRecordingComplete(true);
-        setDuration(29);
-        console.log('Recording completed');
-      }, 3000);
+      handleRecord();
     }
   };
 
   const handleReRecord = () => {
-    setIsRecordingComplete(false);
-    setDuration(0);
+    reset();
   };
 
   const handleSubmit = () => {
-    console.log('Voice submitted');
     onRecordComplete();
     onClose();
   };
@@ -50,7 +48,7 @@ const VoiceRecordModal = ({
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* Duration */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-          {duration}"
+          {currentDuration}"
         </div>
 
         {/* 마이크 이미지 */}
