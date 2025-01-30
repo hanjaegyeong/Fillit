@@ -7,19 +7,19 @@ const SocialLoginItems = [
     socialId: 'google',
     icon: GoogleIcon,
     alt: 'google icon',
-    to: '/',
+    to: '/socialsignup',
   },
   {
     socialId: 'kakao',
     icon: KakaoIcon,
     alt: 'kakao icon',
-    to: '/',
+    to: '/socialsignup',
   },
   {
     socialId: 'naver',
     icon: NaverIcon,
     alt: 'naver icon',
-    to: '/',
+    to: '/socialsignup',
   },
 ];
 
