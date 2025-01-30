@@ -3,23 +3,42 @@ package com.social.a406.domain.board.service;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
+import com.social.a406.domain.board.entity.BoardImage;
+import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardImageRepository boardImageRepository;
     private final UserRepository userRepository;
+    private final S3Client s3Client;
+
+    // AWS S3 환경 변수
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
     // 게시글 생성
     @Transactional
@@ -136,10 +155,125 @@ public class BoardService {
                 .likeCount(board.getLikeCount())
                 .x(board.getX())
                 .y(board.getY())
+                .z(board.getZ())
                 .keyword(board.getKeyword())
                 .pageNumber(board.getPageNumber())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
+    }
+
+    public List<String> saveBoardImage(Long boardId, List<MultipartFile> files) {
+        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new IllegalArgumentException("Not found board to save Image")
+        );
+        List<String> imageUrls = new ArrayList<>();
+        for(MultipartFile file : files){
+            String imageUrl = saveBoardImageAtS3(boardId, file);
+            BoardImage boardImage = BoardImage.builder()
+                    .board(board)
+                    .imageUrl(imageUrl)
+                    .build();
+            boardImageRepository.save(boardImage);
+            imageUrls.add(imageUrl);
+        }
+        return imageUrls;
+    }
+
+    //이미지 저장
+    @Transactional
+    public String saveBoardImageAtS3(Long boardId, MultipartFile file) {
+        try{
+            String fileName = "board/" + boardId + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+            // 이미지의 MIME 타입 추출
+            String contentType = getContentType(file.getOriginalFilename());
+
+            // S3 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(contentType)
+                    .contentDisposition("inline")
+                    .build();
+
+            s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(
+                    file.getInputStream(), file.getSize()));
+
+            String fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
+
+            return fileUrl;
+        } catch(IOException e){
+            throw new RuntimeException("Failed to store the file", e);
+        }
+    }
+    // 파일 확장자에 맞는 MIME 타입을 반환하는 메서드
+    private String getContentType(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+
+        switch (extension) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "gif":
+                return "image/gif";
+            case "bmp":
+                return "image/bmp";
+            case "webp":
+                return "image/webp";
+            default:
+                return "application/octet-stream"; // 기본 값
+        }
+    }
+
+    // 게시글 이미지 가져오기
+    @Transactional
+    public List<String> getBoardImages(Long boardId) {
+        return boardImageRepository.findAllByBoardId(boardId);
+    }
+
+    @Transactional
+    public List<BoardResponse> getBoardByUser(String personalId) {
+        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
+        return boards.stream()
+                .map(this::mapToResponseDto)  // Board -> BoardResponse로 변환
+                .toList(); // 리스트로 수집
+    }
+
+    //게시글 삭제
+    @Transactional
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+                () -> new IllegalArgumentException("Not found board")
+        );
+        try {
+            deleteBoardImage(boardId);  // 이미지 삭제
+        } catch (Exception e) {
+            // 이미지 삭제 실패 처리 (예: 로그 기록)
+            throw new RuntimeException("이미지 삭제 실패: " + e.getMessage(), e);  // 필요시 예외를 다시 던지기
+        }
+        boardRepository.delete(board);
+    }
+
+    // 게시글 이미지 삭제
+    public void deleteBoardImage(Long boardId) {
+        List<String> imageUrls = boardImageRepository.findAllByBoardId(boardId);
+
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            for (String imageUrl : imageUrls) {
+                // S3 버킷 내에서 삭제하려는 파일의 키(파일 경로) 추출
+                String fileKey = imageUrl.substring(imageUrl.indexOf("board/" + boardId + "/"));  // 'board/'부터 시작하는 경로 추출
+
+                // S3에서 해당 파일 삭제
+                s3Client.deleteObject(DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileKey)
+                        .build());
+            }
+            boardImageRepository.deleteByBoardId(boardId);
+        }
     }
 }

@@ -48,6 +48,7 @@ public class AIFacadeService {
                 .content(content)
                 .x(generateRandomDouble(0, 10)) // 좌표 0 ~ 10 사이 랜덤값
                 .y(generateRandomDouble(0, 10))
+                .z(generateRandomInt(0,10))
                 .pageNumber(generateRandomInt(0, 5)) // 페이지넘버 0 ~ 5 사이 랜덤값
                 .keyword(generateKeyword(content)) // 키워드는 게시글 맨 앞 5글자까지
                 .build();
