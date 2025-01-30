@@ -30,9 +30,6 @@ public class BoardImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
-    private boolean isDeleted = false;
-
     @Builder
     private BoardImage(
             Board board,
