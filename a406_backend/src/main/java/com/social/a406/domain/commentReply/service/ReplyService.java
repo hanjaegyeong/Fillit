@@ -1,6 +1,5 @@
 package com.social.a406.domain.commentReply.service;
 
-import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.repository.CommentRepository;
 import com.social.a406.domain.commentReply.dto.ReplyRequest;
@@ -8,10 +7,11 @@ import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.commentReply.repository.ReplyRepository;
 import com.social.a406.domain.user.entity.User;
-import org.springframework.transaction.annotation.Transactional;
+import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
-    private ReplyRepository replyRepository;
-    private CommentRepository commentRepository;
-    private ChatService userRepository;
+    private final ReplyRepository replyRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     // 대댓글 저장
     @Transactional
@@ -31,6 +31,8 @@ public class ReplyService {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with commentId: " + commentId));
+
+        System.out.println(comment);
 
         Reply reply = Reply.builder()
                 .comment(comment)
