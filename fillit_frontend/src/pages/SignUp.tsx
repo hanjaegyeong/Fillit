@@ -54,7 +54,7 @@ const steps = [
   },
   {
     message1: 'Yeah, that’s it, for sure! 😎',
-    message2: 'Do you have a pic of yourself?" 🤔📷',
+    message2: 'Do you have a pic of yourself? 🤔📷',
     message3: '',
     placeholder: '',
     rule: '',
@@ -62,7 +62,7 @@ const steps = [
   },
   {
     message1: 'Oh, then drop your',
-    message2: 'most slay pic!" 😎📸',
+    message2: 'most slay pic! 😎📸',
     message3: '',
     placeholder: '',
     rule: '',
@@ -78,7 +78,7 @@ const steps = [
   },
   {
     message1: 'So, like, what kinda vibe',
-    message2: 'are you giving off?" 🤔✨',
+    message2: 'are you giving off? 🤔✨',
     message3: '',
     placeholder: 'Introduce yourself',
     rule: '',
