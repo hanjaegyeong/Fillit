@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     //comment 쓰는 버전
@@ -23,4 +24,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE b.id NOT IN (SELECT c.board.id FROM Comment c WHERE c.user.personalId = :personalId) " +
             "AND b.user.personalId != :personalId")
     List<Long> findAvailableBoardIdsExcludingUser(@Param("personalId") String personalId);
+
+    Optional<Board> findByBoardId(Long boardId);
+
+    @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
+    List<Board> findAllByPersonalId(@Param("personalId") String personalId);
 }
