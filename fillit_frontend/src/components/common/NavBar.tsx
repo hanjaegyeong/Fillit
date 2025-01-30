@@ -53,7 +53,7 @@ const navItems = [
 
 const NavBar = () => {
   const { pathname } = useLocation();
-  const excludedPaths = ['/login', '/signup'];
+  const excludedPaths = ['/login', '/signup', '/socialsignup'];
 
   return excludedPaths.includes(pathname) ? (
     <></>

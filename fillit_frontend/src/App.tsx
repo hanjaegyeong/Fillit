@@ -5,6 +5,7 @@ import Message from '@/pages/Message';
 import Profile from '@/pages/Profile';
 import Search from '@/pages/Search';
 import SignUp from './pages/SignUp';
+import Social from '@/pages/SocialSignUp';
 import Voice from '@/pages/Voice';
 import Notification from '@/pages/Notification';
 import NavBar from '@/components/common/NavBar';
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/search" element={<Search />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/socialsignup" element={<Social />} />
         <Route path="/voice" element={<Voice />} />
         <Route path="/notification" element={<Notification />} />
       </Routes>
