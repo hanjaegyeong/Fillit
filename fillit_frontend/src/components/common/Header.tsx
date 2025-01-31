@@ -6,7 +6,7 @@ import MenuTabButton from './Button/MenuTabButton';
 import RegistButton from './Button/RegistButton';
 
 interface HeaderProps {
-  left: 'back' | 'home';
+  left?: 'back' | 'home';
   profileImage?: string;
   text?: string;
   isTitle?: boolean;
