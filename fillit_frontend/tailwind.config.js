@@ -5,6 +5,11 @@ export default {
       fontFamily: {
         kanit: ['Kanit', 'sans-serif'],
       },
+      fontSize: {
+        s: '13px',
+        xxs: '11px',
+        small: '10px',
+      },
       backgroundImage: {
         'home-bg': "url('/images/bg-image.png')",
       },

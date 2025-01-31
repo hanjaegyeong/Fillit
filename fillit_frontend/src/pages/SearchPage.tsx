@@ -25,7 +25,7 @@ const mockPost: Post[] = [
   },
 ];
 
-const Search = () => {
+const SearchPage = () => {
   const [searchResults, setSearchResults] = useState(mockPost);
 
   const handleSearch = (term: string) => {
@@ -53,4 +53,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchPage;

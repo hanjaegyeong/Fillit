@@ -1,5 +1,5 @@
 import AiFil from '@/assets/images/ai-fil.png';
-import SlideUpModal from '../Modals/SlideUpModal';
+import SlideUpModal from '../Modal/SlideUpModal';
 import { useState } from 'react';
 
 const AiFilButton = () => {
