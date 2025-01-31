@@ -10,7 +10,7 @@ const CommentBadge = ({ commentCount, size = 'large' }: CommentBadgeProps) => {
     <div className="flex items-center gap-1">
       <img
         src={CommentIcon}
-        alt="like icon"
+        alt="comment icon"
         className={size === 'large' ? 'h-5 w-5' : 'h-3.5 w-3.5'}
       />
       <div className="text-s">{commentCount}</div>

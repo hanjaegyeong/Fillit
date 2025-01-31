@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { speaker, pressedSpeaker, caution } from '@/assets/assets';
-import VoiceBaseModal from './VoiceBaseModal';
+import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 
 interface VoiceManageModalProps {
