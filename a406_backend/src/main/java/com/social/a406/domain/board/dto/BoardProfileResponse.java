@@ -9,7 +9,7 @@ public class BoardProfileResponse {
     private Long BoardId;
     private Double x;
     private Double y;
-    private Integer z;
+    private Double z;
     private String keyword;
     private Integer pageNumber;
     private String imageUrl;
