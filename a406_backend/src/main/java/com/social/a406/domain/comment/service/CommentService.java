@@ -77,6 +77,11 @@ public class CommentService {
     }
 
     @Transactional
+    public Long getCommentCountByBoard(Long boardId){
+        return commentRepository.countByBoard_Id(boardId);
+    }
+
+    @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
@@ -105,11 +110,6 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
-    }
-
-    @Transactional
-    public void deleteCommentsByBoardId(Long BoardId){
-        commentRepository.deleteAllByBoard_Id(BoardId);
     }
 
     private CommentResponse mapToResponse(Comment comment) {
