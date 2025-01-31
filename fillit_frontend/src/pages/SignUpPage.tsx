@@ -103,7 +103,7 @@ const steps = [
   },
 ];
 
-const SignUp = () => {
+const SignUpPage = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
@@ -141,7 +141,10 @@ const SignUp = () => {
           <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
           <div className="flex flex-col items-center">
             {typedMessages.map((msg, index) => (
-              <p key={index} className="inline-block text-center text-white bg-black px-2">
+              <p
+                key={index}
+                className="inline-block text-center text-white bg-black px-2"
+              >
                 {msg}
               </p>
             ))}
@@ -183,4 +186,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpPage;

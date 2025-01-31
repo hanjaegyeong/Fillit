@@ -3,7 +3,7 @@ import BasicInput from '@/components/common/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 import SocialLogin from '@/components/common/SocialLogin';
 
-const Login = () => {
+const LoginPage = () => {
   return (
     <div className="flex flex-col gap-2 justify-center items-center h-screen">
       <img src={loginImg} alt="login-img" />
@@ -23,4 +23,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
