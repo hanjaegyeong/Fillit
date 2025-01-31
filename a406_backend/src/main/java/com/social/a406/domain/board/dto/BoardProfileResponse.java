@@ -1,19 +1,16 @@
 package com.social.a406.domain.board.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-import java.util.List;
-
-@Data
+@Getter
 @Builder
-public class BoardRequest {
-    private String content;
-    
+public class BoardProfileResponse {
+    private Long BoardId;
     private Double x;
     private Double y;
-    private Double z;
+    private Integer z;
     private String keyword;
     private Integer pageNumber;
-    private List<String> interests;
+    private String imageUrl;
 }
