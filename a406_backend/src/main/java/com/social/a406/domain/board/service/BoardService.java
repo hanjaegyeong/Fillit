@@ -318,25 +318,12 @@ public class BoardService {
         }
     }
 
-    public List<BoardProfileResponse> getProfileBoardByUser(String personalId) {
-        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
-        List<BoardProfileResponse> responses = boards.stream()
-                .map(this::mapBoardProfileResponseDto)
-                .toList();
-                return responses;
-    }
-
-    public BoardProfileResponse mapBoardProfileResponseDto(Board board){
-        String imageUrl = boardImageRepository.findAllByBoardId(board.getId()) != null
-                ? boardImageRepository.findAllByBoardId(board.getId()).get(0) : null;
-        return BoardProfileResponse.builder()
-                .BoardId(board.getId())
-                .x(board.getX())
-                .y(board.getY())
-                .z(board.getZ())
-                .keyword(board.getKeyword())
-                .pageNumber(board.getPageNumber())
-                .imageUrl(imageUrl)
-                .build();
+    /**
+     * 게시글 ID로 작성자의 personalId 조회
+     */
+    public String getBoardAuthorPersonalIdById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(board -> board.getUser().getPersonalId())
+                .orElseThrow(() -> new IllegalArgumentException("Not found board: " + boardId));
     }
 }
