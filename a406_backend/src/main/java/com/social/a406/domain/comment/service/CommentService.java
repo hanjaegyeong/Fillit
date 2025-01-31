@@ -6,6 +6,7 @@ import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.repository.CommentRepository;
+import com.social.a406.domain.commentReply.repository.ReplyRepository;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
@@ -26,6 +27,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public CommentResponse addComment(Long boardId, CommentRequest commentRequest, UserDetails userDetails) {
@@ -77,6 +79,11 @@ public class CommentService {
     }
 
     @Transactional
+    public Long getCommentCountByBoard(Long boardId){
+        return commentRepository.countByBoard_Id(boardId);
+    }
+
+    @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
@@ -113,6 +120,7 @@ public class CommentService {
                 .content(comment.getContent())
                 .personalId(comment.getUser().getPersonalId())
                 .likeCount(comment.getLikeCount())
+                .commentReplyCount(replyRepository.countByComment_Id(comment.getId()))
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .build();

@@ -183,6 +183,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User or AI not found for personalId: " + personalId));
     }
 
+    // AI 유저 반환
     public String getRandomUserWithMainPrompt() {
         // 한 개의 결과만 가져오기
         Pageable pageable = PageRequest.of(0, 1);
