@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { sound, playIcon2, soundWave } from '@/assets/assets';
-import VoiceBaseModal from './VoiceBaseModal';
+import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceReplyModalProps {

@@ -28,12 +28,12 @@ const InterestTags = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 mt-4 w-full max-w-[320px] mx-auto">
+    <div className="flex flex-wrap justify-center gap-2 mt-4 w-full max-w-[390px] mx-auto">
       {Tags.map((tag) => (
         <button
           key={tag.id}
           onClick={() => toggleTag(tag.id)}
-          className={`px-4 py-2 rounded-full border text-sm transition-all ${
+          className={`px-4 py-2 rounded-full border text-xl transition-all ${
             selectedTags.includes(tag.id)
               ? 'bg-white text-black font-bold shadow-md'
               : 'bg-transparent border-gray-400 text-gray-600'

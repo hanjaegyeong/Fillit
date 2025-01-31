@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import VoiceReplyItem, { VoiceReplyData } from './VoiceReplyItem';
-import VoiceReplyModal from './Modals/VoiceReplyModal';
+import VoiceReplyItem, {
+  VoiceReplyData,
+} from '@/components/Voice/VoiceReplyItem';
+import VoiceReplyModal from '@/components/Voice/Modals/VoiceReplyModal';
 import { replyBar } from '@/assets/assets';
 
 const VoiceReplyList = () => {
