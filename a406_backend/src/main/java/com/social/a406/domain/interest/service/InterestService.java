@@ -50,7 +50,7 @@ public class InterestService {
 
     public List<InterestResponse> getAllInterests() {
         return interestRepository.findAll().stream()
-                .map(interest -> new InterestResponse(interest.getInterestId(), interest.getContent()))
+                .map(interest -> new InterestResponse(interest.getId(), interest.getContent()))
                 .collect(Collectors.toList());
     }
 
@@ -63,7 +63,7 @@ public class InterestService {
         // UserInterest -> UserInterestResponse로 변환
         return userInterests.stream()
                 .map(userInterest -> new InterestResponse(
-                        userInterest.getInterest().getInterestId(),
+                        userInterest.getInterest().getId(),
                         userInterest.getInterest().getContent()
                 ))
                 .collect(Collectors.toList());

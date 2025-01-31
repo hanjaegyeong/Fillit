@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VoiceRepository extends JpaRepository<Voice, Long> {
-    Optional<Voice> findByVoiceId(Long voiceId);
     Optional<Voice> findByUserPersonalId(String personalId);
     List<Voice> findAllByUser_IdInOrderByCreatedAtDesc(List<String> userIds);
 }

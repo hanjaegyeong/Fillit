@@ -12,7 +12,7 @@ public class BoardRequest {
     
     private Double x;
     private Double y;
-    private Integer z = 0;
+    private Double z;
     private String keyword;
     private Integer pageNumber;
     private List<String> interests;

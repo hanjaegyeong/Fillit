@@ -18,7 +18,7 @@ public class Voice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long voiceId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

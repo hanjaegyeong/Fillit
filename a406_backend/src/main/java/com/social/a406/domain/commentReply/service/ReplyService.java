@@ -85,7 +85,7 @@ public class ReplyService {
 
     public ReplyResponse mapToResponse(Reply reply){
         return ReplyResponse.builder()
-                .replyId(reply.getReplyId())
+                .replyId(reply.getId())
                 .personalId(reply.getUser().getPersonalId())
                 .content(reply.getContent())
                 .likeCount(reply.getLikeCount())
