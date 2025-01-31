@@ -1,6 +1,6 @@
 import Header from '@/components/common/Header';
 
-const Message = () => {
+const MessagePage = () => {
   return (
     <>
       <Header left="home" right="notification" />
@@ -9,4 +9,4 @@ const Message = () => {
   );
 };
 
-export default Message;
+export default MessagePage;
