@@ -12,6 +12,7 @@ public class BoardResponse {
     private Long boardId;
     private String content;
     private String personalId;
+    private String profileImage;
     private Long likeCount;
     private Long commentCount;
 
