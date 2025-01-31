@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Random;
 
 @RestController
@@ -21,72 +20,62 @@ public class AiController {
     private final UserService userService;
     private final BoardService boardService;
 
-    // 일반 AI 게시글 생성
-    @PostMapping("/generate/board/normal")
-    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId,
-                                                       @RequestBody Map<String, String> body) {
-        String prompt = body.getOrDefault("prompt", "");
-        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId, prompt);
+    /**
+     * AI가 일반 게시글 생성
+     */
+    @GetMapping("/generate/board")
+    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId) {
+        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId);
         return ResponseEntity.status(201).body(response);
     }
 
-    // 특정 게시글에 AI 댓글 생성
+    /**
+     * AI가 특정 게시글에 댓글 생성
+     */
     @GetMapping("/generate/comment")
     public ResponseEntity<CommentResponse> generateComment(
             @RequestParam Long boardId,
-            @RequestParam String personalId // 댓글 작성 AI
-            ) {
-
+            @RequestParam String personalId
+    ) {
         CommentResponse response = aiFacadeService.generateAndSaveComment(boardId, personalId);
-
         return ResponseEntity.status(201).body(response);
     }
 
-    // 랜덤 게시글에 랜덤 AI 댓글 생성
+    /**
+     * 랜덤 게시글에 랜덤 AI 댓글 생성
+     */
     @GetMapping("/generate/random/comment")
     public ResponseEntity<CommentResponse> generateRandomAiComment() {
         String randomPersonalId = userService.getRandomUserWithMainPrompt();
-
-        // 본인 댓글 단 게시글 / 본인 게시글 제외한 랜덤 게시글 ID 가져오기
         Long randomBoardId = boardService.getRandomAvailableBoardIdExcludingUser(randomPersonalId);
+
         if (randomBoardId == null) {
-            return ResponseEntity.status(404).body(null); // 사용할 수 있는 게시글이 없는 경우
+            return ResponseEntity.status(404).build();
         }
 
         CommentResponse response = aiFacadeService.generateAndSaveComment(randomBoardId, randomPersonalId);
-
         return ResponseEntity.status(201).body(response);
     }
 
-    // 레딧 AI 게시글 생성
-    @GetMapping("/generate/board/reddit")
-    public ResponseEntity<BoardResponse> generateBoardFromSubredditHotPost(@RequestParam String personalId) {
-        BoardResponse response = aiFacadeService.generateBoardUsingSubredditHotPost(personalId);
-
-        return ResponseEntity.status(201).body(response);
-    }
-
-    // 유튜브 AI 게시글 생성
-    @GetMapping("/generate/board/youtube")
-    public ResponseEntity<BoardResponse> generateBoardFromYoutube(@RequestParam String personalId){
-        BoardResponse response = aiFacadeService.generateBoardUsingYoutube(personalId);
-
-        return ResponseEntity.status(201).body(response);
-    }
-
-    // AI 기반 게시글 생성 컨트롤러
+    /**
+     * AI가 랜덤 게시글 생성 (일반, 서브레딧, 유튜브 기반)
+     */
     @GetMapping("/generate/random/board")
-    public ResponseEntity<BoardResponse> generateBoard() {
+    public ResponseEntity<BoardResponse> generateRandomBoard() {
         String randomPersonalId = userService.getRandomUserWithMainPrompt();
-
-        // 랜덤으로 subreddit 또는 youtube 중 선택
-        boolean useSubreddit = new Random().nextBoolean();
+        int choice = new Random().nextInt(3); // 0, 1, 2 중 랜덤 선택
 
         BoardResponse response;
-        if (useSubreddit) {
-            response = aiFacadeService.generateBoardUsingSubredditHotPost(randomPersonalId);
-        } else {
-            response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
+        switch (choice) {
+            case 0:
+                response = aiFacadeService.generateBoardUsingSubreddit(randomPersonalId);
+                break;
+            case 1:
+                response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
+                break;
+            default:
+                response = aiFacadeService.generateAndSaveBoard(randomPersonalId);
+                break;
         }
 
         return ResponseEntity.status(201).body(response);

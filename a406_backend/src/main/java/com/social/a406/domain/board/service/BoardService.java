@@ -277,4 +277,13 @@ public class BoardService {
             boardImageRepository.deleteByBoardId(boardId);
         }
     }
+
+    /**
+     * 게시글 ID로 작성자의 personalId 조회
+     */
+    public String getBoardAuthorPersonalIdById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(board -> board.getUser().getPersonalId())
+                .orElseThrow(() -> new IllegalArgumentException("Not found board: " + boardId));
+    }
 }
