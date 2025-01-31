@@ -42,7 +42,7 @@ public class Board {
 
     // z좌표
     @Column(nullable = false)
-    private Integer z;
+    private Double z;
 
     // 키워드 (최대 8자 제한)
     @Column(length = 8)
@@ -61,13 +61,13 @@ public class Board {
     private boolean isDeleted;
 
     @Builder
-    public Board(String content, User user, Long likeCount, Double x, Double y, Integer z, String keyword, Integer pageNumber) {
+    public Board(String content, User user, Long likeCount, Double x, Double y, Double z, String keyword, Integer pageNumber) {
         this.content = content;
         this.user = user;
         this.likeCount = likeCount == null ? 0L : likeCount;
         this.x = x;
         this.y = y;
-        this.z = (z != null) ? z : 0;
+        this.z = z;
         this.keyword = keyword;
         this.pageNumber = pageNumber;
     }
