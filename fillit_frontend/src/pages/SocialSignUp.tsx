@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useTypingEffect from '@/hooks/useTypingEffect';
 
 import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
 import FilTakeOn from '@/assets/images/fil-takeon.png';
@@ -87,17 +88,19 @@ const SocialSignUp = () => {
     steps[step].message3,
   ];
 
+const typedMessages = useTypingEffect(messages, step, 30);
+
   return (
     <>
-      <header>
-        <img src={FillitLongLog} className="pt-4 pl-4" />
+      <header className='absolute top-0 left-0 w-full py-4 px-6 z-10'>
+        <img src={FillitLongLog} className="h-10" />
       </header>
-      <div className="flex flex-col justify-center items-center ">
-        <div className="flex flex-col items-center pt-24">
+      <div className="flex flex-col justify-center items-center h-screen max-h-screen">
+        <div className="flex flex-col items-center">
           <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
-          <div>
-            {messages.map((msg, index) => (
-              <p key={index} className="text-center text-white bg-black px-2">
+          <div className='flex flex-col items-center'>
+            {typedMessages.map((msg, index) => (
+              <p key={index} className="inline-block text-center text-white bg-black px-2">
                 {msg}
               </p>
             ))}
