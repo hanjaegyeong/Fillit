@@ -22,6 +22,7 @@ public class BoardResponse {
     private Integer pageNumber;
 
     private List<String> imageUrls;
+    private List<String> interests;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
