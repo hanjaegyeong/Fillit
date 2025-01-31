@@ -10,10 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,9 +68,8 @@ public class YoutubeService {
     // 크롤링 데이터 Youtube 엔티티로 변환
     private Youtube convertToYoutubeEntity(Map<String, Object> item) {
         String description = extractDescription((String) item.get("description"));
-        String categoryId = (String) item.get("categoryId");
-        Integer categoryIdInt = Integer.parseInt(categoryId);
-        YoutubeCategory category = getCategoryNameById(categoryIdInt);
+        Long categoryId = Long.parseLong((String) item.get("categoryId"));
+        YoutubeCategory category = getCategoryNameById(categoryId);
         Youtube youtube = Youtube.builder()
                 .url((String) item.get("url"))
                 .publishedAt((String) item.get("publishedAt"))
@@ -147,14 +143,9 @@ public class YoutubeService {
         }
     }
 
-    private YoutubeCategory getCategoryNameById(Integer categoryId) {
-        // 카테고리 ID로 categoryName 조회
-        YoutubeCategory youtubeCategory = youtubeCategoryRepository.findByCategoryId(categoryId);
-        if (youtubeCategory != null) {
-            return youtubeCategory;
-        } else {
-            throw new IllegalArgumentException("Category not found!");  // 카테고리가 없다면 "Unknown"을 반환
-        }
+    private YoutubeCategory getCategoryNameById(Long categoryId) {
+        return youtubeCategoryRepository.findById(categoryId) // 카테고리 ID로 categoryName 조회
+                .orElseThrow(() -> new IllegalArgumentException("Category not found!"));
     }
 
     // Method to generate the social media post prompt
