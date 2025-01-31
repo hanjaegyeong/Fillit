@@ -42,7 +42,7 @@ public class VoiceReplyController {
     public ResponseEntity<List<VoiceReplyResponse>> findVoiceReply(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
 
-        List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getVoiceId());
+        List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getId());
 
         List<VoiceReplyResponse> responses = voiceReplies.stream()
                 .map(VoiceReplyResponse::new)

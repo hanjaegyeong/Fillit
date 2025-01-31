@@ -78,7 +78,7 @@ public class FollowService {
 
     private void generateFollowNotification(Follow follow){
         // referenceId -> followId
-        notificationService.createNotification(follow.getFollowee(), follow.getFollower(), NotificationType.FOLLOW, follow.getFollowId());
+        notificationService.createNotification(follow.getFollowee(), follow.getFollower(), NotificationType.FOLLOW, follow.getId());
         System.out.println("Generate notification about follow");
     }
 
