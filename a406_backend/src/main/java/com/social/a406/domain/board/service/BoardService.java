@@ -173,6 +173,7 @@ public class BoardService {
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
+                .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .x(board.getX())
                 .y(board.getY())
                 .z(board.getZ())
@@ -279,7 +280,6 @@ public class BoardService {
             // 이미지 삭제 실패 처리 (예: 로그 기록)
             throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
-        commentService.deleteCommentsByBoardId(boardId);
         boardRepository.delete(board);
     }
 
