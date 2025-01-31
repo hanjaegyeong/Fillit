@@ -1,5 +1,6 @@
 package com.social.a406.domain.board.entity;
 
+import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,8 +32,8 @@ public class Board {
     @Column(nullable = false)
     private Long likeCount = 0L;
 
-//    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // x 좌표
     @Column(nullable = false)
