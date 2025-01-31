@@ -43,6 +43,9 @@ import pressedSpeaker from '@/assets/images/speaker-pressed.png';
 import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
+//search
+import searchIcon from '@/assets/icons/search.svg';
+
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -81,4 +84,5 @@ export {
   pressedSpeaker,
   sound,
   caution,
+  searchIcon,
 };
