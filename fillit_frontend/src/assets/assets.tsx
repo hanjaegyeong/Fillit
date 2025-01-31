@@ -23,6 +23,12 @@ import GoogleIcon from '@/assets/icons/google.svg';
 import NaverIcon from '@/assets/icons/naver.svg';
 import KakaoIcon from '@/assets/icons/kakao.svg';
 
+// like
+import LikeActiveIcon from '@/assets/icons/like-fill.svg';
+import LikeInactiveIcon from '@/assets/icons/like-outline.svg';
+
+// comment
+import CommentIcon from '@/assets/icons/comment.svg';
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
 import mic from '@/assets/icons/mic.svg';
@@ -66,6 +72,9 @@ export {
   GoogleIcon,
   NaverIcon,
   KakaoIcon,
+  LikeActiveIcon,
+  LikeInactiveIcon,
+  CommentIcon,
   micBack,
   mic,
   micBig,

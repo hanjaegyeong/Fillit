@@ -58,7 +58,7 @@ const NavBar = () => {
   return excludedPaths.includes(pathname) ? (
     <></>
   ) : (
-    <nav className="fixed z-1 h-24 bottom-0 w-full bg-white border-t">
+    <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">
       <div className="flex justify-around">
         {navItems.map((item) => (
           <NavBarItem

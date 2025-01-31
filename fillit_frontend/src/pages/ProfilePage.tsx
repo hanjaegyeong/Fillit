@@ -1,6 +1,6 @@
 import Header from '@/components/common/Header';
 
-const Profile = () => {
+const ProfilePage = () => {
   return (
     <>
       <Header left="home" right="menu" />
@@ -9,4 +9,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;
