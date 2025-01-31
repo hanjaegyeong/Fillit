@@ -44,7 +44,7 @@ import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
 //search
-import searchIcon from '@/assets/icons/search.svg';
+import searchIcon from '@/assets/icons/search-icon.svg';
 
 export {
   HomeInactiveIcon,
