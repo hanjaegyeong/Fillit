@@ -29,6 +29,28 @@ import LikeInactiveIcon from '@/assets/icons/like-outline.svg';
 
 // comment
 import CommentIcon from '@/assets/icons/comment.svg';
+// voice
+import micBack from '@/assets/icons/mic-back.svg';
+import mic from '@/assets/icons/mic.svg';
+import micBig from '@/assets/images/mic-big.png';
+import pressedMic from '@/assets/images/mic-pressed.png';
+import playIcon from '@/assets/icons/play.svg';
+import playIcon2 from '@/assets/icons/play2.svg';
+import profileBubble from '@/assets/icons/profile-bubble.svg';
+import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
+import bubble1 from '@/assets/images/bubble1.png';
+import bubble2 from '@/assets/images/bubble2.png';
+import bubble3 from '@/assets/images/bubble3.png';
+import bubble4 from '@/assets/images/bubble4.png';
+import replyBar from '@/assets/icons/reply-bar.svg';
+import soundWave from '@/assets/icons/sound-wave.svg';
+import speaker from '@/assets/images/speaker.png';
+import pressedSpeaker from '@/assets/images/speaker-pressed.png';
+import sound from '@/assets/icons/sound.svg';
+import caution from '@/assets/icons/caution.svg';
+
+//search
+import searchIcon from '@/assets/icons/search-icon.svg';
 
 export {
   HomeInactiveIcon,
@@ -53,4 +75,23 @@ export {
   LikeActiveIcon,
   LikeInactiveIcon,
   CommentIcon,
+  micBack,
+  mic,
+  micBig,
+  pressedMic,
+  playIcon,
+  playIcon2,
+  profileBubble,
+  voiceWrapper,
+  bubble1,
+  bubble2,
+  bubble3,
+  bubble4,
+  replyBar,
+  soundWave,
+  speaker,
+  pressedSpeaker,
+  sound,
+  caution,
+  searchIcon,
 };

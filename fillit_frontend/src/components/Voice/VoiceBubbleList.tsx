@@ -1,42 +1,58 @@
+import { useState } from 'react';
 import VoiceBubbleItem from './VoiceBubbleItem';
+import VoiceListenModal from './Modals/VoiceListenModal';
+
+interface VoiceBubbleData {
+  name: string;
+  personal_id: string;
+}
 
 const VoiceBubbleList = () => {
+  const [selectedVoice, setSelectedVoice] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // 임시데이터
-  const items = [
-    { name: 'Alex', nickname: '@chocolate' },
-    { name: 'George', nickname: '@gowithout' },
-    { name: 'Karen', nickname: '@potato153' },
-    { name: 'Alex', nickname: '@chocolate2' },
-    { name: 'Alex', nickname: '@chocolate3' },
-    { name: 'George', nickname: '@gowithout2' },
-    { name: 'Karen', nickname: '@potato154' },
+  const items: VoiceBubbleData[] = [
+    { name: 'Alex', personal_id: 'chocolate' },
+    { name: 'George', personal_id: 'gowithout' },
+    { name: 'Karen', personal_id: 'potato153' },
+    { name: 'Alex', personal_id: 'chocolate2' },
+    { name: 'Alex', personal_id: 'chocolate3' },
+    { name: 'George', personal_id: 'gowithout2' },
+    { name: 'Karen', personal_id: 'potato154' },
   ];
 
+  const handlePlayClick = (personal_id: string) => {
+    setSelectedVoice(personal_id);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedVoice(null);
+  };
+
   return (
-    <div
-      className="flex flex-col items-center"
-      style={{
-        position: 'absolute',
-        top: '55%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '100%',
-        maxWidth: '346px',
-        maxHeight: 'calc(100vh - 43%)',
-        overflow: 'hidden',
-      }}
-    >
-      <h4 className="text-xl mb-1">Voice Bubbles</h4>
-      <div className="w-full overflow-y-auto">
-        {items.map((item) => (
-          <VoiceBubbleItem
-            key={item.nickname}
-            name={item.name}
-            nickname={item.nickname}
-          />
-        ))}
+    <>
+      <div className="absolute top-[200px] left-1/2 -translate-x-1/2 w-[88%] max-w-[346px]">
+        <h4 className="text-xl mb-4 text-center">Voice Bubbles</h4>
+        <div className="w-full overflow-y-auto max-h-[calc(100vh-400px)] hide-scrollbar">
+          {items.map((item) => (
+            <VoiceBubbleItem
+              key={item.personal_id}
+              {...item}
+              onPlayClick={() => handlePlayClick(item.personal_id)}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+
+      <VoiceListenModal
+        voiceData={items.find((item) => item.personal_id === selectedVoice)}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+      />
+    </>
   );
 };
 

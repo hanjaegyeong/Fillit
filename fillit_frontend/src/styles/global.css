@@ -18,3 +18,13 @@
 body {
   @apply bg-home-bg bg-cover bg-center;
 }
+
+/* 스크롤바 숨김 스타일 추가 */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
