@@ -16,7 +16,7 @@
 }
 
 body {
-  @apply bg-home-bg bg-cover bg-center;
+  @apply bg-home-bg bg-cover bg-center bg-fixed;
 }
 
 /* 스크롤바 숨김 스타일 추가 */
