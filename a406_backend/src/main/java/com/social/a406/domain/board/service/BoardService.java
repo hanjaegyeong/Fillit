@@ -6,6 +6,7 @@ import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
+import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final UserRepository userRepository;
     private final S3Client s3Client;
+    private final CommentService commentService;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -42,10 +44,16 @@ public class BoardService {
 
     // 게시글 생성
     @Transactional
-    public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
+    public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> files) {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
-        return mapToResponseDto(boardRepository.save(board));
+        Board newBoard = boardRepository.save(board);
+        List<String> imageUrls = null;
+        if(files != null && !files.isEmpty()) {
+            //게시글 이미지 저장
+            imageUrls = saveBoardImage(newBoard.getId(), files);
+        }
+        return mapToResponseDto(newBoard, imageUrls);
     }
 
     // AI 게시글 생성
@@ -53,26 +61,37 @@ public class BoardService {
     public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
-        return mapToResponseDto(boardRepository.save(board));
+        return mapToResponseDto(boardRepository.save(board), null); // AI 게시글 이미지
     }
 
     // 게시글 단건 조회
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long boardId) {
         Board board = findBoardById(boardId);
-        return mapToResponseDto(board);
+        List<String> imageUrls = getBoardImages(boardId);
+        return mapToResponseDto(board, imageUrls);
     }
 
     // 게시글 수정
     @Transactional
-    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> newFiles) {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = findBoardById(boardId);
 
         validateBoardOwnership(board, user);
 
         board.updateContent(boardRequest.getContent());
-        return mapToResponseDto(board);
+
+        // 기존 이미지 유지 여부 확인 후 처리
+        List<String> existingImageUrls = getBoardImages(boardId);  // 기존 이미지 가져오기
+        List<String> newImageUrls = new ArrayList<>(existingImageUrls);          // 기존 이미지 복사
+
+        if (newFiles != null && !newFiles.isEmpty()) {
+            // 새 이미지 업로드 및 기존 이미지 삭제
+            deleteBoardImage(boardId); // 기존 이미지 삭제 (선택적)
+            newImageUrls = saveBoardImage(boardId, newFiles); // 새 이미지 저장
+        }
+        return mapToResponseDto(board, newImageUrls);
     }
 
     // 게시글 내용 조회
@@ -101,7 +120,7 @@ public class BoardService {
 
     // 랜덤 게시글 조회
     public Long getRandomBoardId() {
-        List<Long> boardIds = boardRepository.findAllBoardIds();
+        List<Long> boardIds = boardRepository.findAllIds();
 
         if (boardIds.isEmpty()) {
             System.err.println("No boards available for random selection.");
@@ -114,7 +133,7 @@ public class BoardService {
 
     // 본인 게시글 / 댓글 단 게시글 제외 랜덤 게시글 조회
     public Long getRandomAvailableBoardIdExcludingUser(String personalId) {
-        List<Long> availableBoardIds = boardRepository.findAvailableBoardIdsExcludingUser(personalId);
+        List<Long> availableBoardIds = boardRepository.findAvailableIdsExcludingUser(personalId);
 
         if (availableBoardIds.isEmpty()) {
             System.err.println("No available boards for random selection.");
@@ -134,6 +153,7 @@ public class BoardService {
                 .likeCount(0L)
                 .x(boardRequest.getX())
                 .y(boardRequest.getY())
+                .z(boardRequest.getZ())
                 .keyword(boardRequest.getKeyword())
                 .pageNumber(boardRequest.getPageNumber())
                 .build();
@@ -147,9 +167,9 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
-    private BoardResponse mapToResponseDto(Board board) {
+    private BoardResponse mapToResponseDto(Board board, List<String> imageUrls) {
         return BoardResponse.builder()
-                .boardId(board.getBoardId())
+                .boardId(board.getId())
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
@@ -158,13 +178,15 @@ public class BoardService {
                 .z(board.getZ())
                 .keyword(board.getKeyword())
                 .pageNumber(board.getPageNumber())
+                .imageUrls(imageUrls)
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
     }
 
+    @Transactional
     public List<String> saveBoardImage(Long boardId, List<MultipartFile> files) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board to save Image")
         );
         List<String> imageUrls = new ArrayList<>();
@@ -181,7 +203,6 @@ public class BoardService {
     }
 
     //이미지 저장
-    @Transactional
     public String saveBoardImageAtS3(Long boardId, MultipartFile file) {
         try{
             String fileName = "board/" + boardId + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -238,23 +259,27 @@ public class BoardService {
     @Transactional
     public List<BoardResponse> getBoardByUser(String personalId) {
         List<Board> boards = boardRepository.findAllByPersonalId(personalId);
-        return boards.stream()
-                .map(this::mapToResponseDto)  // Board -> BoardResponse로 변환
-                .toList(); // 리스트로 수집
+        List<BoardResponse> responses = new ArrayList<>();
+        for(Board board : boards){
+            List<String> imageUrls = getBoardImages(board.getId());
+            responses.add(mapToResponseDto(board,imageUrls));
+        }
+        return responses;
     }
 
     //게시글 삭제
     @Transactional
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board")
         );
         try {
             deleteBoardImage(boardId);  // 이미지 삭제
         } catch (Exception e) {
             // 이미지 삭제 실패 처리 (예: 로그 기록)
-            throw new RuntimeException("이미지 삭제 실패: " + e.getMessage(), e);  // 필요시 예외를 다시 던지기
+            throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
+        commentService.deleteCommentsByBoardId(boardId);
         boardRepository.delete(board);
     }
 
