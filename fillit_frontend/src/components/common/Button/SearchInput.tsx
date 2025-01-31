@@ -1,21 +1,41 @@
 import { searchIcon } from '@/assets/assets';
+import { useState } from 'react';
 
 interface SearchInputProps {
   className?: string;
+  onSearch: (term: string) => void;
+  placeholder?: string;
+  width?: string;
 }
 
-const SearchInput = ({ className = '' }: SearchInputProps) => {
+const SearchInput = ({
+  className = '',
+  onSearch,
+  placeholder = 'Search',
+  width = 'w-[343px]',
+}: SearchInputProps) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(inputValue);
+  };
+
   return (
-    <div className={`relative flex items-center ${className}`}>
-      <input
-        type="text"
-        placeholder="Search"
-        className="w-[343px] px-4 py-1.5 text-sm bg-white rounded-full border-2 transition-colors duration-100 border-solid outline-none focus:border-[#b5b4f2] border-[#9a9a9a]"
-      />
-      <button className="absolute right-4">
-        <img src={searchIcon} alt="search-icon" className="w-4 h-4" />
-      </button>
-    </div>
+    <form onSubmit={handleSubmit} className={`flex items-center ${className}`}>
+      <div className="relative flex items-center w-full">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={placeholder}
+          className={`${width} px-4 py-1.5 text-sm bg-white rounded-full border-2 transition-colors duration-100 border-solid outline-none focus:border-[#b5b4f2] border-[#9a9a9a]`}
+        />
+        <button type="submit" className="absolute right-4">
+          <img src={searchIcon} alt="search-icon" className="w-4 h-4" />
+        </button>
+      </div>
+    </form>
   );
 };
 

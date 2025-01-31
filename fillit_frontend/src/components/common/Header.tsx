@@ -13,6 +13,8 @@ interface HeaderProps {
   isTitle?: boolean;
   right?: 'notification' | 'menu' | 'regist';
   center?: 'search';
+  onSearch?: (term: string) => void;
+  searchPlaceholder?: string;
 }
 
 const Header = ({
@@ -22,6 +24,8 @@ const Header = ({
   isTitle = false,
   right,
   center,
+  onSearch,
+  searchPlaceholder = 'Search',
 }: HeaderProps) => {
   return (
     <header className="top-0 h-[57px] bg-white border-b flex justify-between items-center px-4">
@@ -33,8 +37,14 @@ const Header = ({
           {text}
         </div>
       </div>
-      <div className="flex justify-center w-2/4">
-        {center === 'search' && <SearchInput />}
+      <div>
+        {center === 'search' && onSearch && (
+          <SearchInput
+            onSearch={onSearch}
+            placeholder={searchPlaceholder}
+            width="w-[353px]"
+          />
+        )}
       </div>
       <div className="flex justify-end w-1/4">
         {right === 'notification' && <NotificationButton />}
