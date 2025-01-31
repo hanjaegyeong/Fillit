@@ -25,8 +25,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "AND b.user.personalId != :personalId")
     List<Long> findAvailableBoardIdsExcludingUser(@Param("personalId") String personalId);
 
-    Optional<Board> findByBoardId(Long boardId);
-
     @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
     List<Board> findAllByPersonalId(@Param("personalId") String personalId);
 }

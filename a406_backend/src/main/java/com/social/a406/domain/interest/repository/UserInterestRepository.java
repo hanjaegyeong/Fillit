@@ -16,7 +16,7 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, Long
     @Query("SELECT ui.interest.id " +
             "FROM UserInterest ui " +
             "WHERE ui.user.personalId = :personalId")
-    List<Long> findInterestIdsByPersonalId(@Param("personalId") String personalId);
+    List<Long> findIdsByPersonalId(@Param("personalId") String personalId);
 
     // 여러 관심사 ID와 일치하는 AI 유저 목록 조회
     @Query("SELECT DISTINCT ui.user.personalId " +
