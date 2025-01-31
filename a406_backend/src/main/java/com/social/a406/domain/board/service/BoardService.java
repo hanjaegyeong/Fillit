@@ -7,6 +7,7 @@ import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final S3Client s3Client;
     private final CommentService commentService;
+    private final InterestService interestService;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -53,7 +55,9 @@ public class BoardService {
             //게시글 이미지 저장
             imageUrls = saveBoardImage(newBoard.getId(), files);
         }
-        return mapToResponseDto(newBoard, imageUrls);
+        interestService.addBoardInterests(newBoard.getId(), boardRequest.getInterests());
+        List<String> interests = interestService.getBoardInterests(newBoard.getId());
+        return mapToResponseDto(newBoard, imageUrls, interests);
     }
 
     // AI 게시글 생성
@@ -61,7 +65,7 @@ public class BoardService {
     public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
-        return mapToResponseDto(boardRepository.save(board), null); // AI 게시글 이미지
+        return mapToResponseDto(boardRepository.save(board), null, null); // AI 게시글 이미지, 관심사
     }
 
     // 게시글 단건 조회
@@ -69,7 +73,8 @@ public class BoardService {
     public BoardResponse getBoardById(Long boardId) {
         Board board = findBoardById(boardId);
         List<String> imageUrls = getBoardImages(boardId);
-        return mapToResponseDto(board, imageUrls);
+        List<String> interests = interestService.getBoardInterests(boardId);
+        return mapToResponseDto(board, imageUrls, interests);
     }
 
     // 게시글 수정
@@ -85,13 +90,19 @@ public class BoardService {
         // 기존 이미지 유지 여부 확인 후 처리
         List<String> existingImageUrls = getBoardImages(boardId);  // 기존 이미지 가져오기
         List<String> newImageUrls = new ArrayList<>(existingImageUrls);          // 기존 이미지 복사
+        List<String> newInterests = interestService.getBoardInterests(boardId);
 
         if (newFiles != null && !newFiles.isEmpty()) {
             // 새 이미지 업로드 및 기존 이미지 삭제
             deleteBoardImage(boardId); // 기존 이미지 삭제 (선택적)
             newImageUrls = saveBoardImage(boardId, newFiles); // 새 이미지 저장
         }
-        return mapToResponseDto(board, newImageUrls);
+        if(boardRequest.getInterests() != null && !boardRequest.getInterests().isEmpty()){
+            interestService.deleteAllBoardInterests(boardId);
+            interestService.addBoardInterests(boardId, boardRequest.getInterests());
+            newInterests = interestService.getBoardInterests(boardId);
+        }
+        return mapToResponseDto(board, newImageUrls, newInterests);
     }
 
     // 게시글 내용 조회
@@ -167,7 +178,7 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
-    private BoardResponse mapToResponseDto(Board board, List<String> imageUrls) {
+    private BoardResponse mapToResponseDto(Board board, List<String> imageUrls, List<String> interests) {
         return BoardResponse.builder()
                 .boardId(board.getId())
                 .content(board.getContent())
@@ -180,6 +191,7 @@ public class BoardService {
                 .keyword(board.getKeyword())
                 .pageNumber(board.getPageNumber())
                 .imageUrls(imageUrls)
+                .interests(interests)
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
@@ -263,7 +275,8 @@ public class BoardService {
         List<BoardResponse> responses = new ArrayList<>();
         for(Board board : boards){
             List<String> imageUrls = getBoardImages(board.getId());
-            responses.add(mapToResponseDto(board,imageUrls));
+            List<String> interests = interestService.getBoardInterests(board.getId());
+            responses.add(mapToResponseDto(board,imageUrls, interests));
         }
         return responses;
     }
@@ -277,9 +290,10 @@ public class BoardService {
         try {
             deleteBoardImage(boardId);  // 이미지 삭제
         } catch (Exception e) {
-            // 이미지 삭제 실패 처리 (예: 로그 기록)
+            // 이미지 삭제 실패 처리
             throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
+        interestService.deleteAllBoardInterests(boardId);
         boardRepository.delete(board);
     }
 
