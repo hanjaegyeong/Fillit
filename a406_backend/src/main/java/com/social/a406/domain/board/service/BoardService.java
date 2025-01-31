@@ -134,6 +134,7 @@ public class BoardService {
                 .likeCount(0L)
                 .x(boardRequest.getX())
                 .y(boardRequest.getY())
+                .z(boardRequest.getZ())
                 .keyword(boardRequest.getKeyword())
                 .pageNumber(boardRequest.getPageNumber())
                 .build();
