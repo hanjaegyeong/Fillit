@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header';
-import { BubbleBackground } from '../components/decorations/BubbleBackground';
-import VoiceBubbleList from '../components/Voice/VoiceBubbleList';
-import { micBack, mic } from '../assets/assets';
+import { BubbleBackground } from '@/components/decorations/BubbleBackground';
+import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
+import { micBack, mic } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
