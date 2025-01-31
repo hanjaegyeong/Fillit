@@ -3,19 +3,19 @@ import { sound, playIcon2, soundWave } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 
+interface VoiceReplyData {
+  id: string;
+  user_id: string;
+}
+
 interface VoiceReplyModalProps {
-  voiceData:
-    | {
-        id: string;
-        user_id: string;
-      }
-    | undefined;
+  replyData: VoiceReplyData | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const VoiceReplyModal = ({
-  voiceData,
+  replyData,
   isOpen,
   onClose,
 }: VoiceReplyModalProps) => {
@@ -23,7 +23,7 @@ const VoiceReplyModal = ({
     isModalOpen: isOpen,
   });
 
-  if (!voiceData) return null;
+  if (!replyData) return null;
 
   return (
     <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
@@ -45,7 +45,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${voiceData.user_id}`}
+            src={`https://i.pravatar.cc/150?u=${replyData.user_id}`}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
