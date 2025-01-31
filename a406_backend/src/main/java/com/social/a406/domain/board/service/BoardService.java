@@ -1,5 +1,6 @@
 package com.social.a406.domain.board.service;
 
+import com.social.a406.domain.board.dto.BoardProfileResponse;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
@@ -314,5 +315,27 @@ public class BoardService {
             }
             boardImageRepository.deleteByBoardId(boardId);
         }
+    }
+
+    public List<BoardProfileResponse> getProfileBoardByUser(String personalId) {
+        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
+        List<BoardProfileResponse> responses = boards.stream()
+                .map(this::mapBoardProfileResponseDto)
+                .toList();
+                return responses;
+    }
+
+    public BoardProfileResponse mapBoardProfileResponseDto(Board board){
+        String imageUrl = boardImageRepository.findAllByBoardId(board.getId()) != null
+                ? boardImageRepository.findAllByBoardId(board.getId()).get(0) : null;
+        return BoardProfileResponse.builder()
+                .BoardId(board.getId())
+                .x(board.getX())
+                .y(board.getY())
+                .z(board.getZ())
+                .keyword(board.getKeyword())
+                .pageNumber(board.getPageNumber())
+                .imageUrl(imageUrl)
+                .build();
     }
 }

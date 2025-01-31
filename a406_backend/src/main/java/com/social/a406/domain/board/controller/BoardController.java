@@ -1,5 +1,6 @@
 package com.social.a406.domain.board.controller;
 
+import com.social.a406.domain.board.dto.BoardProfileResponse;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
@@ -11,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -58,6 +58,20 @@ public class BoardController {
     public ResponseEntity<List<BoardResponse>> getUserBoard(@AuthenticationPrincipal UserDetails userDetails){
         List<BoardResponse> boardResponses = boardService.getBoardByUser(userDetails.getUsername());
         return ResponseEntity.ok(boardResponses);
+    }
+
+    // 내 프로필 게시글 조회
+    @GetMapping("/profile")
+    public ResponseEntity<List<BoardProfileResponse>> getUserProfileBoard(@AuthenticationPrincipal UserDetails userDetails){
+        List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(userDetails.getUsername());
+        return ResponseEntity.ok(responses);
+    }
+
+    // 다른 사람 프로필 게시글 조회
+    @GetMapping("/{personalId}/profile")
+    public ResponseEntity<List<BoardProfileResponse>> getOtherUserProfileBoard(@PathVariable String personalId){
+        List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(personalId);
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{boardId}")
