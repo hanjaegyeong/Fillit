@@ -43,7 +43,7 @@ const steps = [
   },
 ];
 
-const Find = () => {
+const FindPage = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
@@ -73,7 +73,7 @@ const Find = () => {
 
   return (
     <>
-      <header className='absolute top-0 left-0 w-full py-4 px-6 z-10'>
+      <header className="absolute top-0 left-0 w-full py-4 px-6 z-10">
         <img src={FillitLongLog} className="h-10" />
       </header>
       <div className="flex flex-col justify-center items-center h-screen max-h-screen">
@@ -81,7 +81,10 @@ const Find = () => {
           <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
           <div className="flex flex-col items-center">
             {typedMessages.map((msg, index) => (
-              <p key={index} className="inline-block text-center text-white bg-black px-2">
+              <p
+                key={index}
+                className="inline-block text-center text-white bg-black px-2"
+              >
                 {msg}
               </p>
             ))}
@@ -131,4 +134,4 @@ const Find = () => {
   );
 };
 
-export default Find;
+export default FindPage;

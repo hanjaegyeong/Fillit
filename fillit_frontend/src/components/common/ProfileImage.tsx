@@ -1,5 +1,7 @@
+import NoProfileImage from '@/assets/images/no-profile-image.png';
+
 interface ProfileImageProps {
-  src: string;
+  src?: string | null;
   alt?: string;
   size?: number;
 }
@@ -7,11 +9,13 @@ interface ProfileImageProps {
 const ProfileImage = ({
   src,
   alt = 'profile image',
-  size = 42,
+  size = 44,
 }: ProfileImageProps) => {
+  const defaultImage = NoProfileImage;
+
   return (
     <img
-      src={src}
+      src={src || defaultImage}
       alt={alt}
       style={{
         height: `${size}px`,

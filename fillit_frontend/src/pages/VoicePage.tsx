@@ -7,7 +7,7 @@ import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
 import { useState } from 'react';
 
-const Voice = () => {
+const VoicePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
 
@@ -70,4 +70,4 @@ const Voice = () => {
   );
 };
 
-export default Voice;
+export default VoicePage;
