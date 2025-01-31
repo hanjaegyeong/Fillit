@@ -65,7 +65,7 @@ public class AiScheduler {
         }
     }
 
-    // 사용자가 게시글 업로드 후 AI댓글 자동 생성
+    // 사용자(personalId)가 게시글 업로드 후 AI댓글 자동 생성
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 

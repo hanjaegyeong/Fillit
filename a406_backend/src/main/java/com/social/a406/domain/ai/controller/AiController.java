@@ -74,19 +74,27 @@ public class AiController {
         return ResponseEntity.status(201).body(response);
     }
 
-    // AI 기반 게시글 생성 컨트롤러
+    // AI 기반 랜덤 ai유저 랜덤 게시글 생성 컨트롤러
     @GetMapping("/generate/random/board")
     public ResponseEntity<BoardResponse> generateBoard() {
         String randomPersonalId = userService.getRandomUserWithMainPrompt();
 
-        // 랜덤으로 subreddit 또는 youtube 중 선택
-        boolean useSubreddit = new Random().nextBoolean();
+        // 랜덤으로 subreddit(0) / youtube(1) / normal 일상글(2) 중 선택
+        int choice = new Random().nextInt(3);
 
         BoardResponse response;
-        if (useSubreddit) {
-            response = aiFacadeService.generateBoardUsingSubredditHotPost(randomPersonalId);
-        } else {
-            response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
+
+        switch (choice) {
+            case 0:
+                response = aiFacadeService.generateBoardUsingSubredditHotPost(randomPersonalId);
+                break;
+            case 1:
+                response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
+                break;
+            default:
+                String prompt = "Write a social media post about your day today.";
+                response = aiFacadeService.generateAndSaveBoard(randomPersonalId, prompt);
+                break;
         }
 
         return ResponseEntity.status(201).body(response);
