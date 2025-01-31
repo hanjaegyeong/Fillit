@@ -184,6 +184,7 @@ public class BoardService {
                 .boardId(board.getId())
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
+                .profileImage(board.getUser().getProfileImageUrl())
                 .likeCount(board.getLikeCount())
                 .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .x(board.getX())
