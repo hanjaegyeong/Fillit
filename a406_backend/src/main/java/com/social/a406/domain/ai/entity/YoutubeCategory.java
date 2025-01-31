@@ -11,7 +11,7 @@ public class YoutubeCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int categoryId; // categoryId 값
+    private int id;
 
     private String name;
 }

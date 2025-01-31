@@ -36,7 +36,7 @@ public class VoiceController {
     public ResponseEntity<VoiceResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
 
-        VoiceResponse response = new VoiceResponse(voice.getVoiceId(),voice.getAudioUrl());
+        VoiceResponse response = new VoiceResponse(voice.getId(),voice.getAudioUrl());
 
         return ResponseEntity.ok(response);
     }
@@ -48,7 +48,7 @@ public class VoiceController {
 
         List<VoiceResponse> responses = voices.stream()
                 .map(voice -> new VoiceResponse(
-                        voice.getVoiceId(),
+                        voice.getId(),
                         voice.getAudioUrl()
                 ))
                 .toList();

@@ -72,7 +72,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByBoard(Long boardId) {
-        List<Comment> comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtAsc(boardId);
+        List<Comment> comments = commentRepository.findByBoard_IdOrderByCreatedAtAsc(boardId);
         return comments.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -109,7 +109,7 @@ public class CommentService {
 
     private CommentResponse mapToResponse(Comment comment) {
         return CommentResponse.builder()
-                .commentId(comment.getCommentId())
+                .commentId(comment.getId())
                 .content(comment.getContent())
                 .personalId(comment.getUser().getPersonalId())
                 .likeCount(comment.getLikeCount())
@@ -124,7 +124,7 @@ public class CommentService {
         User sender = userRepository.findByPersonalId(comment.getUser().getPersonalId()).orElse(null); // 게시글에 댓글을 작성한 user
         if(sender == null) throw new IllegalArgumentException("sender not found");
 
-        Long referenceId = comment.getBoard().getBoardId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
+        Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
 
         notificationService.createNotification(receiver,sender, NotificationType.COMMENT,referenceId);
         System.out.println("Generate notification about comment");
