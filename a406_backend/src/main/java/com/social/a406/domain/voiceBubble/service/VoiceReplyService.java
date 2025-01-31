@@ -56,14 +56,12 @@ public class VoiceReplyService {
     }
 
     public void deleteVoiceReply(Long voiceReplyId) {
-        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElseGet(null);
+        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElseThrow(
+                () -> new IllegalArgumentException("No voices reply found with id: " + voiceReplyId)
+        );
 
-        if(voiceReply != null){
-            deleteFromS3(voiceReply.getAudioUrl());
-            voiceReplyRepository.delete(voiceReply);
-        }else{
-            throw new IllegalArgumentException("No voices reply found with id: " + voiceReplyId);
-        }
+        deleteFromS3(voiceReply.getAudioUrl());
+        voiceReplyRepository.delete(voiceReply);
     }
 
     // S3 파일 삭제
@@ -107,7 +105,6 @@ public class VoiceReplyService {
                     file.getInputStream(), file.getSize()));
 
             String fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
-            System.out.println(voice.getVoiceId());
             // Voice 객체 생성 및 DB에 저장
             VoiceReply voiceReply = voiceReplyRepository.save(new VoiceReply(voice, user, fileUrl));
 
