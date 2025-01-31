@@ -21,10 +21,10 @@ public class BoardImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardImageId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_board_id", foreignKey = @ForeignKey(name = "fk_board_image_board"), nullable = false)
+    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "fk_board_image_board"), nullable = false)
     private Board board;
 
     @Column(nullable = false)
