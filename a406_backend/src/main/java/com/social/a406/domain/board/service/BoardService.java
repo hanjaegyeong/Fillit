@@ -326,4 +326,27 @@ public class BoardService {
                 .map(board -> board.getUser().getPersonalId())
                 .orElseThrow(() -> new IllegalArgumentException("Not found board: " + boardId));
     }
+
+
+    public List<BoardProfileResponse> getProfileBoardByUser(String personalId) {
+        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
+        List<BoardProfileResponse> responses = boards.stream()
+                .map(this::mapBoardProfileResponseDto)
+                .toList();
+        return responses;
+    }
+
+    public BoardProfileResponse mapBoardProfileResponseDto(Board board){
+        String imageUrl = boardImageRepository.findAllById(board.getId()) != null
+                ? boardImageRepository.findAllById(board.getId()).get(0) : null;
+        return BoardProfileResponse.builder()
+                .BoardId(board.getId())
+                .x(board.getX())
+                .y(board.getY())
+                .z(board.getZ())
+                .keyword(board.getKeyword())
+                .pageNumber(board.getPageNumber())
+                .imageUrl(imageUrl)
+                .build();
+    }
 }
