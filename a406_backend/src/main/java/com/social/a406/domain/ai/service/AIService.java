@@ -14,58 +14,91 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class AIService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
     private final UserService userService;
+    private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String PROMPT_SUFFIX = "Please respond within 500 characters.";
-    private static final String PROMPT_CHAT = "You are ‘fillbot’, a chatty english teacher from US. Please answer the following questions in English. Please only answer questions related to English.";
-
-    @Value("${GEMINI_API_KEY}") // application.properties 또는 환경변수에서 값 주입
+    @Value("${GEMINI_API_KEY}")
     private String geminiApiKey;
 
-    // gemini-1.5-flash 모델 생성형AI API 호출
-    public String generateContent(String personalId, String additionalPrompt) {
-        User ai = userService.getUserByPersonalId(personalId);
+    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
+    private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
+    private static final String PROMPT_CHAT = "You are ‘fillbot’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
 
-        String finalPrompt = ai.getMainPrompt() + " " + additionalPrompt + " " + PROMPT_SUFFIX;
-
-        // API 호출 준비
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String requestBody = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + finalPrompt + "\" } ] } ] }";
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
-
-        // API 호출
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-
-        return parseGeneratedContent(response.getBody());
+    /**
+     * 일반 AI 게시글 프롬프트 생성
+     */
+    public String createBoardPrompt(String personalId) {
+        User aiUser = userService.getUserByPersonalId(personalId);
+        return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX;
     }
 
-    public String generateChat(String message){
+    /**
+     * AI 댓글 프롬프트 생성
+     */
+    public String createCommentPrompt(String boardContent, String boardAuthorPersonalId) {
+        return String.format("Author: %s\nContent: %s\nPlease write a reply to this post.", boardAuthorPersonalId, boardContent);
+    }
+
+    /**
+     * AI 챗봇 답장 생성
+     */
+    public String generateChat(String message) {
         String finalPrompt = PROMPT_CHAT + " " + message + " " + PROMPT_SUFFIX;
-
-        // API 호출 준비
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String requestBody = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + finalPrompt + "\" } ] } ] }";
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
-
-        // API 호출
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-
-        return parseGeneratedContent(response.getBody());
+        return generateContent(finalPrompt);
     }
 
-    // 생성형 API 응답의 content만 파싱
-    private String parseGeneratedContent(String responseBody) {
+    /**
+     * AI 콘텐츠 생성
+     */
+    public String generateContent(String prompt) {
+        try {
+            HttpHeaders headers = createHeaders();
+            String requestBody = buildRequestBody(prompt);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    BASE_URL + "?key=" + geminiApiKey,
+                    HttpMethod.POST,
+                    new HttpEntity<>(requestBody, headers),
+                    String.class
+            );
+
+            return parseResponse(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("AI 호출 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    private String buildRequestBody(String prompt) {
+        return """
+            {
+                "contents": [
+                    { "parts": [{ "text": "%s" }] }
+                ]
+            }
+            """.formatted(prompt);
+    }
+
+    private String parseResponse(String responseBody) {
         try {
             JsonNode rootNode = objectMapper.readTree(responseBody);
-            return rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            // 기존 코드에서 정상적으로 작동했던 AI 응답 파싱 방식으로 복원
+            JsonNode candidatesNode = rootNode.path("candidates");
+            if (candidatesNode.isArray() && candidatesNode.size() > 0) {
+                JsonNode contentNode = candidatesNode.get(0).path("content").path("parts").get(0).path("text");
+                return contentNode.asText();
+            }
+
+            throw new RuntimeException("AI 응답에서 적절한 content를 찾을 수 없음: " + responseBody);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse AI response: " + e.getMessage());
+            throw new RuntimeException("AI 응답 파싱 실패: " + e.getMessage());
         }
     }
 }
