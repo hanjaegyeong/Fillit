@@ -15,7 +15,6 @@ import NavBar from '@/components/common/NavBar';
 const App = () => {
   return (
     <>
-      <div className="bg-home-bg bg-fixed"></div>
       <Routes>
         <Route path="/" element={<ArticleListPage />} />
         <Route path="/article/:boardId" element={<ArticleDetailPage />} />
