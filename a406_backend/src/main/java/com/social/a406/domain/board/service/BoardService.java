@@ -268,7 +268,7 @@ public class BoardService {
     // 게시글 이미지 가져오기
     @Transactional
     public List<String> getBoardImages(Long boardId) {
-        return boardImageRepository.findAllByBoardId(boardId);
+        return boardImageRepository.findAllById(boardId);
     }
 
     @Transactional
@@ -301,7 +301,7 @@ public class BoardService {
 
     // 게시글 이미지 삭제
     public void deleteBoardImage(Long boardId) {
-        List<String> imageUrls = boardImageRepository.findAllByBoardId(boardId);
+        List<String> imageUrls = boardImageRepository.findAllById(boardId);
 
         if (imageUrls != null && !imageUrls.isEmpty()) {
             for (String imageUrl : imageUrls) {

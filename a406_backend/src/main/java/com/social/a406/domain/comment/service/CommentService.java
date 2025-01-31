@@ -132,7 +132,6 @@ public class CommentService {
         User sender = userRepository.findByPersonalId(comment.getUser().getPersonalId()).orElse(null); // 게시글에 댓글을 작성한 user
         if(sender == null) throw new IllegalArgumentException("sender not found");
 
-        if(sender.equals(receiver)) return;
         Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
 
         notificationService.createNotification(receiver,sender, NotificationType.COMMENT,referenceId);

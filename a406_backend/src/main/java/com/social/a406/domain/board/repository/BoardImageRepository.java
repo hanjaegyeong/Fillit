@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BoardImageRepository extends JpaRepository<BoardImage, Long> {
-    @Query("SELECT i.imageUrl FROM BoardImage i WHERE i.board.id = :boardId")
-    List<String> findAllByBoardId(@Param("boardId") Long boardId);
+    @Query("SELECT i.imageUrl FROM BoardImage i WHERE i.board.id = :id")
+    List<String> findAllById(@Param("id") Long boardId);
 
     @Modifying
-    @Query("DELETE FROM BoardImage bi WHERE bi.board.id = :boardId")
-    void deleteByBoardId(@Param("boardId") Long boardId);
+    @Query("DELETE FROM BoardImage bi WHERE bi.board.id = :id")
+    void deleteByBoardId(@Param("id") Long boardId);
 }

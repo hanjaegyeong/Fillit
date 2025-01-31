@@ -10,6 +10,6 @@ public record VoiceReplyResponse(
 
 ) {
     public VoiceReplyResponse(VoiceReply reply) {
-        this(reply.getVoiceReplyId(), reply.getUser().getPersonalId(), reply.getUser().getProfileImageUrl(), reply.getAudioUrl());
+        this(reply.getId(), reply.getUser().getPersonalId(), reply.getUser().getProfileImageUrl(), reply.getAudioUrl());
     }
 }

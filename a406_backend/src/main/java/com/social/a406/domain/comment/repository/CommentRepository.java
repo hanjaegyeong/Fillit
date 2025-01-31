@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByBoard_IdOrderByCreatedAtAsc(Long boardId); //댓글 오래된순으로 조회
-    long countByBoard_Id(Long boardId);
 }
