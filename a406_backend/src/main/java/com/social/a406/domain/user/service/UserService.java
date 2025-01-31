@@ -211,7 +211,7 @@ public class UserService {
 
     // 해당 personalId 유저의 모든 관심사 조회
     private List<Long> getInterestIdsByPersonalId(String personalId) {
-        List<Long> interestIds = userInterestRepository.findInterestIdsByPersonalId(personalId);
+        List<Long> interestIds = userInterestRepository.findIdsByPersonalId(personalId);
 
         if (interestIds.isEmpty()) {
             System.err.println("No interests found for user with personalId: " + personalId);

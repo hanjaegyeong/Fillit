@@ -79,7 +79,7 @@ public class ReplyService {
     // 대댓글목록 가져오기
     @Transactional(readOnly = true)
     public List<ReplyResponse> getReplyList(Long commentId) {
-        List<Reply> replys = replyRepository.findByComment_CommentIdOrderByCreatedAtAsc(commentId);
+        List<Reply> replys = replyRepository.findByComment_IdOrderByCreatedAtAsc(commentId);
         return replys.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 

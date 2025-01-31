@@ -134,6 +134,7 @@ public class BoardService {
                 .likeCount(0L)
                 .x(boardRequest.getX())
                 .y(boardRequest.getY())
+                .z(boardRequest.getZ())
                 .keyword(boardRequest.getKeyword())
                 .pageNumber(boardRequest.getPageNumber())
                 .build();
@@ -149,7 +150,7 @@ public class BoardService {
     // Board 엔티티를 Response DTO로 변환
     private BoardResponse mapToResponseDto(Board board) {
         return BoardResponse.builder()
-                .boardId(board.getBoardId())
+                .boardId(board.getId())
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
@@ -164,7 +165,7 @@ public class BoardService {
     }
 
     public List<String> saveBoardImage(Long boardId, List<MultipartFile> files) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board to save Image")
         );
         List<String> imageUrls = new ArrayList<>();
@@ -232,7 +233,7 @@ public class BoardService {
     // 게시글 이미지 가져오기
     @Transactional
     public List<String> getBoardImages(Long boardId) {
-        return boardImageRepository.findAllByBoardId(boardId);
+        return boardImageRepository.findAllById(boardId);
     }
 
     @Transactional
@@ -246,7 +247,7 @@ public class BoardService {
     //게시글 삭제
     @Transactional
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board")
         );
         try {
@@ -260,7 +261,7 @@ public class BoardService {
 
     // 게시글 이미지 삭제
     public void deleteBoardImage(Long boardId) {
-        List<String> imageUrls = boardImageRepository.findAllByBoardId(boardId);
+        List<String> imageUrls = boardImageRepository.findAllById(boardId);
 
         if (imageUrls != null && !imageUrls.isEmpty()) {
             for (String imageUrl : imageUrls) {

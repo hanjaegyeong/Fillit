@@ -42,11 +42,11 @@ public class VoiceReplyService {
 
     public List<VoiceReply> findVoiceReplies(Long voiceId) {
 
-        return voiceReplyRepository.findByVoiceVoiceId(voiceId);
+        return voiceReplyRepository.findByVoiceId(voiceId);
     }
 
     public VoiceReply findVoiceReply(Long voiceReplyId) {
-        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElse(null);
+        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyById(voiceReplyId).orElse(null);
 
         if(voiceReply != null){
             return voiceReply;
@@ -56,7 +56,7 @@ public class VoiceReplyService {
     }
 
     public void deleteVoiceReply(Long voiceReplyId) {
-        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyByVoiceReplyId(voiceReplyId).orElseThrow(
+        VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyById(voiceReplyId).orElseThrow(
                 () -> new IllegalArgumentException("No voices reply found with id: " + voiceReplyId)
         );
 
@@ -84,7 +84,7 @@ public class VoiceReplyService {
             User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            Voice voice = voiceRepository.findByVoiceId(voiceId)
+            Voice voice = voiceRepository.findById(voiceId)
                     .orElseThrow(() -> new IllegalArgumentException("Voice not found"));
             if(Objects.equals(user.getId(), voice.getUser().getId())){
                 throw new IllegalArgumentException("You can't send yourself a voice reply");
@@ -120,7 +120,7 @@ public class VoiceReplyService {
         // 음성 답장
         User receiver = voiceReply.getVoice().getUser();
         User sender = voiceReply.getUser();
-        Long referenceId = voiceReply.getVoice().getVoiceId();
+        Long referenceId = voiceReply.getVoice().getId();
         notificationService.createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
         System.out.println("Generate notification about voice reply");
     }
