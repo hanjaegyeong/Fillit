@@ -89,7 +89,7 @@ public class VoiceService {
         List<Voice> voices = voiceRepository.findAllByUser_IdInOrderByCreatedAtDesc(userIds);
         List<VoiceResponse> responses = voices.stream()
                 .map(voice -> new VoiceResponse(
-                        voice.getVoiceId(),
+                        voice.getId(),
                         voice.getUser().getPersonalId(),
                         voice.getUser().getProfileImageUrl(),
                         voice.getAudioUrl()
