@@ -51,7 +51,11 @@ import YUp from '@/assets/alphabets/Y-U.png';
 import ZLow from '@/assets/alphabets/Z-L.png';
 import ZUp from '@/assets/alphabets/Z-U.png';
 
-export const alphabetImages = {
+interface AlphabetImages {
+  [key: string]: { upper: string; lower: string };
+}
+
+export const alphabetImages: AlphabetImages = {
   a: { upper: AUp, lower: ALow },
   b: { upper: BUp, lower: BLow },
   c: { upper: CUp, lower: CLow },
