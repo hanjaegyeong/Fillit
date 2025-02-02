@@ -5,7 +5,7 @@ import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceReplyData {
   id: string;
-  user_id: string;
+  userId: string; // ✅ user_id → userId (카멜 케이스 적용)
 }
 
 interface VoiceReplyModalProps {
@@ -45,7 +45,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${replyData.user_id}`}
+            src={`https://i.pravatar.cc/150?u=${replyData.userId}`} // ✅ user_id → userId
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
