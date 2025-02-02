@@ -1,9 +1,9 @@
 export interface VoiceReplyData {
   id: string;
-  audio_url: string;
-  created_at: string;
-  user_id: string;
-  voice_id: string;
+  audioUrl: string;
+  createdAt: string;
+  userId: string;
+  voiceId: string;
 }
 
 interface VoiceReplyItemProps {
@@ -20,7 +20,7 @@ const VoiceReplyItem = ({ data, onReplyClick }: VoiceReplyItemProps) => {
       <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden mb-2">
         {/* 나중에 실제 프로필 이미지로 교체 */}
         <img
-          src={`https://i.pravatar.cc/150?u=${data.user_id}`}
+          src={`https://i.pravatar.cc/150?u=${data.userId}`}
           alt="profile"
           className="w-full h-full object-cover"
         />

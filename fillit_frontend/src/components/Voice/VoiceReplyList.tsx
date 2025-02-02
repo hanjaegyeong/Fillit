@@ -12,10 +12,10 @@ const VoiceReplyList = () => {
   // 임시 데이터 배열
   const mockReplies: VoiceReplyData[] = Array.from({ length: 10 }, (_, i) => ({
     id: `${i + 1}`,
-    audio_url: `https://example.com/audio${i + 1}.mp3`,
-    created_at: new Date().toISOString(),
-    user_id: `user${i + 1}`,
-    voice_id: 'voice1',
+    audioUrl: `https://example.com/audio${i + 1}.mp3`,
+    createdAt: new Date().toISOString(),
+    userId: `user${i + 1}`,
+    voiceId: 'voice1',
   }));
 
   const handleReplyClick = (replyId: string) => {

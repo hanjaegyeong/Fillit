@@ -9,7 +9,7 @@ interface VoiceListenModalProps {
   voiceData:
     | {
         name: string;
-        personal_id: string;
+        personalId: string;
       }
     | undefined;
   isOpen: boolean;
