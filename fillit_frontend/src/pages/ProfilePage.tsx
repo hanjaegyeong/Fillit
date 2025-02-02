@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header';
 import ProfileImage from '@/components/common/ProfileImage';
 import { getPaperText } from '@/utils/getPaperText';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const ProfilePage = () => {
   const [paperText, setPaperText] = useState<string>('');
