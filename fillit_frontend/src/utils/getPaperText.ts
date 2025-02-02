@@ -8,17 +8,17 @@ const RENDER_CONFIG = {
   },
   SPACING: {
     TWO_LETTERS: 0.8, // 2글자 일 때 간격
-    THREE_TO_FOUR: 0.6, // 3~4글자 일 때 간격
-    FIVE_PLUS: 0.55, //5글자 이상일 때 간격
+    THREE_TO_FOUR: 0.7, // 3~4글자 일 때 간격
+    FIVE_PLUS: 0.65, //5글자 이상일 때 간격
   },
   SIZE: {
     BASE_FACTOR: 40,
     MIN_BASE: 35,
-    FIRST_LETTER: 1.4, // 첫 글자 크기 배수
-    LAST_LETTER: 1.2, // 마지막 글자 크기 배수
+    FIRST_LETTER: 1.6, // 첫 글자 크기 배수
+    LAST_LETTER: 1.4, // 마지막 글자 크기 배수
   },
   CURVE: {
-    HEIGHT: 8,
+    HEIGHT: 14,
     ANGLE: 0.15,
   },
 } as const;
@@ -150,9 +150,9 @@ export const getPaperText = async (
   const ctx = canvas.getContext('2d');
   if (!ctx) return null; // 캔버스 생성 실패 시 종료
 
-  // 캔버스 크기 설정
-  canvas.width = containerSize * 2; // 가로
-  canvas.height = containerSize * 1.5; // 세로
+  // 캔버스 크기를 더 작게 조정
+  canvas.width = containerSize * 2;
+  canvas.height = containerSize * 0.8;
 
   // 선명하게 그리기 위한 설정
   ctx.imageSmoothingEnabled = true; // 이미지 확대/축소 시 부드럽게 표시
@@ -163,13 +163,12 @@ export const getPaperText = async (
     // 기본 글자 크기 계산
     baseSize:
       Math.max(
-        RENDER_CONFIG.SIZE.MIN_BASE, // 최소 35
-        RENDER_CONFIG.SIZE.BASE_FACTOR * (containerSize / 101) // 40*비율
-      ) * calculateLetterSize(text.length), // 글자 수에 따라 크기 조정
-
-    startY: canvas.height / 2 + 10, // 세로 중앙에서 살짝 아래
-    canvasWidth: canvas.width, //캔버스 가로
-    canvasHeight: canvas.height, // 캔버스 세로
+        RENDER_CONFIG.SIZE.MIN_BASE,
+        RENDER_CONFIG.SIZE.BASE_FACTOR * (containerSize / 101)
+      ) * calculateLetterSize(text.length),
+    startY: canvas.height / 2, // 중앙 정렬을 위해 수정
+    canvasWidth: canvas.width,
+    canvasHeight: canvas.height,
   };
 
   // 글자 이미지 로드
