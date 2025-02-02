@@ -3,7 +3,7 @@ import TimeStamp from '@/components/common/Timestamp';
 import LikeBadge from '@/components/common/Badge/LikeBadge';
 import ProfileBadge from '@/components/common/Badge/ProfileBadge';
 import { getBackgroundImage } from '@/utils/getBackgroundImage';
-import CommentBadge from '../common/Badge/CommentBadge';
+import CommentBadge from '@/components/common/Badge/CommentBadge';
 import { useNavigate } from 'react-router-dom';
 
 interface ArticleItemProps {

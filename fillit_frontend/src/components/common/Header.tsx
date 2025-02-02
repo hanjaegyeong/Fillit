@@ -1,10 +1,10 @@
 import ProfileImage from '@/components/common/ProfileImage';
-import BackButton from './Button/BackButton';
-import LogoButton from './Button/LogoButton';
-import NotificationButton from './Button/NotificationButton';
-import MenuTabButton from './Button/MenuTabButton';
-import RegistButton from './Button/RegistButton';
-import SearchInput from './Button/SearchInput';
+import BackButton from '@/components/common/Button/BackButton';
+import LogoButton from '@/components/common/Button/LogoButton';
+import NotificationButton from '@/components/common/Button/NotificationButton';
+import MenuTabButton from '@/components/common/Button/MenuTabButton';
+import RegistButton from '@/components/common/Button/RegistButton';
+import SearchInput from '@/components/common/Button/SearchInput';
 
 interface HeaderProps {
   left?: 'back' | 'home';
@@ -28,8 +28,8 @@ const Header = ({
   searchPlaceholder = 'Search',
 }: HeaderProps) => {
   return (
-    <header className="fixed w-full top-0 h-[3.6rem] bg-white border-b flex justify-between items-center px-4">
-      <div className="flex gap-3 items-center">
+    <header className="fixed w-full top-0 h-[3.6rem] bg-white border-b flex justify-between items-center px-4 z-10">
+      <div className="flex items-center gap-3">
         {left === 'back' && <BackButton />}
         {left === 'home' && <LogoButton />}
         {profileImage && <ProfileImage src={profileImage} />}

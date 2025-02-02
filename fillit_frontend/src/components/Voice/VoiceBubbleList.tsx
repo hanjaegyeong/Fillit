@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import VoiceBubbleItem from './VoiceBubbleItem';
-import VoiceListenModal from './Modals/VoiceListenModal';
+import VoiceBubbleItem from '@/components/Voice/VoiceBubbleItem';
+import VoiceListenModal from '@/components/Voice/Modals/VoiceListenModal';
 
 interface VoiceBubbleData {
   name: string;
