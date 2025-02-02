@@ -2,13 +2,13 @@ import { profileBubble, playIcon, voiceWrapper } from '@/assets/assets';
 
 interface VoiceBubbleItemProps {
   name: string;
-  personal_id: string;
+  personalId: string;
   onPlayClick: () => void;
 }
 
 const VoiceBubbleItem = ({
   name,
-  personal_id,
+  personalId,
   onPlayClick,
 }: VoiceBubbleItemProps) => {
   return (
@@ -35,7 +35,7 @@ const VoiceBubbleItem = ({
       {/* 텍스트 */}
       <div className="flex-1">
         <p className="font-bold text-lg truncate">{name}</p>
-        <p className="text-gray-500 text-sm truncate">@{personal_id}</p>
+        <p className="text-gray-500 text-sm truncate">@{personalId}</p>
       </div>
       {/* 플레이버튼 */}
       <button
