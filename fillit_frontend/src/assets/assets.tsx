@@ -70,8 +70,9 @@ import SportsIcon from '@/assets/icons/tags-icon/sports.svg';
 import TechIcon from '@/assets/icons/tags-icon/tech.svg';
 import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 
-// keyword
+// profile
 import keyword from '@/assets/images/keyword.png';
+import RippedProfile from '@/assets/icons/profile-ripped.svg';
 
 export {
   HomeInactiveIcon,
@@ -131,4 +132,5 @@ export {
   TechIcon,
   TravelIcon,
   keyword,
+  RippedProfile,
 };
