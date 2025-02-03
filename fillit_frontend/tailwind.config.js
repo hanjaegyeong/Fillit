@@ -11,9 +11,9 @@ export default {
         small: '10px',
       },
       backgroundImage: {
-        'home-bg': "url('/images/bg-image.png')",
+        home: "url('/images/bg-image.png')",
       },
     },
   },
-  plugins: [],
+  plugins: ['tailwind-scrollbar-hide'],
 };

@@ -18,7 +18,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <>
+    <div className="container-header-nav">
       <Header left="home" right="menu" />
       <div className="flex justify-center pt-20">
         <div className="flex flex-col items-center">
@@ -40,7 +40,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
