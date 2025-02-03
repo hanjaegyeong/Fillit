@@ -1,14 +1,16 @@
 package com.social.a406.domain.board.service;
 
+import com.social.a406.domain.board.dto.BoardProfileResponse;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.event.BoardCreatedEvent;
 import com.social.a406.domain.board.event.BoardDeletedEvent;
-import com.social.a406.domain.board.event.BoardCreatedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
+import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -184,24 +186,30 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
-    private BoardResponse mapToResponseDto(Board board) {
+    // Board 엔티티를 Response DTO로 변환
+    private BoardResponse mapToResponseDto(Board board, List<String> imageUrls, List<String> interests) {
         return BoardResponse.builder()
-                .boardId(board.getBoardId())
+                .boardId(board.getId())
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
+                .profileImage(board.getUser().getProfileImageUrl())
                 .likeCount(board.getLikeCount())
+                .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .x(board.getX())
                 .y(board.getY())
                 .z(board.getZ())
                 .keyword(board.getKeyword())
                 .pageNumber(board.getPageNumber())
+                .imageUrls(imageUrls)
+                .interests(interests)
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
     }
 
+    @Transactional
     public List<String> saveBoardImage(Long boardId, List<MultipartFile> files) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board to save Image")
         );
         List<String> imageUrls = new ArrayList<>();
@@ -217,7 +225,9 @@ public class BoardService {
         return imageUrls;
     }
 
+
     //이미지 저장
+    // 이미지 저장
     @Transactional
     public String saveBoardImageAtS3(Long boardId, MultipartFile file) {
         try{
