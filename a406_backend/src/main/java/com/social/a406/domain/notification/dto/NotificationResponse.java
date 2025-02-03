@@ -4,8 +4,8 @@ import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.entity.NotificationType;
 
 public record NotificationResponse(
-        String receiverNickname,
-        String SenderNickname,
+        String receiverPersonalId,
+        String SenderPersonalId,
         NotificationType type,
         Long referenceId
 ) {

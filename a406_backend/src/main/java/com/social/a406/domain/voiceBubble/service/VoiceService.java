@@ -4,6 +4,7 @@ import com.social.a406.domain.follow.entity.Follow;
 import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
 import jakarta.transaction.Transactional;
@@ -78,14 +79,23 @@ public class VoiceService {
     }
 
     // 팔로워들 음성 스토리 리스트 가져오기
-    public List<Voice> findFollwerVoices(String personalId) {
-        User user = userRepository.findByPersonalId(personalId).orElse(null);
-        List<Follow> followers = followRepository.findByFollower(user);
-        List<User> users = followers.stream().map(follow -> follow.getFollower())  // follower의 follower를 가져옴
-                .collect(Collectors.toList());
-        List<Voice> voices = voiceRepository.findAllByUserIdInOrderByCreatedAtDesc(users);
-
-        return voices;
+    public List<VoiceResponse> findFollweeVoices(String personalId) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new IllegalArgumentException("User not found with personalId: " + personalId));
+        List<Follow> follows = followRepository.findByFollower(user);
+        List<User> users = follows.stream().map(Follow::getFollowee)  // follower의 followee를 가져옴
+                .toList();
+        List<String> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        List<Voice> voices = voiceRepository.findAllByUser_IdInOrderByCreatedAtDesc(userIds);
+        List<VoiceResponse> responses = voices.stream()
+                .map(voice -> new VoiceResponse(
+                        voice.getId(),
+                        voice.getUser().getPersonalId(),
+                        voice.getUser().getProfileImageUrl(),
+                        voice.getAudioUrl()
+                ))
+                .toList();
+        return responses;
     }
 
     // 음성 스토리 삭제

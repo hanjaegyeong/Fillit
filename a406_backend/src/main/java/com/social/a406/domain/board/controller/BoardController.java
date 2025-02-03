@@ -1,13 +1,18 @@
 package com.social.a406.domain.board.controller;
 
+import com.social.a406.domain.board.dto.BoardProfileResponse;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/board")
@@ -18,28 +23,60 @@ public class BoardController {
     private final AiScheduler aiScheduler;
 
     @PostMapping
-    public BoardResponse createBoard(
-            @RequestBody BoardRequest boardRequest,
+    public ResponseEntity<BoardResponse> createBoard(
+            @RequestPart("board") BoardRequest boardRequest,
+            @RequestPart(value = "boardImages", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetails userDetails) {
         // 게시글 생성
-        BoardResponse boardResponse = boardService.createBoard(boardRequest, userDetails);
+        BoardResponse boardResponse = boardService.createBoard(boardRequest, userDetails, files);
 
         // 30초 후 AI 댓글 생성 스케줄링
         aiScheduler.scheduleCommentCreation(boardResponse.getBoardId(), boardResponse.getPersonalId());
 
-        return boardResponse;
+        return ResponseEntity.ok(boardResponse);
     }
 
     @GetMapping("/{boardId}")
-    public BoardResponse getBoard(@PathVariable Long boardId) {
-        return boardService.getBoardById(boardId);
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
+        BoardResponse boardResponse = boardService.getBoardById(boardId);
+        return ResponseEntity.ok(boardResponse);
     }
 
     @PutMapping("/{boardId}")
-    public BoardResponse updateBoard(
+    public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long boardId,
-            @RequestBody BoardRequest boardRequest,
+            @RequestPart("board") BoardRequest boardRequest,
+            @RequestPart(value = "boardImages", required = false) List<MultipartFile> newFiles,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return boardService.updateBoard(boardId, boardRequest, userDetails);
+        BoardResponse boardResponse = boardService.updateBoard(boardId, boardRequest, userDetails, newFiles);
+
+        return ResponseEntity.ok(boardResponse);
+    }
+
+    // 유저 게시글 조회
+    @GetMapping("/user")
+    public ResponseEntity<List<BoardResponse>> getUserBoard(@AuthenticationPrincipal UserDetails userDetails){
+        List<BoardResponse> boardResponses = boardService.getBoardByUser(userDetails.getUsername());
+        return ResponseEntity.ok(boardResponses);
+    }
+
+    // 내 프로필 게시글 조회
+    @GetMapping("/profile")
+    public ResponseEntity<List<BoardProfileResponse>> getUserProfileBoard(@AuthenticationPrincipal UserDetails userDetails){
+        List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(userDetails.getUsername());
+        return ResponseEntity.ok(responses);
+    }
+
+    // 다른 사람 프로필 게시글 조회
+    @GetMapping("/{personalId}/profile")
+    public ResponseEntity<List<BoardProfileResponse>> getOtherUserProfileBoard(@PathVariable String personalId){
+        List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(personalId);
+        return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId){
+        boardService.deleteBoard(boardId);
+        return ResponseEntity.ok("Success to delete board");
     }
 }

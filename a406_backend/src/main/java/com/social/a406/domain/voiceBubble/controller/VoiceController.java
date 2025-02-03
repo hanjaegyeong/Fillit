@@ -36,22 +36,18 @@ public class VoiceController {
     public ResponseEntity<VoiceResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
 
-        VoiceResponse response = new VoiceResponse(voice.getId(),voice.getAudioUrl());
+        VoiceResponse response = new VoiceResponse(voice.getId(),
+                voice.getUser().getPersonalId(),
+                voice.getUser().getProfileImageUrl(),
+                voice.getAudioUrl());
 
         return ResponseEntity.ok(response);
     }
 
-    // 팔로워들 음성 스토리 가져오기
+    // 팔로위들 음성 스토리 가져오기
     @GetMapping("/list")
     public ResponseEntity<List<VoiceResponse>> getListVoices(@AuthenticationPrincipal UserDetails userDetails){
-        List<Voice> voices = voiceService.findFollwerVoices(userDetails.getUsername());
-
-        List<VoiceResponse> responses = voices.stream()
-                .map(voice -> new VoiceResponse(
-                        voice.getId(),
-                        voice.getAudioUrl()
-                ))
-                .toList();
+        List<VoiceResponse> responses = voiceService.findFollweeVoices(userDetails.getUsername());
         return ResponseEntity.ok(responses);
     }
 
