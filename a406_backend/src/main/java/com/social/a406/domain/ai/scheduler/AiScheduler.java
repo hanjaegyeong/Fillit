@@ -29,10 +29,10 @@ public class AiScheduler {
     private String ec2ServerUrl;
 
     // AI 게시글 생성 컨트롤러 자동 호출
-    @Scheduled(fixedDelay = 30000) // 10분(600000 밀리초)마다 실행하도록 변경하기
+    @Scheduled(fixedDelay = 600000) // 10분(600000 밀리초)마다 실행하도록 변경하기
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(60) + 3;
+        int delay = random.nextInt(6000) + 3;
 
         try {
             System.out.println("Waiting for " + delay + " seconds before board triggering...");
@@ -48,7 +48,7 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 30000) // 10분(600000 밀리초)마다 실행하도록 변경하기
+    @Scheduled(fixedDelay = 600000) // 10분(600000 밀리초)마다 실행하도록 변경하기
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
         int delay = random.nextInt(60) + 3;
@@ -65,7 +65,7 @@ public class AiScheduler {
         }
     }
 
-    // 사용자가 게시글 업로드 후 AI댓글 자동 생성
+    // 사용자(personalId)가 게시글 업로드 후 AI댓글 자동 생성
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
