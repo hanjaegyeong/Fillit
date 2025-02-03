@@ -52,6 +52,9 @@ import caution from '@/assets/icons/caution.svg';
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
 
+// keyword
+import keyword from '@/assets/images/keyword.png';
+
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -94,4 +97,5 @@ export {
   sound,
   caution,
   searchIcon,
+  keyword,
 };
