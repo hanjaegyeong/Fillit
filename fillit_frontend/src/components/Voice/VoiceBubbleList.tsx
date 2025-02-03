@@ -4,7 +4,7 @@ import VoiceListenModal from '@/components/Voice/Modals/VoiceListenModal';
 
 interface VoiceBubbleData {
   name: string;
-  personal_id: string;
+  personalId: string;
 }
 
 const VoiceBubbleList = () => {
@@ -13,17 +13,17 @@ const VoiceBubbleList = () => {
 
   // 임시데이터
   const items: VoiceBubbleData[] = [
-    { name: 'Alex', personal_id: 'chocolate' },
-    { name: 'George', personal_id: 'gowithout' },
-    { name: 'Karen', personal_id: 'potato153' },
-    { name: 'Alex', personal_id: 'chocolate2' },
-    { name: 'Alex', personal_id: 'chocolate3' },
-    { name: 'George', personal_id: 'gowithout2' },
-    { name: 'Karen', personal_id: 'potato154' },
+    { name: 'Alex', personalId: 'chocolate' },
+    { name: 'George', personalId: 'gowithout' },
+    { name: 'Karen', personalId: 'potato153' },
+    { name: 'Alex', personalId: 'chocolate2' },
+    { name: 'Alex', personalId: 'chocolate3' },
+    { name: 'George', personalId: 'gowithout2' },
+    { name: 'Karen', personalId: 'potato154' },
   ];
 
-  const handlePlayClick = (personal_id: string) => {
-    setSelectedVoice(personal_id);
+  const handlePlayClick = (personalId: string) => {
+    setSelectedVoice(personalId);
     setIsModalOpen(true);
   };
 
@@ -39,16 +39,16 @@ const VoiceBubbleList = () => {
         <div className="w-full overflow-y-auto max-h-[calc(100vh-400px)] hide-scrollbar">
           {items.map((item) => (
             <VoiceBubbleItem
-              key={item.personal_id}
+              key={item.personalId}
               {...item}
-              onPlayClick={() => handlePlayClick(item.personal_id)}
+              onPlayClick={() => handlePlayClick(item.personalId)}
             />
           ))}
         </div>
       </div>
 
       <VoiceListenModal
-        voiceData={items.find((item) => item.personal_id === selectedVoice)}
+        voiceData={items.find((item) => item.personalId === selectedVoice)}
         isOpen={isModalOpen}
         onClose={handleModalClose}
       />
