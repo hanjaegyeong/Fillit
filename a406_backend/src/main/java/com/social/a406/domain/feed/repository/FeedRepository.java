@@ -1,5 +1,6 @@
 package com.social.a406.domain.feed.repository;
 
+import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.feed.entity.Feed;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +12,14 @@ import java.util.List;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
-    @Query("SELECT f FROM Feed f WHERE f.user.userId = :userId AND f.addedAt < :cursor ORDER BY f.addedAt DESC")
-    List<Feed> findByUserIdAndAddedAtBefore(@Param("userId") Long userId,
+    @Query(
+            value = "SELECT f FROM Feed f WHERE f.user.id = :userId AND f.addedAt < :cursor ORDER BY f.addedAt DESC",
+            countQuery = "SELECT COUNT(f) FROM Feed f WHERE f.user.id = :userId AND f.addedAt < :cursor"
+    )
+    List<Feed> findByUserIdAndAddedAtBefore(@Param("userId") String userId,
                                             @Param("cursor") LocalDateTime cursor,
                                             Pageable pageable);
+
+
+    List<Feed> findByBoard(Board board);
 }

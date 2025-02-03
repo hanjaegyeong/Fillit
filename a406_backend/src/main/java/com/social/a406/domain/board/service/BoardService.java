@@ -4,12 +4,15 @@ import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
+import com.social.a406.domain.board.event.BoardCreatedEvent;
+import com.social.a406.domain.board.event.BoardDeletedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,8 @@ public class BoardService {
     private final UserRepository userRepository;
     private final S3Client s3Client;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -45,7 +50,9 @@ public class BoardService {
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
-        return mapToResponseDto(boardRepository.save(board));
+        Board savedBoard = boardRepository.save(board);
+        eventPublisher.publishEvent(new BoardCreatedEvent(this, savedBoard)); // 이벤트발행
+        return mapToResponseDto(savedBoard);
     }
 
     // AI 게시글 생성
@@ -255,7 +262,9 @@ public class BoardService {
             // 이미지 삭제 실패 처리 (예: 로그 기록)
             throw new RuntimeException("이미지 삭제 실패: " + e.getMessage(), e);  // 필요시 예외를 다시 던지기
         }
+        eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
         boardRepository.delete(board);
+
     }
 
     // 게시글 이미지 삭제
