@@ -2,6 +2,7 @@ package com.social.a406.domain.user.controller;
 
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
