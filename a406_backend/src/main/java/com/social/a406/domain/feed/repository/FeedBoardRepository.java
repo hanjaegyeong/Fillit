@@ -20,13 +20,12 @@ public interface FeedBoardRepository extends JpaRepository<Board, Long> {
     // 추천 게시물 조회: 관심사와 일치하며, 좋아요 수가 최소 10, 최근 3일 내에 생성된 게시물을 조회
     @Query("SELECT DISTINCT b FROM Board b " +
             "JOIN b.user u " +
-            "JOIN com.social.a406.domain.interest.entity.UserInterest ui ON u.Id = ui.user.Id " +
-            "JOIN ui.interest i " +
-            "WHERE i.content = :interest " +
+            "JOIN com.social.a406.domain.interest.entity.UserInterest ui ON ui.user = u " +
+            "WHERE ui.interest.Id = :interestId " +
             "AND b.likeCount >= :minLikes " +
             "AND b.createdAt >= :threeDaysAgo " +
             "ORDER BY b.createdAt DESC")
-    List<Board> findRecommendedBoards(@Param("interest") String interest,
+    List<Board> findRecommendedBoards(@Param("interestId") Long interestId,
                                       @Param("minLikes") Integer minLikes,
                                       @Param("threeDaysAgo") LocalDateTime threeDaysAgo,
                                       Pageable pageable);

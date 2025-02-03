@@ -44,8 +44,8 @@ public class FeedService {
 
         // 2. 사용자 관심사 조회 (매핑 테이블)
         List<UserInterest> userInterests = userInterestRepository.findByUser_Id(userId);
-        List<String> interests = userInterests.stream()
-                .map(ui -> ui.getInterest().getContent().trim())
+        List<Long> interests = userInterests.stream()
+                .map(ui -> ui.getInterest().getId())
                 .collect(Collectors.toList());
 
         // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 80% 비율)
@@ -59,7 +59,7 @@ public class FeedService {
         // 4. 추천 게시물 조회 – 풀 방식 (조건: 관심사 동일, 최근 3일, 좋아요 수 ≥ 10)
         int recommendedLimit = limit - friendBoards.size();
         List<Board> recommendedBoards = new ArrayList<>();
-        for (String interest : interests) {
+        for (Long interest : interests) {
             PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 2, Sort.by("createdAt").descending());
             List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
                     10,
