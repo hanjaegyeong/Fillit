@@ -128,10 +128,8 @@ public class CommentService {
     }
 
     private void generateCommentNotification(Comment comment){
-        User receiver = userRepository.findByPersonalId(comment.getBoard().getUser().getPersonalId()).orElse(null); // 게시글을 생성한 user
-        if(receiver == null) throw new IllegalArgumentException("receiver not found");
-        User sender = userRepository.findByPersonalId(comment.getUser().getPersonalId()).orElse(null); // 게시글에 댓글을 작성한 user
-        if(sender == null) throw new IllegalArgumentException("sender not found");
+        User receiver = comment.getBoard().getUser(); // 게시글 작성자
+        User sender = comment.getUser(); // 댓글 작성자
 
         Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
 
