@@ -70,7 +70,7 @@ public class FeedService {
         // 중복 제거 및 랜덤 섞기
         Set<Long> recSet = new HashSet<>();
         recommendedBoards = recommendedBoards.stream()
-                .filter(b -> recSet.add(b.getBoardId()))
+                .filter(b -> recSet.add(b.getId()))
                 .collect(Collectors.toList());
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
@@ -97,7 +97,7 @@ public class FeedService {
 
     private PostDto convertToDto(Board board, Boolean isRecommended) {
         PostDto dto = PostDto.builder()
-                .boardId(board.getBoardId())
+                .boardId(board.getId())
                 .userId(board.getUser().getId())
                 .content(board.getContent())
                 .likeCount(board.getLikeCount())
