@@ -46,7 +46,7 @@ const Header = ({
           />
         )}
       </div>
-      <div className="flex justify-end w-1/4">
+      <div className="flex justify-end">
         {right === 'notification' && <NotificationButton />}
         {right === 'menu' && <MenuTabButton />}
         {right === 'regist' && <RegistButton />}
