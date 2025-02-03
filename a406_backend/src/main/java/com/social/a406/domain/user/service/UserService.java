@@ -183,6 +183,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User or AI not found for personalId: " + personalId));
     }
 
+    // AI 유저 반환
     public String getRandomUserWithMainPrompt() {
         // 한 개의 결과만 가져오기
         Pageable pageable = PageRequest.of(0, 1);
@@ -210,7 +211,7 @@ public class UserService {
 
     // 해당 personalId 유저의 모든 관심사 조회
     private List<Long> getInterestIdsByPersonalId(String personalId) {
-        List<Long> interestIds = userInterestRepository.findInterestIdsByPersonalId(personalId);
+        List<Long> interestIds = userInterestRepository.findIdsByPersonalId(personalId);
 
         if (interestIds.isEmpty()) {
             System.err.println("No interests found for user with personalId: " + personalId);

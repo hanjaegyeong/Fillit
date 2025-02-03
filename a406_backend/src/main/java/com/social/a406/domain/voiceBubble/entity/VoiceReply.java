@@ -21,7 +21,7 @@ public class VoiceReply {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voice_id", nullable = false)
+    @JoinColumn(name = "voice_voice_id", nullable = false)
     private Voice voice;
 
     @ManyToOne(fetch = FetchType.LAZY)

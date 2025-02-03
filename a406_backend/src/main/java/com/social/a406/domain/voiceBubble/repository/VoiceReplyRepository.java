@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface VoiceReplyRepository extends JpaRepository<VoiceReply, Long> {
     Optional<VoiceReply> findVoiceReplyById(Long voiceReplyId);
     List<VoiceReply> findByVoiceId(Long voiceId);
-    void deleteVoiceRepliesByVoiceId(Long voiceId);
 }

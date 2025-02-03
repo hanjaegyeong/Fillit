@@ -3,7 +3,7 @@ package com.social.a406.domain.voiceBubble.dto;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 
 public record VoiceReplyResponse(
-        Long id,
+        Long voiceReplyId,
         String personalId,
         String profileImageUrl,
         String audioUrl

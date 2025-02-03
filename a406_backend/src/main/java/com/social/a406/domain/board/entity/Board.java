@@ -1,5 +1,6 @@
 package com.social.a406.domain.board.entity;
 
+import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +20,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardId;
+    private Long id;
 
     @Column(length = 2000)
     private String content;
@@ -29,8 +32,8 @@ public class Board {
     @Column(nullable = false)
     private Long likeCount = 0L;
 
-//    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // x 좌표
     @Column(nullable = false)
@@ -39,6 +42,10 @@ public class Board {
     // y 좌표
     @Column(nullable = false)
     private Double y;
+
+    // z좌표
+    @Column(nullable = false)
+    private Double z;
 
     // 키워드 (최대 8자 제한)
     @Column(length = 8)
@@ -57,12 +64,13 @@ public class Board {
     private boolean isDeleted;
 
     @Builder
-    public Board(String content, User user, Long likeCount, Double x, Double y, String keyword, Integer pageNumber) {
+    public Board(String content, User user, Long likeCount, Double x, Double y, Double z, String keyword, Integer pageNumber) {
         this.content = content;
         this.user = user;
         this.likeCount = likeCount == null ? 0L : likeCount;
         this.x = x;
         this.y = y;
+        this.z = z;
         this.keyword = keyword;
         this.pageNumber = pageNumber;
     }
