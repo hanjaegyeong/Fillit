@@ -5,15 +5,13 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Data
+@Builder
 public class PostDto {
     private Long boardId;
-    private Long userId;
+    private String userId;
     private String content;
-    private Integer likeCount;
+    private Long likeCount;
     private LocalDateTime createdAt;
     private Boolean isRecommended;
-
-    // getters and setters
 }

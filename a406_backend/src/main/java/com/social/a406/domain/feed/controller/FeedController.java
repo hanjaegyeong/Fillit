@@ -21,21 +21,13 @@ public class FeedController {
     @Autowired
     private FeedService feedService;
 
-    /**
-     * 피드 조회 엔드포인트
-     * @param userDetail SecurityContext에서 가져온 사용자 상세 정보
-     * @param limit 조회할 게시물 수
-     * @param cursor 마지막으로 본 게시물의 createdAt (선택적)
-     * @return 피드 응답 DTO
-     */
-
     @GetMapping
     public ResponseEntity<FeedResponseDto> getFeed(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetails userDetail,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor) {
-
-        FeedResponseDto feed = feedService.getFeed(userDetails, limit, cursor);
+        String personalId = userDetail.getUsername();
+        FeedResponseDto feed = feedService.getFeed(personalId, limit, cursor);
         return ResponseEntity.ok(feed);
     }
 }
