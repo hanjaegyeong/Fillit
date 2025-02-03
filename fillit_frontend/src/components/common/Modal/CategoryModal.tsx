@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import BasicButton from '@/components/common/Button/BasicButton';
-import InterestTags from '@/components/common/Tags';
+import InterestTags from '../InterestTags';
 import Modal from '@/components/common/Modal/Modal';
 
 interface CategoryModalProps {
@@ -40,7 +40,6 @@ export const CategoryModal = ({
         <div className="flex-1 flex items-center justify-center -mt-11">
           <div className="scale-90">
             <InterestTags
-              singleSelect={true}
               onSelect={handleCategorySelect}
               selectedTag={selectedCategory}
             />
