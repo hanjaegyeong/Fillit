@@ -29,12 +29,15 @@ const VoiceReplyList = () => {
   };
 
   return (
-    <div className="relative">
-      <div className="absolute w-[95%] h-auto top-[90px] left-1/2 transform -translate-x-1/2">
-        <img src={replyBar} alt="reply-bar" className="w-full h-auto" />
-        <div className="absolute inset-0 flex items-center justify-center translate-y-[6px]">
-          <div className="w-[88%] overflow-x-auto hide-scrollbar -translate-x-1">
-            <div className="flex items-center justify-start gap-4 min-w-min px-6">
+    <>
+      <div className="flex flex-col z-10 pt-5">
+        <h4 className="text-lg pl-4 mb-2">Voice Replies</h4>
+        <div
+          className="w-[370px] bg-contain bg-no-repeat py-2.5 px-2"
+          style={{ backgroundImage: `url(${replyBar})` }}
+        >
+          <div className="max-w-full overflow-x-auto hide-scrollbar -translate-x-1 rounded-full px-2">
+            <div className="flex items-center space-x-4">
               {mockReplies.map((reply) => (
                 <VoiceReplyItem
                   key={reply.id}
@@ -51,7 +54,7 @@ const VoiceReplyList = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
       />
-    </div>
+    </>
   );
 };
 
