@@ -4,6 +4,7 @@ import com.social.a406.domain.follow.dto.FollowRequest;
 import  com.social.a406.domain.follow.service.FollowService;
 import  com.social.a406.domain.follow.entity.Follow;
 import  com.social.a406.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,13 +16,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/follows")
+@RequiredArgsConstructor
 public class FollowController {
 
     private final FollowService followService;
 
-    public FollowController(FollowService followService) {
-        this.followService = followService;
-    }
     // 팔로우 기능
     @PostMapping("/follow")
     public ResponseEntity<String> followUser
@@ -44,7 +43,7 @@ public class FollowController {
         boolean isFollowed = followService.followUser(follower, followee);
 
         if (isFollowed) {
-            return ResponseEntity.ok("Followed successfully");
+            return ResponseEntity.status(201).body("Followed successfully");
         } else {
             return ResponseEntity.badRequest().body("Follow failed");
         }

@@ -6,6 +6,7 @@ import com.social.a406.domain.chat.entity.ChatMessage;
 import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,15 +18,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/chat")
+@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
-
-    @Autowired
-    public ChatController(ChatService chatService) {
-        this.chatService = chatService;
-    }
-
 
     // 메세지 저장
     @PostMapping("/messages")
@@ -35,7 +31,7 @@ public class ChatController {
         String userId = user.getId();
 
         ChatMessage message = chatService.saveMessageAndUpdateRoom(userId, request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.status(201).body(message);
     }
 
     //채팅방 입장 - 메세지 목록 가져오기
@@ -71,7 +67,7 @@ public class ChatController {
         }
         // 채팅메세지 목록 보여주기
 //        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoom.get().getChatRoomId());
-        return ResponseEntity.ok(chatRoom.get());
+        return ResponseEntity.status(201).body(chatRoom.get());
     }
 
     // 채팅방 목록 가져오기

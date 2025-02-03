@@ -3,8 +3,8 @@ package com.social.a406.domain.oauth.service;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
 import com.social.a406.domain.user.service.CustomUserDetailsService;
 import com.social.a406.util.JwtTokenUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +14,11 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class OauthService {
 
     CustomUserDetailsService customUserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    public OauthService(CustomUserDetailsService customUserDetailsService, JwtTokenUtil jwtTokenUtil) {
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.customUserDetailsService = customUserDetailsService;
-    }
-
 
     public Map<String, String> socialLogin(SocialLoginRequest socialLoginRequest) {
         UserDetails userDetails = customUserDetailsService.loadSocialUserBySocialId(socialLoginRequest.getSocialId());
