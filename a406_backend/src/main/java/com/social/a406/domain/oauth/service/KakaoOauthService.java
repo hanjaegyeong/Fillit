@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.oauth.dto.OauthToken;
 import com.social.a406.domain.oauth.dto.OauthUserInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class KakaoOauthService {
     private final RestTemplate restTemplate;
 
@@ -31,10 +33,6 @@ public class KakaoOauthService {
     private String kakaoClientId;
     @Value("${oauth.kakao.client_secret}")
     private String kakaoClientSecret;
-
-    public KakaoOauthService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     // 프론트 개발 후 사용
     public OauthToken getKakaoToken(String code) {
