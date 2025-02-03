@@ -11,6 +11,7 @@ import SocialPage from '@/pages/SocialSignUpPage';
 import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 import NavBar from '@/components/common/NavBar';
+import NewMessage from '@/pages/NewMassagePage';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/socialsignup" element={<SocialPage />} />
         <Route path="/voice" element={<VoicePage />} />
         <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/newmessage" element={<NewMessage />} />
       </Routes>
       <NavBar />
     </>
