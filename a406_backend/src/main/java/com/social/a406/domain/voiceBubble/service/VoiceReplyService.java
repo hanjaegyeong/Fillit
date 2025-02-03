@@ -118,8 +118,8 @@ public class VoiceReplyService {
 
     private void generateVoiceReplyNotification(VoiceReply voiceReply){
         // 음성 답장
-        User receiver = voiceReply.getVoice().getUser();
-        User sender = voiceReply.getUser();
+        User receiver = voiceReply.getVoice().getUser(); // 음성 스토리 작성자
+        User sender = voiceReply.getUser(); // 음성 스토리 답장 작성자
         Long referenceId = voiceReply.getVoice().getId();
         notificationService.createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
         System.out.println("Generate notification about voice reply");
