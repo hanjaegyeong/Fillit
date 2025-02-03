@@ -70,6 +70,9 @@ import SportsIcon from '@/assets/icons/tags-icon/sports.svg';
 import TechIcon from '@/assets/icons/tags-icon/tech.svg';
 import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 
+// keyword
+import keyword from '@/assets/images/keyword.png';
+
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -127,4 +130,5 @@ export {
   SportsIcon,
   TechIcon,
   TravelIcon,
+  keyword,
 };
