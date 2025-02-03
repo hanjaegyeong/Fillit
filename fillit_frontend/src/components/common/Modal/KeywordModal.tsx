@@ -1,4 +1,4 @@
-import { keyword } from '@/assets/assets';
+import { Keyword } from '@/assets/assets';
 import Modal from './Modal';
 import BasicButton from '../Button/BasicButton';
 import { useState } from 'react';
@@ -32,7 +32,7 @@ export const KeywordModal = ({
     <Modal isOpen={isOpen} onClose={onClose} size="big">
       <div>
         <div className="flex justify-center items-center pt-12 ">
-          <img src={keyword} alt="keyword" />
+          <img src={Keyword} alt="keyword" />
         </div>
         <p className="text-xl font-light text-center pt-3">
           These keywords
