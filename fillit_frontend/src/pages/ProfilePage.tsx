@@ -1,42 +1,57 @@
 import Header from '@/components/common/Header';
 import ProfileImage from '@/components/common/ProfileImage';
+import { RippedProfile } from '@/assets/assets';
+import { user } from '@/mocks/fixtures/user';
+import { useEffect, useState } from 'react';
 import { getPaperText } from '@/utils/getPaperText';
-import { useState } from 'react';
 
 const ProfilePage = () => {
-  const [paperText, setPaperText] = useState<string>('');
-  const [inputName, setInputName] = useState<string>('');
+  const [paperImage, setPaperImage] = useState<string | null>(null);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    setInputName(newName);
-
-    // 입력된 텍스트로 paperText 업데이트
-    getPaperText(newName).then((result) => {
-      if (result) setPaperText(result);
-    });
-  };
+  useEffect(() => {
+    const loadPaperText = async () => {
+      const image = await getPaperText(user.name, 192);
+      setPaperImage(image);
+    };
+    loadPaperText();
+  }, []);
 
   return (
     <div className="container-header-nav">
       <Header left="home" right="menu" />
-      <div className="flex justify-center pt-20">
-        <div className="flex flex-col items-center">
-          <ProfileImage size={101} />
-          {paperText && (
-            <div className="-mt-16 ml-4">
-              <img src={paperText} alt="Paper text" />
+      <div className="w-full">
+        <div className="ml-20 -mt-5">
+          {paperImage && (
+            <div className="w-[192px] h-[50px] mb-2 -ml-8 translate-y-28">
+              <img src={paperImage} alt="paper name" className="w-full" />
             </div>
           )}
-          <div className="mt-20">
-            <input
-              type="text"
-              value={inputName}
-              onChange={handleNameChange}
-              placeholder="Enter your name"
-              maxLength={8}
-              className="px-4 py-2 border-2 border-[#b5b4f2] rounded-lg focus:outline-none focus:border-[#596A95]"
-            />
+          <ProfileImage src={user.profileImageUrl} size={101} />
+          <div className="w-[192px] h-[215px] -mt-[150px] -ml-[53px]">
+            <img src={RippedProfile} alt="ripped profile" />
+          </div>
+          <div className="ml-[145px] -mt-[170px]">
+            <h2 className="text-2xl leading-tight">{user.name}</h2>
+            <p className="text-gray-600 font-light text-sm italic -mt-1">
+              @{user.personalId}
+            </p>
+            <div>
+              <div className="w-[135px] bg-[#ffffff1f] px-4 py-1.5 rounded-[999px] shadow-[0px_2px_4px_#00000040] mt-1">
+                <span className="text-sm font-light">follower</span>
+                <span className="ml-4 font-semibol">427</span>
+              </div>
+              <div className="w-[135px] bg-[#ffffff1f] px-4 py-1.5 rounded-[999px] shadow-[0px_2px_4px_#00000040] mt-2">
+                <span className="text-sm font-light">following</span>
+                <span className="ml-2.5">427</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <div className="w-[351px] h-[51px] mt-7 bg-[#ffffff4c] rounded-[5px] flex items-center justify-center">
+            <p className="font-light text-black text-[13px] tracking-[0] leading-[15px] text-center px-8 text-[12px]">
+              {user.introduction}
+            </p>
           </div>
         </div>
       </div>
