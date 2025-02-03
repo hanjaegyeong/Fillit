@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PhotoBorder from '@/assets/images/photo-border.png';
 import Camera from '@/assets/images/camera.png';
 
-const ProfileImageUploader = () => {
+const ImageUpload = () => {
   const [image, setImage] = useState<string | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,4 +44,4 @@ const ProfileImageUploader = () => {
   );
 };
 
-export default ProfileImageUploader;
+export default ImageUpload;
