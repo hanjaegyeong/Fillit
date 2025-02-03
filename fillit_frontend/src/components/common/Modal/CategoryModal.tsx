@@ -16,9 +16,9 @@ export const CategoryModal = ({
 }: CategoryModalProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-  const handleCategorySelect = (tag: string) => {
-    setSelectedCategory(tag);
-  };
+  //   const handleCategorySelect = (tag: string) => {
+  //     setSelectedCategory(tag);
+  //   };
 
   const handleConfirm = () => {
     if (selectedCategory) {
@@ -39,10 +39,7 @@ export const CategoryModal = ({
         </h2>
         <div className="flex-1 flex items-center justify-center -mt-11">
           <div className="scale-90">
-            <InterestTags
-              onSelect={handleCategorySelect}
-              selectedTag={selectedCategory}
-            />
+            <InterestTags />
           </div>
         </div>
         <div className="-mt-1 pb-10 flex justify-center gap-4">
