@@ -3,7 +3,7 @@ import Header from '@/components/common/Header';
 
 const ArticleListPage = () => {
   return (
-    <div className="flex flex-col items-center h-screen">
+    <div className="container-header-nav">
       <Header left="home" right="notification" />
       <ArticleListSection />
     </div>

@@ -5,18 +5,31 @@
 @tailwind utilities;
 
 @layer base {
-  html,
-  body,
-  #root,
-  .app {
-    height: 100%;
-    width: 100%;
+  html {
     font-family: 'Kanit', sans-serif;
   }
 }
 
-body {
-  @apply bg-home-bg bg-cover bg-center bg-fixed;
+@layer components {
+  .container-header-nav {
+    @apply pt-[3.6rem] pb-[6rem] bg-home bg-cover flex flex-col items-center h-screen;
+  }
+  .container-header {
+    @apply pt-[3.6rem] bg-home bg-cover flex flex-col items-center h-screen;
+  }
+}
+
+@media (min-width: 600px) {
+  body,
+  .container,
+  .content,
+  .modal,
+  header,
+  nav {
+    max-width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
 }
 
 /* 스크롤바 숨김 스타일 추가 */

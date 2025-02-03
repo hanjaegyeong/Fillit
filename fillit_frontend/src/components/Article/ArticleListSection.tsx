@@ -3,7 +3,7 @@ import ArticleItem from '@/components/Article/ArticleItem';
 
 const ArticleListSection = () => {
   return (
-    <div className="overflow-x-hidden pb-[8rem] pt-[4.6rem] h-full">
+    <div className="overflow-x-hidden py-2">
       {articleList.map((item, index) => {
         const position = index % 2 ? 'left' : 'right';
 
