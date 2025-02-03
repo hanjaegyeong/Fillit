@@ -20,10 +20,6 @@ const VoiceBubbleItem = ({
         maxWidth: '346px',
         height: '73px',
         position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        marginTop: '20px',
       }}
     >
       {/* 프로필 이미지*/}
