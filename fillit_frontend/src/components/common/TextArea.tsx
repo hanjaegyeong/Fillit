@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-const BioTextarea = () => {
-  const [bio, setBio] = useState("");
+const Textarea = () => {
+  const [bio, setBio] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(event.target.value);
@@ -21,4 +21,4 @@ const BioTextarea = () => {
   );
 };
 
-export default BioTextarea;
+export default Textarea;

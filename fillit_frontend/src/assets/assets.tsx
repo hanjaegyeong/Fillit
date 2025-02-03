@@ -29,6 +29,7 @@ import LikeInactiveIcon from '@/assets/icons/like-outline.svg';
 
 // comment
 import CommentIcon from '@/assets/icons/comment.svg';
+
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
 import mic from '@/assets/icons/mic.svg';
@@ -51,6 +52,23 @@ import caution from '@/assets/icons/caution.svg';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
+
+//interestTag
+import ArtIcon from '@/assets/icons/tags-icon/art.svg';
+import BeautyIcon from '@/assets/icons/tags-icon/beauty.svg';
+import DailyIcon from '@/assets/icons/tags-icon/daily.svg';
+import EntertainmentIcon from '@/assets/icons/tags-icon/entertainment.svg';
+import FashionIcon from '@/assets/icons/tags-icon/fashion.svg';
+import FoodIcon from '@/assets/icons/tags-icon/food.svg';
+import GameIcon from '@/assets/icons/tags-icon/game.svg';
+import LiteratureIcon from '@/assets/icons/tags-icon/literature.svg';
+import MovieIcon from '@/assets/icons/tags-icon/movie.svg';
+import MusicIcon from '@/assets/icons/tags-icon/music.svg';
+import PetsIcon from '@/assets/icons/tags-icon/pets.svg';
+import PhotographyIcon from '@/assets/icons/tags-icon/photography.svg';
+import SportsIcon from '@/assets/icons/tags-icon/sports.svg';
+import TechIcon from '@/assets/icons/tags-icon/tech.svg';
+import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 
 // keyword
 import keyword from '@/assets/images/keyword.png';
@@ -97,5 +115,20 @@ export {
   sound,
   caution,
   searchIcon,
+  ArtIcon,
+  BeautyIcon,
+  DailyIcon,
+  EntertainmentIcon,
+  FashionIcon,
+  FoodIcon,
+  GameIcon,
+  LiteratureIcon,
+  MovieIcon,
+  MusicIcon,
+  PetsIcon,
+  PhotographyIcon,
+  SportsIcon,
+  TechIcon,
+  TravelIcon,
   keyword,
 };

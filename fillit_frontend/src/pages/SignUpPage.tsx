@@ -7,10 +7,10 @@ import FilTakeOn from '@/assets/images/fil-takeon.png';
 
 import BasicButton from '@/components/common/Button/BasicButton';
 import BasicInput from '@/components/common/BasicInput';
-import ProfileImageUploader from '@/components/common/ImageUpload';
-import BioTextarea from '@/components/common/TextArea';
+import ImageUpload from '@/components/common/ImageUpload';
+import Textarea from '@/components/common/TextArea';
 import BirthInput from '@/components/common/BirthInput';
-import InterestTags from '@/components/common/Tags';
+import InterestTags from '@/components/common/InterestTags';
 
 const steps = [
   {
@@ -158,8 +158,8 @@ const SignUpPage = () => {
             <BasicInput placeholder={steps[step].placeholder} />
           )}
           {steps[step].inputType === 'date' && <BirthInput />}
-          {steps[step].inputType === 'file' && <ProfileImageUploader />}
-          {steps[step].inputType === 'textarea' && <BioTextarea />}
+          {steps[step].inputType === 'file' && <ImageUpload />}
+          {steps[step].inputType === 'textarea' && <Textarea />}
           {steps[step].inputType === 'tags' && <InterestTags />}
           {steps[step].inputType === 'choice' && (
             <div className="flex gap-10">
