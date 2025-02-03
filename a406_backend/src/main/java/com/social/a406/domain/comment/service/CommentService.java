@@ -119,6 +119,7 @@ public class CommentService {
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .personalId(comment.getUser().getPersonalId())
+                .profileImageUrl(comment.getUser().getProfileImageUrl())
                 .likeCount(comment.getLikeCount())
                 .commentReplyCount(replyRepository.countByComment_Id(comment.getId()))
                 .createdAt(comment.getCreatedAt())

@@ -18,18 +18,21 @@ public class InterestController {
     private final InterestService interestService;
 
     @PostMapping
-    public void addUserInterests(@AuthenticationPrincipal UserDetails userDetails, @RequestBody List<String> interestContents) {
+    public ResponseEntity<String> addUserInterests(@AuthenticationPrincipal UserDetails userDetails, @RequestBody List<String> interestContents) {
         interestService.addUserInterests(userDetails.getUsername(), interestContents);
+        return ResponseEntity.status(201).body("Success to add user interests");
     }
 
     @GetMapping
-    public List<InterestResponse> getAllInterests() {
-        return interestService.getAllInterests();
+    public ResponseEntity<List<InterestResponse>> getAllInterests() {
+        return ResponseEntity.ok(
+                interestService.getAllInterests());
     }
 
     @GetMapping("/user")
-    public List<InterestResponse> getUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
-        return interestService.getUserInterests(userDetails.getUsername());
+    public ResponseEntity<List<InterestResponse>> getUserInterests(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(
+                interestService.getUserInterests(userDetails.getUsername()));
     }
 
     @DeleteMapping

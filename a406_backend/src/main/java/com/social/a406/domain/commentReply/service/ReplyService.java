@@ -87,6 +87,7 @@ public class ReplyService {
         return ReplyResponse.builder()
                 .replyId(reply.getId())
                 .personalId(reply.getUser().getPersonalId())
+                .profileImageUrl(reply.getUser().getProfileImageUrl())
                 .content(reply.getContent())
                 .likeCount(reply.getLikeCount())
                 .updatedAt(reply.getUpdatedAt())

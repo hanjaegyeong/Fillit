@@ -29,7 +29,7 @@ public class NotificationController {
     }
 
     // 조회
-    @GetMapping//GET /api/notification?page=0&size=10&sort=createdAt,desc
+    @GetMapping
     public ResponseEntity<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal UserDetails userDetails,
                                                                            @RequestParam(defaultValue = "10") int size,
                                                                            @RequestParam(required = false, defaultValue = "0") Long cursorId) {
@@ -40,7 +40,6 @@ public class NotificationController {
                 .map(NotificationResponse::new)  // Notification 엔티티를 NotificationResponse로 변환
                 .toList();
 
-        // Page<NotificationResponse>로 변환
         return ResponseEntity.ok(responseList);
     }
 

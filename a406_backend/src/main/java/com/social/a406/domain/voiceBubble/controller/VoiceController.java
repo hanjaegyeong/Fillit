@@ -3,8 +3,8 @@ package com.social.a406.domain.voiceBubble.controller;
 import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.service.VoiceService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,14 +16,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/voice")
+@RequiredArgsConstructor
 public class VoiceController {
 
     private final VoiceService voiceService;
-
-    @Autowired
-    public VoiceController(VoiceService voiceService) {
-        this.voiceService = voiceService;
-    }
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadVoice(@RequestParam("file") MultipartFile file,
