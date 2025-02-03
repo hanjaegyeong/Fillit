@@ -11,6 +11,7 @@ public class CommentResponse {
     private Long commentId;
     private String content;
     private String personalId;
+    private String profileImageUrl;
     private Long likeCount;
     private Long commentReplyCount;
     private LocalDateTime createdAt;

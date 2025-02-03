@@ -4,6 +4,7 @@ import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.service.ReplyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -18,30 +19,33 @@ public class ReplyController {
     private final ReplyService replyService;
 
     @PostMapping
-    public ReplyResponse addReply (
+    public ResponseEntity<ReplyResponse> addReply (
             @PathVariable Long commentId,
             @RequestBody ReplyRequest request,
             @AuthenticationPrincipal UserDetails userDetails){
-        return replyService.saveReply(commentId, request, userDetails);
+        return ResponseEntity.status(201).body(
+                replyService.saveReply(commentId, request, userDetails));
     }
 
     @PutMapping("/{replyId}")
-    public ReplyResponse updateReply(
+    public ResponseEntity<ReplyResponse> updateReply(
             @PathVariable Long replyId,
             @RequestBody ReplyRequest request,
             @AuthenticationPrincipal UserDetails userDetails){
-        return replyService.updateReply(replyId, request, userDetails);
+        return ResponseEntity.ok(
+                replyService.updateReply(replyId, request, userDetails));
     }
 
     @DeleteMapping("/{replyId}")
-    public void deleteReply (
+    public ResponseEntity<String> deleteReply (
             @PathVariable Long replyId,
             @AuthenticationPrincipal UserDetails userDetails){
         replyService.deleteReply(replyId, userDetails);
+        return ResponseEntity.ok("Success to delete comment reply");
     }
 
     @GetMapping
-    public List<ReplyResponse> getReplyByComment (@PathVariable Long commentId){
-        return replyService.getReplyList(commentId);
+    public ResponseEntity<List<ReplyResponse>> getReplyByComment (@PathVariable Long commentId){
+        return ResponseEntity.ok(replyService.getReplyList(commentId));
     }
 }

@@ -5,7 +5,7 @@ import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.service.VoiceReplyService;
 import com.social.a406.domain.voiceBubble.service.VoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,16 +16,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/voice/reply")
+@RequiredArgsConstructor
 public class VoiceReplyController {
 
     private final VoiceReplyService voiceReplyService;
     private final VoiceService voiceService;
-
-    @Autowired
-    public VoiceReplyController(VoiceReplyService voiceReplyService, VoiceService voiceService) {
-        this.voiceReplyService = voiceReplyService;
-        this.voiceService = voiceService;
-    }
 
     //답장 저장
     @PostMapping("/upload")
