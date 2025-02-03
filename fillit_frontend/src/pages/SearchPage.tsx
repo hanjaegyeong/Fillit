@@ -38,10 +38,10 @@ const SearchPage = () => {
     setSearchResults(filteredPosts);
   };
   return (
-    <div>
+    <div className="container-header-nav">
       <Header center="search" onSearch={handleSearch} />
 
-      <div className="mt-6 space-y-5 p-5">
+      <div className="space-y-4 p-5">
         {searchResults.map((post) => (
           <div key={post.id} className="p-4 bg-white rounded-lg shadow">
             <p className="text-sm font-bold text-gray-600">{post.user_id}</p>
