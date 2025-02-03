@@ -6,6 +6,7 @@ import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.repository.CommentRepository;
+import com.social.a406.domain.commentReply.repository.ReplyRepository;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
@@ -26,6 +27,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public CommentResponse addComment(Long boardId, CommentRequest commentRequest, UserDetails userDetails) {
@@ -72,8 +74,13 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByBoard(Long boardId) {
-        List<Comment> comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtAsc(boardId);
+        List<Comment> comments = commentRepository.findByBoard_IdOrderByCreatedAtAsc(boardId);
         return comments.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Long getCommentCountByBoard(Long boardId){
+        return commentRepository.countByBoard_Id(boardId);
     }
 
     @Transactional
@@ -109,10 +116,11 @@ public class CommentService {
 
     private CommentResponse mapToResponse(Comment comment) {
         return CommentResponse.builder()
-                .commentId(comment.getCommentId())
+                .commentId(comment.getId())
                 .content(comment.getContent())
                 .personalId(comment.getUser().getPersonalId())
                 .likeCount(comment.getLikeCount())
+                .commentReplyCount(replyRepository.countByComment_Id(comment.getId()))
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .build();
@@ -124,7 +132,7 @@ public class CommentService {
         User sender = userRepository.findByPersonalId(comment.getUser().getPersonalId()).orElse(null); // 게시글에 댓글을 작성한 user
         if(sender == null) throw new IllegalArgumentException("sender not found");
 
-        Long referenceId = comment.getBoard().getBoardId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
+        Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
 
         notificationService.createNotification(receiver,sender, NotificationType.COMMENT,referenceId);
         System.out.println("Generate notification about comment");

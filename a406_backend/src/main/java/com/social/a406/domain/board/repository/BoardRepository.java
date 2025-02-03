@@ -16,16 +16,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 //            "GROUP BY b")
 //    List<Object[]> findAllBoardsWithCommentCount();
     @Query("SELECT b.id FROM Board b")
-    List<Long> findAllBoardIds();
+    List<Long> findAllIds();
 
     // 해당 사용자가 댓글을 달거나, 해당 사용자의 게시글이 아닌 게시글 조회
     @Query("SELECT b.id " +
             "FROM Board b " +
             "WHERE b.id NOT IN (SELECT c.board.id FROM Comment c WHERE c.user.personalId = :personalId) " +
             "AND b.user.personalId != :personalId")
-    List<Long> findAvailableBoardIdsExcludingUser(@Param("personalId") String personalId);
-
-    Optional<Board> findByBoardId(Long boardId);
+    List<Long> findAvailableIdsExcludingUser(@Param("personalId") String personalId);
 
     @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
     List<Board> findAllByPersonalId(@Param("personalId") String personalId);

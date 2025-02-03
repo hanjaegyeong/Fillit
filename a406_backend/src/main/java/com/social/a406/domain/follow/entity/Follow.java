@@ -18,7 +18,7 @@ public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long followId;
+    private Long id;
 
     // 팔로우 건 사용자
     @ManyToOne

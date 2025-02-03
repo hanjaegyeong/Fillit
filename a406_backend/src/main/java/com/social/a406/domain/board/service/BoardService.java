@@ -6,6 +6,7 @@ import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.event.BoardCreatedEvent;
 import com.social.a406.domain.board.event.BoardDeletedEvent;
+import com.social.a406.domain.board.event.BoardCreatedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.user.entity.User;
@@ -36,6 +37,8 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final UserRepository userRepository;
     private final S3Client s3Client;
+    private final CommentService commentService;
+    private final InterestService interestService;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -47,12 +50,20 @@ public class BoardService {
 
     // 게시글 생성
     @Transactional
-    public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails) {
+    public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> files) {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
-        Board savedBoard = boardRepository.save(board);
-        eventPublisher.publishEvent(new BoardCreatedEvent(this, savedBoard)); // 이벤트발행
-        return mapToResponseDto(savedBoard);
+        Board newBoard = boardRepository.save(board);
+        eventPublisher.publishEvent(new BoardCreatedEvent(this, newBoard)); // 이벤트발행
+
+        List<String> imageUrls = null;
+        if(files != null && !files.isEmpty()) {
+            //게시글 이미지 저장
+            imageUrls = saveBoardImage(newBoard.getId(), files);
+        }
+        interestService.addBoardInterests(newBoard.getId(), boardRequest.getInterests());
+        List<String> interests = interestService.getBoardInterests(newBoard.getId());
+        return mapToResponseDto(newBoard, imageUrls, interests);
     }
 
     // AI 게시글 생성
@@ -60,26 +71,44 @@ public class BoardService {
     public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
-        return mapToResponseDto(boardRepository.save(board));
+        return mapToResponseDto(boardRepository.save(board), null, null); // AI 게시글 이미지, 관심사
     }
 
     // 게시글 단건 조회
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long boardId) {
         Board board = findBoardById(boardId);
-        return mapToResponseDto(board);
+        List<String> imageUrls = getBoardImages(boardId);
+        List<String> interests = interestService.getBoardInterests(boardId);
+        return mapToResponseDto(board, imageUrls, interests);
     }
 
     // 게시글 수정
     @Transactional
-    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails) {
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> newFiles) {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = findBoardById(boardId);
 
         validateBoardOwnership(board, user);
 
         board.updateContent(boardRequest.getContent());
-        return mapToResponseDto(board);
+
+        // 기존 이미지 유지 여부 확인 후 처리
+        List<String> existingImageUrls = getBoardImages(boardId);  // 기존 이미지 가져오기
+        List<String> newImageUrls = new ArrayList<>(existingImageUrls);          // 기존 이미지 복사
+        List<String> newInterests = interestService.getBoardInterests(boardId);
+
+        if (newFiles != null && !newFiles.isEmpty()) {
+            // 새 이미지 업로드 및 기존 이미지 삭제
+            deleteBoardImage(boardId); // 기존 이미지 삭제 (선택적)
+            newImageUrls = saveBoardImage(boardId, newFiles); // 새 이미지 저장
+        }
+        if(boardRequest.getInterests() != null && !boardRequest.getInterests().isEmpty()){
+            interestService.deleteAllBoardInterests(boardId);
+            interestService.addBoardInterests(boardId, boardRequest.getInterests());
+            newInterests = interestService.getBoardInterests(boardId);
+        }
+        return mapToResponseDto(board, newImageUrls, newInterests);
     }
 
     // 게시글 내용 조회
@@ -108,7 +137,7 @@ public class BoardService {
 
     // 랜덤 게시글 조회
     public Long getRandomBoardId() {
-        List<Long> boardIds = boardRepository.findAllBoardIds();
+        List<Long> boardIds = boardRepository.findAllIds();
 
         if (boardIds.isEmpty()) {
             System.err.println("No boards available for random selection.");
@@ -121,7 +150,7 @@ public class BoardService {
 
     // 본인 게시글 / 댓글 단 게시글 제외 랜덤 게시글 조회
     public Long getRandomAvailableBoardIdExcludingUser(String personalId) {
-        List<Long> availableBoardIds = boardRepository.findAvailableBoardIdsExcludingUser(personalId);
+        List<Long> availableBoardIds = boardRepository.findAvailableIdsExcludingUser(personalId);
 
         if (availableBoardIds.isEmpty()) {
             System.err.println("No available boards for random selection.");
@@ -141,6 +170,7 @@ public class BoardService {
                 .likeCount(0L)
                 .x(boardRequest.getX())
                 .y(boardRequest.getY())
+                .z(boardRequest.getZ())
                 .keyword(boardRequest.getKeyword())
                 .pageNumber(boardRequest.getPageNumber())
                 .build();
@@ -239,37 +269,41 @@ public class BoardService {
     // 게시글 이미지 가져오기
     @Transactional
     public List<String> getBoardImages(Long boardId) {
-        return boardImageRepository.findAllByBoardId(boardId);
+        return boardImageRepository.findAllById(boardId);
     }
 
     @Transactional
     public List<BoardResponse> getBoardByUser(String personalId) {
         List<Board> boards = boardRepository.findAllByPersonalId(personalId);
-        return boards.stream()
-                .map(this::mapToResponseDto)  // Board -> BoardResponse로 변환
-                .toList(); // 리스트로 수집
+        List<BoardResponse> responses = new ArrayList<>();
+        for(Board board : boards){
+            List<String> imageUrls = getBoardImages(board.getId());
+            List<String> interests = interestService.getBoardInterests(board.getId());
+            responses.add(mapToResponseDto(board,imageUrls, interests));
+        }
+        return responses;
     }
 
     //게시글 삭제
     @Transactional
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findByBoardId(boardId).orElseThrow(
+        Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new IllegalArgumentException("Not found board")
         );
         try {
             deleteBoardImage(boardId);  // 이미지 삭제
         } catch (Exception e) {
-            // 이미지 삭제 실패 처리 (예: 로그 기록)
-            throw new RuntimeException("이미지 삭제 실패: " + e.getMessage(), e);  // 필요시 예외를 다시 던지기
+            // 이미지 삭제 실패 처리
+            throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
+        interestService.deleteAllBoardInterests(boardId);
         eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
         boardRepository.delete(board);
-
     }
 
     // 게시글 이미지 삭제
     public void deleteBoardImage(Long boardId) {
-        List<String> imageUrls = boardImageRepository.findAllByBoardId(boardId);
+        List<String> imageUrls = boardImageRepository.findAllById(boardId);
 
         if (imageUrls != null && !imageUrls.isEmpty()) {
             for (String imageUrl : imageUrls) {
@@ -284,5 +318,37 @@ public class BoardService {
             }
             boardImageRepository.deleteByBoardId(boardId);
         }
+    }
+
+    /**
+     * 게시글 ID로 작성자의 personalId 조회
+     */
+    public String getBoardAuthorPersonalIdById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(board -> board.getUser().getPersonalId())
+                .orElseThrow(() -> new IllegalArgumentException("Not found board: " + boardId));
+    }
+
+
+    public List<BoardProfileResponse> getProfileBoardByUser(String personalId) {
+        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
+        List<BoardProfileResponse> responses = boards.stream()
+                .map(this::mapBoardProfileResponseDto)
+                .toList();
+        return responses;
+    }
+
+    public BoardProfileResponse mapBoardProfileResponseDto(Board board){
+        String imageUrl = boardImageRepository.findAllById(board.getId()) != null
+                ? boardImageRepository.findAllById(board.getId()).get(0) : null;
+        return BoardProfileResponse.builder()
+                .BoardId(board.getId())
+                .x(board.getX())
+                .y(board.getY())
+                .z(board.getZ())
+                .keyword(board.getKeyword())
+                .pageNumber(board.getPageNumber())
+                .imageUrl(imageUrl)
+                .build();
     }
 }

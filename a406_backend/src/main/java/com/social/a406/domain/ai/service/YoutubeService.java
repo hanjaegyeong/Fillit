@@ -10,10 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,15 +29,20 @@ public class YoutubeService {
 
     @Value("${youtube.api.url}")
     private String YOUTUBE_API_URL;
+
     @Value("${youtube.api.key}")
     private String API_KEY;
 
-    private final int DESCRIPTION_MAX_LENGTH = 950;
-    private final int MAX_RESULT = 10;
+    private static final int DESCRIPTION_MAX_LENGTH = 950;
+    private static final int MAX_RESULT = 10;
 
-    private final String PROMPT = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
+    private static final String PROMPT_TEMPLATE = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
 
-    public Youtube getRandomPopularVideos() {
+    /**
+     * 유튜브 API에서 인기 동영상 가져오고 랜덤 선택
+     */
+    public Youtube getRandomPopularVideo() {
         // API 요청 URL 생성
         String url = UriComponentsBuilder.fromHttpUrl(YOUTUBE_API_URL)
                 .queryParam("part", "snippet,topicDetails")
@@ -56,24 +58,25 @@ public class YoutubeService {
 
         List<Youtube> youtubeList = items.stream()
                 .map(this::convertToYoutubeEntity)  // 엔티티로 변환
-                .peek(youtubeRepository::save)      // 저장
+                .peek(youtubeRepository::save)      // DB 저장
                 .collect(Collectors.toList());
 
         // 리스트에서 랜덤한 요소 선택
         if (!youtubeList.isEmpty()) {
-            Random random = new Random();
-            return youtubeList.get(random.nextInt(youtubeList.size()));
+            return youtubeList.get(new Random().nextInt(youtubeList.size()));
         } else {
             throw new RuntimeException("No videos found.");
         }
     }
 
-    // 크롤링 데이터 Youtube 엔티티로 변환
+    /**
+     * 크롤링 데이터 -> Youtube 엔티티 변환
+     */
     private Youtube convertToYoutubeEntity(Map<String, Object> item) {
         String description = extractDescription((String) item.get("description"));
-        String categoryId = (String) item.get("categoryId");
-        Integer categoryIdInt = Integer.parseInt(categoryId);
-        YoutubeCategory category = getCategoryNameById(categoryIdInt);
+        Long categoryId = Long.parseLong((String) item.get("categoryId"));
+        YoutubeCategory category = getCategoryNameById(categoryId);
+
         Youtube youtube = Youtube.builder()
                 .url((String) item.get("url"))
                 .publishedAt((String) item.get("publishedAt"))
@@ -83,12 +86,13 @@ public class YoutubeService {
                 .category(category)
                 .channelTitle((String) item.get("channelTitle"))
                 .build();
-        String prompt = generatePrompt(youtube);
 
-        return new Youtube(youtube, prompt);
+        return new Youtube(youtube, generatePrompt(youtube));
     }
 
-    // 설명(description) 문자열 처리
+    /**
+     * 설명(description) 문자열 처리
+     */
     private String extractDescription(String description) {
         if (description == null) return null;
 
@@ -106,11 +110,13 @@ public class YoutubeService {
         return description;
     }
 
-    public List<Map<String, Object>> filter(Map<String, Object> response){
+    /**
+     * 유튜브 API 응답에서 필요한 데이터만 필터링
+     */
+    private List<Map<String, Object>> filter(Map<String, Object> response) {
         if (response != null && response.containsKey("items")) {
             List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("items");
 
-            // 필요한 정보만 추출
             return items.stream().map(item -> {
                 Map<String, Object> filteredData = new HashMap<>();
 
@@ -147,28 +153,34 @@ public class YoutubeService {
         }
     }
 
-    private YoutubeCategory getCategoryNameById(Integer categoryId) {
-        // 카테고리 ID로 categoryName 조회
-        YoutubeCategory youtubeCategory = youtubeCategoryRepository.findByCategoryId(categoryId);
-        if (youtubeCategory != null) {
-            return youtubeCategory;
-        } else {
-            throw new IllegalArgumentException("Category not found!");  // 카테고리가 없다면 "Unknown"을 반환
-        }
+    /**
+     * 카테고리 ID로 YoutubeCategory 조회
+     */
+    private YoutubeCategory getCategoryNameById(Long categoryId) {
+        return youtubeCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found!"));
     }
 
-    // Method to generate the social media post prompt
-    String generatePrompt(Youtube youtube) {
-        String title = youtube.getTitle();
-        String url = youtube.getUrl();
-        String description = youtube.getDescription();
-        YoutubeCategory category = youtube.getCategory();
-        String topicCategory = youtube.getTopicCategory();
-        String channelTitle = youtube.getChannelTitle();
-
-        // Construct the prompt
-        return String.format(PROMPT,
-                category, title, url, description, topicCategory, category, channelTitle);
+    /**
+     * 유튜브 게시글 생성 프롬프트
+     */
+    public String createYoutubePrompt(String personalId) {
+        Youtube youtube = getRandomPopularVideo();
+        return generatePrompt(youtube);
     }
 
+    /**
+     * 프롬프트 생성
+     */
+    private String generatePrompt(Youtube youtube) {
+        return String.format(PROMPT_TEMPLATE,
+                youtube.getCategory(),
+                youtube.getTitle(),
+                youtube.getUrl(),
+                youtube.getDescription(),
+                youtube.getTopicCategory(),
+                youtube.getCategory(),
+                youtube.getChannelTitle())
+                + PROMPT_SUFFIX;
+    }
 }
