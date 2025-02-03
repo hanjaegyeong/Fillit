@@ -54,19 +54,20 @@ public class ChatService {
         }
 
         // 메시지 저장
-        ChatMessage newMessage = ChatMessage.builder()
+        ChatMessage Message = ChatMessage.builder()
                 .messageId(nextMessageId)
                 .chatParticipants(chatParticipants)
                 .messageContent(request.getMessageContent())
                 .build();
-        chatMessageRepository.save(newMessage);
+
+        ChatMessage savedMessage = chatMessageRepository.save(Message);
 
         // 채팅방 마지막 메시지 정보 업데이트
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
-        chatRoom.updateLastMessageContent(newMessage.getMessageContent());
+        chatRoom.updateLastMessageContent(savedMessage.getMessageContent());
 //        chatRoomRepository.save(chatRoom); 더티체킹하기때문에 따로 해줄 필요 x
-        return newMessage;
+        return savedMessage;
     }
 
     // 채팅방 입장

@@ -10,37 +10,29 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 
 @Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-    private final Map<Long, WebSocketSessionList> webSocketListHashMap;
+//    private final Map<Long, WebSocketSessionList> webSocketListHashMap;
     private final WebSocketSessionMap webSocketSessionMap;
     private final ChatService chatService;
 
     public ChatWebSocketHandler(WebSocketSessionMap webSocketSessionMap, ChatService chatService) {
         this.webSocketSessionMap = webSocketSessionMap;
-        this.webSocketListHashMap = webSocketSessionMap.getWebSocketListHashMap();
         this.chatService = chatService;
+    }
+
+    public WebSocketSessionMap getWebSocketSessionMap() {
+        return webSocketSessionMap;
     }
 
     // after
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
-        WebSocketSessionList sessionList = webSocketListHashMap.get(chatRoomId);
 
-        // 채팅방 유뮤 확인
-        if (sessionList == null) {
-            sessionList = WebSocketSessionList.builder()
-                    .webSocketSessions(new ArrayList<>())
-                    .build();
-        }
-        // 세션 추가 해주기
-        sessionList.getWebSocketSessions().add(session);
-        webSocketListHashMap.put(chatRoomId, sessionList);
-
+        // chatRoomId로 채팅방 유무 확인후 없으면 생성 후 추가
+        webSocketSessionMap.addSessionToChatRoom(chatRoomId, session);
         System.out.println("Connected: " + session.getId());
     }
 
@@ -50,7 +42,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         ChatMessageRequest chatMessageRequest = objectMapper.readValue(message.getPayload(), ChatMessageRequest.class);
 
         Long chatRoomIdFromMessage = chatMessageRequest.getChatRoomId();
+
         Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
+        String personalId = (String) session.getAttributes().get("personalId");
 
         // chatRoomId 의도적 조작여부 검증
         if (!chatRoomId.equals(chatRoomIdFromMessage)) {
@@ -63,29 +57,28 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             return; // 메시지 처리 중단
         }
 
-        String personalId = (String) session.getAttributes().get("personalId");
-
         switch (chatMessageRequest.getType()) {
-            case ENTER: // 일단 비워둠
+            case TEXT:
+                sendMessageToChatRoom(personalId, chatMessageRequest);
                 break;
             case LEAVE:
                 leaveChatRoom(personalId, session, chatRoomId);
-                break;
-            case TEXT:
-                sendMessageToChatRoom(personalId, chatMessageRequest);
                 break;
         }
     }
 
 
     private void sendMessageToChatRoom(String personalId, ChatMessageRequest chatMessageRequest) throws IOException {
-        WebSocketSessionList sessionList = webSocketListHashMap.get(chatMessageRequest.getChatRoomId());
+//        WebSocketSessionSet sessionList = webSocketSessionMap.get(chatMessageRequest.getChatRoomId());
+        WebSocketSessionSet sessionSet = webSocketSessionMap.getWebSocketSet(chatMessageRequest.getChatRoomId());
+
         // 채팅 메세지 저장
         chatService. saveMessageAndUpdateRoom(personalId, chatMessageRequest);
 
-        if (sessionList != null) {
+        // 메세지 broadCast
+        if (sessionSet != null) {
             TextMessage textMessage = new TextMessage(chatMessageRequest.getMessageContent());
-            for (WebSocketSession session : sessionList.getWebSocketSessions()) {
+            for (WebSocketSession session : sessionSet.getWebSocketSessions()) {
                 if (session.isOpen()) {
                     session.sendMessage(textMessage);
                 }
@@ -94,18 +87,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void leaveChatRoom(String personalId, WebSocketSession session, Long chatRoomId) {
-        WebSocketSessionList sessionList = webSocketListHashMap.get(chatRoomId);
+//        Set<WebSocketSession> sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
 
         // 나갈 때 마지막 메시지 읽음 처리
         chatService.updateLastReadMessage(personalId, chatRoomId);
 
-        if (sessionList != null) {
-            sessionList.getWebSocketSessions().remove(session);
-            if (sessionList.getWebSocketSessions().isEmpty()) {
-                webSocketListHashMap.remove(chatRoomId);
-                System.out.println("Chat room " + chatRoomId + " is now empty and removed.");
-            }
-        }
+        // 세션삭제 메서드
+        webSocketSessionMap.removeSession(chatRoomId, session);
+
         System.out.println("User " + personalId + " left chat room: " + session.getId());
     }
 
