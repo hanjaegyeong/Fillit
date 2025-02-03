@@ -33,7 +33,7 @@ public class BoardController {
         // 30초 후 AI 댓글 생성 스케줄링
         aiScheduler.scheduleCommentCreation(boardResponse.getBoardId(), boardResponse.getPersonalId());
 
-        return ResponseEntity.ok(boardResponse);
+        return ResponseEntity.status(201).body(boardResponse);
     }
 
     @GetMapping("/{boardId}")

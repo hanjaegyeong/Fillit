@@ -22,6 +22,6 @@ public class ChatBotController {
     public ResponseEntity<AiChatResponse> generateChat(@RequestBody AiChatRequest aiChatRequest){
         String chat = chatBotService.generateChat(aiChatRequest.getMessage());
         AiChatResponse response = new AiChatResponse(chat);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(201).body(response);
     }
 }

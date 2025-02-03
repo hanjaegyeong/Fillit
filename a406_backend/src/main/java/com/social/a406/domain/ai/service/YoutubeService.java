@@ -4,6 +4,7 @@ import com.social.a406.domain.ai.entity.Youtube;
 import com.social.a406.domain.ai.entity.YoutubeCategory;
 import com.social.a406.domain.ai.repository.YoutubeCategoryRepository;
 import com.social.a406.domain.ai.repository.YoutubeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +16,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class YoutubeService {
 
     private final RestTemplate restTemplate;
     private final YoutubeRepository youtubeRepository;
     private final YoutubeCategoryRepository youtubeCategoryRepository;
-
-    public YoutubeService(RestTemplate restTemplate, YoutubeRepository youtubeRepository, YoutubeCategoryRepository youtubeCategoryRepository) {
-        this.restTemplate = restTemplate;
-        this.youtubeRepository = youtubeRepository;
-        this.youtubeCategoryRepository = youtubeCategoryRepository;
-    }
 
     @Value("${youtube.api.url}")
     private String YOUTUBE_API_URL;
