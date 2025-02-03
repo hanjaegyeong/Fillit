@@ -2,7 +2,7 @@ package com.social.a406.domain.chat.websocket;
 
 import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.util.JwtTokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -15,16 +15,13 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Component
 public class ChatHandshakeInterceptor implements HandshakeInterceptor {
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private ChatService chatService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+    private final ChatService chatService;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
