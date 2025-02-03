@@ -23,13 +23,14 @@ const SearchInput = ({
 
   return (
     <form onSubmit={handleSubmit} className={`flex items-center ${className}`}>
-      <div className="relative flex items-center w-full">
+      <div className={`relative flex items-center ${width}`}>
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={placeholder}
-          className={`${width} px-4 py-2 text-sm bg-white rounded-full border transition-colors duration-100 outline-none focus:border-[#b5b4f2] border-[#9a9a9a]`}
+          className="w-full px-4 py-1.5 text-sm bg-white rounded-full border transition-colors duration-100 border-solid outline-none focus:border-[#b5b4f2] border-[#9a9a9a]"
+          style={{ textIndent: '0px', paddingRight: '40px' }}
         />
         <button type="submit" className="absolute right-4">
           <img src={searchIcon} alt="search-icon" className="w-4 h-4" />
