@@ -7,14 +7,14 @@ import FilTakeOn from '@/assets/images/fil-takeon.png';
 
 import BasicInput from '@/components/common/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
-import ProfileImageUploader from '@/components/common/ImageUpload';
-import BioTextarea from '@/components/common/TextArea';
-import InterestTags from '@/components/common/Tags';
+import ImageUpload from '@/components/common/ImageUpload';
+import Textarea from '@/components/common/TextArea';
+import InterestTags from '@/components/common/InterestTags';
 
 const steps = [
   {
     message1: 'Oh, you’re from somewhere else, huh?',
-    message2: 'What’s your name?" 🌍✨',
+    message2: 'What’s your name? 🌍✨',
     message3: '',
     placeholder: 'Enter your name',
     rule: '영어 최대 8글자, 특수기호 불가',
@@ -30,7 +30,7 @@ const steps = [
   },
   {
     message1: 'Oh, then drop your',
-    message2: 'most slay pic!" 😎📸',
+    message2: 'most slay pic! 😎📸',
     message3: '',
     placeholder: '',
     rule: '',
@@ -113,8 +113,8 @@ const SocialSignUpPage = () => {
           {steps[step].inputType === 'text' && (
             <BasicInput placeholder={steps[step].placeholder} />
           )}
-          {steps[step].inputType === 'file' && <ProfileImageUploader />}
-          {steps[step].inputType === 'textarea' && <BioTextarea />}
+          {steps[step].inputType === 'file' && <ImageUpload />}
+          {steps[step].inputType === 'textarea' && <Textarea />}
           {steps[step].inputType === 'tags' && <InterestTags />}
           {steps[step].inputType === 'choice' && (
             <div className="flex gap-10">
