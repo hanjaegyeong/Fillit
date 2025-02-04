@@ -8,7 +8,7 @@ import SocialLogin from '@/components/common/SocialLogin';
 const LoginPage = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-2 justify-center items-center h-screen">
+    <div className="container-base gap-2 justify-center">
       <img src={loginImg} alt="login-img" />
       <BasicInput placeholder="Enter your email" />
       <BasicInput placeholder="Enter your password" />

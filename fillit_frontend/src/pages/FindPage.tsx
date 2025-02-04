@@ -72,65 +72,56 @@ const FindPage = () => {
   const typedMessages = useTypingEffect(messages, step, 30);
 
   return (
-    <>
-      <header className="absolute top-0 left-0 w-full py-4 px-6 z-10">
+    <div className="container-base justify-center">
+      <header className="fixed top-0 w-full py-4 px-6 z-10">
         <img src={FillitLongLog} className="h-10" />
       </header>
-      <div className="flex flex-col justify-center items-center h-screen max-h-screen">
-        <div className="flex flex-col items-center">
-          <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
-          <div className="flex flex-col items-center">
-            {typedMessages.map((msg, index) => (
-              <p
-                key={index}
-                className="inline-block text-center text-white bg-black px-2"
-              >
-                {msg}
-              </p>
-            ))}
+      <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
+      {typedMessages.map((msg, index) => (
+        <p key={index} className="inline-block text-white bg-black px-2">
+          {msg}
+        </p>
+      ))}
+      <div className="pt-6">
+        {steps[step].inputType === 'search' && (
+          <>
+            <div>
+              <BasicInput placeholder="Enter your name" />
+            </div>
+            <div className="pt-2">
+              <BasicInput placeholder="Enter your Email" />
+            </div>
+          </>
+        )}
+        {steps[step].inputType === 'resend' && (
+          <div className="flex gap-10">
+            <BasicButton text="Resend" onClick={() => setStep(2)} />
           </div>
-        </div>
-        <div className="pt-6">
-          {steps[step].inputType === 'search' && (
-            <>
-              <div>
-                <BasicInput placeholder="Enter your name" />
-              </div>
-              <div className="pt-2">
-                <BasicInput placeholder="Enter your Email" />
-              </div>
-            </>
-          )}
-          {steps[step].inputType === 'resend' && (
-            <div className="flex gap-10">
-              <BasicButton text="Resend" onClick={() => setStep(2)} />
+        )}
+        {steps[step].inputType === 'password' && (
+          <>
+            <div>
+              <BasicInput placeholder="Enter your new password" />
             </div>
-          )}
-          {steps[step].inputType === 'password' && (
-            <>
-              <div>
-                <BasicInput placeholder="Enter your new password" />
-              </div>
-              <div className="pt-2">
-                <BasicInput placeholder="Enter your password again" />
-              </div>
-            </>
-          )}
-          <p className="flex justify-start text-xs">{steps[step].rule}</p>
-          {steps[step].inputType !== 'resend' && (
-            <div className="flex flex-row justify-center pt-10 gap-10">
-              <BasicButton text="Back" onClick={handleBack} />
+            <div className="pt-2">
+              <BasicInput placeholder="Enter your password again" />
+            </div>
+          </>
+        )}
+        <p className="flex justify-start text-xs">{steps[step].rule}</p>
+        {steps[step].inputType !== 'resend' && (
+          <div className="flex flex-row pt-10 gap-10">
+            <BasicButton text="Back" onClick={handleBack} />
 
-              {step === steps.length - 1 ? (
-                <BasicButton text="Login" onClick={handleLogin} />
-              ) : (
-                <BasicButton text="Next" onClick={handleNext} />
-              )}
-            </div>
-          )}
-        </div>
+            {step === steps.length - 1 ? (
+              <BasicButton text="Login" onClick={handleLogin} />
+            ) : (
+              <BasicButton text="Next" onClick={handleNext} />
+            )}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
