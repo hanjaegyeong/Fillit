@@ -29,79 +29,67 @@ public class AIFacadeService {
     /**
      * 랜덤 방식으로 AI 게시글 생성
      */
-    /**
-     * 랜덤 방식으로 AI 게시글 생성
-     */
     public BoardResponse generateAndSaveRandomBoard(boolean includeImage) {
         String personalId = userService.getRandomUserWithMainPrompt();
-        BoardResponse response = selectRandomGenerationMethod(personalId);
-
-        return applyKeywordProcessing(response, includeImage);
+        BoardResponse response = generateBoardWithRandomMethod(personalId, includeImage);
+        return response;
     }
 
     /**
-     * 랜덤한 방식으로 게시글 생성 메서드 선택
+     * 랜덤한 방식으로 게시글 생성
      */
-    private BoardResponse selectRandomGenerationMethod(String personalId) {
+    private BoardResponse generateBoardWithRandomMethod(String personalId, boolean includeImage) {
         return switch (new Random().nextInt(3)) {
-            case 0 -> generateBoardUsingSubreddit(personalId);
-            case 1 -> generateBoardUsingYoutube(personalId);
-            default -> generateAndSaveBoard(personalId);
+            case 0 -> generateBoardUsingSubreddit(personalId, includeImage);
+            case 1 -> generateBoardUsingYoutube(personalId, includeImage);
+            default -> generateAndSaveBoard(personalId, includeImage);
         };
     }
 
     /**
-     * 본문 & 키워드 처리 + 이미지 추가
-     */
-    private BoardResponse applyKeywordProcessing(BoardResponse response, boolean includeImage) {
-        parseAndSetContent(response);
-        return includeImage ? enrichWithImage(response) : response;
-    }
-
-    /**
-     * '!@@@'을 기준으로 본문과 키워드를 분리하고 설정
-     */
-    private void parseAndSetContent(BoardResponse response) {
-        String[] parsedContent = parseKeywordAndUpdateContent(response.getContent());
-        response.setContent(parsedContent[0]); // 본문 업데이트
-        response.setKeyword(parsedContent[1]); // 추출된 키워드 설정
-    }
-
-    /**
-     * 키워드 기반 이미지 추가
-     */
-    private BoardResponse enrichWithImage(BoardResponse response) {
-        String imageUrl = flickrService.getRandomImageUrl(response.getKeyword());
-        response.setImageUrls(imageUrl != null ? List.of(imageUrl) : List.of());
-        return response;
-    }
-
-
-    /**
      * AI가 일반 게시글 생성 후 저장
      */
-    public BoardResponse generateAndSaveBoard(String personalId) {
+    public BoardResponse generateAndSaveBoard(String personalId, boolean includeImage) {
         String content = aiService.generateContent(aiService.createBoardPrompt(personalId));
-        BoardRequest request = buildBoardRequest(content);
-        return boardService.createAiBoard(request, personalId);
+        return createBoardWithKeywordAndImage(personalId, content, includeImage);
     }
 
     /**
      * AI가 서브레딧 기반 게시글 생성
      */
-    public BoardResponse generateBoardUsingSubreddit(String personalId) {
+    public BoardResponse generateBoardUsingSubreddit(String personalId, boolean includeImage) {
         String content = aiService.generateContent(subredditService.createSubredditPrompt(personalId));
-        BoardRequest request = buildBoardRequest(content);
-        return boardService.createAiBoard(request, personalId);
+        return createBoardWithKeywordAndImage(personalId, content, includeImage);
     }
 
     /**
      * AI가 유튜브 기반 게시글 생성
      */
-    public BoardResponse generateBoardUsingYoutube(String personalId) {
+    public BoardResponse generateBoardUsingYoutube(String personalId, boolean includeImage) {
         String content = aiService.generateContent(youtubeService.createYoutubePrompt());
-        BoardRequest request = buildBoardRequest(content);
-        return boardService.createAiBoard(request, personalId);
+        return createBoardWithKeywordAndImage(personalId, content, includeImage);
+    }
+
+    /**
+     * AI 게시글 생성 로직 (키워드 및 이미지 포함)
+     */
+    private BoardResponse createBoardWithKeywordAndImage(String personalId, String content, boolean includeImage) {
+        // 키워드 분리 및 정리
+        String[] parsedContent = parseKeywordAndUpdateContent(content);
+        String updatedContent = parsedContent[0];
+        String keyword = parsedContent[1];
+
+        // 이미지 추출
+        String imageUrl = null;
+        if (includeImage && !keyword.isEmpty()) {
+            imageUrl = flickrService.getRandomImageUrl(keyword);
+        }
+
+        // 게시글 요청 DTO 생성
+        BoardRequest request = buildBoardRequest(updatedContent, keyword);
+
+        // 게시글 생성 및 응답 반환
+        return boardService.createAiBoard(request, personalId, imageUrl);
     }
 
     /**
@@ -118,14 +106,14 @@ public class AIFacadeService {
     /**
      * 게시글 요청 DTO 생성
      */
-    private BoardRequest buildBoardRequest(String content) {
+    private BoardRequest buildBoardRequest(String content, String keyword) {
         return BoardRequest.builder()
                 .content(content)
                 .x(ThreadLocalRandom.current().nextDouble(0, 10))
                 .y(ThreadLocalRandom.current().nextDouble(0, 10))
                 .z(ThreadLocalRandom.current().nextDouble(0, 10))
                 .pageNumber(ThreadLocalRandom.current().nextInt(0, 5))
-                .keyword(parseKeywordAndUpdateContent(content)[1])
+                .keyword(keyword)
                 .build();
     }
 

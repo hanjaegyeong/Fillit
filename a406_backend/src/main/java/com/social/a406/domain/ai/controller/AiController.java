@@ -26,8 +26,9 @@ public class AiController {
      * AI가 일반 게시글 생성
      */
     @GetMapping("/generate/board")
-    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId) {
-        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId);
+    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId,
+                                                       @RequestParam(required = false, defaultValue = "false") boolean includeImage) {
+        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId, includeImage);
         return ResponseEntity.status(201).body(response);
     }
 
