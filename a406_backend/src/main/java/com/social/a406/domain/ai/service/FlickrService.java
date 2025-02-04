@@ -28,17 +28,30 @@ public class FlickrService {
 
     private final RestTemplate restTemplate;
     private final Random random = new Random();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * 주어진 키워드로 Flickr API에서 이미지를 검색하고, 해당 이미지의 URL 리스트를 반환
+     * 주어진 키워드로 Flickr API에서 이미지를 검색하고, 랜덤한 이미지의 URL을 반환
      */
-    public List<String> getFlickrImageUrls(String keyword) {
+    public String getRandomImageUrl(String keyword) {
+        List<String> imageUrls = fetchImageUrls(keyword);
+        if (imageUrls.isEmpty()) {
+            log.warn("No images found for keyword: {}", keyword);
+            return null;
+        }
+        return imageUrls.get(random.nextInt(imageUrls.size()));
+    }
+
+    /**
+     * Flickr API에서 주어진 키워드로 이미지 URL 리스트를 가져옴
+     */
+    private List<String> fetchImageUrls(String keyword) {
         List<String> imageUrls = new ArrayList<>();
         try {
             String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
             String requestUrl = String.format(API_URL, flickrApiKey, encodedKeyword);
 
-            log.debug("Request URL: {}", requestUrl);
+            log.debug("Requesting Flickr API: {}", requestUrl);
 
             String jsonResponse = restTemplate.getForObject(requestUrl, String.class);
             if (jsonResponse == null) {
@@ -46,7 +59,6 @@ public class FlickrService {
                 return imageUrls;
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode photosArray = rootNode.path("photos").path("photo");
 
@@ -59,13 +71,13 @@ public class FlickrService {
 
             log.debug("Total images fetched: {}", imageUrls.size());
         } catch (Exception e) {
-            log.error("Error fetching images: {}", e.getMessage());
+            log.error("Error fetching images from Flickr API: {}", e.getMessage());
         }
         return imageUrls;
     }
 
     /**
-     * Flickr API 응답에서 이미지 정보를 추출하여 URL을 생성
+     * Flickr API 응답에서 개별 이미지 정보를 추출하여 URL을 생성
      */
     private String generateImageUrl(JsonNode photo) {
         try {
@@ -78,17 +90,5 @@ public class FlickrService {
             log.error("Error generating image URL: {}", e.getMessage());
             return null;
         }
-    }
-
-    /**
-     * 검색된 이미지 리스트 중 랜덤한 하나의 이미지 URL을 반환
-     */
-    public String getRandomImageUrl(String keyword) {
-        List<String> imageUrls = getFlickrImageUrls(keyword);
-        if (imageUrls.isEmpty()) {
-            log.warn("No images found for keyword: {}", keyword);
-            return null;
-        }
-        return imageUrls.get(random.nextInt(imageUrls.size()));
     }
 }
