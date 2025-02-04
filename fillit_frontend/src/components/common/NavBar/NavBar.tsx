@@ -10,7 +10,7 @@ import {
   MyPageInactiveIcon,
   MyPageActiveIcon,
 } from '@/assets/assets';
-import NavBarItem from './NavBarItem';
+import NavBarItem from '@/components/common/NavBar/NavBarItem';
 import { useLocation } from 'react-router-dom';
 
 const navItems = [

@@ -10,7 +10,7 @@ import SignUpPage from './pages/SignUpPage';
 import SocialPage from '@/pages/SocialSignUpPage';
 import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
-import NavBar from '@/components/common/NavBar';
+import NavBar from '@/components/common/NavBar/NavBar';
 
 const App = () => {
   return (
