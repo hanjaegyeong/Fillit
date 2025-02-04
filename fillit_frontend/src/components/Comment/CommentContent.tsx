@@ -8,10 +8,15 @@ import CommentImage from '@/assets/images/comment-bg.png';
 
 interface CommentContentProps {
   comment: Comment;
+  position: 'left' | 'right';
   isReply?: boolean;
 }
 
-const CommentContent = ({ comment, isReply = false }: CommentContentProps) => {
+const CommentContent = ({
+  comment,
+  position,
+  isReply = false,
+}: CommentContentProps) => {
   const navigate = useNavigate();
 
   const handleGoCommentDetail = () => {
@@ -20,16 +25,18 @@ const CommentContent = ({ comment, isReply = false }: CommentContentProps) => {
 
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[200px] flex items-center`}
+      className={`bg-contain bg-no-repeat bg-center w-[250px] flex items-center -mt-7 ${
+        position === 'left' ? 'mr-24' : 'ml-24'
+      }`}
       style={{
         backgroundImage: `url(${CommentImage})`,
       }}
       onClick={handleGoCommentDetail}
     >
-      <div className={`flex flex-col h-full space-y-2 px-12 `}>
+      <div className={`flex flex-col space-y-2 py-7 pl-16 pr-12`}>
         <div
           className={`flex items-center ${
-            isReply ? 'justify-between' : 'gap-4'
+            isReply ? 'justify-between' : 'gap-2'
           }`}
         >
           <ProfileBadge
