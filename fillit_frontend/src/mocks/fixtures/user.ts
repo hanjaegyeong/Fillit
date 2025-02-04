@@ -15,7 +15,7 @@ export const user: User = {
 export const anotherUser: User = {
   type: 'type',
   id: 'id2',
-  name: 'Alex',
+  name: 'Cordewex',
   personalId: 'chocolate',
   profileImageUrl: ProfileImage,
   introduction:
