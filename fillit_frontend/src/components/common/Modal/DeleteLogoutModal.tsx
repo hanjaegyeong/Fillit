@@ -6,7 +6,7 @@ interface DeleteLogoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  message?: 'delete' | 'logout'; // 삭제 or 로그아웃 메세지
+  message: 'delete' | 'logout'; // 삭제 or 로그아웃 메세지
 }
 
 export const DeleteLogoutModal = ({
