@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import ArticleListPage from '@/pages/ArticleListPage';
 import ArticleDetailPage from '@/pages/ArticleDetailPage';
+import CommentDetailPage from '@/pages/CommentDetailPage';
 import FindPage from './pages/FindPage';
 import LoginPage from '@/pages/LoginPage';
 import MessageListPage from '@/pages/MessageListPage';
@@ -21,6 +22,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<ArticleListPage />} />
         <Route path="/article/:boardId" element={<ArticleDetailPage />} />
+        <Route path="/comment" element={<CommentDetailPage />} />
         <Route path="/find" element={<FindPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/message" element={<MessageListPage />} />
