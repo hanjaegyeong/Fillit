@@ -1,5 +1,5 @@
 import { User } from '@/types/user';
-import ProfileImage from '@/assets/images/profile-image.png';
+import ProfileImage from '@/mocks/images/profile-image.png';
 
 export const user: User = {
   type: 'type',
