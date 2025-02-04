@@ -3,6 +3,7 @@ import ArticleListPage from '@/pages/ArticleListPage';
 import ArticleDetailPage from '@/pages/ArticleDetailPage';
 import FindPage from './pages/FindPage';
 import LoginPage from '@/pages/LoginPage';
+import MessageListPage from '@/pages/MessageListPage';
 import MessagePage from '@/pages/MessagePage';
 import ProfilePage from '@/pages/ProfilePage';
 import SearchPage from '@/pages/SearchPage';
@@ -11,7 +12,8 @@ import SocialPage from '@/pages/SocialSignUpPage';
 import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 import NavBar from '@/components/common/NavBar';
-import { ProfileEditPage } from './pages/ProfileEditPage';
+import NewMessage from '@/pages/NewMassagePage';
+import { ProfileEditPage } from '@/pages/ProfileEditPage';
 
 const App = () => {
   return (
@@ -21,7 +23,8 @@ const App = () => {
         <Route path="/article/:boardId" element={<ArticleDetailPage />} />
         <Route path="/find" element={<FindPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/message" element={<MessagePage />} />
+        <Route path="/message" element={<MessageListPage />} />
+        <Route path="/message/:chatId" element={<MessagePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
         <Route path="/search" element={<SearchPage />} />
@@ -29,6 +32,7 @@ const App = () => {
         <Route path="/socialsignup" element={<SocialPage />} />
         <Route path="/voice" element={<VoicePage />} />
         <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/newmessage" element={<NewMessage />} />
       </Routes>
       <NavBar />
     </>

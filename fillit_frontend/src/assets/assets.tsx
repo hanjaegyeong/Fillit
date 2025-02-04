@@ -53,6 +53,9 @@ import caution from '@/assets/icons/caution.svg';
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
 
+//message
+import NewMessage from '@/assets/icons/add-messaage.svg';
+
 //interestTag
 import ArtIcon from '@/assets/icons/tags-icon/art.svg';
 import BeautyIcon from '@/assets/icons/tags-icon/beauty.svg';
@@ -143,4 +146,5 @@ export {
   NameIcon,
   IntroIcon,
   CameraIcon,
+  NewMessage,
 };
