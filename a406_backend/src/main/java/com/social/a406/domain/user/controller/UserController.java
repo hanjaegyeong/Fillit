@@ -4,6 +4,8 @@ import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -100,5 +103,17 @@ public class UserController {
         String response = userService.changeUserPassword(userPasswordRequest);
 
         return ResponseEntity.ok(response);
+    }
+
+    // 유저 검색
+    // cursorId -> personalId 사전순 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<UserSearchResponse>> searchUser(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String cursorId,
+            @RequestParam String word
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(userService.searchUser(pageable, cursorId, word));
     }
 }
