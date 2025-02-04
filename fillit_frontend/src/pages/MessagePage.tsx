@@ -2,6 +2,7 @@ import Header from '@/components/common/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import ProfileImage from '@/mocks/images/profile-image.png';
+import AiFilButton from '@/components/common/Button/AiFilButton';
 
 interface Message {
   id: number;
@@ -186,7 +187,7 @@ const MessagePage = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-
+        <AiFilButton />
         {/* 메세지 입력 */}
         <div className="p-6 flex items-center border-t border-gray-300">
           <input
