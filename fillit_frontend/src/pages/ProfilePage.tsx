@@ -6,17 +6,22 @@ import { useEffect, useState } from 'react';
 import { getPaperText } from '@/utils/getPaperText';
 import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
+import { ProfileDropdown } from '@/components/common/ProfileDropdown';
 
 const ProfilePage = () => {
   const [paperImage, setPaperImage] = useState<string | null>(null);
   const [isMyProfile, setIsMyProfile] = useState(false);
   const [profileData, setProfileData] = useState(user);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleProfile = () => {
     setIsMyProfile(!isMyProfile);
     setProfileData(!isMyProfile ? user : anotherUser);
   };
 
+  const handleMenuClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   useEffect(() => {
     const loadPaperText = async () => {
       const image = await getPaperText(profileData.name, 192);
@@ -27,7 +32,11 @@ const ProfilePage = () => {
 
   return (
     <div className="container-header-nav overflow-hidden">
-      <Header left="home" right="menu" />
+      <Header left="home" right="menu" onMenuClick={handleMenuClick} />
+      <ProfileDropdown
+        isOpen={isDropdownOpen}
+        onClose={() => setIsDropdownOpen(false)}
+      />
       <div className="w-full flex flex-col items-center">
         <button
           onClick={toggleProfile}
