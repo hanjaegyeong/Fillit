@@ -1,4 +1,4 @@
-import Header from '@/components/common/Header';
+import Header from '@/components/common/Header/Header';
 import { useParams } from 'react-router-dom';
 
 const ArticleDetailPage = () => {

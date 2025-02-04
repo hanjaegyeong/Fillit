@@ -1,5 +1,5 @@
 import ArticleListSection from '@/components/Article/ArticleListSection';
-import Header from '@/components/common/Header';
+import Header from '@/components/common/Header/Header';
 
 const ArticleListPage = () => {
   return (
