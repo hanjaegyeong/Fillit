@@ -6,6 +6,8 @@ import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.interest.dto.InterestResponse;
+import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class AIFacadeService {
     private final SubredditService subredditService;
     private final YoutubeService youtubeService;
     private final FlickrService flickrService;
+    private final InterestService interestService;
 
     /**
      * 랜덤 방식으로 AI 게시글 생성
@@ -71,7 +75,7 @@ public class AIFacadeService {
     }
 
     /**
-     * AI 게시글 생성 로직 (키워드 및 이미지 포함)
+     * AI 게시글 생성 - boardService.createAiBoard() 호출
      */
     private BoardResponse createBoardWithKeywordAndImage(String personalId, String content, boolean includeImage) {
         // 키워드 분리 및 정리
@@ -87,6 +91,13 @@ public class AIFacadeService {
 
         // 게시글 요청 DTO 생성
         BoardRequest request = buildBoardRequest(updatedContent, keyword);
+
+        // request에 interests 세팅
+        List<String> userInterests = interestService.getUserInterests(personalId).stream()
+                .map(InterestResponse::getContent)
+                .collect(Collectors.toList());
+
+        request.setInterests(userInterests);
 
         // 게시글 생성 및 응답 반환
         return boardService.createAiBoard(request, personalId, imageUrl);
