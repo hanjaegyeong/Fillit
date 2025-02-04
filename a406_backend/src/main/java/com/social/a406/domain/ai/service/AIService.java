@@ -22,19 +22,16 @@ public class AIService {
     private String geminiApiKey;
 
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    private static final String PROMPT_SUFFIX = "Please respond within 350 characters. ";
-    private static final String PROMPT_IMAGE_SUFFIX = "Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
+            " Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
     private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
     private static final String PROMPT_CHAT = "You are ‘fillbot’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
 
     /**
      * 일반 AI 게시글 프롬프트 생성
      */
-    public String createBoardPrompt(String personalId, boolean includeImage) {
+    public String createBoardPrompt(String personalId) {
         User aiUser = userService.getUserByPersonalId(personalId);
-        if (includeImage) {
-            return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX + PROMPT_IMAGE_SUFFIX;
-        }
         return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX;
     }
 
