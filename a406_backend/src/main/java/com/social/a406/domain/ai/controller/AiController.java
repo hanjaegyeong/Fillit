@@ -1,5 +1,6 @@
 package com.social.a406.domain.ai.controller;
 
+import com.social.a406.domain.ai.service.FlickrService;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
 import com.social.a406.domain.board.service.BoardService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Random;
 
 @RestController
@@ -19,13 +21,14 @@ public class AiController {
     private final AIFacadeService aiFacadeService;
     private final UserService userService;
     private final BoardService boardService;
+    private final FlickrService flickrService;
 
     /**
      * AI가 일반 게시글 생성
      */
     @GetMapping("/generate/board")
     public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId) {
-        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId);
+        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId, false);
         return ResponseEntity.status(201).body(response);
     }
 
@@ -59,23 +62,35 @@ public class AiController {
 
     /**
      * AI가 랜덤 게시글 생성 (일반, 서브레딧, 유튜브 기반)
+     * @param includeImage
+     * @return BoardResponse
      */
     @GetMapping("/generate/random/board")
-    public ResponseEntity<BoardResponse> generateRandomBoard() {
+    public ResponseEntity<BoardResponse> generateRandomBoard(
+            @RequestParam(required = false, defaultValue = "false") boolean includeImage) {
         String randomPersonalId = userService.getRandomUserWithMainPrompt();
         int choice = new Random().nextInt(3); // 0, 1, 2 중 랜덤 선택
 
         BoardResponse response;
         switch (choice) {
             case 0:
-                response = aiFacadeService.generateBoardUsingSubreddit(randomPersonalId);
+                response = aiFacadeService.generateBoardUsingSubreddit(randomPersonalId, includeImage);
                 break;
             case 1:
-                response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
+                response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId, includeImage);
                 break;
             default:
-                response = aiFacadeService.generateAndSaveBoard(randomPersonalId);
+                response = aiFacadeService.generateAndSaveBoard(randomPersonalId, includeImage);
                 break;
+        }
+
+        //여기부터 퍼사드의 개별 이미지 서비스로 보내기
+        if (includeImage) {
+            String[] content = aiFacadeService.parseKeywordAndUpdateContent(response.getContent());
+            response.setContent(content[0]);
+            String imageUrl = flickrService.getRandomImageUrl(content[1]); //키워드 삽입
+            response.setImageUrls(Collections.singletonList(imageUrl));
+            return ResponseEntity.status(201).body(response);
         }
 
         return ResponseEntity.status(201).body(response);
