@@ -1,11 +1,11 @@
-import ArticleListSection from '@/components/Article/ArticleListSection';
+import ArticleListContainer from '@/components/Article/ArticleListContainer';
 import Header from '@/components/common/Header/Header';
 
 const ArticleListPage = () => {
   return (
     <div className="container-header-nav">
       <Header left="home" right="notification" />
-      <ArticleListSection />
+      <ArticleListContainer />
     </div>
   );
 };
