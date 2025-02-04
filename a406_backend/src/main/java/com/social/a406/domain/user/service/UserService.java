@@ -264,9 +264,7 @@ public class UserService {
             s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(
                     file.getInputStream(), file.getSize()));
 
-            String fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
-
-            return fileUrl;
+            return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
         } catch(IOException e){
             throw new RuntimeException("Failed to store the file", e);
         }
@@ -361,5 +359,16 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(userPasswordRequest.getPassword()));
         userRepository.save(user);
         return "Password change success!!";
+    }
+
+    public List<UserSearchResponse> searchUser(Pageable pageable, String cursorId, String word) {
+        List<User> users = userRepository.searchUsers(word, cursorId, pageable);
+        return users.stream()
+                .map(user -> new UserSearchResponse(
+                        user.getPersonalId(),
+                        user.getName(),
+                        user.getProfileImageUrl()
+                ))
+                .toList();
     }
 }
