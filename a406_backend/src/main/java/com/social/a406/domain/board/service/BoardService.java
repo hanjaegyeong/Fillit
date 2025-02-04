@@ -5,6 +5,8 @@ import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
+import com.social.a406.domain.board.event.BoardCreatedEvent;
+import com.social.a406.domain.board.event.BoardDeletedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
@@ -13,6 +15,7 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,8 @@ public class BoardService {
     private final CommentService commentService;
     private final InterestService interestService;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -51,6 +56,8 @@ public class BoardService {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
         Board newBoard = boardRepository.save(board);
+        eventPublisher.publishEvent(new BoardCreatedEvent(this, newBoard)); // 이벤트발행
+
         List<String> imageUrls = null;
         if(files != null && !files.isEmpty()) {
             //게시글 이미지 저장
@@ -179,6 +186,7 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
+    // Board 엔티티를 Response DTO로 변환
     private BoardResponse mapToResponseDto(Board board, List<String> imageUrls, List<String> interests) {
         return BoardResponse.builder()
                 .boardId(board.getId())
@@ -217,7 +225,10 @@ public class BoardService {
         return imageUrls;
     }
 
+
     //이미지 저장
+    // 이미지 저장
+    @Transactional
     public String saveBoardImageAtS3(Long boardId, MultipartFile file) {
         try{
             String fileName = "board/" + boardId + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -296,6 +307,7 @@ public class BoardService {
             throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
         interestService.deleteAllBoardInterests(boardId);
+        eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
         boardRepository.delete(board);
     }
 
