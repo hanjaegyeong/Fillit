@@ -19,8 +19,8 @@ const ProfilePage = () => {
   return (
     <div className="container-header-nav">
       <Header left="home" right="menu" />
-      <div className="w-full">
-        <div className="ml-16 -mt-7">
+      <div className="w-full flex flex-col items-center">
+        <div className="ml-5 -mt-7">
           {paperImage && (
             <div className="w-[12rem] h-[3.125rem] mb-2 -ml-8 translate-y-28">
               <img src={paperImage} alt="paper name" className="w-full" />
@@ -54,7 +54,7 @@ const ProfilePage = () => {
             </p>
           </div>
         </div>
-        <div className="flex justify-center scale-98 -mt-5">
+        <div className="w-full object-cover flex justify-center scale-110 mt-2">
           <img src={ProfilePagePaper} alt="profile page paper" />
         </div>
       </div>
