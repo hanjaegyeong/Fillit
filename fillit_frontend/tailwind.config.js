@@ -15,6 +15,9 @@ export default {
       backgroundImage: {
         home: "url('/images/bg-image.png')",
       },
+      colors: {
+        'gray-300': '#D0D0D0',
+      },
     },
   },
   plugins: [scrollbarHide],

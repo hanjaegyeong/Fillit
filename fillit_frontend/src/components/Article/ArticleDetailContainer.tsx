@@ -1,8 +1,10 @@
 import { useParams } from 'react-router-dom';
-import ArticleContent from './ArticleContent';
+import ArticleContent from '@/components/Article/ArticleContent';
 import { articleList } from '@/mocks/fixtures/articleList';
 import { commentList } from '@/mocks/fixtures/commentList';
-import CommentContent from '../Comment/CommentContent';
+import CommentContent from '@/components/Comment/CommentContent';
+import ProfileImage from '@/components/common/ProfileImage';
+import { SendIcon } from '@/assets/assets';
 
 type RouteParams = {
   boardId: string;
@@ -19,12 +21,29 @@ const ArticleDetailContainer = () => {
         </div>
         <hr className="border-t border-black" />
         <div className="p-4">
-          <div className="text-center border border-black  rounded-full">
-            댓글입력창
+          <div className="relative flex gap-3 pb-10">
+            <ProfileImage size={40} />
+            <input
+              type="text"
+              placeholder="Write a comment..."
+              className="flex-1 border-[0.05rem] px-4 border-black rounded-full placeholder:text-sm  placeholder:text-gray-300 placeholder:font-light focus:outline-none"
+            />
+            <button className="p-2 absolute right-2 top-1">
+              <img src={SendIcon} alt="send icon" />
+            </button>
           </div>
-          {commentList.map((comment) => (
-            <CommentContent key={comment.commentId} comment={comment} />
-          ))}
+          <div className="flex flex-col items-center">
+            {commentList.map((comment, index) => {
+              const position = index % 2 ? 'right' : 'left';
+              return (
+                <CommentContent
+                  key={comment.commentId}
+                  comment={comment}
+                  position={position}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
