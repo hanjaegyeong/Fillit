@@ -1,4 +1,4 @@
-import Header from '@/components/common/Header';
+import Header from '@/components/common/Header/Header';
 import { BubbleBackground } from '@/components/decorations/BubbleBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
 import { micBack, mic } from '@/assets/assets';

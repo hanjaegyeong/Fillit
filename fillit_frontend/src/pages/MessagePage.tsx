@@ -1,4 +1,4 @@
-import Header from '@/components/common/Header';
+import Header from '@/components/common/Header/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import ProfileImage from '@/mocks/images/profile-image.png';

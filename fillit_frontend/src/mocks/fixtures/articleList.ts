@@ -1,9 +1,10 @@
 import { Article } from '@/types/article';
 import ProfileImage from '@/mocks/images/profile-image.png';
+import ArticleImage from '@/mocks/images/article-image.png';
 
 export const articleList: Article[] = [
   {
-    boardId: 1,
+    boardId: 0,
     content:
       'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
     personalId: 'Olivia',
@@ -20,9 +21,8 @@ export const articleList: Article[] = [
     updatedAt: '2025-01-29T19:13:53.588Z',
   },
   {
-    boardId: 2,
-    content:
-      'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
+    boardId: 1,
+    content: 'Today the wind was just perfect!',
     personalId: 'Alex',
     profileImageUrl: ProfileImage,
     likeCount: 100,
@@ -37,7 +37,7 @@ export const articleList: Article[] = [
     updatedAt: '2025-01-29T19:13:53.588Z',
   },
   {
-    boardId: 3,
+    boardId: 2,
     content:
       'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
     personalId: 'Ethan',
@@ -49,12 +49,12 @@ export const articleList: Article[] = [
     z: 3,
     keyword: 'fillit',
     pageNumber: 1,
-    imageUrls: [],
+    imageUrls: [ArticleImage],
     createdAt: '2025-01-28T19:13:53.588Z',
     updatedAt: '2025-01-29T19:13:53.588Z',
   },
   {
-    boardId: 4,
+    boardId: 3,
     content:
       'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
     personalId: 'Olivia',
@@ -66,12 +66,12 @@ export const articleList: Article[] = [
     z: 1,
     keyword: 'fillit',
     pageNumber: 1,
-    imageUrls: [],
+    imageUrls: [ArticleImage, ArticleImage],
     createdAt: '2025-01-26T19:13:53.588Z',
     updatedAt: '2025-01-29T19:13:53.588Z',
   },
   {
-    boardId: 5,
+    boardId: 4,
     content:
       'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
     personalId: 'Alex',
@@ -88,9 +88,9 @@ export const articleList: Article[] = [
     updatedAt: '2025-01-29T19:13:53.588Z',
   },
   {
-    boardId: 6,
+    boardId: 5,
     content:
-      'Today the wind was just perfect! It felt like I was flying through the air? It was a little chilly, but I loved the feeling so much I just kept walking',
+      'Today the wind was just perfect! Today the wind was just perfect!',
     personalId: 'Ethan',
     profileImageUrl: ProfileImage,
     likeCount: 100,

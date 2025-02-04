@@ -1,4 +1,4 @@
-import Header from '@/components/common/Header';
+import Header from '@/components/common/Header/Header';
 import ProfileImage from '@/components/common/ProfileImage';
 import { ProfilePagePaper, RippedProfile } from '@/assets/assets';
 import { user, anotherUser } from '@/mocks/fixtures/user';
