@@ -76,6 +76,8 @@ import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 // profile
 import Keyword from '@/assets/images/keyword.png';
 import RippedProfile from '@/assets/icons/profile-ripped.svg';
+import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
+import DmIcon from '@/assets/icons/dm.svg';
 
 export {
   HomeInactiveIcon,
@@ -136,5 +138,7 @@ export {
   TravelIcon,
   Keyword,
   RippedProfile,
+  ProfilePagePaper,
+  DmIcon,
   NewMessage,
 };
