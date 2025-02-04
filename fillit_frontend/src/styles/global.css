@@ -17,6 +17,9 @@
   .container-header {
     @apply pt-[3.6rem] bg-home bg-cover flex flex-col items-center h-screen;
   }
+  .container-base {
+    @apply bg-home bg-cover flex flex-col items-center h-screen;
+  }
 }
 
 @media (min-width: 600px) {
