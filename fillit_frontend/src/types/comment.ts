@@ -1,16 +1,10 @@
-export interface Article {
-  boardId: number;
+export interface Comment {
+  commentId: number;
   content: string;
   personalId: string;
   profileImageUrl: string | null;
   likeCount: number;
   commentCount: number;
-  x: number;
-  y: number;
-  z: number;
-  keyword: string;
-  pageNumber: number;
-  imageUrls: string[];
   createdAt: string;
   updatedAt: string;
 }

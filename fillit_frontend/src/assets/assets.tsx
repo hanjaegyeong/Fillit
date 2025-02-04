@@ -29,6 +29,7 @@ import LikeInactiveIcon from '@/assets/icons/like-outline.svg';
 
 // comment
 import CommentIcon from '@/assets/icons/comment.svg';
+import SendIcon from '@/assets/icons/send-outline.svg';
 
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
@@ -105,6 +106,7 @@ export {
   LikeActiveIcon,
   LikeInactiveIcon,
   CommentIcon,
+  SendIcon,
   micBack,
   mic,
   micBig,

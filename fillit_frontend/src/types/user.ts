@@ -3,7 +3,7 @@ export interface User {
   id: string;
   name: string;
   personalId: string;
-  profileImageUrl?: string | null;
+  profileImageUrl: string | null;
   introduction: string;
   birthDate: string;
 }

@@ -1,15 +1,11 @@
-import Header from '@/components/common/Header';
-import { useParams } from 'react-router-dom';
+import ArticleDetailContainer from '@/components/Article/ArticleDetailContainer';
+import Header from '@/components/common/Header/Header';
 
 const ArticleDetailPage = () => {
-  const { boardId } = useParams();
-
   return (
-    <div className="flex flex-col items-center h-screen">
+    <div className="container-header-nav">
       <Header left="back" right="menu" />
-      <div className="pt-[4.6rem]">
-        <h1>Article Detail Page #{boardId}</h1>
-      </div>
+      <ArticleDetailContainer />
     </div>
   );
 };
