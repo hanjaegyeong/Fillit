@@ -4,7 +4,8 @@ import ProfileImage from '@/mocks/images/profile-image.png';
 export const commentList: Comment[] = [
   {
     commentId: 0,
-    content: 'Sounds so refreshing! I wish I could feel that breeze too!',
+    content:
+      'Sounds so refreshing! I wish I could feel that breeze too!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
     personalId: 'Alex',
     profileImageUrl: ProfileImage,
     likeCount: 234,
@@ -34,7 +35,7 @@ export const commentList: Comment[] = [
   },
   {
     commentId: 3,
-    content: 'Sounds so refreshing! I wish I could feel that breeze too!',
+    content: 'Sounds so refreshing! ',
     personalId: 'Alex',
     profileImageUrl: ProfileImage,
     likeCount: 234,
