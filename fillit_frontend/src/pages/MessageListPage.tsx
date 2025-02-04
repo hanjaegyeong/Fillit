@@ -57,7 +57,7 @@ const mockChat: ChatRoom[] = [
   },
 ];
 
-const MessagePage = () => {
+const MessageListPage = () => {
   const [chatResults, setChatResults] = useState(mockChat);
 
   const handleSearch = (term: string) => {
@@ -122,4 +122,4 @@ const MessagePage = () => {
   );
 };
 
-export default MessagePage;
+export default MessageListPage;
