@@ -1,8 +1,12 @@
 import { MenuTabIcon } from '@/assets/assets';
 
-const MenuTabButton = () => {
+interface MenuTabButtonProps {
+  onClick?: () => void;
+}
+
+const MenuTabButton = ({ onClick }: MenuTabButtonProps) => {
   return (
-    <button>
+    <button onClick={onClick}>
       <img src={MenuTabIcon} alt="menutab icon" />
     </button>
   );
