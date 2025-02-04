@@ -43,30 +43,43 @@ public class SubredditService {
         return mappings.get(new Random().nextInt(mappings.size())).getSubreddit().getName();
     }
 
-    /**
-     * 특정 서브레딧의 랜덤 핫 게시글 가져오기 (WebClient 동기 변환)
-     */
     private String getRandomHotPost(String subredditName) {
         String url = String.format(REDDIT_URL, subredditName);
 
         try {
             JsonNode jsonNode = restTemplate.getForObject(url, JsonNode.class);
-            return extractRandomPostTitle(jsonNode);
+            return extractRandomPostInfo(jsonNode);
         } catch (Exception e) {
             System.err.println("Reddit API 요청 실패: " + e.getMessage());
-            return "No Title Available";
+            return "No Title Available | No Description Available";
         }
     }
 
     /**
-     * JSON 응답에서 랜덤한 게시글 제목 추출
+     * JSON 응답에서 랜덤한 게시글 제목과 설명을 추출
      */
-    private String extractRandomPostTitle(JsonNode jsonNode) {
+    private String extractRandomPostInfo(JsonNode jsonNode) {
         if (jsonNode == null || !jsonNode.has("data")) {
-            return "No Title Available";
+            return "No Title Available | No Description Available";
         }
+
         List<JsonNode> hotPosts = jsonNode.path("data").path("children").findValues("data");
-        return hotPosts.isEmpty() ? "No Title Available" :
-                hotPosts.get(new Random().nextInt(hotPosts.size())).path("title").asText("No Title Available");
+
+        if (hotPosts.isEmpty()) {
+            return "No Title Available | No Description Available";
+        }
+
+        JsonNode randomPost = hotPosts.get(new Random().nextInt(hotPosts.size()));
+
+        // 제목 추출
+        String title = randomPost.path("title").asText("No Title Available");
+
+        // 설명 추출 (secure_media.oembed.description이 있을 경우)
+        String description = randomPost.path("secure_media")
+                .path("oembed")
+                .path("description")
+                .asText("No Description Available");
+
+        return title + " | " + description;
     }
 }
