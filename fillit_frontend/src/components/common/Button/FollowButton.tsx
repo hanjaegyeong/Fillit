@@ -40,6 +40,7 @@ const FollowButton = ({
           width,
           height,
           fontSize,
+          paddingTop: '3.35px',
         }}
       >
         {isFollowingState ? 'UNFOLLOW' : 'FOLLOW'}
