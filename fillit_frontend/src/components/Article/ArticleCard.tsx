@@ -21,15 +21,15 @@ const ArticleCard = ({ article, position }: ArticleItemProps) => {
     <div
       className={`bg-contain bg-no-repeat bg-center w-[380px] flex items-center drop-shadow-md ${
         position === 'left' ? 'mr-16' : 'ml-16'
-      } -mb-14 pb-1`}
+      } -mb-12 pb-1`}
       style={{
         backgroundImage: `url(${getBackgroundImage(hasImage)})`,
       }}
       onClick={handleGoArticleDetail}
     >
       <div
-        className={`flex flex-col h-full space-y-2 px-12 ${
-          hasImage ? 'pt-20 pb-12 -mt-6' : 'py-14'
+        className={`flex flex-col h-full space-y-2 px-10 ${
+          hasImage ? ' pt-20 pb-12 -mt-6' : 'py-12'
         }`}
       >
         <ArticleContent article={article} />
