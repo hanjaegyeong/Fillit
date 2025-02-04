@@ -78,7 +78,7 @@ const MessagePage = () => {
     <div className="container-header-nav relative flex flex-col min-h-screen items-center">
       <Header left="home" right="notification" />
 
-      <div className="p-4 flex justify-center max-w-[600px]">
+      <div className="p-4 flex justify-center">
         <SearchInput
           className="w-full max-w-[380px]"
           onSearch={handleSearch}
@@ -87,7 +87,7 @@ const MessagePage = () => {
         />
       </div>
 
-      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-280px)] hide-scrollbar space-y-4">
+      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-4">
         {chatResults.map((chat) => (
           <div
             key={chat.id}
