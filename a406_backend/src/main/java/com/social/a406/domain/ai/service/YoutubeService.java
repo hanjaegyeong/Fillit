@@ -169,14 +169,23 @@ public class YoutubeService {
      * 프롬프트 생성
      */
     private String generatePrompt(Youtube youtube) {
-        return String.format(PROMPT_TEMPLATE,
-                youtube.getCategory(),
+        return escapeJsonString(String.format(PROMPT_TEMPLATE,
+                youtube.getCategory().getName(),
                 youtube.getTitle(),
                 youtube.getUrl(),
                 youtube.getDescription(),
                 youtube.getTopicCategory(),
-                youtube.getCategory(),
+                youtube.getCategory().getName(),
                 youtube.getChannelTitle())
-                + PROMPT_SUFFIX;
+                + PROMPT_SUFFIX);
+    }
+
+    private String escapeJsonString(String input) {
+        if (input == null) return "";
+        return input.replace("\\", "\\\\")  // 백슬래시 처리
+                .replace("\"", "\\\"") // 큰따옴표 처리
+                .replace("\n", "\\n")   // 개행 문자 처리
+                .replace("\r", "\\r")   // 캐리지 리턴 처리
+                .replace("\t", "\\t");   // 탭 문자 처리
     }
 }
