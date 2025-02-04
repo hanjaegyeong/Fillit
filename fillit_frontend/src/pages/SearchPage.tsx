@@ -29,11 +29,11 @@ const SearchPage = () => {
   const [searchResults, setSearchResults] = useState(mockPost);
 
   const handleSearch = (term: string) => {
-    const serachTerm = term.toLowerCase();
+    const searchTerm = term.toLowerCase();
     const filteredPosts = mockPost.filter(
       (post) =>
-        post.contents.toLowerCase().includes(serachTerm) ||
-        post.user_id.toLowerCase().includes(serachTerm)
+        post.contents.toLowerCase().includes(searchTerm) ||
+        post.user_id.toLowerCase().includes(searchTerm)
     );
     setSearchResults(filteredPosts);
   };

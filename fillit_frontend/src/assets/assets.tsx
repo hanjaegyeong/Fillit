@@ -53,6 +53,9 @@ import caution from '@/assets/icons/caution.svg';
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
 
+//message
+import NewMessage from '@/assets/icons/add-messaage.svg';
+
 //interestTag
 import ArtIcon from '@/assets/icons/tags-icon/art.svg';
 import BeautyIcon from '@/assets/icons/tags-icon/beauty.svg';
@@ -75,6 +78,9 @@ import Keyword from '@/assets/images/keyword.png';
 import RippedProfile from '@/assets/icons/profile-ripped.svg';
 import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
 import DmIcon from '@/assets/icons/dm.svg';
+import NameIcon from '@/assets/icons/name.svg';
+import IntroIcon from '@/assets/icons/introduction.svg';
+import CameraIcon from '@/assets/icons/camera.svg';
 
 export {
   HomeInactiveIcon,
@@ -137,4 +143,8 @@ export {
   RippedProfile,
   ProfilePagePaper,
   DmIcon,
+  NameIcon,
+  IntroIcon,
+  CameraIcon,
+  NewMessage,
 };
