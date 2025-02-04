@@ -15,6 +15,7 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -360,5 +361,17 @@ public class BoardService {
                 .pageNumber(board.getPageNumber())
                 .imageUrl(imageUrl)
                 .build();
+    }
+
+    public List<BoardResponse> searchBoard(Pageable pageable, Long cursorId, String word) {
+        List<Board> boards = boardRepository.searchBoard(word, cursorId, pageable);
+
+        return boards.stream()
+                .map(board -> mapToResponseDto(
+                        board,
+                        boardImageRepository.findAllById(board.getId()),
+                        interestService.getBoardInterests(board.getId())
+                ))
+                .toList();
     }
 }

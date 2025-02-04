@@ -6,6 +6,8 @@ import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +42,18 @@ public class BoardController {
     public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
         BoardResponse boardResponse = boardService.getBoardById(boardId);
         return ResponseEntity.ok(boardResponse);
+    }
+
+    // 게시글 검색
+    //cursorId -> boardId 최신순
+    @GetMapping("/search")
+    public ResponseEntity<List<BoardResponse>> searchBoard(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam String word
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(boardService.searchBoard(pageable, cursorId, word));
     }
 
     @PutMapping("/{boardId}")
