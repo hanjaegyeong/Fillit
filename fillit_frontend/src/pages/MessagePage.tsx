@@ -31,6 +31,30 @@ const mockChat: ChatRoom[] = [
     user_id: 'tech_guru',
     contents: 'Check out this cool new feature in React!',
   },
+  {
+    id: 4,
+    image: ProfileImage,
+    user_id: 'tech_guru',
+    contents: 'Check out this cool new feature in React!',
+  },
+  {
+    id: 5,
+    image: ProfileImage,
+    user_id: 'alice_smith',
+    contents: 'Did you see the latest movie?',
+  },
+  {
+    id: 6,
+    image: ProfileImage,
+    user_id: 'tech_guru',
+    contents: 'Check out this cool new feature in React!',
+  },
+  {
+    id: 7,
+    image: ProfileImage,
+    user_id: 'tech_guru',
+    contents: 'Check out this cool new feature in React!',
+  },
 ];
 
 const MessagePage = () => {
@@ -51,33 +75,23 @@ const MessagePage = () => {
   const navigate = useNavigate();
 
   return (
-    <>
+    <div className="container-header-nav relative flex flex-col min-h-screen items-center">
       <Header left="home" right="notification" />
-      <div className="mt-6 space-y-5 p-5">
-        <div className="flex flex-col justify-center items-center">
-          <SearchInput
-            className=""
-            onSearch={handleSearch}
-            placeholder="search"
-            width="w-[300px]"
-          />
-        </div>
-        <div className="fixed bottom-28 right-4 z-50">
-          <button
-            onClick={() => navigate('/newmessage')}
-            className="w-[64px] h-[64px] bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
-          >
-            <img
-              src={NewMessage}
-              alt="mic-back"
-              className="w-full h-full object-contain"
-            />
-          </button>
-        </div>
+
+      <div className="p-4 flex justify-center max-w-[600px]">
+        <SearchInput
+          className="w-full max-w-[380px]"
+          onSearch={handleSearch}
+          placeholder="search"
+          width="min-w-[343px]"
+        />
+      </div>
+
+      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-280px)] hide-scrollbar space-y-4">
         {chatResults.map((chat) => (
           <div
             key={chat.id}
-            className="p-4 bg-white rounded-lg shadow flex items-center"
+            className="p-4 bg-white rounded-lg shadow flex items-center cursor-pointer"
             onClick={() => handleChatClick(chat.id)}
           >
             <img
@@ -92,9 +106,20 @@ const MessagePage = () => {
           </div>
         ))}
       </div>
-    </>
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-32">
+        <button
+          onClick={() => navigate('/newmessage')}
+          className="w-[64px] h-[64px] bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+        >
+          <img
+            src={NewMessage}
+            alt="mic-back"
+            className="w-full h-full object-contain"
+          />
+        </button>
+      </div>
+    </div>
   );
 };
 
 export default MessagePage;
-
