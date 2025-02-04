@@ -1,5 +1,6 @@
 package com.social.a406.domain.user.service;
 
+import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.EmailVerifyCode;
@@ -41,6 +42,7 @@ public class UserService {
     private final S3Client s3Client;
     private final EmailVerifyCodeRepository emailVerifyCodeRepository;
     private final VerifyEmailUtil verifyEmailUtil;
+    private final FollowRepository followRepository;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -162,6 +164,8 @@ public class UserService {
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            Long followerCount = followRepository.countFollowers(user);
+            Long followeeCount = followRepository.countFollowees(user);
             return UserCharacterResponse.builder()
                     .type(user.getEmail() == null && user.getPassword() == null ? "ai" : "user")
                     .id(user.getId())
@@ -170,6 +174,8 @@ public class UserService {
                     .profileImageUrl(user.getProfileImageUrl())
                     .introduction(user.getIntroduction())
                     .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
+                    .followerCount(followerCount)
+                    .followeeCount(followeeCount)
                     .build();
         }
 
