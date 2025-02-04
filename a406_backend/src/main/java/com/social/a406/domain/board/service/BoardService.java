@@ -74,7 +74,7 @@ public class BoardService {
             boardImageRepository.save(boardImage);
         }
 
-        System.out.println(Collections.singletonList(imageUrl));
+        interestService.addBoardInterests(savedBoard.getId(), boardRequest.getInterests());
         return mapToResponseDto(savedBoard, Collections.singletonList(imageUrl), boardRequest.getInterests());
     }
 
