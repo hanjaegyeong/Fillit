@@ -3,17 +3,28 @@ import BasicInput from '@/components/common/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 import Header from '@/components/common/Header';
 import ProfileImage from '@/components/common/ProfileImage';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const ProfileEditPage = () => {
   const navigate = useNavigate();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEditClick = () => {
     navigate('/profile');
   };
 
   const handleCameraClick = () => {
-    console.log('프로필 이미지 업로드');
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
   };
 
   return (
@@ -21,13 +32,20 @@ export const ProfileEditPage = () => {
       <Header left="back" />
       <div className="flex flex-col items-center">
         <div className="mt-16 flex flex-col items-center">
-          <ProfileImage size={101} />
+          <ProfileImage src={profileImage} size={101} />
           <button
             onClick={handleCameraClick}
             className="w-10 h-10 bg-white rounded-[1.3rem] shadow-[5px_6px_18px_#00000014] -mt-8 ml-20"
           >
             <img src={CameraIcon} alt="camera" className="scale-125 ml-2.5" />
           </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
         </div>
         <div>
           <div className="flex mt-5 ">
