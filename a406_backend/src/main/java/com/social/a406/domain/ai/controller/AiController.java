@@ -21,14 +21,13 @@ public class AiController {
     private final AIFacadeService aiFacadeService;
     private final UserService userService;
     private final BoardService boardService;
-    private final FlickrService flickrService;
 
     /**
      * AI가 일반 게시글 생성
      */
     @GetMapping("/generate/board")
     public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId) {
-        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId, false);
+        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId);
         return ResponseEntity.status(201).body(response);
     }
 
