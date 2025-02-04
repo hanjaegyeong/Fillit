@@ -4,6 +4,7 @@ import com.social.a406.domain.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +26,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.mainPrompt IS NOT NULL ORDER BY FUNCTION('RAND')")
     List<User> findUsersWithMainPrompt(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(u.personalId LIKE %:word% OR u.name LIKE %:word%) " +
+            "AND (:cursorPersonalId IS NULL OR u.personalId > :cursorPersonalId) " +
+            "ORDER BY u.personalId ASC")
+    List<User> searchUsers(@Param("word") String word,
+                           @Param("cursorPersonalId") String cursorPersonalId,
+                           Pageable pageable);
 }
