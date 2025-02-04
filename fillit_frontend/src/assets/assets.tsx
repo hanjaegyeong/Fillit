@@ -74,7 +74,7 @@ import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 import Keyword from '@/assets/images/keyword.png';
 import RippedProfile from '@/assets/icons/profile-ripped.svg';
 import DmButton from '@/assets/icons/dm-button.svg';
-import ProfilePagePaper from '@/assets/images/profile-page-paper.png';
+import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
 
 export {
   HomeInactiveIcon,
