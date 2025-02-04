@@ -44,7 +44,7 @@ const ProfilePage = () => {
         >
           {isMyProfile ? '다른 유저 보기' : '내 프로필'}
         </button>
-        <div className="w-[22rem] ml-24 -mt-7">
+        <div className="w-[22rem] ml-20 -mt-7">
           {paperImage && (
             <div className="w-[12rem] h-[3.125rem] mb-2 -ml-8 translate-y-28">
               <img src={paperImage} alt="paper name" className="w-full" />
@@ -57,7 +57,7 @@ const ProfilePage = () => {
           <div className="ml-[9.6rem] -mt-[10.625rem]">
             <div className="flex items-center h-8">
               <h4 className="text-xl leading-tight">{profileData.name}</h4>
-              <div className="flex gap-1 w-[120px] ml-1">
+              <div className="flex gap-1 w-[120px] ml-1 ">
                 {!isMyProfile && (
                   <>
                     <div>
@@ -75,16 +75,16 @@ const ProfilePage = () => {
                 )}
               </div>
             </div>
-            <p className="text-gray-600 font-light text-sm italic -mt-1">
+            <p className="text-gray-600 font-light text-xs italic -mt-1.5">
               @{profileData.personalId}
             </p>
             <div>
-              <div className="w-[8.438rem] bg-[#ffffff1f] px-4 py-1.5 rounded-[999px] shadow-[0px_2px_4px_#00000040] mt-1">
-                <span className="text-sm font-light">follower</span>
+              <div className="w-[8.438rem] bg-[#ffffff1f] px-4 py-1.5 rounded-[999px] shadow-[0px_2px_4px_#00000040] mt-2">
+                <span className="ml-1 text-sm font-light">follower</span>
                 <span className="ml-4 font-semibol">427</span>
               </div>
               <div className="w-[8.438rem] bg-[#ffffff1f] px-4 py-1.5 rounded-[999px] shadow-[0px_2px_4px_#00000040] mt-2">
-                <span className="text-sm font-light">following</span>
+                <span className="ml-1 text-sm font-light">following</span>
                 <span className="ml-2.5">427</span>
               </div>
             </div>
