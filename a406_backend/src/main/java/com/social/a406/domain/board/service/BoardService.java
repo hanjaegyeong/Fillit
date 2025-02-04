@@ -23,10 +23,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -63,10 +60,22 @@ public class BoardService {
 
     // AI 게시글 생성
     @Transactional
-    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId, String imageUrl) {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
-        return mapToResponseDto(boardRepository.save(board), null, null); // AI 게시글 이미지, 관심사
+        Board savedBoard = boardRepository.save(board);
+
+        // 이미지가 있을 경우 BoardImage에 저장
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            BoardImage boardImage = BoardImage.builder()
+                    .board(savedBoard)
+                    .imageUrl(imageUrl)
+                    .build();
+            boardImageRepository.save(boardImage);
+        }
+
+        System.out.println(Collections.singletonList(imageUrl));
+        return mapToResponseDto(savedBoard, Collections.singletonList(imageUrl), boardRequest.getInterests());
     }
 
     // 게시글 단건 조회
