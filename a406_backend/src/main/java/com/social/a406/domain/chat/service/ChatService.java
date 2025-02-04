@@ -10,7 +10,7 @@ import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.repository.ChatRoomRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,21 +20,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService {
 
-    @Autowired
-    private ChatMessageRepository chatMessageRepository;
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
-    @Autowired
-    private ChatParticipantsRepository chatParticipantsRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantsRepository chatParticipantsRepository;
+    private final UserRepository userRepository;
 
 
     // 채팅 저장
     @Transactional
-    public ChatMessage saveMessageAndUpdateRoom(String userId, ChatMessageRequest request) {
+    public ChatMessage saveMessageAndUpdateRoom(String personalId, ChatMessageRequest request) {
+
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
 
         Long chatRoomId = request.getChatRoomId();
 
@@ -53,25 +54,30 @@ public class ChatService {
         }
 
         // 메시지 저장
-        ChatMessage newMessage = ChatMessage.builder()
+        ChatMessage Message = ChatMessage.builder()
                 .messageId(nextMessageId)
                 .chatParticipants(chatParticipants)
                 .messageContent(request.getMessageContent())
                 .build();
-        chatMessageRepository.save(newMessage);
+
+        ChatMessage savedMessage = chatMessageRepository.save(Message);
 
         // 채팅방 마지막 메시지 정보 업데이트
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
-        chatRoom.updateLastMessageContent(newMessage.getMessageContent());
+        chatRoom.updateLastMessageContent(savedMessage.getMessageContent());
 //        chatRoomRepository.save(chatRoom); 더티체킹하기때문에 따로 해줄 필요 x
-
-        return newMessage;
+        return savedMessage;
     }
 
     // 채팅방 입장
-    // 채팅방 입장전 권한 사전검증 - userId와 chatRoomId로 chatParticipants 존재 확인
-    public boolean isParticipantInChatRoom (String userId, Long chatRoomId){
+    // 채팅방 입장전 권한 사전검증 - personalId와 chatRoomId로 chatParticipants 존재 확인
+    public boolean isParticipantInChatRoom (String personalId, Long chatRoomId){
+        //userId 찾기
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
+
         return chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId).isPresent();
     }
 
@@ -103,6 +109,14 @@ public class ChatService {
         // 참여자 목록 생성 (userId와 otherId를 포함)
         List<String> participantIds = Arrays.asList(new String[]{userId, otherId});
 
+        // 매핑만들기
+        createChatParticipants(chatRoom, participantIds);
+
+        return chatRoom;
+    }
+
+    //매핑관계만들기
+    public void createChatParticipants(ChatRoom chatRoom, List<String> participantIds){
         // 참여자를 매핑 테이블에 추가
         for (String Id : participantIds) {
             User user = userRepository.findById(Id)
@@ -110,19 +124,18 @@ public class ChatService {
             ChatParticipants participant = ChatParticipants.builder()
                     .chatRoom(chatRoom)
                     .user(user)
-                    .lastReadMessageId(null)
+                    .lastReadMessageId(0L)
                     .build();
 
             chatParticipantsRepository.save(participant); // 매핑관계 저장
         }
-        return chatRoom;
     }
 
     // 채팅방 목록 가져오기
     public List<ChatRoomResponse> getChatRoomsForUser(String userId) {
         List<ChatParticipants> participants = chatParticipantsRepository.findByChatParticipantsId_UserId(userId);
         return participants.stream().map(participant -> {
-            ChatRoom chatRoom = participant.getChatRoom();
+            ChatRoom chatRoom = participant.getChatRoom(); // 얘도 위험함!!
             Long lastReadMessageId = participant.getLastReadMessageId();
             
             // 마지막으로 읽은 메세지 Id로 안읽은 메세지 수 찾기
@@ -141,13 +154,21 @@ public class ChatService {
                     .unReadMessageCount(unreadMessagesCount.intValue())
                     .build();
 
+            System.out.println("unReadMsg: "+unreadMessagesCount);
+            System.out.println("lastReadMsg: "+lastReadMessageId);
+
             return response;
         }).collect(Collectors.toList());
     }
 
     // 채팅참여 테이블, 메세지 읽음 처리
     @Transactional
-    public ChatParticipants updateLastReadMessage(String userId, Long chatRoomId) {
+    public ChatParticipants updateLastReadMessage(String personalId, Long chatRoomId) {
+        //userId 찾기
+        User user = findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+        String userId = user.getId();
+
         // ChatParticipants 엔티티 찾기
         ChatParticipants participant = chatParticipantsRepository.findByChatParticipantsId_ChatRoomIdAndChatParticipantsId_UserId(chatRoomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));
