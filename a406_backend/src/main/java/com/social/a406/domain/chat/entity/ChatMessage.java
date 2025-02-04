@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "chat_message",
+@Table(
     indexes = @Index(name = "idx_chat_room_message", columnList = "chat_room_id, message_id") // 복합 인덱스 생성
 )
 @EntityListeners(AuditingEntityListener.class) //날짜 자동 업데이트를 위한 애노테이션
