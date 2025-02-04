@@ -2,7 +2,7 @@ export interface Article {
   boardId: number;
   content: string;
   personalId: string;
-  profileImageUrl?: string | null;
+  profileImageUrl: string | null;
   likeCount: number;
   commentCount: number;
   x: number;
@@ -10,7 +10,7 @@ export interface Article {
   z: number;
   keyword: string;
   pageNumber: number;
-  imageUrls?: string[] | null;
+  imageUrls: string[];
   createdAt: string;
   updatedAt: string;
 }
