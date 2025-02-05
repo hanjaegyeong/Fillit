@@ -20,7 +20,7 @@ const CommentContent = ({
   const navigate = useNavigate();
 
   const handleGoCommentDetail = () => {
-    navigate(`/comment`);
+    navigate(`comment/${comment.commentId}`);
   };
 
   return (

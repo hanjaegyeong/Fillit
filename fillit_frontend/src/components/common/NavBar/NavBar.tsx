@@ -47,15 +47,14 @@ const navItems = [
     inactiveIcon: MyPageInactiveIcon,
     activeIcon: MyPageActiveIcon,
     alt: 'myPage icon',
-    to: '/profile',
+    to: '/profile/mynameis',
   },
 ];
 
 const NavBar = () => {
   const { pathname } = useLocation();
-  const excludedPaths = ['/login', '/signup', '/socialsignup', '/find'];
 
-  return excludedPaths.includes(pathname) ? (
+  return pathname.includes('edit') ? (
     <></>
   ) : (
     <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">

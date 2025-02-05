@@ -4,7 +4,7 @@ import LogoButton from '@/components/common/Button/LogoButton';
 import NotificationButton from '@/components/common/Button/NotificationButton';
 import MenuTabButton from '@/components/common/Button/MenuTabButton';
 import RegistButton from '@/components/common/Button/RegistButton';
-import SearchInput from '@/components/common/Button/SearchInput';
+import SearchInput from '@/components/common/Input/SearchInput';
 
 interface HeaderProps {
   left?: 'back' | 'home';

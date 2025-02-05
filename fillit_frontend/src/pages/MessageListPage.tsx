@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
-import SearchInput from '@/components/common/Button/SearchInput';
+import SearchInput from '@/components/common/Input/SearchInput';
 import ProfileImage from '@/mocks/images/profile-image.png';
 import { NewMessage } from '@/assets/assets';
 

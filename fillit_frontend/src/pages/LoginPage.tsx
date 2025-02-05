@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import loginImg from '@/assets/images/login-img.png';
-import BasicInput from '@/components/common/BasicInput';
+import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 import SocialLogin from '@/components/common/SocialLogin';
 
