@@ -3,7 +3,7 @@ import { RippedProfile } from '@/assets/assets';
 import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
-import ProfileFollow from './Profilefollow';
+import ProfileFollow from './ProfileFollow';
 
 interface ProfileInfoProps {
   profileData: User;
