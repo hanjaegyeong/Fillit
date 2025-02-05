@@ -1,12 +1,12 @@
 import { CameraIcon, IntroIcon, NameIcon } from '@/assets/assets';
-import BasicInput from '@/components/common/BasicInput';
+import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 import Header from '@/components/common/Header/Header';
 import ProfileImage from '@/components/common/ProfileImage';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const ProfileEditPage = () => {
+const ProfileEditPage = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,3 +66,5 @@ export const ProfileEditPage = () => {
     </div>
   );
 };
+
+export default ProfileEditPage;
