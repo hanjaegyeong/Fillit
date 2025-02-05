@@ -6,4 +6,6 @@ export interface User {
   profileImageUrl: string | null;
   introduction: string;
   birthDate: string;
+  followersCount: number;
+  followingCount: number;
 }

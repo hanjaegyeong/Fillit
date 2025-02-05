@@ -35,12 +35,11 @@ const FollowButton = ({
             isFollowingState
               ? 'bg-[#69cbf5] px-[5px]'
               : 'bg-[#d68de1] px-[11px]'
-          } py-0`}
+          } py-0 leading-none`}
         style={{
           width,
           height,
           fontSize,
-          paddingTop: '3.35px',
         }}
       >
         {isFollowingState ? 'UNFOLLOW' : 'FOLLOW'}
