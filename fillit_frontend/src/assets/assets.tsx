@@ -82,6 +82,7 @@ import DmIcon from '@/assets/icons/dm.svg';
 import NameIcon from '@/assets/icons/name.svg';
 import IntroIcon from '@/assets/icons/introduction.svg';
 import CameraIcon from '@/assets/icons/camera.svg';
+import FollowBackground from '@/assets/icons/follow-back.svg';
 
 export {
   HomeInactiveIcon,
@@ -149,4 +150,5 @@ export {
   IntroIcon,
   CameraIcon,
   NewMessage,
+  FollowBackground,
 };
