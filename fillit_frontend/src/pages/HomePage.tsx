@@ -1,7 +1,7 @@
 import ArticleListContainer from '@/components/Article/ArticleListContainer';
 import Header from '@/components/common/Header/Header';
 
-const ArticleListPage = () => {
+const HomePage = () => {
   return (
     <div className="container-header-nav">
       <Header left="home" right="notification" />
@@ -10,4 +10,4 @@ const ArticleListPage = () => {
   );
 };
 
-export default ArticleListPage;
+export default HomePage;

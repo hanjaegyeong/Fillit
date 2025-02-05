@@ -6,10 +6,10 @@ import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
 import FilTakeOn from '@/assets/images/fil-takeon.png';
 
 import BasicButton from '@/components/common/Button/BasicButton';
-import BasicInput from '@/components/common/BasicInput';
+import BasicInput from '@/components/common/Input/BasicInput';
 import ImageUpload from '@/components/common/ImageUpload';
 import Textarea from '@/components/common/TextArea';
-import BirthInput from '@/components/common/BirthInput';
+import BirthInput from '@/components/common/Input/BirthInput';
 import InterestTags from '@/components/common/InterestTags';
 
 const steps = [

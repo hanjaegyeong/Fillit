@@ -13,7 +13,7 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleProfileEdit = () => {
-    navigate('/profile/edit');
+    navigate('edit');
   };
 
   const handleCustomize = () => {
