@@ -15,6 +15,8 @@ import NewMessagePage from '@/pages/NewMassagePage';
 
 import ProfilePage from '@/pages/ProfilePage';
 import ProfileEditPage from '@/pages/ProfileEditPage';
+import FollowerPage from '@/pages/FollowerPage';
+import FollowingPage from '@/pages/FollowingPage';
 
 import SearchPage from '@/pages/SearchPage';
 import VoicePage from '@/pages/VoicePage';
@@ -68,8 +70,17 @@ const router = createBrowserRouter([
             path: 'edit',
             element: <ProfileEditPage />,
           },
+          {
+            path: 'follower',
+            element: <FollowerPage />,
+          },
+          {
+            path: 'following',
+            element: <FollowingPage />,
+          },
         ],
       },
+
       {
         path: 'search',
         element: <SearchPage />,
