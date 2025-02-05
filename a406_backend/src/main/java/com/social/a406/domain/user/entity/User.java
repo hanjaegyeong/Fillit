@@ -81,4 +81,12 @@ public class User {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    // 사용자 프로필 수정
+    public void updateUserProfile(String name, String introduction){
+        this.name = name;
+        this.introduction = introduction;
+    }
+
+    public void updateUserProfileImage(String profileImageUrl){this.profileImageUrl = profileImageUrl;}
 }

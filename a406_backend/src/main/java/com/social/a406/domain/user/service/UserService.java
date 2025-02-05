@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -298,9 +299,9 @@ public class UserService {
 
     // 이미지 삭제
     // S3 파일 삭제
-    private void deleteProfileImageFromS3(String audioUrl) {
+    private void deleteProfileImageFromS3(String profileImageUrl) {
         // S3 버킷 내에서 삭제하려는 파일의 키(파일 경로) 추출
-        String fileKey = audioUrl.substring(audioUrl.indexOf("profile/"));  // 'profile/'부터 시작하는 경로 추출
+        String fileKey = profileImageUrl.substring(profileImageUrl.indexOf("profile/"));  // 'profile/'부터 시작하는 경로 추출
 
         // S3에서 해당 파일 삭제
         s3Client.deleteObject(DeleteObjectRequest.builder()
@@ -376,5 +377,18 @@ public class UserService {
                         user.getProfileImageUrl()
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public void updateUser(String personalId, UserUpdateRequest userUpdateRequest, MultipartFile file) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                ()-> new IllegalArgumentException("Not found user"));
+
+        user.updateUserProfile(userUpdateRequest.getName(), userUpdateRequest.getIntroduction());
+        if(file != null){
+            deleteProfileImageFromS3(user.getProfileImageUrl());
+            String newProfileImageUrl = saveProfileImageAtS3(file);
+            user.updateUserProfileImage(newProfileImageUrl);
+        }
     }
 }
