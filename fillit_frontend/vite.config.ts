@@ -16,6 +16,7 @@ export default defineConfig({
         short_name: 'Fillit',
         description: 'SNS for english learning',
         theme_color: '#ffffff',
+        display: 'fullscreen',
         icons: [
           {
             src: '/pwa-192x192.png',

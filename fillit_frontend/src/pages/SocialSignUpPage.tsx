@@ -5,7 +5,7 @@ import useTypingEffect from '@/hooks/useTypingEffect';
 import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
 import FilTakeOn from '@/assets/images/fil-takeon.png';
 
-import BasicInput from '@/components/common/BasicInput';
+import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 import ImageUpload from '@/components/common/ImageUpload';
 import Textarea from '@/components/common/TextArea';
@@ -92,23 +92,19 @@ const SocialSignUpPage = () => {
 
   return (
     <>
-      <header className="absolute top-0 left-0 w-full py-4 px-6 z-10">
+      <header className="fixed top-0 w-full py-4 px-6 z-10">
         <img src={FillitLongLog} className="h-10" />
       </header>
-      <div className="flex flex-col justify-center items-center h-screen max-h-screen">
-        <div className="flex flex-col items-center">
-          <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
-          <div className="flex flex-col items-center">
-            {typedMessages.map((msg, index) => (
-              <p
-                key={index}
-                className="inline-block text-center text-white bg-black px-2"
-              >
-                {msg}
-              </p>
-            ))}
-          </div>
-        </div>
+      <div className="container-header-nav justify-center">
+        <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
+        {typedMessages.map((msg, index) => (
+          <p
+            key={index}
+            className="inline-block text-center text-white bg-black px-2"
+          >
+            {msg}
+          </p>
+        ))}
         <div className="pt-6">
           {steps[step].inputType === 'text' && (
             <BasicInput placeholder={steps[step].placeholder} />
