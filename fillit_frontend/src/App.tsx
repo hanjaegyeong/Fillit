@@ -1,3 +1,5 @@
+import { RouterProvider } from 'react-router-dom';
+import router from '@/router';
 import { Routes, Route } from 'react-router-dom';
 import ArticleListPage from '@/pages/ArticleListPage';
 import ArticleDetailPage from '@/pages/ArticleDetailPage';
@@ -21,26 +23,7 @@ import FollowingPage from './pages/FollowingPage';
 const App = () => {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<ArticleListPage />} />
-        <Route path="/article/:boardId" element={<ArticleDetailPage />} />
-        <Route path="/comment" element={<CommentDetailPage />} />
-        <Route path="/find" element={<FindPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/message" element={<MessageListPage />} />
-        <Route path="/message/:chatId" element={<MessagePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/edit" element={<ProfileEditPage />} />
-        <Route path="/follower" element={<FollowerPage />} />
-        <Route path="/following" element={<FollowingPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/socialsignup" element={<SocialPage />} />
-        <Route path="/voice" element={<VoicePage />} />
-        <Route path="/notification" element={<NotificationPage />} />
-        <Route path="/newmessage" element={<NewMessage />} />
-      </Routes>
-      <NavBar />
+      <RouterProvider router={router} />
     </>
   );
 };
