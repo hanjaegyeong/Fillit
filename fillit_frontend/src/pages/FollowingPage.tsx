@@ -1,5 +1,5 @@
 import Header from '@/components/common/Header/Header';
-import FollowingList from '@/components/Profile/FollowingList';
+import UserList from '@/components/Profile/UserList';
 import { user } from '@/mocks/fixtures/user';
 
 const FollowingPage = () => {
@@ -7,10 +7,10 @@ const FollowingPage = () => {
     <div className="container-header-nav">
       <Header
         left="back"
-        text={`People ${user.name} keeps up with ⭐`}
+        text={`${user[0].name}'s Following`}
         right="notification"
       />
-      <FollowingList />
+      <UserList type="following" />
     </div>
   );
 };

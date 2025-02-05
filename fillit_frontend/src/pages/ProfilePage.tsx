@@ -1,5 +1,5 @@
 import { ProfilePagePaper } from '@/assets/assets';
-import { user, anotherUser } from '@/mocks/fixtures/user';
+import { user } from '@/mocks/fixtures/user';
 import { useEffect, useState } from 'react';
 import { getPaperText } from '@/utils/getPaperText';
 import Header from '@/components/common/Header/Header';
@@ -10,12 +10,12 @@ import ProfileIntroduction from '@/components/Profile/ProfileIntroduction';
 const ProfilePage = () => {
   const [paperImage, setPaperImage] = useState<string | null>(null);
   const [isMyProfile, setIsMyProfile] = useState(false);
-  const [profileData, setProfileData] = useState(user);
+  const [profileData, setProfileData] = useState(user[0]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleProfile = () => {
     setIsMyProfile(!isMyProfile);
-    setProfileData(!isMyProfile ? user : anotherUser);
+    setProfileData(!isMyProfile ? user[1] : user[0]);
   };
 
   const handleMenuClick = () => {
