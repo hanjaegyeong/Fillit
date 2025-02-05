@@ -6,17 +6,17 @@ import { Comment } from '@/types/comment';
 import { useNavigate } from 'react-router-dom';
 import CommentImage from '@/assets/images/comment-bg.png';
 
-interface CommentContentProps {
+interface CommentItemProps {
   comment: Comment;
-  position: 'left' | 'right';
-  isReply?: boolean;
+  position?: 'left' | 'right';
+  isDetail?: boolean;
 }
 
-const CommentContent = ({
+const CommentItem = ({
   comment,
-  position,
-  isReply = false,
-}: CommentContentProps) => {
+  position = 'left',
+  isDetail = false,
+}: CommentItemProps) => {
   const navigate = useNavigate();
 
   const handleGoCommentDetail = () => {
@@ -25,39 +25,52 @@ const CommentContent = ({
 
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[250px] flex items-center -mt-7 ${
-        position === 'left' ? 'mr-24' : 'ml-24'
-      }`}
+      className={`bg-contain bg-no-repeat bg-center ${
+        isDetail ? 'w-[18.8rem]' : 'w-[16.6rem]'
+      } flex items-center -mt-8 ${position === 'left' ? 'mr-16' : 'ml-20'}`}
       style={{
         backgroundImage: `url(${CommentImage})`,
       }}
       onClick={handleGoCommentDetail}
     >
-      <div className={`flex flex-col space-y-2 py-7 pl-16 pr-12`}>
+      <div
+        className={`flex flex-col space-y-2 
+          ${isDetail ? 'py-10' : 'py-10'} pl-16 pr-14
+        `}
+      >
         <div
           className={`flex items-center ${
-            isReply ? 'justify-between' : 'gap-2'
+            isDetail ? 'justify-between' : 'gap-2'
           }`}
         >
           <ProfileBadge
             profileImageUrl={comment.profileImageUrl}
             personalId={comment.personalId}
-            imageSize={27}
+            imageSize={isDetail ? 41 : 27}
           />
-          <TimeStamp date={comment.createdAt} size="small" />
+          <TimeStamp date={comment.createdAt} />
         </div>
-        <div className="font-extralight text-xxs">{comment.content}</div>
+        <div
+          className={`font-extralight ${
+            isDetail ? 'text-s w-[10rem]' : 'text-xxs w-[9rem]'
+          }`}
+        >
+          {comment.content}
+        </div>
         <div className="flex justify-end gap-4">
           <LikeBadge
             likeCount={comment.likeCount}
             isLiked={true}
-            size="small"
+            size={!isDetail ? 'small' : 'large'}
           />
-          <CommentBadge commentCount={comment.commentCount} size="small" />
+          <CommentBadge
+            commentCount={comment.commentCount}
+            size={!isDetail ? 'small' : 'large'}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default CommentContent;
+export default CommentItem;

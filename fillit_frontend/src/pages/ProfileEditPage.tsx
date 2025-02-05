@@ -52,7 +52,7 @@ const ProfileEditPage = () => {
             <img src={NameIcon} alt="name" />
             <p className="font-light ml-1">name</p>
           </div>
-          <BasicInput />
+          <BasicInput placeholder="Enter your name" />
           <div className="flex mt-5">
             <img src={IntroIcon} alt="intro" />
             <p className="font-light ml-1.5">introduction</p>
