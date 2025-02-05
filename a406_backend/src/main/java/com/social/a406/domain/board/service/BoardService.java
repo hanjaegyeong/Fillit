@@ -1,6 +1,7 @@
 package com.social.a406.domain.board.service;
 
 import com.social.a406.domain.board.dto.BoardProfileResponse;
+import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
@@ -373,5 +374,27 @@ public class BoardService {
                         interestService.getBoardInterests(board.getId())
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public void updateUserProfileBoard(String personalId,List<BoardProfileUpdateRequest> requests) {
+        // BoardId 목록을 생성하여 한번에 조회
+        List<Long> boardIds = requests.stream()
+                .map(BoardProfileUpdateRequest::getBoardId)
+                .toList();
+
+        // 한번에 Board 엔티티들을 조회
+        List<Board> boards = boardRepository.findAllById(boardIds);
+
+        // 요청과 일치하는 Board를 찾고 업데이트
+        for (BoardProfileUpdateRequest request : requests) {
+            Board board = boards.stream()
+                    .filter(b -> b.getId().equals(request.getBoardId()))
+                    .filter(b -> b.getUser().getPersonalId().equals(personalId)) // 자신의 게시글만 수정
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Not found Board with Id : " + request.getBoardId()));
+
+            board.updateBoardLocation(request.getX(), request.getY(), request.getY(), request.getPageNumber());
+        }
     }
 }

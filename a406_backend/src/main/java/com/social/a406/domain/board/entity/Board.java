@@ -90,4 +90,12 @@ public class Board {
             this.likeCount--;
         }
     }
+
+    // 게시글 위치 수정
+    public void updateBoardLocation(Double x, Double y, Double z, int pageNumber){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.pageNumber = pageNumber;
+    }
 }
