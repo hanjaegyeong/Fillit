@@ -54,7 +54,7 @@ pipeline {
                         string(credentialsId: 'YOUTUBE_API_KEY', variable: 'YOUTUBE_API_KEY'),
                         string(credentialsId: 'YOUTUBE_API_URL', variable: 'YOUTUBE_API_URL'),
                         string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_API_KEY'),
-                        string(credentialsId: 'EC2_SERVER_URL', variable: 'EC2_SERVER_URL')
+                        string(credentialsId: 'EC2_SERVER_URL', variable: 'EC2_SERVER_URL'),
                         string(credentialsId: 'FLICKR_API_KEY', variable: 'FLICKR_API_KEY')
                     ]) {
                         dir('a406_backend') {
