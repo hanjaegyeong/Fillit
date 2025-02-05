@@ -29,7 +29,7 @@ const mockChatData: ChatData[] = [
         sender: 'ai',
         content: "What's the problem?",
         timestamp: '10:00 AM',
-      },     
+      },
     ],
   },
 ];
@@ -77,37 +77,32 @@ const AiFilButton = () => {
         <img src={AiFilImg} alt="ai-fil-img" />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
-        {/* 이후 ai 컴포넌트 구현 필요 */}
         <h2 className="text-xl font-bold mb-4">AI Fil</h2>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-340px)] hide-scrollbar">
           {messages.map((msg, index) => (
+            <div
+              key={msg.id}
+              className={`flex items-end ${
+                msg.sender === 'me' ? 'justify-end' : 'justify-start'
+              }`}
+            >
+              {msg.sender !== 'me' && isFirstMessage(index) && (
+                <img src={AiFil} alt="ai-fil" />
+              )}
               <div
-                key={msg.id}
-                className={`flex items-end ${
-                  msg.sender === 'me' ? 'justify-end' : 'justify-start'
+                className={`max-w-[70%] p-3 rounded-lg ${
+                  msg.sender === 'me'
+                    ? 'bg-[#dcdada]/60 text-black font-light'
+                    : 'bg-[#dcdada]/60 text-black font-light'
                 }`}
               >
-                {msg.sender !== 'me' && isFirstMessage(index) && (
-                  <img
-                    src={AiFil}
-                    alt="ai-fil"
-                    
-                  />
-                )}
-                <div
-                  className={`max-w-[70%] p-3 rounded-lg ${
-                    msg.sender === 'me'
-                      ? 'bg-[#dcdada]/60 text-black font-light'
-                      : 'bg-[#dcdada]/60 text-black font-light'
-                  }`}
-                >
-                  <p className="text-sm">{msg.content}</p>
-                  <span className="block text-xs text-gray-500 text-right mt-1">
-                    {msg.timestamp}
-                  </span>
-                </div>
+                <p className="text-sm">{msg.content}</p>
+                <span className="block text-xs text-gray-500 text-right mt-1">
+                  {msg.timestamp}
+                </span>
               </div>
-            ))}
+            </div>
+          ))}
           <div ref={messagesEndRef} />
         </div>
         <div className="p-6 flex items-center border-t border-gray-300">
