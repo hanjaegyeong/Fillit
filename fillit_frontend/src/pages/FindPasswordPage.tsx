@@ -5,7 +5,7 @@ import useTypingEffect from '@/hooks/useTypingEffect';
 import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
 import FilTakeOn from '@/assets/images/fil-takeon.png';
 
-import BasicInput from '@/components/common/BasicInput';
+import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 
 const steps = [
@@ -43,7 +43,7 @@ const steps = [
   },
 ];
 
-const FindPage = () => {
+const FindPasswordPage = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
@@ -125,4 +125,4 @@ const FindPage = () => {
   );
 };
 
-export default FindPage;
+export default FindPasswordPage;
