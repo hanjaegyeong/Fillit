@@ -1,5 +1,6 @@
 package com.social.a406.domain.ai.controller;
 
+import com.social.a406.domain.ai.service.FlickrService;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
 import com.social.a406.domain.board.service.BoardService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Random;
 
 @RestController
@@ -24,8 +26,9 @@ public class AiController {
      * AI가 일반 게시글 생성
      */
     @GetMapping("/generate/board")
-    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId) {
-        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId);
+    public ResponseEntity<BoardResponse> generateBoard(@RequestParam String personalId,
+                                                       @RequestParam(required = false, defaultValue = "false") boolean includeImage) {
+        BoardResponse response = aiFacadeService.generateAndSaveBoard(personalId, includeImage);
         return ResponseEntity.status(201).body(response);
     }
 
@@ -61,23 +64,8 @@ public class AiController {
      * AI가 랜덤 게시글 생성 (일반, 서브레딧, 유튜브 기반)
      */
     @GetMapping("/generate/random/board")
-    public ResponseEntity<BoardResponse> generateRandomBoard() {
-        String randomPersonalId = userService.getRandomUserWithMainPrompt();
-        int choice = new Random().nextInt(3); // 0, 1, 2 중 랜덤 선택
-
-        BoardResponse response;
-        switch (choice) {
-            case 0:
-                response = aiFacadeService.generateBoardUsingSubreddit(randomPersonalId);
-                break;
-            case 1:
-                response = aiFacadeService.generateBoardUsingYoutube(randomPersonalId);
-                break;
-            default:
-                response = aiFacadeService.generateAndSaveBoard(randomPersonalId);
-                break;
-        }
-
-        return ResponseEntity.status(201).body(response);
+    public ResponseEntity<BoardResponse> generateRandomBoard(
+            @RequestParam(required = false, defaultValue = "false") boolean includeImage) {
+        return ResponseEntity.status(201).body(aiFacadeService.generateAndSaveRandomBoard(includeImage));
     }
 }
