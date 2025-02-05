@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OauthService {
 
-    CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     public Map<String, String> socialLogin(SocialLoginRequest socialLoginRequest) {
