@@ -15,6 +15,8 @@ import NotificationPage from '@/pages/NotificationPage';
 import NavBar from '@/components/common/NavBar/NavBar';
 import NewMessage from '@/pages/NewMassagePage';
 import { ProfileEditPage } from '@/pages/ProfileEditPage';
+import FollowerPage from './pages/FollowerPage';
+import FollowingPage from './pages/FollowingPage';
 
 const App = () => {
   return (
@@ -29,6 +31,8 @@ const App = () => {
         <Route path="/message/:chatId" element={<MessagePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
+        <Route path="/follower" element={<FollowerPage />} />
+        <Route path="/following" element={<FollowingPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/socialsignup" element={<SocialPage />} />
