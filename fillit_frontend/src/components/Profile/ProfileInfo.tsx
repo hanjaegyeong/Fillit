@@ -47,7 +47,11 @@ const ProfileInfo = ({
         <p className="text-gray-600 font-light text-xs italic -mt-1.5">
           @{profileData.personalId}
         </p>
-        <ProfileFollow />
+        <ProfileFollow
+          followersCount={profileData.followersCount}
+          followingCount={profileData.followingCount}
+          personalId={profileData.personalId}
+        />
       </div>
     </div>
   );

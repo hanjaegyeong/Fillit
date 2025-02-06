@@ -1,0 +1,72 @@
+pipeline {
+    agent {
+        // Node.js와 npm이 포함된 공식 Node.js 22 이미지 사용
+        docker { image 'node:22' }
+    }
+
+    environment {
+        GIT_BRANCH = 'dev_front'
+        GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        DOCKER_IMAGE_NAME = 'fillit-front'
+        DOCKER_CONTAINER_NAME = 'fillit-front-container'
+        DOCKER_PORT = '3000'
+        VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id',
+                                                       usernameVariable: 'GITLAB_USERNAME',
+                                                       passwordVariable: 'GITLAB_PASSWORD')]) {
+                        git branch: "${GIT_BRANCH}",
+                            credentialsId: 'gitlab-credentials-id',
+                            url: "${GITLAB_REPO_URL}"
+                    }
+                }
+            }
+        }
+
+        stage('Install & Build') {
+            steps {
+                // fillit_frontend 폴더로 이동하여 npm install 및 빌드 실행
+                dir('fillit_frontend') {
+                    sh """
+                        npm install
+                        export VITE_API_BASE_URL=${VITE_API_BASE_URL}
+                        npm run build
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                // Dockerfile fillit_frontend 폴더 안에 있음
+                dir('fillit_frontend') {
+                    sh """
+                        docker build -t ${DOCKER_IMAGE_NAME}:latest \
+                                     -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \
+                                     -f Dockerfile .
+                    """
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // 기존 컨테이너가 있다면 중지 및 삭제 후 새 컨테이너 실행
+                    sh """
+                        docker stop ${DOCKER_CONTAINER_NAME} || true
+                        docker rm ${DOCKER_CONTAINER_NAME} || true
+                        docker run -d -p ${DOCKER_PORT}:8080 --name ${DOCKER_CONTAINER_NAME} \\
+                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \\
+                            ${DOCKER_IMAGE_NAME}:latest
+                    """
+                }
+            }
+        }
+    }
+}
