@@ -2,10 +2,13 @@ import Header from '@/components/common/Header/Header';
 import { NewArticleImg } from '@/assets/assets';
 import ArticleNavBar from '@/components/common/NavBar/ArticleNavBar';
 import { useState, useRef } from 'react';
+import AiFilButton from '@/components/common/Button/AiFilButton';
+import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
 
 const NewArticlePage = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
 
   const handleAddPhoto = () => {
     if (fileInputRef.current) {
@@ -28,10 +31,18 @@ const NewArticlePage = () => {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleAddTag = () => {
+    setIsTagModalOpen(true);
+  };
+
+  const handleCloseTagModal = () => {
+    setIsTagModalOpen(false);
+  };
+
   return (
     <div className="container-header">
       <Header left="back" right="regist" />
-      <div className="relative h-full overflow-auto pb-[6rem]">
+      <div className="h-full overflow-auto pb-[6rem]">
         {/* 배경 종이 이미지 */}
         <img
           src={NewArticleImg}
@@ -62,7 +73,17 @@ const NewArticlePage = () => {
           )}
         </div>
       </div>
-      <ArticleNavBar onAddPhoto={handleAddPhoto} />
+      <AiFilButton />
+      <ArticleNavBar onAddPhoto={handleAddPhoto} onAddTag={handleAddTag} />
+
+      {isTagModalOpen && (
+        <TagSelectModal
+          isOpen={isTagModalOpen}
+          onClose={handleCloseTagModal}
+          onConfirm={() => console.log('Tag Selected!')} // 선택 동작을 추가 가능
+        />
+      )}
+
       {/* 숨겨진 파일 입력 요소 */}
       <input
         type="file"

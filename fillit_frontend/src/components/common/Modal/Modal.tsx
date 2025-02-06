@@ -1,14 +1,18 @@
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  size?: 'small' | 'big';
+  size?: 'small' | 'normal' | 'big';
   children: React.ReactNode;
 }
 
 const Modal = ({ isOpen, onClose, size = 'small', children }: ModalProps) => {
   if (!isOpen) return null;
   const sizeClass =
-    size === 'small' ? 'w-[319px] h-[307px]' : 'w-[319px] h-[529px]';
+    size === 'small'
+      ? 'w-[319px] h-[307px]'
+      : size === 'normal'
+      ? 'w-[319px] h-[529px]'
+      : 'w-[380px] h-[550px]'; // ✅ "normal" 크기 설정 (원하는 값으로 변경 가능)
 
   return (
     <div>
