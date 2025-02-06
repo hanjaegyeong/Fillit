@@ -54,7 +54,7 @@ const navItems = [
 const NavBar = () => {
   const { pathname } = useLocation();
 
-  return pathname.includes('edit') ? (
+  return pathname.includes('edit') || pathname.includes('customize') ? (
     <></>
   ) : (
     <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">
