@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,6 +81,15 @@ public class UserController {
     public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String personalId) {
         UserCharacterResponse response = userService.getUserInfoByPersonalId(personalId);
         return ResponseEntity.ok(response);
+    }
+
+    // 유저 프로필 수정
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateUser(@AuthenticationPrincipal UserDetails userDetails,
+                                             @RequestPart("update") UserUpdateRequest userUpdateRequest,
+                                             @RequestPart(value = "profileImage",required = false) MultipartFile file){
+        userService.updateUser(userDetails.getUsername(), userUpdateRequest, file);
+        return ResponseEntity.ok("Success to update profile of " + userDetails.getUsername());
     }
 
     // 비밀번호 변경 - 이메일 코드 전송

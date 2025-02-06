@@ -33,23 +33,29 @@ public class AiScheduler {
     private final String AI_COMMENT_ENDPOINT = "/api/ai/generate/comment";
     private final String RANDOM_AI_COMMENT_ENDPOINT = "/api/ai/generate/random/comment";
     private final String AI_BOARD_ENDPOINT = "/api/ai/generate/random/board";
-    private final String AI_COMMENT_REPLY_ENDPOINT = "/api/ai/generate/reply";
+    private final int MINUTE = 60000;
 
     @Value("${EC2_SERVER_URL}")
     private String ec2ServerUrl;
 
     // AI 게시글 생성 컨트롤러 자동 호출
-    @Scheduled(fixedDelay = 600000) // 10분(600000 밀리초)마다 실행하도록 변경하기
+    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(6000) + 3;
+        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
 
         try {
             System.out.println("Waiting for " + delay + " seconds before board triggering...");
-            Thread.sleep(delay * 1000L);
+            Thread.sleep(delay * 10L);
+
+            // 30% 확률로 이미지 게시글 생성
+            String requestUrl = ec2ServerUrl + AI_BOARD_ENDPOINT;
+            if (ThreadLocalRandom.current().nextInt(100) < 30) {
+                requestUrl += "?includeImage=true";
+            }
 
             // EC2 컨트롤러 호출
-            String response = restTemplate.getForObject(ec2ServerUrl + AI_BOARD_ENDPOINT, String.class);
+            String response = restTemplate.getForObject(requestUrl, String.class);
             System.out.println("Response from EC2: " + response);
         } catch (Exception e) {
             System.err.println("Failed to call EC2 controller: " + e.getMessage());
@@ -58,14 +64,14 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 600000) // 10분(600000 밀리초)마다 실행하도록 변경하기
+    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(60) + 3;
+        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
 
         try {
             System.out.println("Waiting for " + delay + " seconds before comment triggering...");
-            Thread.sleep(delay * 1000L);
+            Thread.sleep(delay * 10L);
 
             // EC2 컨트롤러 호출
             String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_COMMENT_ENDPOINT, String.class);
@@ -79,7 +85,7 @@ public class AiScheduler {
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(10, 61); // 10초 ~ 60초 랜덤 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(5 * MINUTE, 30 * MINUTE); // 5분 ~ 30분 사이 딜레이
         System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {

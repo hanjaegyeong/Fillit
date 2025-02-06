@@ -1,6 +1,7 @@
 package com.social.a406.domain.board.controller;
 
 import com.social.a406.domain.board.dto.BoardProfileResponse;
+import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
@@ -86,6 +87,15 @@ public class BoardController {
     public ResponseEntity<List<BoardProfileResponse>> getOtherUserProfileBoard(@PathVariable String personalId){
         List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(personalId);
         return ResponseEntity.ok(responses);
+    }
+
+    // 프로필 게시글 위치 수정
+    @PatchMapping("/profile/update")
+    public ResponseEntity<String> updateUserProfileBoard(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody List<BoardProfileUpdateRequest> requests){
+        boardService.updateUserProfileBoard(userDetails.getUsername(), requests);
+        return ResponseEntity.ok("Success to update profile boards");
     }
 
     @DeleteMapping("/{boardId}")
