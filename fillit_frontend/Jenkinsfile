@@ -1,6 +1,5 @@
 pipeline {
     agent {
-        // Node.js와 npm이 포함된 공식 Node.js 22 이미지 사용
         docker { image 'node:22' }
     }
 
@@ -33,7 +32,11 @@ pipeline {
                 // fillit_frontend 폴더로 이동하여 npm install 및 빌드 실행
                 dir('fillit_frontend') {
                     sh """
-                        npm install
+                        # 캐시 정리 및 검증 (선택 사항)
+                        npm cache clean --force
+                        npm cache verify
+                        # package-lock.json 기반 깨끗한 설치
+                        npm ci
                         export VITE_API_BASE_URL=${VITE_API_BASE_URL}
                         npm run build
                     """
