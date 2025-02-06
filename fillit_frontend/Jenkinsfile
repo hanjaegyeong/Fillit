@@ -7,7 +7,7 @@ pipeline {
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
-        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제를 회피
+        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제 회피
         HOME = "${env.WORKSPACE}"
     }
     stages {
@@ -16,7 +16,7 @@ pipeline {
                 docker { image 'node:22' }
             }
             steps {
-                // Git 체크아웃: CloneOption 확장을 추가하여 honorRefspec false 설정
+                // Git 체크아웃
                 script {
                     withCredentials([usernamePassword(
                         credentialsId: 'gitlab-credentials-id',
@@ -38,10 +38,17 @@ pipeline {
                 // npm 설치 및 빌드
                 dir('fillit_frontend') {
                     sh """
-                        npm config set cache \$WORKSPACE/.npm --global
+                        # npm 캐시 디렉토리를 WORKSPACE 내의 .npm 디렉토리로 설정
+                        npm config set cache \$WORKSPACE/.npm
+                        
+                        # 캐시 정리 및 검증
                         npm cache clean --force
                         npm cache verify
+
+                        # package-lock.json을 사용하는 깨끗한 설치
                         npm ci
+                        
+                        # 환경 변수 적용 후 빌드
                         export VITE_API_BASE_URL=${VITE_API_BASE_URL}
                         npm run build
                     """
