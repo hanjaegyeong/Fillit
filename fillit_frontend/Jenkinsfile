@@ -1,27 +1,23 @@
 pipeline {
     agent any
     environment {
+        // 브랜치는 단순히 dev_front로 설정합니다.
         GIT_BRANCH = 'dev_front'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
         DOCKER_IMAGE_NAME = 'fillit-front'
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
-        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제 회피
+        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제를 회피합니다.
         HOME = "${env.WORKSPACE}"
     }
     stages {
         stage('Checkout & Build') {
-            // Node.js와 npm이 모두 포함된 이미지 사용 (예: node:22-buster)
             agent {
-                docker {
-                    image 'node:22-buster'
-                    // 필요하다면, 사용자 권한 관련 옵션을 추가할 수 있음
-                    // 예: args '-u root:root'
-                }
+                docker { image 'node:22-buster' }
             }
             steps {
-                // Git 체크아웃
+                // Git 체크아웃 단계
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/${GIT_BRANCH}"]],
@@ -31,22 +27,22 @@ pipeline {
                         credentialsId: 'gitlab-credentials-id'
                     ]]
                 ])
-                
-                // npm 설치 및 빌드 단계
+                // npm 설치 및 빌드 단계 (프로젝트가 fillit_frontend 폴더에 있다고 가정)
                 dir('fillit_frontend') {
-                    // 먼저 npm이 제대로 설치되어 있는지 확인
-                    sh 'which npm'
-                    sh 'npm -v'
-                    
                     sh '''
-                        npm install
+                        echo "npm 위치: $(which npm)"
+                        npm -v
+                        # npm 캐시 경로를 /tmp/.npm-cache로 설정하여 권한 문제 회피
+                        npm config set cache /tmp/.npm-cache
+                        npm cache clean --force
+                        npm cache verify
+                        npm ci
                         VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' npm run build
                     '''
                 }
             }
         }
         stage('Build Docker Image') {
-            // Docker CLI가 포함된 이미지를 사용하여 Docker 명령어 실행
             agent {
                 docker {
                     image 'docker:20.10'
@@ -54,7 +50,6 @@ pipeline {
                 }
             }
             steps {
-                // Dockerfile은 fillit_frontend 폴더 내에 있다고 가정
                 dir('fillit_frontend') {
                     sh '''
                         docker build -t ''' + "${DOCKER_IMAGE_NAME}:latest" + ''' \
@@ -74,11 +69,11 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        docker stop ''' + "${DOCKER_CONTAINER_NAME}" + ''' || true
-                        docker rm ''' + "${DOCKER_CONTAINER_NAME}" + ''' || true
-                        docker run -d -p ''' + "${DOCKER_PORT}:80" + ''' --name ''' + "${DOCKER_CONTAINER_NAME}" + ''' \
-                            -e VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' \
-                            ''' + "${DOCKER_IMAGE_NAME}:latest"
+                        docker stop ${DOCKER_CONTAINER_NAME} || true
+                        docker rm ${DOCKER_CONTAINER_NAME} || true
+                        docker run -d -p ${DOCKER_PORT}:80 --name ${DOCKER_CONTAINER_NAME} \
+                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                            ${DOCKER_IMAGE_NAME}:latest
                     '''
                 }
             }
