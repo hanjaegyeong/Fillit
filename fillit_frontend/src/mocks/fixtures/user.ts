@@ -3,7 +3,7 @@ import ProfileImage from '@/mocks/images/profile-image.png';
 
 export const user: User[] = [
   {
-    type: 'type',
+    type: 'user',
     id: 'id1',
     name: 'Olivia',
     personalId: 'mynameis',
@@ -16,7 +16,7 @@ export const user: User[] = [
   },
 
   {
-    type: 'type',
+    type: 'user',
     id: 'id2',
     name: 'Clarence',
     personalId: 'chocolate',
@@ -28,7 +28,7 @@ export const user: User[] = [
     followingCount: 100,
   },
   {
-    type: 'type',
+    type: 'user',
     id: 'id3',
     name: 'Alex',
     personalId: 'alex',
@@ -40,7 +40,7 @@ export const user: User[] = [
     followingCount: 134,
   },
   {
-    type: 'type',
+    type: 'user',
     id: 'id4',
     name: 'Sophia',
     personalId: 'dreamer',
@@ -54,7 +54,7 @@ export const user: User[] = [
   },
 
   {
-    type: 'type',
+    type: 'user',
     id: 'id5',
     name: 'Ethan',
     personalId: 'starrynight',
@@ -66,7 +66,7 @@ export const user: User[] = [
     followingCount: 100,
   },
   {
-    type: 'type',
+    type: 'user',
     id: 'id6',
     name: 'Maya',
     personalId: 'sunshine',
@@ -79,7 +79,7 @@ export const user: User[] = [
     followingCount: 100,
   },
   {
-    type: 'type',
+    type: 'user',
     id: 'id7',
     name: 'Liam',
     personalId: 'wildheart',
