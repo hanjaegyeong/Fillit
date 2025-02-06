@@ -10,15 +10,19 @@ pipeline {
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
+        // WORKSPACE를 HOME으로 설정하여 npm이 쓰기 권한 있는 캐시 디렉토리를 사용하도록 함
+        HOME = "${env.WORKSPACE}"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id',
-                                                       usernameVariable: 'GITLAB_USERNAME',
-                                                       passwordVariable: 'GITLAB_PASSWORD')]) {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'gitlab-credentials-id',
+                        usernameVariable: 'GITLAB_USERNAME',
+                        passwordVariable: 'GITLAB_PASSWORD'
+                    )]) {
                         git branch: "${GIT_BRANCH}",
                             credentialsId: 'gitlab-credentials-id',
                             url: "${GITLAB_REPO_URL}"
@@ -32,11 +36,17 @@ pipeline {
                 // fillit_frontend 폴더로 이동하여 npm install 및 빌드 실행
                 dir('fillit_frontend') {
                     sh """
-                        # 캐시 정리 및 검증 (선택 사항)
+                        # npm 캐시 디렉토리를 WORKSPACE 내의 .npm 디렉토리로 설정 (글로벌로 적용)
+                        npm config set cache \$WORKSPACE/.npm --global
+                        
+                        # 캐시 정리 및 검증 (필요시)
                         npm cache clean --force
                         npm cache verify
-                        # package-lock.json 기반 깨끗한 설치
+
+                        # package-lock.json을 사용하는 깨끗한 설치
                         npm ci
+                        
+                        # 환경 변수 적용 후 빌드
                         export VITE_API_BASE_URL=${VITE_API_BASE_URL}
                         npm run build
                     """
@@ -46,7 +56,6 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                // Dockerfile fillit_frontend 폴더 안에 있음
                 dir('fillit_frontend') {
                     sh """
                         docker build -t ${DOCKER_IMAGE_NAME}:latest \
