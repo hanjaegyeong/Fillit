@@ -48,6 +48,15 @@ pipeline {
             }
         }
 
+        // Docker Hub 로그인 단계
+        stage('Docker Hub Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
+                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                }
+            }
+        }
+
         // 도커 이미지 레지스트리에 푸시
         stage('Push Docker Image') {
             steps {
