@@ -10,6 +10,7 @@ pipeline {
         DOCKER_IMAGE_NAME = 'fillit-front'
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
+        VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
     }
 
     stages {
@@ -29,8 +30,8 @@ pipeline {
 
         stage('Install & Build') {
             steps {
-                script {
-                    // 의존성 설치 후 React + TypeScript 빌드 (보통 package.json에 "build" 스크립트가 정의되어 있음)
+                // fillit_frontend 폴더로 이동하여 npm install 및 빌드 실행
+                dir('fillit_frontend') {
                     sh """
                         npm install
                         export VITE_API_BASE_URL=${VITE_API_BASE_URL}
@@ -42,8 +43,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Dockerfile이 프로젝트 루트에 있다고 가정
+                // Dockerfile fillit_frontend 폴더 안에 있음
+                dir('fillit_frontend') {
                     sh """
                         docker build -t ${DOCKER_IMAGE_NAME}:latest \
                                      -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \
