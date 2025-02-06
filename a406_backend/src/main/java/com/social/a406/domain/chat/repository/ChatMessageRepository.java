@@ -1,11 +1,11 @@
 package com.social.a406.domain.chat.repository;
 
 import com.social.a406.domain.chat.entity.ChatMessage;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
@@ -16,14 +16,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     JOIN FETCH p.chatRoom r
     WHERE r.id = :chatRoomId
     AND c.id <= :cursor
-    ORDER BY c.id DESC
-    LIMIT :limit
     """)
-    List<ChatMessage> findMessagesByCursor(
+    Slice<ChatMessage> findMessagesByCursor(
             @Param("chatRoomId") Long chatRoomId,
-            @Param("limit") int limit,
-            @Param("cursor") Long cursor
-    );
+            @Param("cursor") Long cursor,
+            Pageable pageable);
 
     // 안읽은 메세지 개수 세기
 
