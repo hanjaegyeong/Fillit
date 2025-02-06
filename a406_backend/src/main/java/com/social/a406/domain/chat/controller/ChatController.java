@@ -7,6 +7,7 @@ import com.social.a406.domain.chat.dto.ChatRoomResponse;
 import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,15 +19,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/chat")
+@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
-
-    @Autowired
-    public ChatController(ChatService chatService) {
-        this.chatService = chatService;
-    }
-
 
     // 메세지 저장
     @PostMapping("/messages")

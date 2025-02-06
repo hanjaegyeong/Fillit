@@ -6,6 +6,8 @@ import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.commentReply.repository.ReplyRepository;
+import com.social.a406.domain.notification.entity.NotificationType;
+import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 대댓글 저장
     @Transactional
@@ -41,7 +44,7 @@ public class ReplyService {
                 .build();
 
         Reply savedReply = replyRepository.save(reply);
-
+        generateCommentReplyNotification(savedReply);
         return mapToResponse(savedReply);
     }
 
@@ -87,11 +90,33 @@ public class ReplyService {
         return ReplyResponse.builder()
                 .replyId(reply.getId())
                 .personalId(reply.getUser().getPersonalId())
+                .profileImageUrl(reply.getUser().getProfileImageUrl())
                 .content(reply.getContent())
                 .likeCount(reply.getLikeCount())
                 .updatedAt(reply.getUpdatedAt())
                 .createdAt(reply.getCreatedAt())
                 .build();
+    }
+
+    private void generateCommentReplyNotification(Reply reply) {
+        User boardReceiver = reply.getComment().getBoard().getUser(); // 대댓글을 단 게시글 작성자
+        User commentReceiver = reply.getComment().getUser(); // 대댓글을 단 댓글 작성자
+        User sender = reply.getUser(); // 대댓글 작성자
+
+        Long boardReferenceId = reply.getComment().getBoard().getId(); // 게시글의 id -> 알림 클릭 시 게시글로 이동
+
+        // 댓글 작성자와 게시글 작성자가 동일한 경우 하나의 알림만 생성
+        createNotification(boardReceiver, sender, boardReferenceId);
+
+        // 댓글 작성자와 게시글 작성자가 다른 경우 두 개의 알림 생성
+        if (!boardReceiver.equals(commentReceiver)) {
+            createNotification(commentReceiver, sender, boardReferenceId);
+        }
+        System.out.println("Generate notification about comment reply");
+    }
+
+    private void createNotification(User receiver, User sender, Long boardReferenceId) {
+        notificationService.createNotification(receiver, sender, NotificationType.RECOMMENT, boardReferenceId);
     }
 
 }

@@ -47,8 +47,8 @@ public class Board {
     @Column(nullable = false)
     private Double z;
 
-    // 키워드 (최대 8자 제한)
-    @Column(length = 8)
+    // 키워드 (최대 8자 제한: 프론트, 최대 15자 제한: 백엔드 - AI이미지 검색용)
+    @Column(length = 15)
     private String keyword;
 
     // 페이지 번호
@@ -89,5 +89,13 @@ public class Board {
         if (this.likeCount > 0) {
             this.likeCount--;
         }
+    }
+
+    // 게시글 위치 수정
+    public void updateBoardLocation(Double x, Double y, Double z, int pageNumber){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.pageNumber = pageNumber;
     }
 }
