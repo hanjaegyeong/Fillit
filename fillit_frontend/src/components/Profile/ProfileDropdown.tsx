@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DeleteLogoutModal } from './Modal/DeleteLogoutModal';
+import { DeleteLogoutModal } from '../common/Modal/DeleteLogoutModal';
 import { useNavigate } from 'react-router-dom';
 
 interface ProfileDropdownProps {
@@ -19,6 +19,7 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const handleCustomize = () => {
     console.log('프로필 꾸미기');
     onClose();
+    navigate('customize');
   };
 
   // 로그아웃
