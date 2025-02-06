@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+    environment {
+        GIT_BRANCH = 'dev_front'
+        GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        DOCKER_IMAGE_NAME = 'fillit-front'
+        DOCKER_CONTAINER_NAME = 'fillit-front-container'
+        DOCKER_PORT = '3000'
+        VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
+        // WORKSPACE를 HOME으로 설정해서 npm 캐시 권한 문제를 회피
+        HOME = "${env.WORKSPACE}"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${GIT_BRANCH}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    userRemoteConfigs: [[
+                        url: "${GITLAB_REPO_URL}",
+                        credentialsId: 'gitlab-credentials-id'
+                    ]]
+                ])
+            }
+        }
+        stage('Install & Build') {
+            // Node.js와 npm이 포함된 컨테이너를 사용 (node:22-buster-slim)
+            agent {
+                docker { 
+                    image 'node:22-buster-slim'
+                }
+            }
+            steps {
+                dir('fillit_frontend') {
+                    sh '''
+                        echo "Using npm at: $(which npm) and version: $(npm -v)"
+                        npm config set cache $WORKSPACE/.npm
+                        npm cache clean --force
+                        npm cache verify
+                        npm ci
+                        echo "Building project..."
+                        VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' npm run build
+                    '''
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    image 'docker:20.10'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                dir('fillit_frontend') {
+                    sh '''
+                        docker build -t ''' + "${DOCKER_IMAGE_NAME}:latest" + ''' \
+                                     -t ''' + "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}" + ''' \
+                                     -f Dockerfile .
+                    '''
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'docker:20.10'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                sh '''
+                    docker stop ${DOCKER_CONTAINER_NAME} || true
+                    docker rm ${DOCKER_CONTAINER_NAME} || true
+                    docker run -d -p ${DOCKER_PORT}:80 --name ${DOCKER_CONTAINER_NAME} \
+                        -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                        ${DOCKER_IMAGE_NAME}:latest
+                '''
+            }
+        }
+    }
+}
