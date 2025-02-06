@@ -19,9 +19,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id',
                                                        usernameVariable: 'GITLAB_USERNAME',
                                                        passwordVariable: 'GITLAB_PASSWORD')]) {
-                        git branch: "${GIT_FRONT_BRANCH}",
+                        git branch: "${GIT_BRANCH}",
                             credentialsId: 'gitlab-credentials-id',
-                            url: "${GITLAB_FRONT_REPO_URL}"
+                            url: "${GITLAB_REPO_URL}"
                     }
                 }
             }
