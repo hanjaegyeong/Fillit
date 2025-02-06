@@ -90,7 +90,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 //        Set<WebSocketSession> sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
 
         // 나갈 때 마지막 메시지 읽음 처리
-        chatService.updateLastReadMessage(personalId, chatRoomId);
+//        chatService.updateLastReadMessage(personalId, chatRoomId);
 
         // 세션삭제 메서드
         webSocketSessionMap.removeSession(chatRoomId, session);

@@ -19,12 +19,13 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chatRoomId;
+    private Long Id;
 
     private String lastMessageContent;
 
     @LastModifiedDate
     private LocalDateTime lastMessageTime;
+
 
     public void updateLastMessageContent(String newContent) {
         this.lastMessageContent = newContent;

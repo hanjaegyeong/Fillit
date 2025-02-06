@@ -8,13 +8,17 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository <ChatRoom, Long> {
-    Optional<ChatRoom> findByChatRoomId(Long chatRoomId);
 
-    @Query("SELECT cr " +
-            "FROM ChatRoom cr " +
-            "JOIN ChatParticipants cp1 ON cp1.chatParticipantsId.chatRoomId = cr.chatRoomId " +
-            "JOIN ChatParticipants cp2 ON cp2.chatParticipantsId.chatRoomId = cr.chatRoomId " +
-            "WHERE cp1.chatParticipantsId.userId = :userId AND cp2.chatParticipantsId.userId = :otherId")
-    Optional<ChatRoom> findChatRoomByParticipants(@Param("userId") String userId, @Param("otherId") String otherId);
+    @Query("""
+    SELECT cr
+    FROM ChatRoom cr
+    JOIN ChatParticipants cp1 ON cp1.chatRoom.id = cr.id
+    JOIN ChatParticipants cp2 ON cp2.chatRoom.id = cr.id
+    WHERE cp1.user.id = :userId AND cp2.user.id = :otherId
+    """)
+    Optional<ChatRoom> findChatRoomByParticipants(
+            @Param("userId") String userId,
+            @Param("otherId") String otherId
+    );
 
 }

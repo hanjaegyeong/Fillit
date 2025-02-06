@@ -19,7 +19,7 @@ public class UserInterest {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_id", nullable = false)
+    @JoinColumn(name = "interest_id", referencedColumnName = "id", nullable = false)
     private Interest interest;
 
     public UserInterest(User user, Interest interest) {

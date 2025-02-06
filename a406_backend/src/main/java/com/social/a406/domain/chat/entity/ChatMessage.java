@@ -10,43 +10,27 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(
-    indexes = @Index(name = "idx_chat_room_message", columnList = "chat_room_id, message_id") // 복합 인덱스 생성
-)
 @EntityListeners(AuditingEntityListener.class) //날짜 자동 업데이트를 위한 애노테이션
 public class ChatMessage {
 
-    @EmbeddedId
-    @AttributeOverrides({
-            @AttributeOverride(name = "chatRoomId", column = @Column(name = "chat_room_id")),
-            @AttributeOverride(name = "messageId", column = @Column(name = "message_id"))
-    })
-    private ChatMessageId chatMessageId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
 
-//    @MapsId("chatRoomId")
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "chat_room_id", referencedColumnName = "chat_room_id", insertable = false, updatable = false), // 복합키 필드 참조
-            @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_participants_id", nullable = false)
     private ChatParticipants chatParticipants;
 
-
-
-//    @Column(name = "content")
+    @Column(nullable = false, length = 1000)
     private String messageContent;
 
-//    @Column(name = "create")
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Builder
-    public ChatMessage(Long messageId, ChatParticipants chatParticipants, String messageContent) {
+    public ChatMessage(ChatParticipants chatParticipants, String messageContent) {
         this.chatParticipants = chatParticipants;
         this.messageContent = messageContent;
-        this.chatMessageId = new ChatMessageId(messageId, chatParticipants.getChatRoomId());
     }
 }
