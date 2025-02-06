@@ -83,7 +83,11 @@ import NameIcon from '@/assets/icons/name.svg';
 import IntroIcon from '@/assets/icons/introduction.svg';
 import CameraIcon from '@/assets/icons/camera.svg';
 import FollowBackground from '@/assets/icons/follow-back.svg';
-
+import DeleteIcon from '@/assets/icons/delete-icon.svg';
+import KeywordPaper from '@/assets/icons/keyword-paper.svg';
+import ArticleBg1 from '@/assets/icons/article-pic-bg1.svg';
+import ArticleBg2 from '@/assets/icons/article-pic-bg2.svg';
+import ArticleBg3 from '@/assets/icons/article-pic-bg3.svg';
 export {
   HomeInactiveIcon,
   HomeActiveIcon,
@@ -151,4 +155,9 @@ export {
   CameraIcon,
   NewMessage,
   FollowBackground,
+  DeleteIcon,
+  KeywordPaper,
+  ArticleBg1,
+  ArticleBg2,
+  ArticleBg3,
 };
