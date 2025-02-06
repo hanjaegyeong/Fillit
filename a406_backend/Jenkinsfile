@@ -12,9 +12,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${GIT_BRANCH}",
-                    credentialsId: 'gitlab-credentials-id',
-                    url: "${GITLAB_REPO_URL}"
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id', usernameVariable: 'GITLAB_USERNAME', passwordVariable: 'GITLAB_PASSWORD')]) {
+                        git branch: "${GIT_BRANCH}",
+                            credentialsId: 'gitlab-credentials-id',
+                            url: "${GITLAB_REPO_URL}"
+                    }
+                }
             }
         }
 
