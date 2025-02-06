@@ -73,8 +73,8 @@ pipeline {
                     sh """
                         docker stop ${DOCKER_CONTAINER_NAME} || true
                         docker rm ${DOCKER_CONTAINER_NAME} || true
-                        docker run -d -p ${DOCKER_PORT}:8080 --name ${DOCKER_CONTAINER_NAME} \\
-                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \\
+                        docker run -d -p ${DOCKER_PORT}:${DOCKER_PORT} --name ${DOCKER_CONTAINER_NAME} \
+                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
                             ${DOCKER_IMAGE_NAME}:latest
                     """
                 }
