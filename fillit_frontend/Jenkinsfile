@@ -1,43 +1,50 @@
 pipeline {
     agent any
     environment {
-        GIT_BRANCH = '*/dev_front'
+        // Git 저장소 관련 설정
+        GIT_BRANCH = 'dev_front'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        
+        // Docker 관련 설정
         DOCKER_IMAGE_NAME = 'fillit-front'
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
+        
+        // 빌드 시 사용할 환경 변수 (Jenkins Global Properties 또는 파라미터에 미리 설정)
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
-        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제를 회피
+        
+        // WORKSPACE를 HOME으로 지정하여 npm 캐시 권한 문제를 회피
         HOME = "${env.WORKSPACE}"
     }
     stages {
-        stage('Checkout & Build') {
+        stage('Checkout') {
+            steps {
+                // Git 저장소에서 코드를 체크아웃합니다.
+                // "*/dev_front" 형식을 사용하면 원격 브랜치(예: origin/dev_front)를 올바르게 찾는 데 도움이 됩니다.
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${GIT_BRANCH}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    userRemoteConfigs: [[
+                        url: "${GITLAB_REPO_URL}",
+                        credentialsId: 'gitlab-credentials-id'
+                    ]]
+                ])
+            }
+        }
+        stage('Install & Build') {
             agent {
+                // Node.js와 npm이 포함된 공식 이미지 node:22 사용
                 docker { image 'node:22' }
             }
             steps {
-                // Git 체크아웃
-                script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'gitlab-credentials-id',
-                        usernameVariable: 'GITLAB_USERNAME',
-                        passwordVariable: 'GITLAB_PASSWORD'
-                    )]) {
-                        git branch: "${GIT_BRANCH}",
-                            credentialsId: 'gitlab-credentials-id',
-                            url: "${GITLAB_REPO_URL}"
-                    }
-                }
-                // npm 설치 및 빌드
+                // 프로젝트 폴더가 "fillit_frontend"에 있다고 가정합니다.
                 dir('fillit_frontend') {
-                    sh """
-                        npm config set cache \$WORKSPACE/.npm --global
-                        npm cache clean --force
-                        npm cache verify
-                        npm ci
-                        export VITE_API_BASE_URL=${VITE_API_BASE_URL}
-                        npm run build
-                    """
+                    sh '''
+                        echo "Using npm at: $(which npm) and version: $(npm -v)"
+                        npm install
+                        VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' npm run build
+                    '''
                 }
             }
         }
@@ -51,12 +58,13 @@ pipeline {
                 }
             }
             steps {
+                // Dockerfile이 "fillit_frontend" 폴더 내에 있다고 가정합니다.
                 dir('fillit_frontend') {
-                    sh """
-                        docker build -t ${DOCKER_IMAGE_NAME}:latest \
-                                     -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \
+                    sh '''
+                        docker build -t ''' + "${DOCKER_IMAGE_NAME}:latest" + ''' \
+                                     -t ''' + "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}" + ''' \
                                      -f Dockerfile .
-                    """
+                    '''
                 }
             }
         }
@@ -68,16 +76,14 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    // 기존 컨테이너 중지 및 삭제 후 새 컨테이너 실행
-                    sh """
-                        docker stop ${DOCKER_CONTAINER_NAME} || true
-                        docker rm ${DOCKER_CONTAINER_NAME} || true
-                        docker run -d -p ${DOCKER_PORT}:8080 --name ${DOCKER_CONTAINER_NAME} \\
-                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \\
-                            ${DOCKER_IMAGE_NAME}:latest
-                    """
-                }
+                // 하나의 sh 블록 내에서 컨테이너 중지, 삭제 및 실행 명령어를 순차적으로 실행합니다.
+                sh '''
+                    docker stop ${DOCKER_CONTAINER_NAME} || true
+                    docker rm ${DOCKER_CONTAINER_NAME} || true
+                    docker run -d -p ${DOCKER_PORT}:80 --name ${DOCKER_CONTAINER_NAME} \
+                        -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                        ${DOCKER_IMAGE_NAME}:latest
+                '''
             }
         }
     }
