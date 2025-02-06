@@ -84,6 +84,13 @@ public class CommentService {
     }
 
     @Transactional
+    public CommentResponse getComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        return mapToResponse(comment);
+    }
+
+    @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
@@ -119,6 +126,7 @@ public class CommentService {
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .personalId(comment.getUser().getPersonalId())
+                .profileImageUrl(comment.getUser().getProfileImageUrl())
                 .likeCount(comment.getLikeCount())
                 .commentReplyCount(replyRepository.countByComment_Id(comment.getId()))
                 .createdAt(comment.getCreatedAt())
@@ -127,10 +135,8 @@ public class CommentService {
     }
 
     private void generateCommentNotification(Comment comment){
-        User receiver = userRepository.findByPersonalId(comment.getBoard().getUser().getPersonalId()).orElse(null); // 게시글을 생성한 user
-        if(receiver == null) throw new IllegalArgumentException("receiver not found");
-        User sender = userRepository.findByPersonalId(comment.getUser().getPersonalId()).orElse(null); // 게시글에 댓글을 작성한 user
-        if(sender == null) throw new IllegalArgumentException("sender not found");
+        User receiver = comment.getBoard().getUser(); // 게시글 작성자
+        User sender = comment.getUser(); // 댓글 작성자
 
         Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
 

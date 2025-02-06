@@ -26,10 +26,10 @@ public class Follow {
     private User follower;
 
     // 팔로우 당한 사용자
-
     @ManyToOne
     @JoinColumn(name = "followee_id", nullable = false)
     private User followee;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

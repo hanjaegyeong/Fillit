@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.oauth.dto.OauthToken;
 import com.social.a406.domain.oauth.dto.OauthUserInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GoogleOauthService {
 
     private final RestTemplate restTemplate;
@@ -34,10 +36,6 @@ public class GoogleOauthService {
     private String googleClientSecret;
     @Value("${oauth.google.scope")
     private String googleScope;
-
-    public GoogleOauthService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     // 프론트 개발 후 사용
     public OauthToken getGoogleToken(String code) {
