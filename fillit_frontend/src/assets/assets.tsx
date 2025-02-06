@@ -51,6 +51,9 @@ import pressedSpeaker from '@/assets/images/speaker-pressed.png';
 import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
+// article
+import NewArticleIcon from '@/assets/icons/new-article.svg';
+
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
 
@@ -151,4 +154,5 @@ export {
   CameraIcon,
   NewMessage,
   FollowBackground,
+  NewArticleIcon,
 };
