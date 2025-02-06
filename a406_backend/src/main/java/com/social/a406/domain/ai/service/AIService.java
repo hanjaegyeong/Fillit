@@ -10,6 +10,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AIService {
@@ -57,6 +60,7 @@ public class AIService {
         try {
             HttpHeaders headers = createHeaders();
             String requestBody = buildRequestBody(prompt);
+
             ResponseEntity<String> response = restTemplate.exchange(
                     BASE_URL + "?key=" + geminiApiKey,
                     HttpMethod.POST,
@@ -77,13 +81,17 @@ public class AIService {
     }
 
     private String buildRequestBody(String prompt) {
-        return """
-            {
-                "contents": [
-                    { "parts": [{ "text": "%s" }] }
-                ]
-            }
-            """.formatted(prompt);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> requestBody = Map.of(
+                    "contents", List.of(
+                            Map.of("parts", List.of(Map.of("text", prompt)))
+                    )
+            );
+            return objectMapper.writeValueAsString(requestBody);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON 변환 오류: " + e.getMessage());
+        }
     }
 
     private String parseResponse(String responseBody) {
