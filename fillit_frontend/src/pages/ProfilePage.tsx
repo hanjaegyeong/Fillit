@@ -3,7 +3,7 @@ import { user } from '@/mocks/fixtures/user';
 import { useEffect, useState } from 'react';
 import { getPaperText } from '@/utils/getPaperText';
 import Header from '@/components/common/Header/Header';
-import { ProfileDropdown } from '@/components/common/ProfileDropdown';
+import { ProfileDropdown } from '@/components/Profile/ProfileDropdown';
 import ProfileInfo from '@/components/Profile/ProfileInfo';
 import ProfileIntroduction from '@/components/Profile/ProfileIntroduction';
 
