@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GIT_BRANCH = '*/dev_front'
+        GIT_BRANCH = 'refs/heads/dev_front'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
         DOCKER_IMAGE_NAME = 'fillit-front'
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
