@@ -33,6 +33,12 @@ public class CommentController {
                 commentService.getCommentsByBoard(boardId));
     }
 
+    @GetMapping("/get/{commentId}")
+    public ResponseEntity<CommentResponse> getComment(@PathVariable Long commentId){
+        return ResponseEntity.ok(
+                commentService.getComment(commentId));
+    }
+
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponse> updateComment(
             @PathVariable Long commentId,
