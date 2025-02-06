@@ -24,6 +24,7 @@ import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 
 import Layout from './components/common/Layout/Layout';
+import ProfileCustomize from './pages/ProfileCustomizePage';
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
           {
             path: 'following',
             element: <FollowingPage />,
+          },
+          {
+            path: 'customize',
+            element: <ProfileCustomize />,
           },
         ],
       },
