@@ -1,11 +1,17 @@
 package com.social.a406.domain.ai.scheduler;
 
+import com.social.a406.domain.board.dto.BoardResponse;
+import com.social.a406.domain.board.service.BoardService;
+import com.social.a406.domain.comment.entity.Comment;
+import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.commentReply.service.ReplyService;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -20,10 +26,14 @@ public class AiScheduler {
     private final Random random = new Random();
     private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     private final UserService userService;
+    private final CommentService commentService;
+    private final ReplyService replyService;
+    private final BoardService boardService;
 
     private final String AI_COMMENT_ENDPOINT = "/api/ai/generate/comment";
     private final String RANDOM_AI_COMMENT_ENDPOINT = "/api/ai/generate/random/comment";
     private final String AI_BOARD_ENDPOINT = "/api/ai/generate/random/board";
+    private final String AI_COMMENT_REPLY_ENDPOINT = "/api/ai/generate/reply";
 
     @Value("${EC2_SERVER_URL}")
     private String ec2ServerUrl;
@@ -91,6 +101,57 @@ public class AiScheduler {
             } catch (Exception e) {
                 System.err.println("Failed to create AI comment: " + e.getMessage());
             } finally {
+                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+            }
+        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+    }
+
+    // AI 게시글에 댓글이 생긴 경우 답장 생성
+    @Transactional
+    public void scheduleCommentReplyCreationAtComment(Long commentId){
+        taskScheduler.initialize();
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(10, 61);
+        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        taskScheduler.schedule(() -> {
+            try {
+                Long boardId = commentService.getBoardIdByCommentId(commentId);
+                BoardResponse board = boardService.getBoardById(boardId);
+                String aiPersonalId = board.getPersonalId();
+
+                String response = restTemplate.getForObject(
+                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT + "?originId=" + board.getBoardId() + "&commentId=" + commentId + "&personalId=" + aiPersonalId +"&isBoard=true",
+                        String.class
+                );
+                System.out.println("AI Comment reply Created by " + aiPersonalId + ": " + response);
+            } catch (Exception e) {
+                System.err.println("Failed to create AI comment reply: " + e.getMessage());
+            }finally {
+                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+            }
+        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+    }
+
+    // AI 댓글에 대댓글이 생긴 경우 답장 생성
+    @Transactional
+    public void scheduleCommentReplyCreationAtCommentReply(Long replyId){
+        taskScheduler.initialize();
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(10, 61);
+        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        taskScheduler.schedule(() -> {
+            try {
+                Comment comment = replyService.getCommentByReplyId(replyId);
+                String aiPersonalId = commentService.getPersonalIdById(comment.getId());
+
+                String response = restTemplate.getForObject(
+                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT + "?originId=" + comment.getId() + "&commentId=" + replyId + "&personalId=" + aiPersonalId +"&isBoard=false",
+                        String.class
+                );
+                System.out.println("AI Comment reply Created by " + aiPersonalId + ": " + response);
+            } catch (Exception e) {
+                System.err.println("Failed to create AI comment reply: " + e.getMessage());
+            }finally {
                 taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
             }
         }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));

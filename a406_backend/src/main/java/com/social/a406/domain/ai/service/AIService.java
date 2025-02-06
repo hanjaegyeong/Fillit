@@ -24,14 +24,13 @@ public class AIService {
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
     private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
     private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
-    private static final String PROMPT_CHAT = "You are ‘fillbot’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
-
+    private static final String PROMPT_CHAT = "You are ‘fillip’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
+    private static final String PROMPT_COMMET_RPLY = "A user has left a \\\"%s\\\" on a \\\"%s\\\", and now you need to write a relevant and natural-sounding reply to that comment.";
     /**
      * 일반 AI 게시글 프롬프트 생성
      */
     public String createBoardPrompt(String personalId) {
-        User aiUser = userService.getUserByPersonalId(personalId);
-        return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX;
+        return null;
     }
 
     /**
@@ -100,5 +99,10 @@ public class AIService {
         } catch (Exception e) {
             throw new RuntimeException("AI 응답 파싱 실패: " + e.getMessage());
         }
+    }
+
+    public String createCommentReplyPrompt(String origin, String content, String personalId) {
+        User aiUser = userService.getUserByPersonalId(personalId);
+        return String.format(aiUser.getMainPrompt()+PROMPT_COMMET_RPLY, content, origin) + PROMPT_SUFFIX;
     }
 }

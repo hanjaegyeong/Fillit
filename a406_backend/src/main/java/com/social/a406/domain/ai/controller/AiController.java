@@ -4,6 +4,7 @@ import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentResponse;
+import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -79,5 +80,17 @@ public class AiController {
         }
 
         return ResponseEntity.status(201).body(response);
+    }
+
+    // AI 대댓글 생성
+    @GetMapping("/generate/reply")
+    public ResponseEntity<ReplyResponse> generateCommentReply(
+            @RequestParam Long originId,
+            @RequestParam Long commentId,
+            @RequestParam String personalId,
+            @RequestParam Boolean isBoard
+    ){
+        ReplyResponse replyResponse = aiFacadeService.generateAndSaveCommentReply(originId, commentId, personalId, isBoard);
+        return ResponseEntity.status(201).body(replyResponse);
     }
 }
