@@ -198,7 +198,10 @@ const MessagePage = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
           />
-          <button className="ml-3 bg-blue-500 text-white p-3 rounded-lg">
+          <button
+            onClick={sendMessage}
+            className="ml-3 bg-blue-500 text-white p-3 rounded-lg"
+          >
             Send
           </button>
         </div>
