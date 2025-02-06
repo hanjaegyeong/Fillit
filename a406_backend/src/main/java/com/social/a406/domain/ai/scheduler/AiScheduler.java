@@ -33,6 +33,7 @@ public class AiScheduler {
     private final String AI_COMMENT_ENDPOINT = "/api/ai/generate/comment";
     private final String RANDOM_AI_COMMENT_ENDPOINT = "/api/ai/generate/random/comment";
     private final String AI_BOARD_ENDPOINT = "/api/ai/generate/random/board";
+    private final String AI_COMMENT_REPLY_ENDPOINT = "/api/ai/generate/reply";
     private final int MINUTE = 60000;
 
     @Value("${EC2_SERVER_URL}")
