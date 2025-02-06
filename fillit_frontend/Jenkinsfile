@@ -1,23 +1,18 @@
 pipeline {
     agent any
     environment {
-        // 브랜치는 단순히 dev_front로 설정합니다.
         GIT_BRANCH = 'dev_front'
         GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
         DOCKER_IMAGE_NAME = 'fillit-front'
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
-        // HOME을 WORKSPACE로 설정하여 npm 캐시 권한 문제를 회피합니다.
+        // WORKSPACE를 HOME으로 설정해서 npm 캐시 권한 문제를 회피
         HOME = "${env.WORKSPACE}"
     }
     stages {
-        stage('Checkout & Build') {
-            agent {
-                docker { image 'node:22-buster' }
-            }
+        stage('Checkout') {
             steps {
-                // Git 체크아웃 단계
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/${GIT_BRANCH}"]],
@@ -27,16 +22,24 @@ pipeline {
                         credentialsId: 'gitlab-credentials-id'
                     ]]
                 ])
-                // npm 설치 및 빌드 단계 (프로젝트가 fillit_frontend 폴더에 있다고 가정)
+            }
+        }
+        stage('Install & Build') {
+            // Node.js와 npm이 포함된 컨테이너를 사용 (node:22-buster-slim)
+            agent {
+                docker { 
+                    image 'node:22-buster-slim'
+                }
+            }
+            steps {
                 dir('fillit_frontend') {
                     sh '''
-                        echo "npm 위치: $(which npm)"
-                        npm -v
-                        # npm 캐시 경로를 /tmp/.npm-cache로 설정하여 권한 문제 회피
-                        npm config set cache /tmp/.npm-cache
+                        echo "Using npm at: $(which npm) and version: $(npm -v)"
+                        npm config set cache $WORKSPACE/.npm
                         npm cache clean --force
                         npm cache verify
                         npm ci
+                        echo "Building project..."
                         VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' npm run build
                     '''
                 }
@@ -67,15 +70,13 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    sh '''
-                        docker stop ${DOCKER_CONTAINER_NAME} || true
-                        docker rm ${DOCKER_CONTAINER_NAME} || true
-                        docker run -d -p ${DOCKER_PORT}:80 --name ${DOCKER_CONTAINER_NAME} \
-                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
-                            ${DOCKER_IMAGE_NAME}:latest
-                    '''
-                }
+                sh '''
+                    docker stop ${DOCKER_CONTAINER_NAME} || true
+                    docker rm ${DOCKER_CONTAINER_NAME} || true
+                    docker run -d -p ${DOCKER_PORT}:80 --name ${DOCKER_CONTAINER_NAME} \
+                        -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                        ${DOCKER_IMAGE_NAME}:latest
+                '''
             }
         }
     }
