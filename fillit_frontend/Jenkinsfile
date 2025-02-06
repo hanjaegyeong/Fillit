@@ -10,19 +10,17 @@ pipeline {
         DOCKER_CONTAINER_NAME = 'fillit-front-container'
         DOCKER_PORT = '3000'
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
-        // WORKSPACE를 HOME으로 설정하여 npm이 쓰기 권한 있는 캐시 디렉토리를 사용하도록 함
-        HOME = "${env.WORKSPACE}"
+        HOME = "${env.WORKSPACE}"  // npm이 HOME을 사용하도록 설정
+        NPM_CONFIG_USERCONFIG = "${env.WORKSPACE}/.npmrc"  // npmrc를 현재 작업 디렉토리로 변경
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'gitlab-credentials-id',
-                        usernameVariable: 'GITLAB_USERNAME',
-                        passwordVariable: 'GITLAB_PASSWORD'
-                    )]) {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id',
+                                                       usernameVariable: 'GITLAB_USERNAME',
+                                                       passwordVariable: 'GITLAB_PASSWORD')]) {
                         git branch: "${GIT_BRANCH}",
                             credentialsId: 'gitlab-credentials-id',
                             url: "${GITLAB_REPO_URL}"
@@ -33,19 +31,21 @@ pipeline {
 
         stage('Install & Build') {
             steps {
-                // fillit_frontend 폴더로 이동하여 npm install 및 빌드 실행
                 dir('fillit_frontend') {
                     sh """
-                        # npm 캐시 디렉토리를 WORKSPACE 내의 .npm 디렉토리로 설정 (글로벌로 적용)
-                        npm config set cache \$WORKSPACE/.npm --global
-                        
-                        # 캐시 정리 및 검증 (필요시)
+                        # npm 전역 설정을 사용하지 않도록 변경
+                        export NPM_CONFIG_USERCONFIG=\$WORKSPACE/.npmrc
+
+                        # npm 캐시를 Jenkins 작업공간 내로 설정
+                        npm config set cache \$WORKSPACE/.npm --userconfig \$NPM_CONFIG_USERCONFIG
+
+                        # 캐시 정리 및 검증
                         npm cache clean --force
                         npm cache verify
 
-                        # package-lock.json을 사용하는 깨끗한 설치
+                        # package-lock.json 기반 깨끗한 설치
                         npm ci
-                        
+
                         # 환경 변수 적용 후 빌드
                         export VITE_API_BASE_URL=${VITE_API_BASE_URL}
                         npm run build
@@ -69,12 +69,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // 기존 컨테이너가 있다면 중지 및 삭제 후 새 컨테이너 실행
                     sh """
                         docker stop ${DOCKER_CONTAINER_NAME} || true
                         docker rm ${DOCKER_CONTAINER_NAME} || true
-                        docker run -d -p ${DOCKER_PORT}:${DOCKER_PORT} --name ${DOCKER_CONTAINER_NAME} \
-                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                        docker run -d -p ${DOCKER_PORT}:3000 --name ${DOCKER_CONTAINER_NAME} \\
+                            -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \\
                             ${DOCKER_IMAGE_NAME}:latest
                     """
                 }
