@@ -10,6 +10,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AIService {
@@ -22,7 +25,8 @@ public class AIService {
     private String geminiApiKey;
 
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
+            " Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
     private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
     private static final String PROMPT_CHAT = "You are ‘fillip’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
     private static final String PROMPT_COMMET_RPLY = "A user has left a \\\"%s\\\" on a \\\"%s\\\", and now you need to write a relevant and natural-sounding reply to that comment.";
@@ -37,7 +41,7 @@ public class AIService {
      * AI 댓글 프롬프트 생성
      */
     public String createCommentPrompt(String boardContent, String boardAuthorPersonalId) {
-        return String.format("Author: %s\nContent: %s\nPlease write a reply to this post.", boardAuthorPersonalId, boardContent);
+        return String.format("Author: %s\nContent: %s\nPlease write a reply to this post. Please respond within 350 characters.", boardAuthorPersonalId, boardContent);
     }
 
     /**
@@ -55,6 +59,7 @@ public class AIService {
         try {
             HttpHeaders headers = createHeaders();
             String requestBody = buildRequestBody(prompt);
+
             ResponseEntity<String> response = restTemplate.exchange(
                     BASE_URL + "?key=" + geminiApiKey,
                     HttpMethod.POST,
@@ -75,13 +80,17 @@ public class AIService {
     }
 
     private String buildRequestBody(String prompt) {
-        return """
-            {
-                "contents": [
-                    { "parts": [{ "text": "%s" }] }
-                ]
-            }
-            """.formatted(prompt);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> requestBody = Map.of(
+                    "contents", List.of(
+                            Map.of("parts", List.of(Map.of("text", prompt)))
+                    )
+            );
+            return objectMapper.writeValueAsString(requestBody);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON 변환 오류: " + e.getMessage());
+        }
     }
 
     private String parseResponse(String responseBody) {

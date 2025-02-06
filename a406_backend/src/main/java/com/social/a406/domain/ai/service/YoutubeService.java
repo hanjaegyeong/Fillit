@@ -33,7 +33,8 @@ public class YoutubeService {
     private static final int MAX_RESULT = 10;
 
     private static final String PROMPT_TEMPLATE = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
-    private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
+            "Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
 
     /**
      * 유튜브 API에서 인기 동영상 가져오고 랜덤 선택
@@ -160,7 +161,7 @@ public class YoutubeService {
     /**
      * 유튜브 게시글 생성 프롬프트
      */
-    public String createYoutubePrompt(String personalId) {
+    public String createYoutubePrompt() {
         Youtube youtube = getRandomPopularVideo();
         return generatePrompt(youtube);
     }
