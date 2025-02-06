@@ -13,7 +13,7 @@ public class ChatParticipants {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id", nullable = false)
@@ -23,7 +23,8 @@ public class ChatParticipants {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long lastReadMessageId;
+    @Column(nullable = false)
+    private Long unReadMessageCount = 0L;
 
     @Builder
     public ChatParticipants(ChatRoom chatRoom, User user) {
@@ -31,10 +32,13 @@ public class ChatParticipants {
         this.user = user;
     }
 
-    public void updateLastReadMessageId(Long messageId) {
-        this.lastReadMessageId = messageId;
+    public void increaseUnReadMessageCount () {
+        this.unReadMessageCount ++;
     }
 
+    public void resetUnReadMessageCount () {
+        this.unReadMessageCount = 0L;
+    }
 
 }
 
