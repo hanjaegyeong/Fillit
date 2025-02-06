@@ -16,16 +16,23 @@ pipeline {
                 docker { image 'node:22' }
             }
             steps {
-                // Git 체크아웃
+                // Git 체크아웃: CloneOption 확장을 추가하여 honorRefspec false 설정
                 script {
                     withCredentials([usernamePassword(
                         credentialsId: 'gitlab-credentials-id',
                         usernameVariable: 'GITLAB_USERNAME',
                         passwordVariable: 'GITLAB_PASSWORD'
                     )]) {
-                        git branch: "${GIT_BRANCH}",
-                            credentialsId: 'gitlab-credentials-id',
-                            url: "${GITLAB_REPO_URL}"
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: "${GIT_BRANCH}"]],
+                            doGenerateSubmoduleConfigurations: false,
+                            extensions: [[$class: 'CloneOption', shallow: false, honorRefspec: false]],
+                            userRemoteConfigs: [[
+                                credentialsId: 'gitlab-credentials-id',
+                                url: "${GITLAB_REPO_URL}"
+                            ]]
+                        ])
                     }
                 }
                 // npm 설치 및 빌드
