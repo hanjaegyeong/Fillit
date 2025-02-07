@@ -29,38 +29,6 @@ public class ChatService {
     private final ChatParticipantsRepository chatParticipantsRepository;
     private final UserRepository userRepository;
 
-
-    // 채팅 저장
-    @Transactional
-    public ChatMessageDto saveMessageAndUpdateRoom(String personalId, ChatMessageRequest request) {
-
-        User user = findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
-        String userId = user.getId();
-
-        Long chatRoomId = request.getChatRoomId();
-
-        // 채팅참여 정보 가져오기
-        ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoomId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
-
-        // 메시지 저장
-        ChatMessage Message = ChatMessage.builder()
-                .chatParticipants(chatParticipants)
-                .messageContent(request.getMessageContent())
-                .build();
-
-        ChatMessage savedMessage = chatMessageRepository.save(Message);
-
-        // 채팅방 마지막 메시지 정보 업데이트
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
-        chatRoom.updateLastMessageContent(savedMessage.getMessageContent());
-
-        return convertToChatMessageDto(savedMessage);
-    }
-
-
     // 채팅방 입장
     // 채팅방 입장전 권한 사전검증 - personalId와 chatRoomId로 chatParticipants 존재 확인
     @Transactional(readOnly = true)
@@ -163,7 +131,7 @@ public class ChatService {
 
             User userInfo = otherUserInfoMap.get(roomId);
 
-            return new ChatRoomResponse(roomId, userInfo.getName(), userInfo.getProfileImageUrl(), cr.getLastMessageContent(), cr.getLastMessageTime(), cp.getUnReadMessageCount());
+            return new ChatRoomResponse(roomId, userInfo.getName(), userInfo.getProfileImageUrl(), cr.getLastMessageContent(), cr.getLastMessageTime(), cp.getUnreadMessageCount());
 
         }).collect(Collectors.toList());
 
@@ -210,7 +178,7 @@ public class ChatService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("현재 사용자의 채팅 참여자 정보가 없습니다."));
 
-        Long unreadCount = currentParticipant.getUnReadMessageCount();
+        Long unreadCount = currentParticipant.getUnreadMessageCount();
 
         return new ChatRoomResponse(
                 chatRoom.getId(),
@@ -221,6 +189,7 @@ public class ChatService {
                 unreadCount
         );
     }
+
 
 
 }
