@@ -128,13 +128,13 @@ public class UserController {
         return ResponseEntity.ok(userService.searchUser(pageable, cursorId, word));
     }
 
-    @GetMapping("/duplicate/email")
+    @PostMapping("/duplicate/email")
     public ResponseEntity<String> checkDuplicateEmail(@RequestBody DuplicateRequest request){
         userService.checkDuplicateEmail(request.getInput());
         return ResponseEntity.ok("This Email is available.");
     }
 
-    @GetMapping("/duplicate/nickname")
+    @PostMapping("/duplicate/nickname")
     public ResponseEntity<String> checkDuplicatePersonalId(@RequestBody DuplicateRequest request){
         userService.checkDuplicatePersonalId(request.getInput());
         return ResponseEntity.ok("This nickname is available.");
