@@ -108,20 +108,11 @@ public class VoiceReplyService {
             // Voice 객체 생성 및 DB에 저장
             VoiceReply voiceReply = voiceReplyRepository.save(new VoiceReply(voice, user, fileUrl));
 
-            generateVoiceReplyNotification(voiceReply);
+            notificationService.generateVoiceReplyNotification(voiceReply);
 
             return "Success to store the file";
         } catch (IOException e) {
             throw new RuntimeException("Failed to store the file", e);
         }
-    }
-
-    private void generateVoiceReplyNotification(VoiceReply voiceReply){
-        // 음성 답장
-        User receiver = voiceReply.getVoice().getUser(); // 음성 스토리 작성자
-        User sender = voiceReply.getUser(); // 음성 스토리 답장 작성자
-        Long referenceId = voiceReply.getVoice().getId();
-        notificationService.createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
-        System.out.println("Generate notification about voice reply");
     }
 }

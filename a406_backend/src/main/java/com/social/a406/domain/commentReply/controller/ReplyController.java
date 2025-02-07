@@ -1,5 +1,6 @@
 package com.social.a406.domain.commentReply.controller;
 
+import com.social.a406.domain.ai.scheduler.AiScheduler;
 import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.service.ReplyService;
@@ -17,14 +18,20 @@ import java.util.List;
 public class ReplyController {
 
     private final ReplyService replyService;
+    private final AiScheduler aiScheduler;
 
     @PostMapping
     public ResponseEntity<ReplyResponse> addReply (
             @PathVariable Long commentId,
             @RequestBody ReplyRequest request,
             @AuthenticationPrincipal UserDetails userDetails){
-        return ResponseEntity.status(201).body(
-                replyService.saveReply(commentId, request, userDetails));
+        ReplyResponse response = replyService.saveReply(commentId, request, userDetails.getUsername());
+
+        // 대댓글 자동 생성
+        if(replyService.isAIAndRandomCreate(commentId)) {
+            aiScheduler.scheduleCommentReplyCreationAtCommentReply(response.getReplyId());
+        }
+        return ResponseEntity.status(201).body(response);
     }
 
     @PutMapping("/{replyId}")

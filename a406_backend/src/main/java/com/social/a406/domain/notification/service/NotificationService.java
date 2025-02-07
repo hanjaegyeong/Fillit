@@ -1,10 +1,14 @@
 package com.social.a406.domain.notification.service;
 
+import com.social.a406.domain.comment.entity.Comment;
+import com.social.a406.domain.comment.repository.CommentRepository;
+import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.repository.NotificationRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +29,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private static final ConcurrentMap<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final CommentRepository commentRepository;
 
     private long TIME_OUT = 60 * 1000L; // 1분
 
@@ -54,8 +59,9 @@ public class NotificationService {
     }
 
     public Notification createNotification(User receiver, User sender, NotificationType type, Long referenceId){
-        if(receiver.equals(sender)){
-            throw new IllegalArgumentException("You can't send yourself a notification");
+        if(receiver.equals(sender) || receiver.getMainPrompt() != null){
+            System.out.println("Don't need to send notification");
+            return null;
         }
 
         Notification notification = Notification.builder()
@@ -93,4 +99,41 @@ public class NotificationService {
 
     }
 
+    public void generateCommentReplyNotification(Reply reply, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        User boardReceiver = comment.getBoard().getUser(); // 대댓글을 단 게시글 작성자
+        User commentReceiver = comment.getUser(); // 대댓글을 단 댓글 작성자
+        User sender = reply.getUser();
+
+        Long boardReferenceId = reply.getComment().getBoard().getId(); // 게시글의 id -> 알림 클릭 시 게시글로 이동
+
+        // 댓글 작성자와 게시글 작성자가 동일한 경우 하나의 알림만 생성
+        createNotification(boardReceiver, sender,NotificationType.RECOMMENT, boardReferenceId);
+
+        // 댓글 작성자와 게시글 작성자가 다른 경우 두 개의 알림 생성
+        if (!boardReceiver.equals(commentReceiver)) {
+            createNotification(commentReceiver, sender,NotificationType.RECOMMENT, boardReferenceId);
+        }
+        System.out.println("Generate notification about comment reply");
+    }
+
+    public void generateCommentNotification(Comment comment){
+        User receiver = comment.getBoard().getUser(); // 게시글 작성자
+        User sender = comment.getUser(); // 댓글 작성자
+
+        Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
+
+        createNotification(receiver,sender, NotificationType.COMMENT,referenceId);
+        System.out.println("Generate notification about comment");
+    }
+
+    public void generateVoiceReplyNotification(VoiceReply voiceReply){
+        // 음성 답장
+        User receiver = voiceReply.getVoice().getUser(); // 음성 스토리 작성자
+        User sender = voiceReply.getUser(); // 음성 스토리 답장 작성자
+        Long referenceId = voiceReply.getVoice().getId();
+        createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
+        System.out.println("Generate notification about voice reply");
+    }
 }
