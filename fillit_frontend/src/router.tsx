@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import HomePage from '@/pages/HomePage';
+import NewArticlePage from '@/pages/NewArticlePage';
 import ArticleDetailPage from '@/pages/ArticleDetailPage';
 import CommentDetailPage from '@/pages/CommentDetailPage';
 
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: 'newmessage',
         element: <NewMessagePage />,
+      },
+      {
+        path: 'newarticle',
+        element: <NewArticlePage />,
       },
     ],
   },

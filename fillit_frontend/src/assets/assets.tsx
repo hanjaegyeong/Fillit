@@ -9,6 +9,9 @@ import MessageInactiveIcon from '@/assets/icons/message-outline.svg';
 import MessageActiveIcon from '@/assets/icons/message-fill.svg';
 import MyPageInactiveIcon from '@/assets/icons/mypage-outline.svg';
 import MyPageActiveIcon from '@/assets/icons/mypage-fill.svg';
+import AddPhotiIcon from '@/assets/icons/add-photo.svg';
+import AskToFilbotIcon from '@/assets/icons/ask-to-filbot.svg';
+import AddTagIcon from '@/assets/icons/add-tag.svg';
 
 // header
 import BackIcon from '@/assets/icons/back-arrow.svg';
@@ -50,6 +53,10 @@ import speaker from '@/assets/images/speaker.png';
 import pressedSpeaker from '@/assets/images/speaker-pressed.png';
 import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
+
+// article
+import NewArticleIcon from '@/assets/icons/new-article.svg';
+import NewArticleImg from '@/assets/images/new-article.png';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
@@ -160,4 +167,9 @@ export {
   ArticleBg1,
   ArticleBg2,
   ArticleBg3,
+  NewArticleIcon,
+  AddPhotiIcon,
+  AskToFilbotIcon,
+  AddTagIcon,
+  NewArticleImg,
 };

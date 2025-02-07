@@ -2,23 +2,23 @@ import AiFilImg from '@/assets/images/ai-fil-img.png';
 import AiFil from '@/assets/images/ai-fil.png';
 import SlideUpModal from '../Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-interface Message {
+export interface Message {
   id: number;
   sender: string;
   content: string;
   timestamp: string;
 }
 
-interface ChatData {
+export interface ChatData {
   chatId: number;
   image: string;
   userName: string;
   messages: Message[];
 }
 
-const mockChatData: ChatData[] = [
+export const mockChatData: ChatData[] = [
   {
     chatId: 1,
     image: AiFilImg,
@@ -37,7 +37,7 @@ const mockChatData: ChatData[] = [
 const AiFilButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { chatId } = useParams<{ chatId: string }>();
+  const chatId = 1;
   const chatData = mockChatData.find((chat) => chat.chatId === Number(chatId));
   const [messages, setMessages] = useState<Message[]>(
     chatData ? chatData.messages : []
@@ -70,15 +70,23 @@ const AiFilButton = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage('');
   };
+  const { pathname } = useLocation();
 
   return (
     <>
-      <button className="fixed bottom-44" onClick={() => setIsOpen(true)}>
+      <button
+        className={
+          pathname.includes('newarticle') || pathname.includes('edit')
+            ? 'w-full max-w-[600px] px-4 fixed bottom-28'
+            : 'fixed bottom-44'
+        }
+        onClick={() => setIsOpen(true)}
+      >
         <img src={AiFilImg} alt="ai-fil-img" />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-xl font-bold mb-4">AI Fil</h2>
-        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-340px)] hide-scrollbar">
+        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-340px)] z-50 hide-scrollbar">
           {messages.map((msg, index) => (
             <div
               key={msg.id}
@@ -87,7 +95,7 @@ const AiFilButton = () => {
               }`}
             >
               {msg.sender !== 'me' && isFirstMessage(index) && (
-                <img src={AiFil} alt="ai-fil" />
+                <img src={AiFil} alt="ai-fil" className="z-50" />
               )}
               <div
                 className={`max-w-[70%] p-3 rounded-lg ${
@@ -122,5 +130,5 @@ const AiFilButton = () => {
     </>
   );
 };
-
+console.log('여기');
 export default AiFilButton;
