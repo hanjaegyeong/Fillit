@@ -1,5 +1,6 @@
 package com.social.a406.domain.user.service;
 
+import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.EmailVerifyCode;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -41,6 +43,7 @@ public class UserService {
     private final S3Client s3Client;
     private final EmailVerifyCodeRepository emailVerifyCodeRepository;
     private final VerifyEmailUtil verifyEmailUtil;
+    private final FollowRepository followRepository;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -162,6 +165,8 @@ public class UserService {
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            Long followerCount = followRepository.countFollowers(user);
+            Long followeeCount = followRepository.countFollowees(user);
             return UserCharacterResponse.builder()
                     .type(user.getEmail() == null && user.getPassword() == null ? "ai" : "user")
                     .id(user.getId())
@@ -170,6 +175,8 @@ public class UserService {
                     .profileImageUrl(user.getProfileImageUrl())
                     .introduction(user.getIntroduction())
                     .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
+                    .followerCount(followerCount)
+                    .followeeCount(followeeCount)
                     .build();
         }
 
@@ -264,9 +271,7 @@ public class UserService {
             s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(
                     file.getInputStream(), file.getSize()));
 
-            String fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
-
-            return fileUrl;
+            return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
         } catch(IOException e){
             throw new RuntimeException("Failed to store the file", e);
         }
@@ -294,9 +299,9 @@ public class UserService {
 
     // 이미지 삭제
     // S3 파일 삭제
-    private void deleteProfileImageFromS3(String audioUrl) {
+    private void deleteProfileImageFromS3(String profileImageUrl) {
         // S3 버킷 내에서 삭제하려는 파일의 키(파일 경로) 추출
-        String fileKey = audioUrl.substring(audioUrl.indexOf("profile/"));  // 'profile/'부터 시작하는 경로 추출
+        String fileKey = profileImageUrl.substring(profileImageUrl.indexOf("profile/"));  // 'profile/'부터 시작하는 경로 추출
 
         // S3에서 해당 파일 삭제
         s3Client.deleteObject(DeleteObjectRequest.builder()
@@ -361,5 +366,29 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(userPasswordRequest.getPassword()));
         userRepository.save(user);
         return "Password change success!!";
+    }
+
+    public List<UserSearchResponse> searchUser(Pageable pageable, String cursorId, String word) {
+        List<User> users = userRepository.searchUsers(word, cursorId, pageable);
+        return users.stream()
+                .map(user -> new UserSearchResponse(
+                        user.getPersonalId(),
+                        user.getName(),
+                        user.getProfileImageUrl()
+                ))
+                .toList();
+    }
+
+    @Transactional
+    public void updateUser(String personalId, UserUpdateRequest userUpdateRequest, MultipartFile file) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                ()-> new IllegalArgumentException("Not found user"));
+
+        user.updateUserProfile(userUpdateRequest.getName(), userUpdateRequest.getIntroduction());
+        if(file != null){
+            deleteProfileImageFromS3(user.getProfileImageUrl());
+            String newProfileImageUrl = saveProfileImageAtS3(file);
+            user.updateUserProfileImage(newProfileImageUrl);
+        }
     }
 }

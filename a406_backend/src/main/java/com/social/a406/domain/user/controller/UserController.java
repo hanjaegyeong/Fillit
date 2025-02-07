@@ -2,25 +2,28 @@ package com.social.a406.domain.user.controller;
 
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
@@ -80,6 +83,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // 유저 프로필 수정
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateUser(@AuthenticationPrincipal UserDetails userDetails,
+                                             @RequestPart("update") UserUpdateRequest userUpdateRequest,
+                                             @RequestPart(value = "profileImage",required = false) MultipartFile file){
+        userService.updateUser(userDetails.getUsername(), userUpdateRequest, file);
+        return ResponseEntity.ok("Success to update profile of " + userDetails.getUsername());
+    }
+
     // 비밀번호 변경 - 이메일 코드 전송
     @PostMapping("/email/send")
     public ResponseEntity<String> sendEmailCode(@RequestBody EmailRequest emailRequest){
@@ -102,5 +114,17 @@ public class UserController {
         String response = userService.changeUserPassword(userPasswordRequest);
 
         return ResponseEntity.ok(response);
+    }
+
+    // 유저 검색
+    // cursorId -> personalId 사전순 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<UserSearchResponse>> searchUser(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String cursorId,
+            @RequestParam String word
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(userService.searchUser(pageable, cursorId, word));
     }
 }

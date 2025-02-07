@@ -7,7 +7,7 @@ import com.social.a406.domain.oauth.service.KakaoOauthService;
 import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,20 +19,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/oauth")
+@RequiredArgsConstructor
 public class OauthController {
 
     private final OauthService oauthService;
     private final KakaoOauthService kakaoOauthService;
     private final GoogleOauthService googleOauthService;
     private final NaverOauthService naverOauthService;
-
-    @Autowired
-    public OauthController(OauthService oauthService, KakaoOauthService kakaoOauthService, GoogleOauthService googleOauthService, NaverOauthService naverOauthService) {
-        this.oauthService = oauthService;
-        this.kakaoOauthService = kakaoOauthService;
-        this.googleOauthService = googleOauthService;
-        this.naverOauthService = naverOauthService;
-    }
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")

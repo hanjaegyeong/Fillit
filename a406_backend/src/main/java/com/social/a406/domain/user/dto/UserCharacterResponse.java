@@ -15,4 +15,6 @@ public class UserCharacterResponse {
     private String profileImageUrl;
     private String introduction;
     private String birthDate; // 생년월일 (yyyy-MM-dd)
+    private Long followerCount;
+    private Long followeeCount;
 }

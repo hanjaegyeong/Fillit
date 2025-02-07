@@ -1,11 +1,14 @@
 package com.social.a406.domain.board.controller;
 
 import com.social.a406.domain.board.dto.BoardProfileResponse;
+import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,13 +36,25 @@ public class BoardController {
         // 30초 후 AI 댓글 생성 스케줄링
         aiScheduler.scheduleCommentCreation(boardResponse.getBoardId(), boardResponse.getPersonalId());
 
-        return ResponseEntity.ok(boardResponse);
+        return ResponseEntity.status(201).body(boardResponse);
     }
 
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
         BoardResponse boardResponse = boardService.getBoardById(boardId);
         return ResponseEntity.ok(boardResponse);
+    }
+
+    // 게시글 검색
+    //cursorId -> boardId 최신순
+    @GetMapping("/search")
+    public ResponseEntity<List<BoardResponse>> searchBoard(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam String word
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(boardService.searchBoard(pageable, cursorId, word));
     }
 
     @PutMapping("/{boardId}")
@@ -72,6 +87,15 @@ public class BoardController {
     public ResponseEntity<List<BoardProfileResponse>> getOtherUserProfileBoard(@PathVariable String personalId){
         List<BoardProfileResponse> responses = boardService.getProfileBoardByUser(personalId);
         return ResponseEntity.ok(responses);
+    }
+
+    // 프로필 게시글 위치 수정
+    @PatchMapping("/profile/update")
+    public ResponseEntity<String> updateUserProfileBoard(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody List<BoardProfileUpdateRequest> requests){
+        boardService.updateUserProfileBoard(userDetails.getUsername(), requests);
+        return ResponseEntity.ok("Success to update profile boards");
     }
 
     @DeleteMapping("/{boardId}")

@@ -25,5 +25,6 @@ public class Subreddit {
     private String content;
 
     @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<UserSubredditMapping> userSubredditMappings = new ArrayList<>();
 }
