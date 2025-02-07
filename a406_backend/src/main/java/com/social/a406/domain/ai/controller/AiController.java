@@ -1,17 +1,16 @@
 package com.social.a406.domain.ai.controller;
 
-import com.social.a406.domain.ai.service.FlickrService;
-import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.ai.service.AIFacadeService;
+import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.Random;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/ai")
@@ -68,4 +67,34 @@ public class AiController {
             @RequestParam(required = false, defaultValue = "false") boolean includeImage) {
         return ResponseEntity.status(201).body(aiFacadeService.generateAndSaveRandomBoard(includeImage));
     }
+
+    /**
+     *  AI가 랜덤하게 좋아요 생성
+     */
+    @GetMapping("/generate/random/like")
+    public ResponseEntity generateRandomLike() {
+        String randomPersonalId = userService.getRandomUserWithMainPrompt();
+        Long randomBoardId = boardService.getRandomAvailableBoardIdExcludingUser(randomPersonalId);
+
+        if (randomBoardId == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        aiFacadeService.generateAndSaveLike(randomBoardId, randomPersonalId);
+        return ResponseEntity.status(201).build();
+    }
+
+    /**
+     * AI가 특정 게시글에 좋아요 생성
+     */
+    @GetMapping("/generate/like")
+    public ResponseEntity generateLike(
+            @RequestParam Long boardId,
+            @RequestParam String personalId
+    ) {
+        aiFacadeService.generateAndSaveLike(boardId, personalId);
+        return ResponseEntity.status(201).build();
+    }
+
+
 }

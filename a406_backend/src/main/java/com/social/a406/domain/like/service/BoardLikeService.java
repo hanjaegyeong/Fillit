@@ -38,6 +38,7 @@ public class BoardLikeService {
         boardLikeRepository.save(like);
 
         board.increaseLikeCount();
+//        return board;
     }
 
     @Transactional
