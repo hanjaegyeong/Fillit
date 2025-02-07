@@ -80,6 +80,8 @@ pipeline {
             steps {
                 sh 'kubectl apply -f a406_backend/k8s/nginx-deployment.yaml'
                 sh 'kubectl apply -f a406_backend/k8s/nginx-service.yaml'
+                sh 'kubectl apply -f a406_backend/k8s/clusterissuer.yaml'
+                sh 'kubectl apply -f a406_backend/k8s/ingress.yaml'
             }
         }
     }
