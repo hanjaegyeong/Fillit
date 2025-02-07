@@ -15,7 +15,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     JOIN FETCH c.chatParticipants p
     JOIN FETCH p.chatRoom r
     WHERE r.id = :chatRoomId
-    AND c.id <= :cursor
+    AND c.id < :cursor
     """)
     Slice<ChatMessage> findMessagesByCursor(
             @Param("chatRoomId") Long chatRoomId,
