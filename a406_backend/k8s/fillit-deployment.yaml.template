@@ -76,7 +76,5 @@ spec:
             value: "${GEMINI_API_KEY}"
           - name: EC2_SERVER_URL
             value: "${EC2_SERVER_URL}"
-          - name: EC2_SERVER_URL
-            value: "${EC2_SERVER_URL}"
           - name: FLICKR_API_KEY
             value: "${FLICKR_API_KEY}"
