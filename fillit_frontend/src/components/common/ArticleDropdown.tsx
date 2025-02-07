@@ -60,7 +60,7 @@ const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
               <button
                 onClick={() => {
                   navigate('/');
-                  handleArticleEdit;
+                  handleDeleteArticle;
                 }}
                 className={dangerItemClass}
               >
