@@ -1,12 +1,12 @@
 package com.social.a406.domain.board.repository;
 
 import com.social.a406.domain.board.entity.Board;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     //comment 쓰는 버전
@@ -27,4 +27,25 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
     List<Board> findAllByPersonalId(@Param("personalId") String personalId);
+
+    //단어 검색
+    @Query(value = "SELECT * FROM board " +
+            "WHERE MATCH(content, keyword) AGAINST(:word IN BOOLEAN MODE) " +
+            "AND (:cursorId IS NULL OR board.board_id < :cursorId) " +
+            "ORDER BY board.board_id DESC",
+            nativeQuery = true)
+    List<Board> searchBoard(@Param("word") String word,
+                            @Param("cursorId") Long cursorId,
+                            Pageable pageable);
+
+    //부분 문자열 검색 가능
+//    @Query(value = "SELECT * FROM board " +
+//            "WHERE (content LIKE %:word% OR keyword LIKE %:word%) " +
+//            "AND (:cursorId IS NULL OR board.board_id < :cursorId) " +
+//            "ORDER BY board.board_id DESC",
+//            nativeQuery = true)
+//    List<Board> searchBoard(@Param("word") String word,
+//                            @Param("cursorId") Long cursorId,
+//                            Pageable pageable);
+
 }

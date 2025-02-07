@@ -4,6 +4,7 @@ import com.social.a406.domain.ai.entity.Youtube;
 import com.social.a406.domain.ai.entity.YoutubeCategory;
 import com.social.a406.domain.ai.repository.YoutubeCategoryRepository;
 import com.social.a406.domain.ai.repository.YoutubeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +16,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class YoutubeService {
 
     private final RestTemplate restTemplate;
     private final YoutubeRepository youtubeRepository;
     private final YoutubeCategoryRepository youtubeCategoryRepository;
-
-    public YoutubeService(RestTemplate restTemplate, YoutubeRepository youtubeRepository, YoutubeCategoryRepository youtubeCategoryRepository) {
-        this.restTemplate = restTemplate;
-        this.youtubeRepository = youtubeRepository;
-        this.youtubeCategoryRepository = youtubeCategoryRepository;
-    }
 
     @Value("${youtube.api.url}")
     private String YOUTUBE_API_URL;
@@ -37,7 +33,8 @@ public class YoutubeService {
     private static final int MAX_RESULT = 10;
 
     private static final String PROMPT_TEMPLATE = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
-    private static final String PROMPT_SUFFIX = "Please respond within 350 characters.";
+    private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
+            "Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
 
     /**
      * 유튜브 API에서 인기 동영상 가져오고 랜덤 선택
@@ -164,7 +161,7 @@ public class YoutubeService {
     /**
      * 유튜브 게시글 생성 프롬프트
      */
-    public String createYoutubePrompt(String personalId) {
+    public String createYoutubePrompt() {
         Youtube youtube = getRandomPopularVideo();
         return generatePrompt(youtube);
     }
@@ -173,14 +170,23 @@ public class YoutubeService {
      * 프롬프트 생성
      */
     private String generatePrompt(Youtube youtube) {
-        return String.format(PROMPT_TEMPLATE,
-                youtube.getCategory(),
+        return escapeJsonString(String.format(PROMPT_TEMPLATE,
+                youtube.getCategory().getName(),
                 youtube.getTitle(),
                 youtube.getUrl(),
                 youtube.getDescription(),
                 youtube.getTopicCategory(),
-                youtube.getCategory(),
+                youtube.getCategory().getName(),
                 youtube.getChannelTitle())
-                + PROMPT_SUFFIX;
+                + PROMPT_SUFFIX);
+    }
+
+    private String escapeJsonString(String input) {
+        if (input == null) return "";
+        return input.replace("\\", "\\\\")  // 백슬래시 처리
+                .replace("\"", "\\\"") // 큰따옴표 처리
+                .replace("\n", "\\n")   // 개행 문자 처리
+                .replace("\r", "\\r")   // 캐리지 리턴 처리
+                .replace("\t", "\\t");   // 탭 문자 처리
     }
 }

@@ -8,6 +8,7 @@ import com.social.a406.domain.notification.service.NotificationService;
 import  com.social.a406.domain.user.entity.User;
 
 import  com.social.a406.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,17 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-
-    public FollowService(FollowRepository followRepository, UserRepository userRepository, NotificationService notificationService) {
-        this.followRepository = followRepository;
-        this.userRepository = userRepository;
-        this.notificationService = notificationService;
-    }
 
     public Optional<Follow> findByFollowerAndFollowee (User follower, User followee) {
         return followRepository.findByFollowerAndFollowee(follower, followee) ;

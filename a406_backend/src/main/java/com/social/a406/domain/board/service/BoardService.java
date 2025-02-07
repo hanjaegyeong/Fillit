@@ -1,10 +1,13 @@
 package com.social.a406.domain.board.service;
 
 import com.social.a406.domain.board.dto.BoardProfileResponse;
+import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
 import com.social.a406.domain.board.dto.BoardRequest;
 import com.social.a406.domain.board.dto.BoardResponse;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
+import com.social.a406.domain.board.event.BoardCreatedEvent;
+import com.social.a406.domain.board.event.BoardDeletedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
@@ -13,6 +16,8 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +28,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,8 @@ public class BoardService {
     private final S3Client s3Client;
     private final CommentService commentService;
     private final InterestService interestService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -51,6 +55,8 @@ public class BoardService {
         User user = findUserBypersonalId(userDetails.getUsername());
         Board board = buildBoard(boardRequest, user);
         Board newBoard = boardRepository.save(board);
+        eventPublisher.publishEvent(new BoardCreatedEvent(this, newBoard)); // 이벤트발행
+
         List<String> imageUrls = null;
         if(files != null && !files.isEmpty()) {
             //게시글 이미지 저장
@@ -63,10 +69,22 @@ public class BoardService {
 
     // AI 게시글 생성
     @Transactional
-    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId) {
+    public BoardResponse createAiBoard(BoardRequest boardRequest, String aiPersonalId, String imageUrl) {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
-        return mapToResponseDto(boardRepository.save(board), null, null); // AI 게시글 이미지, 관심사
+        Board savedBoard = boardRepository.save(board);
+
+        // 이미지가 있을 경우 BoardImage에 저장
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            BoardImage boardImage = BoardImage.builder()
+                    .board(savedBoard)
+                    .imageUrl(imageUrl)
+                    .build();
+            boardImageRepository.save(boardImage);
+        }
+
+        interestService.addBoardInterests(savedBoard.getId(), boardRequest.getInterests());
+        return mapToResponseDto(savedBoard, Collections.singletonList(imageUrl), boardRequest.getInterests());
     }
 
     // 게시글 단건 조회
@@ -179,6 +197,7 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
+    // Board 엔티티를 Response DTO로 변환
     private BoardResponse mapToResponseDto(Board board, List<String> imageUrls, List<String> interests) {
         return BoardResponse.builder()
                 .boardId(board.getId())
@@ -217,7 +236,10 @@ public class BoardService {
         return imageUrls;
     }
 
+
     //이미지 저장
+    // 이미지 저장
+    @Transactional
     public String saveBoardImageAtS3(Long boardId, MultipartFile file) {
         try{
             String fileName = "board/" + boardId + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -296,6 +318,7 @@ public class BoardService {
             throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
         }
         interestService.deleteAllBoardInterests(boardId);
+        eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
         boardRepository.delete(board);
     }
 
@@ -348,5 +371,39 @@ public class BoardService {
                 .pageNumber(board.getPageNumber())
                 .imageUrl(imageUrl)
                 .build();
+    }
+
+    public List<BoardResponse> searchBoard(Pageable pageable, Long cursorId, String word) {
+        List<Board> boards = boardRepository.searchBoard(word, cursorId, pageable);
+
+        return boards.stream()
+                .map(board -> mapToResponseDto(
+                        board,
+                        boardImageRepository.findAllById(board.getId()),
+                        interestService.getBoardInterests(board.getId())
+                ))
+                .toList();
+    }
+
+    @Transactional
+    public void updateUserProfileBoard(String personalId,List<BoardProfileUpdateRequest> requests) {
+        // BoardId 목록을 생성하여 한번에 조회
+        List<Long> boardIds = requests.stream()
+                .map(BoardProfileUpdateRequest::getBoardId)
+                .toList();
+
+        // 한번에 Board 엔티티들을 조회
+        List<Board> boards = boardRepository.findAllById(boardIds);
+
+        // 요청과 일치하는 Board를 찾고 업데이트
+        for (BoardProfileUpdateRequest request : requests) {
+            Board board = boards.stream()
+                    .filter(b -> b.getId().equals(request.getBoardId()))
+                    .filter(b -> b.getUser().getPersonalId().equals(personalId)) // 자신의 게시글만 수정
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Not found Board with Id : " + request.getBoardId()));
+
+            board.updateBoardLocation(request.getX(), request.getY(), request.getY(), request.getPageNumber());
+        }
     }
 }
