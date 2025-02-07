@@ -15,8 +15,8 @@ RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 RUN npm install --production
 
-# 6. 빌드된 파일 복사 (Jenkins에서 빌드된 `build/` 폴더가 존재해야 함)
-COPY build /app/build
+# 6. 빌드된 파일 복사 (Jenkins에서 빌드된 `dist/` 폴더가 존재해야 함)
+COPY dist /app/dist
 
 # 7. `serve` 패키지 설치 (빌드된 정적 파일 제공)
 RUN npm install -g serve
