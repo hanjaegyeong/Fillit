@@ -127,4 +127,16 @@ public class UserController {
         Pageable pageable = PageRequest.of(0,size);
         return ResponseEntity.ok(userService.searchUser(pageable, cursorId, word));
     }
+
+    @GetMapping("/duplicate/email")
+    public ResponseEntity<String> checkDuplicateEmail(@RequestBody DuplicateRequest request){
+        userService.checkDuplicateEmail(request.getInput());
+        return ResponseEntity.ok("This Email is available.");
+    }
+
+    @GetMapping("/duplicate/nickname")
+    public ResponseEntity<String> checkDuplicatePersonalId(@RequestBody DuplicateRequest request){
+        userService.checkDuplicatePersonalId(request.getInput());
+        return ResponseEntity.ok("This nickname is available.");
+    }
 }
