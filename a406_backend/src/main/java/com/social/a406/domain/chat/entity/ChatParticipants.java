@@ -24,7 +24,7 @@ public class ChatParticipants {
     private User user;
 
     @Column(nullable = false)
-    private Long unReadMessageCount = 0L;
+    private Long unreadMessageCount = 0L;
 
     @Builder
     public ChatParticipants(ChatRoom chatRoom, User user) {
@@ -32,12 +32,12 @@ public class ChatParticipants {
         this.user = user;
     }
 
-    public void increaseUnReadMessageCount () {
-        this.unReadMessageCount ++;
+    public void increaseUnreadMessageCount () {
+        this.unreadMessageCount ++;
     }
 
-    public void resetUnReadMessageCount () {
-        this.unReadMessageCount = 0L;
+    public void resetUnreadMessageCount () {
+        this.unreadMessageCount = 0L;
     }
 
 }
