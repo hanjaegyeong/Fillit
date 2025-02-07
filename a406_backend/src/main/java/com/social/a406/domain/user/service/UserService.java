@@ -70,7 +70,7 @@ public class UserService {
             throw new IllegalArgumentException("Login ID already exists");
         }
 
-        if (userRepository.existsByPersonalId(request.getPersonalId())) {
+        if (existsByPersonalId(request.getPersonalId())) {
             log.warn("Registration failed. personalId duplicate: {}", request.getPersonalId());
             throw new IllegalArgumentException("personalId duplicate");
         }
@@ -125,6 +125,10 @@ public class UserService {
     // 사용자 존재 여부 확인
     public boolean existsByEmail(String Email) {
         return userRepository.existsByEmail(Email);
+    }
+
+    public boolean existsByPersonalId(String personalId) {
+        return userRepository.existsByPersonalId(personalId);
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
@@ -332,7 +336,7 @@ public class UserService {
         );
 
         if(userEmail != userPersonalId){
-            throw new RuntimeException("Not matched email ans personalId");
+            throw new RuntimeException("Not matched email and personalId");
         }
         return userEmail;
     }
@@ -389,6 +393,18 @@ public class UserService {
             deleteProfileImageFromS3(user.getProfileImageUrl());
             String newProfileImageUrl = saveProfileImageAtS3(file);
             user.updateUserProfileImage(newProfileImageUrl);
+        }
+    }
+
+    public void checkDuplicateEmail(String email) {
+        if (existsByEmail(email)) {
+            throw new IllegalArgumentException("Somebody is already using this email.");
+        }
+    }
+
+    public void checkDuplicatePersonalId(String personalId) {
+        if (existsByPersonalId(personalId)) {
+            throw new IllegalArgumentException("This nickname is already taken.");
         }
     }
 }
