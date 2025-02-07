@@ -1,8 +1,9 @@
 package com.social.a406.domain.chat.controller;
 
+import com.social.a406.domain.chat.dto.ChatMessageDto;
+import com.social.a406.domain.chat.dto.ChatMessageListResponse;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
 import com.social.a406.domain.chat.dto.ChatRoomResponse;
-import com.social.a406.domain.chat.entity.ChatMessage;
 import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.user.entity.User;
@@ -25,27 +26,34 @@ public class ChatController {
 
     // 메세지 저장
     @PostMapping("/messages")
-    public ResponseEntity<ChatMessage> saveMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ChatMessageRequest request) {
+    public ResponseEntity<ChatMessageDto> saveMessage( // 나중엔 void로
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody ChatMessageRequest request) {
         String personalId = userDetails.getUsername();
-        ChatMessage message = chatService.saveMessageAndUpdateRoom(personalId, request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(chatService.saveMessageAndUpdateRoom(personalId, request));
     }
 
     //채팅방 입장 - 메세지 목록 가져오기
     @GetMapping("/rooms/messages")
-    public ResponseEntity<?> getMessagesByChatRoomId(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId) {
+    public ResponseEntity<?> getMessagesByChatRoomId(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Long chatRoomId,
+            @RequestParam(required = false) Long cursor) { // 30개씩 가져오기 cursor는 그 이후의 거부터 가져오는거 즉 첫번째 메세지는 cursor가 null 일 수도 있음
+
         // 접근권한 검증
         if(!chatService.isParticipantInChatRoom(userDetails.getUsername(), chatRoomId)){
             return ResponseEntity.badRequest().body("You do not have permission to access this chat room: " + userDetails.getUsername() + ", " + chatRoomId);
         }
         // 메세지 목록 가져오기
-        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoomId);
+        ChatMessageListResponse messages = chatService.getMessagesByChatRoomId(chatRoomId, cursor);
         return ResponseEntity.ok(messages);
     }
 
     //채팅방 입장 (프로필에서) - 채팅방 유무 검증 후 없으면 채팅방 생성하기
     @PostMapping("/rooms/messages")
-    public ResponseEntity<ChatRoom> getMessagesOnProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String otherPersonalId) {
+    public ResponseEntity<ChatRoomResponse> getMessagesOnProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String otherPersonalId) {
 
         String personalId = userDetails.getUsername();
         User user = chatService.findByPersonalId(personalId)
@@ -61,14 +69,14 @@ public class ChatController {
         if(!chatRoom.isPresent()) { // 비어있으면 채팅방 생성
             chatRoom = Optional.ofNullable(chatService.createChatRoom(userId, otherId));
         }
-        // 채팅메세지 목록 보여주기
-//        List<ChatMessage> messages = chatService.getMessagesByChatRoomId(chatRoom.get().getChatRoomId());
-        return ResponseEntity.status(201).body(chatRoom.get());
+
+        return ResponseEntity.ok(chatService.convertToChatRoomResponse(chatRoom.get(), userId,other)); // dto로 mapping 해서 반환
     }
 
     // 채팅방 목록 가져오기
     @GetMapping("/rooms/list")
-    public ResponseEntity<List<ChatRoomResponse>> getChatRoomsForUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<ChatRoomResponse>> getChatRoomsForUser(
+            @AuthenticationPrincipal UserDetails userDetails) {
         User user = chatService.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
         String userId = user.getId();
