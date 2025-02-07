@@ -16,6 +16,7 @@ interface HeaderProps {
   onSearch?: (term: string) => void;
   searchPlaceholder?: string;
   onMenuClick?: () => void;
+  onRegistClick?: () => void;
 }
 
 const Header = ({
@@ -28,6 +29,7 @@ const Header = ({
   onSearch,
   searchPlaceholder = 'Search',
   onMenuClick,
+  onRegistClick,
 }: HeaderProps) => {
   return (
     <header className="fixed w-full top-0 h-[3.6rem] bg-white border-b flex justify-between items-center px-4 z-10">
@@ -51,7 +53,7 @@ const Header = ({
       <div className="flex justify-end">
         {right === 'notification' && <NotificationButton />}
         {right === 'menu' && <MenuTabButton onClick={onMenuClick} />}
-        {right === 'regist' && <RegistButton />}
+        {right === 'regist' && <RegistButton onClick={onRegistClick} />}
       </div>
     </header>
   );
