@@ -1,8 +1,12 @@
 import { RegistIcon } from '@/assets/assets';
 
-const RegistButton = () => {
+interface RegistButtonProps {
+  onClick?: () => void;
+}
+
+const RegistButton = ({ onClick }: RegistButtonProps) => {
   return (
-    <button>
+    <button onClick={onClick}>
       <img src={RegistIcon} alt="regist icon" />
     </button>
   );

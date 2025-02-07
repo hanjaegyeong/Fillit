@@ -2,6 +2,7 @@ import AiFilImg from '@/assets/images/ai-fil-img.png';
 import AiFil from '@/assets/images/ai-fil.png';
 import SlideUpModal from '../Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export interface Message {
   id: number;
@@ -69,13 +70,20 @@ const AiFilButton = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage('');
   };
+  const { pathname } = useLocation();
 
   return (
     <>
-      <button className="fixed bottom-44" onClick={() => setIsOpen(true)}>
+      <button
+        className={
+          pathname.includes('newarticle') || pathname.includes('edit')
+            ? 'w-full max-w-[600px] px-4 fixed bottom-28'
+            : 'fixed bottom-44'
+        }
+        onClick={() => setIsOpen(true)}
+      >
         <img src={AiFilImg} alt="ai-fil-img" />
       </button>
-
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-xl font-bold mb-4">AI Fil</h2>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-340px)] z-50 hide-scrollbar">

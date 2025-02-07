@@ -2,6 +2,7 @@ import { Keyword } from '@/assets/assets';
 import Modal from './Modal';
 import BasicButton from '../Button/BasicButton';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface KeywordModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export const KeywordModal = ({
 }: KeywordModalProps) => {
   const [inputValue, setInputValue] = useState('');
   const isValidKeyWord = inputValue.length >= 1 && inputValue.length <= 8;
+  const navigate = useNavigate();
 
   const handleClose = () => {
     setInputValue('');
@@ -30,7 +32,7 @@ export const KeywordModal = ({
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="big">
-      <div>
+      <div className="m-10">
         <div className="flex justify-center items-center pt-12 ">
           <img src={Keyword} alt="keyword" />
         </div>
@@ -56,7 +58,10 @@ export const KeywordModal = ({
           <BasicButton text="Cancel" onClick={handleClose} />
           <BasicButton
             text="Confirm"
-            onClick={() => handleKeywordConfirm(inputValue)}
+            onClick={() => {
+              handleKeywordConfirm(inputValue);
+              navigate('/');
+            }}
             disabled={!isValidKeyWord}
           />
         </div>
