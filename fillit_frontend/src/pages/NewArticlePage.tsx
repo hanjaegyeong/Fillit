@@ -4,11 +4,13 @@ import ArticleNavBar from '@/components/common/NavBar/ArticleNavBar';
 import { useState, useRef } from 'react';
 import AiFilButton from '@/components/common/Button/AiFilButton';
 import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
+import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 
 const NewArticlePage = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
+  const [isKeywordModalOpen, setIsKeywordModalOpen] = useState<boolean>(false);
 
   const handleAddPhoto = () => {
     if (fileInputRef.current) {
@@ -31,7 +33,7 @@ const NewArticlePage = () => {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleAddTag = () => {
+  const handleOpenTagModal = () => {
     setIsTagModalOpen(true);
   };
 
@@ -39,18 +41,30 @@ const NewArticlePage = () => {
     setIsTagModalOpen(false);
   };
 
+  const handleOpenKeywordModal = () => {
+    setIsKeywordModalOpen(true);
+  };
+
+  const handleCloseKeywordModal = () => {
+    setIsKeywordModalOpen(false);
+  };
+
   return (
     <div className="container-header">
-      <Header left="back" right="regist" />
-      <div className="h-full overflow-auto pb-[6rem]">
+      <Header
+        left="back"
+        right="regist"
+        onRegistClick={handleOpenKeywordModal}
+      />
+      <div className="h-4/5 w-full max-w-[600px] overflow-auto botton-[10rem]">
         {/* 배경 종이 이미지 */}
         <img
           src={NewArticleImg}
-          className="absolute inset-0 w-full h-full object-cover origin-top"
+          className="absolute h-full w-full max-w-[600px] top-0 object-cover origin-top"
           alt="paper background"
         />
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
-        <div className="relative z-10 p-20">
+        <div className="relative m-4 z-10 p-20">
           <textarea
             className="w-full min-h-[40vh] text-lg bg-transparent outline-none"
             placeholder="What's happening?"
@@ -72,15 +86,28 @@ const NewArticlePage = () => {
             </div>
           )}
         </div>
+        <div className="">
+          <AiFilButton />
+        </div>
       </div>
-      <AiFilButton />
-      <ArticleNavBar onAddPhoto={handleAddPhoto} onAddTag={handleAddTag} />
+      <ArticleNavBar
+        onAddPhoto={handleAddPhoto}
+        onAddTag={handleOpenTagModal}
+      />
 
       {isTagModalOpen && (
         <TagSelectModal
           isOpen={isTagModalOpen}
           onClose={handleCloseTagModal}
           onConfirm={() => console.log('Tag Selected!')} // 선택 동작을 추가 가능
+        />
+      )}
+
+      {isKeywordModalOpen && (
+        <KeywordModal
+          isOpen={isKeywordModalOpen}
+          onClose={handleCloseKeywordModal}
+          onConfirm={() => console.log('Keyword Selected!')} // 선택 동작을 추가 가능
         />
       )}
 
