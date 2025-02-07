@@ -6,7 +6,7 @@ interface NavStore {
 }
 
 const useNavStore = create<NavStore>((set) => ({
-  activeNavItem: null,
+  activeNavItem: 'home',
   setActiveNavItem: (item) => set({ activeNavItem: item }),
 }));
 
