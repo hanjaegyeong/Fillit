@@ -18,12 +18,12 @@ const steps = [
     inputType: 'search',
   },
   {
-    message1: 'Just sent you an email',
-    message2: '—check it out!" 📧✨',
+    message1: 'Yo, I just shot you an email',
+    message2: '—peep it and drop in the code! 📧🔑',
     message3: '',
     placeholder: '',
     rule: '',
-    inputType: 'resend',
+    inputType: 'check',
   },
   {
     message1: 'Cool, found your account',
@@ -93,10 +93,15 @@ const FindPasswordPage = () => {
             </div>
           </>
         )}
-        {steps[step].inputType === 'resend' && (
-          <div className="flex gap-10">
-            <BasicButton text="Resend" onClick={() => setStep(2)} />
-          </div>
+        {steps[step].inputType === 'check' && (
+          <>
+            <div>
+              <BasicInput placeholder="Enter your code" />
+            </div>
+            <div className=" flex pt-2 justify-center items-center">
+              <BasicButton text="Next" onClick={() => setStep(2)} />
+            </div>
+          </>
         )}
         {steps[step].inputType === 'password' && (
           <>
@@ -109,7 +114,7 @@ const FindPasswordPage = () => {
           </>
         )}
         <p className="flex justify-start text-xs">{steps[step].rule}</p>
-        {steps[step].inputType !== 'resend' && (
+        {steps[step].inputType !== 'check' && (
           <div className="flex flex-row pt-10 gap-10">
             <BasicButton text="Back" onClick={handleBack} />
 

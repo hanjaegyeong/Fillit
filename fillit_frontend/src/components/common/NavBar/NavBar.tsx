@@ -54,16 +54,21 @@ const navItems = [
 const NavBar = () => {
   const { pathname } = useLocation();
 
-  return pathname.includes('edit') ||
+  if (
+    pathname.includes('edit') ||
     pathname.includes('customize') ||
-    pathname.includes('newarticle') ? (
-    <></>
-  ) : (
+    pathname.includes('newarticle')
+  ) {
+    return null;
+  }
+
+  return (
     <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">
       <div className="flex justify-around">
         {navItems.map((item) => (
           <NavBarItem
             key={item.navItemId}
+            navItemId={item.navItemId}
             inactiveIcon={item.inactiveIcon}
             activeIcon={item.activeIcon}
             alt={item.alt}
