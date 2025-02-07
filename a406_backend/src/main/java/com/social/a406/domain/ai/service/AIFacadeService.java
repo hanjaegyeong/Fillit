@@ -6,6 +6,9 @@ import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.commentReply.dto.ReplyRequest;
+import com.social.a406.domain.commentReply.dto.ReplyResponse;
+import com.social.a406.domain.commentReply.service.ReplyService;
 import com.social.a406.domain.interest.dto.InterestResponse;
 import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.service.UserService;
@@ -29,6 +32,7 @@ public class AIFacadeService {
     private final YoutubeService youtubeService;
     private final FlickrService flickrService;
     private final InterestService interestService;
+    private final ReplyService replyService;
 
     /**
      * 랜덤 방식으로 AI 게시글 생성
@@ -141,5 +145,23 @@ public class AIFacadeService {
         String keyword = parts[1].trim(); // 키워드
 
         return new String[]{updatedContent, keyword};
+    }
+
+    public ReplyResponse generateAndSaveCommentReply(Long originId, Long commentId, String personalId, boolean isBoard) {
+        String content = null;
+        String origin = null;
+        if(isBoard){
+            content = commentService.getComment(commentId).getContent();
+            origin = boardService.getBoardContentById(originId);
+        }else{
+            content = replyService.getReply(commentId);
+            origin = commentService.getComment(originId).getContent();
+        }
+        String prompt = aiService.createCommentReplyPrompt(origin, content, personalId);
+        String generateContent = aiService.generateContent(prompt);
+        ReplyRequest replyRequest = ReplyRequest.builder()
+                .content(generateContent)
+                .build();
+        return replyService.saveReply(commentId, replyRequest, personalId);
     }
 }

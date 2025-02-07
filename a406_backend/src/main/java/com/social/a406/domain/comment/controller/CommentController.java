@@ -1,5 +1,6 @@
 package com.social.a406.domain.comment.controller;
 
+import com.social.a406.domain.ai.scheduler.AiScheduler;
 import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.service.CommentService;
@@ -17,14 +18,21 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final AiScheduler aiScheduler;
 
     @PostMapping
     public ResponseEntity<CommentResponse> addComment(
             @PathVariable Long boardId,
             @RequestBody CommentRequest commentRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(201).body(
-                commentService.addComment(boardId, commentRequest, userDetails));
+        CommentResponse response = commentService.addComment(boardId, commentRequest, userDetails);
+
+        // ai 대댓글 자동 생성
+        if(commentService.isAIAndRandomCreate(boardId)) {
+            aiScheduler.scheduleCommentReplyCreationAtComment(response.getCommentId());
+        }
+
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
