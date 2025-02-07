@@ -78,8 +78,8 @@ pipeline {
         }
         stage('Deploy Nginx to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/nginx-deployment.yaml'
-                sh 'kubectl apply -f k8s/nginx-service.yaml'
+                sh 'kubectl apply -f a406_backend/k8s/nginx-deployment.yaml'
+                sh 'kubectl apply -f a406_backend/k8s/nginx-service.yaml'
             }
         }
     }
