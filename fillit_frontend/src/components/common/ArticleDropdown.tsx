@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { DeleteLogoutModal } from './Modal/DeleteLogoutModal';
+import { useNavigate } from 'react-router-dom';
 
 interface ArticleDropdownProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
+const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleArticleEdit = () => {
     console.log('게시글 수정');
@@ -44,12 +46,24 @@ export const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
         <ul className="py-[0.5rem] text-sm text-gray-700 dark:text-gray-200">
           <>
             <li>
-              <button onClick={handleArticleEdit} className={menuItemClass}>
+              <button
+                onClick={() => {
+                  navigate('/newarticle');
+                  handleArticleEdit;
+                }}
+                className={menuItemClass}
+              >
                 Edit Post
               </button>
             </li>
             <li>
-              <button onClick={handleDeleteArticle} className={dangerItemClass}>
+              <button
+                onClick={() => {
+                  navigate('/');
+                  handleArticleEdit;
+                }}
+                className={dangerItemClass}
+              >
                 Delete
               </button>
             </li>
@@ -66,3 +80,5 @@ export const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
     </>
   );
 };
+
+export default ArticleDropdown;
