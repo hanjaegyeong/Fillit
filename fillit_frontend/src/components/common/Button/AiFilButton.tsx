@@ -130,5 +130,5 @@ const AiFilButton = () => {
     </>
   );
 };
-console.log('여기');
+
 export default AiFilButton;
