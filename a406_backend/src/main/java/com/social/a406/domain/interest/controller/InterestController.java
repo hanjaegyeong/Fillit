@@ -1,5 +1,6 @@
 package com.social.a406.domain.interest.controller;
 
+import com.social.a406.domain.interest.dto.InterestRequest;
 import com.social.a406.domain.interest.dto.InterestResponse;
 import com.social.a406.domain.interest.service.InterestService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class InterestController {
     private final InterestService interestService;
 
     @PostMapping
-    public ResponseEntity<String> addUserInterests(@AuthenticationPrincipal UserDetails userDetails, @RequestBody List<String> interestContents) {
-        interestService.addUserInterests(userDetails.getUsername(), interestContents);
+    public ResponseEntity<String> addUserInterests(@RequestBody InterestRequest request) {
+        interestService.addUserInterests(request.getPersonalId(), request.getInterestContents());
         return ResponseEntity.status(201).body("Success to add user interests");
     }
 
