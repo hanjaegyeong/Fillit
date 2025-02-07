@@ -3,6 +3,8 @@ package com.social.a406.domain.notification.service;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.repository.CommentRepository;
 import com.social.a406.domain.commentReply.entity.Reply;
+import com.social.a406.domain.like.entity.BoardLike;
+import com.social.a406.domain.like.entity.CommentLike;
 import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.repository.NotificationRepository;
@@ -129,11 +131,34 @@ public class NotificationService {
     }
 
     public void generateVoiceReplyNotification(VoiceReply voiceReply){
-        // 음성 답장
         User receiver = voiceReply.getVoice().getUser(); // 음성 스토리 작성자
         User sender = voiceReply.getUser(); // 음성 스토리 답장 작성자
         Long referenceId = voiceReply.getVoice().getId();
         createNotification(receiver, sender, NotificationType.VOICEREPLY, referenceId);
         System.out.println("Generate notification about voice reply");
+    }
+
+    public void generateBoardLikeNotification(BoardLike like) {
+        User receiver = like.getBoard().getUser(); // 게시글 작성자
+        User sender = like.getUser(); // 댓글 작성자
+        Long referenceId = like.getBoard().getId();
+        createNotification(receiver, sender, NotificationType.BOARDLIKE, referenceId);
+        System.out.println("Generate notification about board like");
+    }
+
+    public void generateCommentLikeNotification(CommentLike like) {
+        User receiver = like.getComment().getUser(); // 게시글 작성자
+        User sender = like.getUser(); // 댓글 작성자
+        Long referenceId = like.getComment().getId();
+        createNotification(receiver, sender, NotificationType.COMMENTLIKE, referenceId);
+        System.out.println("Generate notification about comment like");
+    }
+
+    public void generateChatNotification(CommentLike like) {
+        User receiver = like.getComment().getUser(); // 게시글 작성자
+        User sender = like.getUser(); // 댓글 작성자
+        Long referenceId = like.getComment().getId();
+        createNotification(receiver, sender, NotificationType.COMMENTLIKE, referenceId);
+        System.out.println("Generate notification about chat");
     }
 }
