@@ -5,6 +5,7 @@ import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.like.dto.LikedUserResponse;
 import com.social.a406.domain.like.entity.BoardLike;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
+import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class BoardLikeService {
     private final BoardLikeRepository boardLikeRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void addLike(String personalId, Long boardId) {
@@ -36,6 +38,8 @@ public class BoardLikeService {
 
         BoardLike like = new BoardLike(user, board);
         boardLikeRepository.save(like);
+
+        notificationService.generateBoardLikeNotification(like);
 
         board.increaseLikeCount();
     }

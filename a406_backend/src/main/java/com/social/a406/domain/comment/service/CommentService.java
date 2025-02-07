@@ -98,13 +98,6 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse getComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("Not found comment"));
-        return mapToResponse(comment);
-    }
-
-    @Transactional
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
