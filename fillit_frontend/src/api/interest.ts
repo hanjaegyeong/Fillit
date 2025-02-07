@@ -1,6 +1,6 @@
 import axiosInstance from '@/api/axiosInstance';
 
-// 관심사 추가
+/* 관심사 추가 */
 export const postInterest = async (
   personalId: string,
   interestContents: string[]
