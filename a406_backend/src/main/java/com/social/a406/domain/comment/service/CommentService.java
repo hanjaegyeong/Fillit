@@ -7,7 +7,6 @@ import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.repository.CommentRepository;
 import com.social.a406.domain.commentReply.repository.ReplyRepository;
-import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +45,7 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
-        generateCommentNotification(savedComment); // 게시글 댓글 알림 생성
+        notificationService.generateCommentNotification(savedComment); // 게시글 댓글 알림 생성
 
         return mapToResponse(savedComment);
     }
@@ -67,7 +67,7 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
-        generateCommentNotification(savedComment); // 게시글 댓글 알림 생성
+        notificationService.generateCommentNotification(savedComment); // 게시글 댓글 알림 생성
 
         return mapToResponse(savedComment);
     }
@@ -76,6 +76,20 @@ public class CommentService {
     public List<CommentResponse> getCommentsByBoard(Long boardId) {
         List<Comment> comments = commentRepository.findByBoard_IdOrderByCreatedAtAsc(boardId);
         return comments.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CommentResponse getComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        return mapToResponse(comment);
+    }
+
+    @Transactional
+    public Long getBoardIdByCommentId(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        return comment.getBoard().getId();
     }
 
     @Transactional
@@ -134,13 +148,30 @@ public class CommentService {
                 .build();
     }
 
-    private void generateCommentNotification(Comment comment){
-        User receiver = comment.getBoard().getUser(); // 게시글 작성자
-        User sender = comment.getUser(); // 댓글 작성자
+    // AI의 게시글인지 확인 후 70% 확률로 생성
+    public boolean isAIAndRandomCreate(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+        User user = board.getUser();
+        if(isAiUser(user)){
+            if(ThreadLocalRandom.current().nextInt(100) < 70){
+                return true;
+            }else { return false; }
+        }else{
+            System.out.println("Is not ai user's board");
+            return false;
+        }
+    }
 
-        Long referenceId = comment.getBoard().getId(); // 게시글의 id -> 알림 클릭시 게시글로 이동
+    public boolean isAiUser(User user){
+        if(user.getMainPrompt() != null) return true;
+        else return false;
+    }
 
-        notificationService.createNotification(receiver,sender, NotificationType.COMMENT,referenceId);
-        System.out.println("Generate notification about comment");
+    @Transactional
+    public String getPersonalIdById(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        return comment.getUser().getPersonalId();
     }
 }

@@ -6,7 +6,6 @@ import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.commentReply.repository.ReplyRepository;
-import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,14 +28,12 @@ public class ReplyService {
 
     // 대댓글 저장
     @Transactional
-    public ReplyResponse saveReply(Long commentId, ReplyRequest request, UserDetails userDetails) {
-        User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + userDetails.getUsername()));
+    public ReplyResponse saveReply(Long commentId, ReplyRequest request, String personalId) {
+        User user = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with commentId: " + commentId));
-
-        System.out.println(comment);
 
         Reply reply = Reply.builder()
                 .comment(comment)
@@ -44,7 +42,7 @@ public class ReplyService {
                 .build();
 
         Reply savedReply = replyRepository.save(reply);
-        generateCommentReplyNotification(savedReply);
+        notificationService.generateCommentReplyNotification(savedReply, commentId);
         return mapToResponse(savedReply);
     }
 
@@ -86,6 +84,19 @@ public class ReplyService {
         return replys.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    public String getReply(Long replyId) {
+        Reply reply = replyRepository.findById(replyId).orElseThrow(
+                () -> new IllegalArgumentException("Not found reply"));
+        return reply.getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public Comment getCommentByReplyId(Long replyId){
+        Reply reply = replyRepository.findById(replyId).orElseThrow(
+                () -> new IllegalArgumentException("Not found reply"));
+        return reply.getComment();
+    }
+
     public ReplyResponse mapToResponse(Reply reply){
         return ReplyResponse.builder()
                 .replyId(reply.getId())
@@ -98,25 +109,24 @@ public class ReplyService {
                 .build();
     }
 
-    private void generateCommentReplyNotification(Reply reply) {
-        User boardReceiver = reply.getComment().getBoard().getUser(); // 대댓글을 단 게시글 작성자
-        User commentReceiver = reply.getComment().getUser(); // 대댓글을 단 댓글 작성자
-        User sender = reply.getUser(); // 대댓글 작성자
-
-        Long boardReferenceId = reply.getComment().getBoard().getId(); // 게시글의 id -> 알림 클릭 시 게시글로 이동
-
-        // 댓글 작성자와 게시글 작성자가 동일한 경우 하나의 알림만 생성
-        createNotification(boardReceiver, sender, boardReferenceId);
-
-        // 댓글 작성자와 게시글 작성자가 다른 경우 두 개의 알림 생성
-        if (!boardReceiver.equals(commentReceiver)) {
-            createNotification(commentReceiver, sender, boardReferenceId);
+    // AI의 댓글인지 확인 후 70% 확률로 생성
+    public boolean isAIAndRandomCreate(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Not found comment"));
+        User user = comment.getUser();
+        if(isAiUser(user)){
+            if(ThreadLocalRandom.current().nextInt(100) < 70){
+                return true;
+            }else { return false; }
+        }else{
+            System.out.println("Is not ai user's comment");
+            return false;
         }
-        System.out.println("Generate notification about comment reply");
     }
 
-    private void createNotification(User receiver, User sender, Long boardReferenceId) {
-        notificationService.createNotification(receiver, sender, NotificationType.RECOMMENT, boardReferenceId);
+    // ai 유저인지 확인
+    public boolean isAiUser(User user){
+        if(user.getMainPrompt() != null) return true;
+        else return false;
     }
-
 }
