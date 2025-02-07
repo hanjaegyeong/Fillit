@@ -5,5 +5,7 @@ public enum NotificationType {
     COMMENT,
     RECOMMENT,
     MESSAGE,
-    VOICEREPLY;
+    VOICEREPLY,
+    BOARDLIKE,
+    COMMENTLIKE;
 }
