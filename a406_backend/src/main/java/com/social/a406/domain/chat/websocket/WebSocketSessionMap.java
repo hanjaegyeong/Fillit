@@ -4,18 +4,18 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // Key가 chatRoomId고 value가 webSocketSessionList인 Map
 @Getter
 @Component
 public class WebSocketSessionMap {
 
-    private final HashMap<Long, WebSocketSessionSet> webSocketSetHashMap;
+    private final ConcurrentHashMap<Long, WebSocketSessionSet> webSocketSetHashMap;
 
-    public WebSocketSessionMap() { this.webSocketSetHashMap = new HashMap<>(); }
+    public WebSocketSessionMap() { this.webSocketSetHashMap = new ConcurrentHashMap<>(); }
 
     // 세션을 이용해 HashMap의 Key(ChatRoomId)를 가져오는 메서드 -> 채팅방 연결끊을때 쓰는거
     public Long getKeyFromSession(WebSocketSession session){

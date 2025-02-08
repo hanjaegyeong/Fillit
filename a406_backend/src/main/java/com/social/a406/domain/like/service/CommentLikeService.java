@@ -5,6 +5,7 @@ import com.social.a406.domain.comment.repository.CommentRepository;
 import com.social.a406.domain.like.dto.LikedUserResponse;
 import com.social.a406.domain.like.entity.CommentLike;
 import com.social.a406.domain.like.repository.CommentLikeRepository;
+import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void addLike(String personalId, Long commentId) {
@@ -36,6 +38,8 @@ public class CommentLikeService {
 
         CommentLike like = new CommentLike(comment, user);
         commentLikeRepository.save(like);
+
+        notificationService.generateCommentLikeNotification(like);
 
         comment.increaseLikeCount();
     }

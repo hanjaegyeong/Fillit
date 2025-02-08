@@ -2,7 +2,12 @@ package com.social.a406.domain.chat.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
+import com.social.a406.domain.chat.event.MessageCreatedEvent;
+import com.social.a406.domain.chat.event.UnreadMessageEvent;
 import com.social.a406.domain.chat.service.ChatService;
+import com.social.a406.domain.chat.service.ChatWebSocketService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -10,26 +15,28 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-//    private final Map<Long, WebSocketSessionList> webSocketListHashMap;
+
     private final WebSocketSessionMap webSocketSessionMap;
     private final ChatService chatService;
+    private final ChatWebSocketService chatWebSocketService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ChatWebSocketHandler(WebSocketSessionMap webSocketSessionMap, ChatService chatService) {
-        this.webSocketSessionMap = webSocketSessionMap;
-        this.chatService = chatService;
-    }
 
-    public WebSocketSessionMap getWebSocketSessionMap() {
-        return webSocketSessionMap;
-    }
 
     // after
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
+        String personalId = (String) session.getAttributes().get("personalId");
+
+        // 해당 채팅방의 메세지 전부 읽음처리
+        chatWebSocketService.readAllMessage(chatRoomId, personalId);
 
         // chatRoomId로 채팅방 유무 확인후 없으면 생성 후 추가
         webSocketSessionMap.addSessionToChatRoom(chatRoomId, session);
@@ -69,29 +76,28 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
 
     private void sendMessageToChatRoom(String personalId, ChatMessageRequest chatMessageRequest) throws IOException {
-//        WebSocketSessionSet sessionList = webSocketSessionMap.get(chatMessageRequest.getChatRoomId());
-        WebSocketSessionSet sessionSet = webSocketSessionMap.getWebSocketSet(chatMessageRequest.getChatRoomId());
-
-        // 채팅 메세지 저장
-        chatService. saveMessageAndUpdateRoom(personalId, chatMessageRequest);
+        Long chatRoomId = chatMessageRequest.getChatRoomId();
+        WebSocketSessionSet sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
 
         // 메세지 broadCast
         if (sessionSet != null) {
             TextMessage textMessage = new TextMessage(chatMessageRequest.getMessageContent());
+            List<String> personalIdList = new ArrayList<>(); // 현재 채팅방에 접속중인 personalId 목록
             for (WebSocketSession session : sessionSet.getWebSocketSessions()) {
                 if (session.isOpen()) {
                     session.sendMessage(textMessage);
+                    personalIdList.add((String) session.getAttributes().get(personalId)); // 접속중인 personalId 추가
                 }
-            }
+            }// end of for
+
+            // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
+            eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
+            eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList));
+
         }
     }
 
     private void leaveChatRoom(String personalId, WebSocketSession session, Long chatRoomId) {
-//        Set<WebSocketSession> sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
-
-        // 나갈 때 마지막 메시지 읽음 처리
-//        chatService.updateLastReadMessage(personalId, chatRoomId);
-
         // 세션삭제 메서드
         webSocketSessionMap.removeSession(chatRoomId, session);
 
