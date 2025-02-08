@@ -73,6 +73,8 @@ public class BoardService {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
         Board savedBoard = boardRepository.save(board);
+        eventPublisher.publishEvent(new BoardCreatedEvent(this, savedBoard)); // 이벤트발행
+
 
         // 이미지가 있을 경우 BoardImage에 저장
         if (imageUrl != null && !imageUrl.isEmpty()) {

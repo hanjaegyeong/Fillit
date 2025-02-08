@@ -17,6 +17,6 @@ public class ChatRoomResponse {
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;
 
-    private Long unReadMessageCount;
+    private Long unreadMessageCount;
 
 }

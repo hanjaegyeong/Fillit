@@ -6,9 +6,9 @@ import com.social.a406.domain.chat.dto.ChatMessageRequest;
 import com.social.a406.domain.chat.dto.ChatRoomResponse;
 import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.service.ChatService;
+import com.social.a406.domain.chat.service.ChatWebSocketService;
 import com.social.a406.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +23,8 @@ import java.util.Optional;
 public class ChatController {
 
     private final ChatService chatService;
+    private final ChatWebSocketService chatWebSocketService;
+
 
     // 메세지 저장
     @PostMapping("/messages")
@@ -30,7 +32,7 @@ public class ChatController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody ChatMessageRequest request) {
         String personalId = userDetails.getUsername();
-        return ResponseEntity.ok(chatService.saveMessageAndUpdateRoom(personalId, request));
+        return ResponseEntity.ok(chatWebSocketService.saveMessage(personalId, request));
     }
 
     //채팅방 입장 - 메세지 목록 가져오기
@@ -83,6 +85,10 @@ public class ChatController {
 
         List<ChatRoomResponse> chatRooms = chatService.getChatRoomsForUser(userId);
         return ResponseEntity.ok(chatRooms);
+        /*
+                return ResponseEntity.status(201).body(chatRoom.get());
+         */
+
     }
 
 //    // 마지막 메세지 읽음처리

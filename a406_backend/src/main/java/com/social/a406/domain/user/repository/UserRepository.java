@@ -34,4 +34,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> searchUsers(@Param("word") String word,
                            @Param("cursorPersonalId") String cursorPersonalId,
                            Pageable pageable);
+
+    @Query("""
+    SELECT u.id FROM User u
+    WHERE u.personalId IN :personalIdList
+    """)
+    List<String> findUserIdsByPersonalIds(@Param("personalIdList") List<String> personalIdList);
 }
