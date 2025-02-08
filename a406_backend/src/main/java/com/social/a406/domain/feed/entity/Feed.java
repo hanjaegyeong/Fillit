@@ -16,7 +16,7 @@ public class Feed {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long feedId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -28,18 +28,14 @@ public class Feed {
 
     private Boolean isRecommended = false;
 
-    private LocalDateTime addedAt;
+    private LocalDateTime createdAt;
 
     @Builder
-    public Feed(User user, Board board, Boolean isRecommended, LocalDateTime addedAt) {
+    public Feed(User user, Board board, Boolean isRecommended, LocalDateTime createdAt) {
         this.user = user;
         this.board = board;
         this.isRecommended = isRecommended;
-        this.addedAt = addedAt;
+        this.createdAt = createdAt;
     }
 
-    public void updateFeed(Board board, LocalDateTime addedAt) {
-        this.board = board;
-        this.addedAt = addedAt;
-    }
 }
