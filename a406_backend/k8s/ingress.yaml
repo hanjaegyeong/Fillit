@@ -11,8 +11,8 @@ spec:
   tls:
     - hosts:
         - fillit.kro.kr
-      # cert-manager가 발급한 인증서와 키가 저장될 Secret 이름
-      secretName: fillit-tls
+      # cert-manager가 발급한 인증서와 키가 저장될 Secret 이름 - 실제 저장이 fillit-tls-qpr6s로 이루어져 변경
+      secretName: fillit-tls-qpr6s
   rules:
     - host: fillit.kro.kr
       http:
