@@ -406,4 +406,14 @@ public class BoardService {
             board.updateBoardLocation(request.getX(), request.getY(), request.getY(), request.getPageNumber());
         }
     }
+
+    @Transactional
+    public BoardImage findFirstByBoardIdOrderByIdAsc(Long boardId){
+       BoardImage boardImage = boardImageRepository.findFirstByBoardIdOrderByIdAsc(boardId)
+               .orElseThrow(() -> new IllegalArgumentException("Not found BoardImage with Id : " + boardId));
+
+       return boardImage;
+    }
+
+
 }
