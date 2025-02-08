@@ -4,6 +4,7 @@ interface BasicButtonProps {
   width?: string;
   height?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 const BasicButton = ({
@@ -12,12 +13,13 @@ const BasicButton = ({
   width = '110px',
   height = '40px',
   disabled = false,
+  className,
 }: BasicButtonProps) => {
   return (
     <button
       className={`from-white to-transparent p-[4px] rounded-[16px] ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
-      }`}
+      } ${className || ''}`}
       onClick={onClick}
       style={{ width, height }}
       disabled={disabled}
