@@ -12,4 +12,4 @@ spec:
     solvers:
       - http01:
           ingress:
-            class: nginx             # 사용 중인 Ingress Controller의 클래스 (보통 "nginx")
+            class: traefik             # 사용 중인 Ingress Controller의 클래스 (보통 "nginx")
