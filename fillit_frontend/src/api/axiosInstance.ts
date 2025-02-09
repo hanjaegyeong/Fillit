@@ -39,12 +39,6 @@ axiosInstance.interceptors.response.use(
     // 콘솔 추가 부분 '[API Response Error]', 이후 제거거
     console.error('[API 응답 오류]', error);
 
-    const status = error?.response?.status;
-
-    if (status === 400) {
-      window.location.replace('/login');
-    }
-
     throw error;
   }
 );

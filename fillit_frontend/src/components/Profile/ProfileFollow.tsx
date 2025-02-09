@@ -7,8 +7,8 @@ interface ProfileFollowProps {
 }
 
 const ProfileFollow = ({
-  followersCount = 164,
-  followingCount = 795,
+  followersCount,
+  followingCount,
   personalId,
 }: ProfileFollowProps) => {
   const navigate = useNavigate();
