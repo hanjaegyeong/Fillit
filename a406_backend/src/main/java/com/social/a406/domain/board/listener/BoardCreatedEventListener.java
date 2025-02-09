@@ -7,20 +7,18 @@ import com.social.a406.domain.feed.repository.FeedRepository;
 import com.social.a406.domain.follow.entity.Follow;
 import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.user.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class BoardCreatedEventListener {
 
-    @Autowired
-    private FollowRepository followRepository;
-
-    @Autowired
-    private FeedRepository feedRepository;
+    private final FollowRepository followRepository;
+    private final FeedRepository feedRepository;
 
     @EventListener
     public void handleBoardCreatedEvent(BoardCreatedEvent event) {
