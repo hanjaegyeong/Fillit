@@ -1,5 +1,6 @@
 package com.social.a406.domain.oauth.controller;
 
+import com.social.a406.domain.oauth.dto.OauthLoginResponse;
 import com.social.a406.domain.oauth.dto.OauthResponse;
 import com.social.a406.domain.oauth.dto.OauthUserInfo;
 import com.social.a406.domain.oauth.service.GoogleOauthService;
@@ -32,7 +33,7 @@ public class OauthController {
     private int refreshTokenMaxage;
 
     @PostMapping("/login")
-    public ResponseEntity<String> SocialLoginUser(@RequestBody SocialLoginRequest socialLoginRequest) {
+    public ResponseEntity<?> SocialLoginUser(@RequestBody SocialLoginRequest socialLoginRequest) {
         try {
             Map<String, String> tokens = oauthService.socialLogin(socialLoginRequest);
 
@@ -43,10 +44,14 @@ public class OauthController {
             // Refresh Token은 쿠키에 세팅
             ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), refreshTokenMaxage);
 
+            OauthLoginResponse response = OauthLoginResponse.builder()
+                    .personalId(tokens.get("personalId"))
+                    .accessToken(tokens.get("accessToken"))
+                    .build();
             return ResponseEntity.ok()
                     .headers(headers)
                     .header("Set-Cookie", refreshTokenCookie.toString())
-                    .body("Login successful");
+                    .body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
