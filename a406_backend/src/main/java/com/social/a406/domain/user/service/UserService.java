@@ -146,6 +146,7 @@ public class UserService {
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
+        tokens.put("personalId", userDetails.getUsername());
 
         return tokens;
     }
