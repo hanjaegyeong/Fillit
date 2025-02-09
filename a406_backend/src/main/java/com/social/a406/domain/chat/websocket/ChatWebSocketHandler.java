@@ -86,13 +86,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession session : sessionSet.getWebSocketSessions()) {
                 if (session.isOpen()) {
                     session.sendMessage(textMessage);
-                    personalIdList.add((String) session.getAttributes().get(personalId)); // 접속중인 personalId 추가
+                    personalIdList.add((String) session.getAttributes().get("personalId")); // 접속중인 personalId 추가
                 }
             }// end of for
 
             // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
             eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
             eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList));
+            System.out.println("personalIdList: "+personalIdList);
 
         }
     }
