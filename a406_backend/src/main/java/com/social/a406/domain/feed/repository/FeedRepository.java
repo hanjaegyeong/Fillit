@@ -13,10 +13,10 @@ import java.util.List;
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query(
-            value = "SELECT f FROM Feed f WHERE f.user.id = :userId AND f.addedAt < :cursor ORDER BY f.addedAt DESC",
-            countQuery = "SELECT COUNT(f) FROM Feed f WHERE f.user.id = :userId AND f.addedAt < :cursor"
+            value = "SELECT f FROM Feed f WHERE f.user.id = :userId AND f.createdAt < :cursor ORDER BY f.createdAt DESC",
+            countQuery = "SELECT COUNT(f) FROM Feed f WHERE f.user.id = :userId AND f.createdAt < :cursor"
     )
-    List<Feed> findByUserIdAndAddedAtBefore(@Param("userId") String userId,
+    List<Feed> findByUserIdAndcreatedAtBefore(@Param("userId") String userId,
                                             @Param("cursor") LocalDateTime cursor,
                                             Pageable pageable);
 
