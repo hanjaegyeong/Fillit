@@ -410,9 +410,8 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardImage findFirstByBoardIdOrderByIdAsc(Long boardId){
-       BoardImage boardImage = boardImageRepository.findFirstByBoardIdOrderByIdAsc(boardId)
-               .orElseThrow(() -> new IllegalArgumentException("Not found BoardImage with Id : " + boardId));
+    public Optional <BoardImage> findFirstByBoardIdOrderByIdAsc(Long boardId){
+       Optional <BoardImage> boardImage = boardImageRepository.findFirstByBoardIdOrderByIdAsc(boardId);
 
        return boardImage;
     }
