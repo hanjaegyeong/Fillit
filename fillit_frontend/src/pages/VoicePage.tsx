@@ -23,9 +23,13 @@ const VoicePage = () => {
       if (voices.length > 0) {
         setCurrentVoiceId(voices[0].voiceId);
       }
-      console.log('보이스 패치 성공');
+      ///
+      console.log('[VoicePage] 보이스 패치 성공:', voices);
+      ///
     } catch (error) {
-      console.error('보이스 패치 실패', error);
+      ///
+      console.error('[VoicePage] 보이스 패치 실패:', error);
+      ///
     }
   };
 
@@ -33,9 +37,13 @@ const VoicePage = () => {
     try {
       const replies = await getVoiceReplyList();
       setVoiceReplyList(replies);
-      console.log('보이스 답장 패치 성공');
+      ///
+      console.log('[VoicePage] 보이스 답장 패치 성공:', replies);
+      ///
     } catch (error) {
-      console.error('보이스 답장 패치 실패', error);
+      ///
+      console.error('[VoicePage] 보이스 답장 패치 실패:', error);
+      ///
     }
   };
 
@@ -44,19 +52,27 @@ const VoicePage = () => {
     fetchVoiceReplies();
   }, [hasRecordedVoice]);
 
-  const handleMicClick = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  const handleMicClick = () => {
+    setIsModalOpen(true);
+    console.log('[VoicePage] 마이크 버튼 클릭, 모달 열림.');
+  };
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    console.log('[VoicePage] 모달 닫힘.');
+  };
 
   const handleRecordComplete = () => {
     setHasRecordedVoice(true);
     setIsModalOpen(false);
     fetchVoices();
+    console.log('[VoicePage] 녹음 완료, 보이스 목록 갱신.');
   };
 
   const handleDeleteComplete = () => {
     setHasRecordedVoice(false);
     setIsModalOpen(false);
     fetchVoices();
+    console.log('[VoicePage] 보이스 삭제 완료, 보이스 목록 갱신.');
   };
 
   return (

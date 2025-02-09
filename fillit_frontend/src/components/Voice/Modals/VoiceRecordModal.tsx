@@ -5,7 +5,7 @@ import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { postVoice } from '@/api/voice';
 
-// 녹음 완료 시 녹음 파일을 api로 업로드드
+// 녹음 완료 시 녹음 파일을 api로 업로드
 
 interface VoiceRecordModalProps {
   isOpen: boolean;
@@ -29,17 +29,20 @@ const VoiceRecordModal = ({
     isModalOpen: isOpen,
     onComplete: () => {
       // 녹음 완료 후 처리
+      console.log('[VoiceRecordModal] 녹음 완료됨.');
     },
   });
 
   const handleMicClick = () => {
     if (!isRecording && !isRecordingComplete) {
+      console.log('[VoiceRecordModal] 녹음 시작됨.');
       handleRecord();
     }
   };
 
   const handleReRecord = () => {
     reset();
+    console.log('[VoiceRecordModal] 녹음 리셋됨.');
   };
 
   const handleSubmit = async () => {

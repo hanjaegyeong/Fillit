@@ -38,6 +38,9 @@ export const useVoiceControl = ({
         }
         setCurrentDuration(audioRef.current?.duration || 29);
         onComplete?.();
+        ///
+        console.log('[useVoiceControl] 오디오 재생 완료됨.');
+        ///
       };
 
       audioRef.current.addEventListener('ended', handleEnded);
@@ -67,6 +70,7 @@ export const useVoiceControl = ({
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      console.log('[useVoiceControl] 모달 종료로 상태 초기화됨.');
     }
   }, [isModalOpen]);
 
@@ -78,6 +82,9 @@ export const useVoiceControl = ({
         .play()
         .then(() => {
           setIsPlaying(true);
+          // 콘솔 추가
+          console.log('[useVoiceControl] 오디오 재생 시작됨.');
+          ////
           // 0.5초 간격으로 재생 시간을 업데이트
           intervalRef.current = window.setInterval(() => {
             if (audioRef.current) {
@@ -86,7 +93,7 @@ export const useVoiceControl = ({
           }, 500);
         })
         .catch((error) => {
-          console.error('Audio playback error:', error);
+          console.error('[useVoiceControl] 오디오 재생 에러:', error);
         });
     } else {
       // audioUrl이 없는 경우, 기존 시뮬레이션 방식으로 처리
@@ -96,6 +103,7 @@ export const useVoiceControl = ({
         setIsFinished(true);
         setCurrentDuration(29);
         onComplete?.();
+        console.log('[useVoiceControl] 시뮬레이션 오디오 재생 완료됨.');
       }, duration);
     }
   }, [duration, isFinished, onComplete, audioUrl]);
@@ -113,6 +121,7 @@ export const useVoiceControl = ({
       const file = new File([dummyBlob], 'recorded.mp3', { type: 'audio/mp3' });
       setRecordedFile(file);
       onComplete?.();
+      console.log('[useVoiceControl] 녹음 시뮬레이션 완료됨. (더미 파일 생성)');
     }, duration);
   }, [duration, onComplete]);
 
@@ -128,6 +137,7 @@ export const useVoiceControl = ({
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    console.log('[useVoiceControl] 상태 리셋됨.');
   }, []);
 
   return {

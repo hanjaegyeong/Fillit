@@ -11,18 +11,8 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 임시데이터
-  // const items: VoiceBubbleData[] = [
-  //   { name: 'Alex', personalId: 'chocolate' },
-  //   { name: 'George', personalId: 'gowithout' },
-  //   { name: 'Karen', personalId: 'potato153' },
-  //   { name: 'Alex', personalId: 'chocolate2' },
-  //   { name: 'Alex', personalId: 'chocolate3' },
-  //   { name: 'George', personalId: 'gowithout2' },
-  //   { name: 'Karen', personalId: 'potato154' },
-  // ];
-
   const handlePlayClick = (voice: Voice) => {
+    console.log('[VoiceBubbleList] 선택된 보이스:', voice);
     setSelectedVoice(voice);
     setIsModalOpen(true);
   };
@@ -30,6 +20,7 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedVoice(null);
+    console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
   return (

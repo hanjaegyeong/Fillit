@@ -5,7 +5,7 @@ import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { deleteVoice } from '@/api/voice';
 
-// 보이스 삭제 시 api 함수 deletvoice를 호출출
+// 보이스 삭제 시 api 함수 deletvoice를 호출
 
 interface VoiceManageModalProps {
   isOpen: boolean;
@@ -33,11 +33,13 @@ const VoiceManageModal = ({
 
   const handleDelete = () => {
     setIsDeleteMode(true);
+    console.log('[VoiceManageModal] 삭제 모드 활성화됨.');
   };
 
   const handleModalClose = () => {
     setIsDeleteMode(false);
     onClose();
+    console.log('[VoiceManageModal] 모달 닫힘.');
   };
 
   const handleDeleteConfirm = async () => {
@@ -52,12 +54,12 @@ const VoiceManageModal = ({
 
   const handlePlayClick = () => {
     setIsPlaying(true);
-    console.log('Playing voice...');
+    console.log('[VoiceManageModal] 보이스 재생 시작됨.');
 
     // 3초 후에 재생 종료
     setTimeout(() => {
       setIsPlaying(false);
-      console.log('Voice playback ended');
+      console.log('[VoiceManageModal] 보이스 재생 종료됨.');
     }, 3000);
   };
 
