@@ -29,7 +29,7 @@ const BasicInput = ({
         onChange={onChange}
         type={type}
         style={{ width: `${width}px`, height: `${height}px` }}
-        className={`w-full p-3 text-[#757575] text-sm rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#596A95] ${
+        className={`w-full p-3 text-[#757575] text-sm rounded-lg border-2 transition-colors duration-100 border-solid outline-none focus:border-[#596A95] ${
           error ? 'border-red-500' : 'border-[#b5b4f2]'
         } ${className}`}
         {...props}

@@ -16,7 +16,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full">
         <textarea
-          className="bg-[#ffffff] px-3 py-1.5 w-[280px] text-[#757575] text-sm rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#596A95] border-[#b5b4f2]"
+          className="bg-[#ffffff] px-3 py-1.5 w-[280px] text-[#757575] text-sm rounded-lg border-2 transition-colors duration-100 border-solid outline-none focus:border-[#596A95] border-[#b5b4f2]"
           placeholder="Introduce yourself"
           value={value}
           onChange={handleChange}
