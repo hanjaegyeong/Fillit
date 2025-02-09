@@ -14,13 +14,13 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleProfileEdit = () => {
-    navigate('edit');
+    navigate('/edit');
   };
 
   const handleCustomize = () => {
     console.log('프로필 꾸미기');
     onClose();
-    navigate('customize');
+    navigate('/customize');
   };
 
   const handleLogout = () => {

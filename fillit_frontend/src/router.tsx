@@ -16,6 +16,7 @@ import NewMessagePage from '@/pages/NewMassagePage';
 
 import ProfilePage from '@/pages/ProfilePage';
 import ProfileEditPage from '@/pages/ProfileEditPage';
+import ProfileCustomPage from '@/pages/ProfileCustomPage';
 import FollowerPage from '@/pages/FollowerPage';
 import FollowingPage from '@/pages/FollowingPage';
 
@@ -24,7 +25,6 @@ import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 
 import Layout from './components/common/Layout/Layout';
-import ProfileCustomize from './pages/ProfileCustomizePage';
 
 const router = createBrowserRouter([
   {
@@ -69,20 +69,12 @@ const router = createBrowserRouter([
             element: <ProfilePage />,
           },
           {
-            path: 'edit',
-            element: <ProfileEditPage />,
-          },
-          {
             path: 'follower',
             element: <FollowerPage />,
           },
           {
             path: 'following',
             element: <FollowingPage />,
-          },
-          {
-            path: 'customize',
-            element: <ProfileCustomize />,
           },
         ],
       },
@@ -103,27 +95,35 @@ const router = createBrowserRouter([
         path: 'newmessage',
         element: <NewMessagePage />,
       },
-      {
-        path: 'newarticle',
-        element: <NewArticlePage />,
-      },
     ],
   },
   {
-    path: '/login',
+    path: 'login',
     element: <LoginPage />,
   },
   {
-    path: '/find',
+    path: 'find',
     element: <FindPasswordPage />,
   },
   {
-    path: '/signup',
+    path: 'signup',
     element: <SignUpPage />,
   },
   {
-    path: '/socialsignup',
+    path: 'socialsignup',
     element: <SocialSignUpPage />,
+  },
+  {
+    path: 'newarticle',
+    element: <NewArticlePage />,
+  },
+  {
+    path: 'edit',
+    element: <ProfileEditPage />,
+  },
+  {
+    path: 'customize',
+    element: <ProfileCustomPage />,
   },
 ]);
 
