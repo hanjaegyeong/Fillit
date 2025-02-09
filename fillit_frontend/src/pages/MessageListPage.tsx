@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
 import SearchInput from '@/components/common/Input/SearchInput';
-import ProfileImage from '@/mocks/images/profile-image.png';
+import MockProfileImage from '@/mocks/images/profile-image.png';
+import ProfileImage from '@/components/common/ProfileImage';
 import { NewMessage } from '@/assets/assets';
+import { truncateText } from '@/utils/truncateText';
 
 interface ChatRoom {
   id: number;
@@ -15,43 +17,43 @@ interface ChatRoom {
 const mockChat: ChatRoom[] = [
   {
     id: 1,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'john_doe',
     contents: 'Hey! How have you been?',
   },
   {
     id: 2,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'alice_smith',
     contents: 'Did you see the latest movie?',
   },
   {
     id: 3,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'tech_guru',
     contents: 'Check out this cool new feature in React!',
   },
   {
     id: 4,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'tech_guru',
     contents: 'Check out this cool new feature in React!',
   },
   {
     id: 5,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'alice_smith',
     contents: 'Did you see the latest movie?',
   },
   {
     id: 6,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'tech_guru',
     contents: 'Check out this cool new feature in React!',
   },
   {
     id: 7,
-    image: ProfileImage,
+    image: MockProfileImage,
     user_id: 'tech_guru',
     contents: 'Check out this cool new feature in React!',
   },
@@ -78,7 +80,7 @@ const MessageListPage = () => {
     <div className="container-header-nav relative flex flex-col min-h-screen items-center">
       <Header left="home" right="notification" />
 
-      <div className="p-4 flex justify-center">
+      <div className="p-6 flex justify-center">
         <SearchInput
           className="w-full max-w-[380px]"
           onSearch={handleSearch}
@@ -87,21 +89,21 @@ const MessageListPage = () => {
         />
       </div>
 
-      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-4">
+      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
         {chatResults.map((chat) => (
           <div
             key={chat.id}
-            className="p-4 bg-white rounded-lg shadow flex items-center cursor-pointer"
+            className="px-3 py-4 bg-white rounded-[20px] shadow flex items-center cursor-pointer"
             onClick={() => handleChatClick(chat.id)}
           >
-            <img
-              src={chat.image}
-              alt={chat.user_id}
-              className="w-12 h-12 rounded-full mr-4"
-            />
+            <div className="mr-3">
+              <ProfileImage src={chat.image} size={42} />
+            </div>
             <div>
-              <p className="text-sm font-bold text-gray-600">{chat.user_id}</p>
-              <p className="text-sm text-gray-500">{chat.contents}</p>
+              <p className="text-sm font-medium">{chat.user_id}</p>
+              <p className="text-sm font-extralight text-gray-600">
+                {truncateText(chat.contents, 30)}
+              </p>
             </div>
           </div>
         ))}
