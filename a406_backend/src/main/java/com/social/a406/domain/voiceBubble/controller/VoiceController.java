@@ -1,5 +1,6 @@
 package com.social.a406.domain.voiceBubble.controller;
 
+import com.social.a406.domain.voiceBubble.dto.VoiceListenResponse;
 import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.service.VoiceService;
@@ -29,12 +30,11 @@ public class VoiceController {
     }
 
     @GetMapping("/listen")
-    public ResponseEntity<VoiceResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<VoiceListenResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
 
-        VoiceResponse response = new VoiceResponse(voice.getId(),
-                voice.getUser().getPersonalId(),
-                voice.getUser().getProfileImageUrl(),
+        VoiceListenResponse response = new VoiceListenResponse(
+                voice.getId(),
                 voice.getAudioUrl());
 
         return ResponseEntity.ok(response);
