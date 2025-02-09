@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useTypingEffect from '@/hooks/useTypingEffect';
@@ -253,10 +254,10 @@ const SignUpPage = () => {
   const handleNext = async () => {
     if (!validateCurrentStep()) return;
 
-    if (step === steps.length - 2) {
+    if (step === steps.length - 3) {
       // 회원가입 API 호출
       await handleSignup();
-    } else if (step === steps.length - 1) {
+    } else if (step === steps.length - 2) {
       // 관심사 등록 API 호출
       await handleInterestSubmit();
     } else {
