@@ -16,22 +16,6 @@ export const postLogin = async (email: string, password: string) => {
   return response.data;
 };
 
-/* 중복 이메일 체크 */
-export const postEmailCheck = async (input: string) => {
-  const response = await axiosInstance.post('/api/users/duplicate/email', {
-    input,
-  });
-  return response.data;
-};
-
-/* 중복 personalId 체크 */
-export const postPersonalIdCheck = async (input: string) => {
-  const response = await axiosInstance.post('/api/users/duplicate/nickname', {
-    input,
-  });
-  return response.data;
-};
-
 /* 로그아웃 */ //추후 수정
 export const getLogout = async () => {
   //const response = await axiosInstance.get('/api/users/logout');
