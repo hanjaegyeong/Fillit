@@ -1,6 +1,7 @@
 package com.social.a406.domain.board.repository;
 
 import com.social.a406.domain.board.entity.Board;
+import com.social.a406.domain.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,6 +38,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> searchBoard(@Param("word") String word,
                             @Param("cursorId") Long cursorId,
                             Pageable pageable);
+
+    List<Board> findByUser(User otherUser);
 
     //부분 문자열 검색 가능
 //    @Query(value = "SELECT * FROM board " +

@@ -30,4 +30,6 @@ public class FeedController {
         FeedResponseDto feed = feedService.getFeed(personalId, limit, cursor);
         return ResponseEntity.ok(feed);
     }
+
+
 }
