@@ -25,12 +25,6 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     console.error(error);
 
-    const status = error?.response?.status;
-
-    if (status === 400) {
-      window.location.replace('/login');
-    }
-
     throw error;
   }
 );
