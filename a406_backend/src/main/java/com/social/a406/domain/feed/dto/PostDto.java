@@ -9,9 +9,14 @@ import java.time.LocalDateTime;
 @Builder
 public class PostDto {
     private Long boardId;
-    private String userId;
     private String content;
+    private String personalId;
+    private String profileImageUrl;
+
     private Long likeCount;
+    private Long commentCount;
+    private String keyword;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private Boolean isRecommended;
 }

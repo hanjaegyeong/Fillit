@@ -33,8 +33,9 @@ public class BoardController {
         // 게시글 생성
         BoardResponse boardResponse = boardService.createBoard(boardRequest, userDetails, files);
 
-        // 30초 후 AI 댓글 생성 스케줄링
+        // 30초 후 AI 댓글 생성, 좋아요 스케줄링
         aiScheduler.scheduleCommentCreation(boardResponse.getBoardId(), boardResponse.getPersonalId());
+        aiScheduler.scheduleLikeCreation(boardResponse.getBoardId(), boardResponse.getPersonalId());
 
         return ResponseEntity.status(201).body(boardResponse);
     }

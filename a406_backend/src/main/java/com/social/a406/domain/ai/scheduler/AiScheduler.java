@@ -25,6 +25,8 @@ public class AiScheduler {
     private final RestTemplate restTemplate = new RestTemplate();
     private final Random random = new Random();
     private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    private final ThreadPoolTaskScheduler likeScheduler = new ThreadPoolTaskScheduler();
+
     private final UserService userService;
     private final CommentService commentService;
     private final ReplyService replyService;
@@ -33,6 +35,9 @@ public class AiScheduler {
     private final String AI_COMMENT_ENDPOINT = "/api/ai/generate/comment";
     private final String RANDOM_AI_COMMENT_ENDPOINT = "/api/ai/generate/random/comment";
     private final String AI_BOARD_ENDPOINT = "/api/ai/generate/random/board";
+    private final String AI_LIKE_ENDPOINT = "/api/ai/generate/like";
+    private final String RANDOM_AI_LIKE_ENDPOINT = "/api/ai/generate/random/like";
+
     private final String AI_COMMENT_REPLY_ENDPOINT = "/api/ai/generate/reply";
     private final int MINUTE = 60000;
 
@@ -163,5 +168,52 @@ public class AiScheduler {
             }
         }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
     }
+
+    // like 랜덤생성
+    @Scheduled(fixedDelay = MINUTE * 60) // 60분마다 실행
+    public void callGenerateAiLikeController() {
+        try{
+        String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_LIKE_ENDPOINT, String.class);
+        System.out.println("Response from EC2: " + response);
+        } catch (Exception e) {
+            System.err.println("like Failed to call EC2 controller: " + e.getMessage());
+        }
+
+    }
+
+
+    // 사용자(personalId)가 게시글 업로드 후 AI댓글 자동 생성
+    public void scheduleLikeCreation(Long boardId, String personalId) {
+        likeScheduler.initialize();
+
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * MINUTE, 2 * MINUTE); // 5분 ~ 30분 사이 딜레이
+        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        likeScheduler.schedule(() -> {
+            try {
+                // 주어진 personalId와 동일한 관심사를 가진 랜덤 AI 사용자 찾기
+                String randomPersonalId = userService.getRandomUserWithMatchingInterest(personalId);
+
+                if (randomPersonalId == null) {
+                    System.err.println("No suitable user found for AI Like creation.");
+                    return;
+                }
+
+                String response = restTemplate.getForObject(
+                        ec2ServerUrl + AI_LIKE_ENDPOINT + "?boardId=" + boardId + "&personalId=" + randomPersonalId,
+                        String.class
+                );
+
+                System.out.println("AI Like Created by " + randomPersonalId + ": " + response);
+            } catch (Exception e) {
+                System.err.println("Failed to create AI Like: " + e.getMessage());
+            } finally {
+                likeScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+            }
+        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+    }
+
+
+
 
 }
