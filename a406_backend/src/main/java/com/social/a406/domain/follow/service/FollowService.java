@@ -2,14 +2,16 @@ package  com.social.a406.domain.follow.service;
 
 
 import com.social.a406.domain.follow.dto.FollowResponse;
-import  com.social.a406.domain.follow.entity.Follow;
-import  com.social.a406.domain.follow.repository.FollowRepository;
+import com.social.a406.domain.follow.entity.Follow;
+import com.social.a406.domain.follow.event.FollowEvent;
+import com.social.a406.domain.follow.event.UnfollowEvent;
+import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
-import  com.social.a406.domain.user.entity.User;
-
-import  com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.domain.user.entity.User;
+import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Optional<Follow> findByFollowerAndFollowee (User follower, User followee) {
         return followRepository.findByFollowerAndFollowee(follower, followee) ;
@@ -37,6 +40,7 @@ public class FollowService {
         Follow saveFollow =  followRepository.save(follow); // save는 기본이라 repository에 따로 안써도 되나?
 
         generateFollowNotification(saveFollow); // 팔로우 알림 생성
+        eventPublisher.publishEvent(new FollowEvent(follower, followee));
 
         return saveFollow != null;
     }
@@ -46,6 +50,7 @@ public class FollowService {
 
         if (followOptional.isPresent()) {
             followRepository.delete(followOptional.get());
+            eventPublisher.publishEvent(new UnfollowEvent(follower, followee));
             return true; // 삭제 성공
         }
         return false; // 삭제 실패 (존재하지 않는 관계)

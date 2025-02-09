@@ -2,6 +2,7 @@ package com.social.a406.domain.feed.service;
 
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
+import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.feed.dto.FeedResponseDto;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,7 +35,7 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final CommentService commentService;
     private final BoardService boardService;
-
+    private final BoardRepository boardRepository;
 
     /**
      * 피드 조회 – 친구 게시물(푸시된 데이터)과 추천 게시물(풀 방식)을 4:1 비율로 결합하여 반환
@@ -121,4 +123,38 @@ public class FeedService {
 
         return dto;
     }
+
+    @Transactional
+    public void addBoardsToUserFeed(User user, User otherUser) {
+        // 팔로우한 사용자의 모든 게시글 조회
+        List<Board> boards = boardRepository.findByUser(otherUser);
+
+        // 피드에 게시글 추가 (Builder 사용)
+        List<Feed> feeds = boards.stream()
+                .map(board -> Feed.builder()
+                        .user(user)
+                        .board(board)
+                        .isRecommended(false) // 기본값 설정
+                        .createdAt(LocalDateTime.now()) // 현재 시간 설정
+                        .build())
+                .collect(Collectors.toList());
+
+        feedRepository.saveAll(feeds);
+    }
+
+
+    /**
+     * 언팔로우 시 user의 피드에서 otherUser의 모든 게시글 삭제
+     */
+    @Transactional
+    public void removeBoardsFromUserFeed(User user, User otherUser) {
+        // otherUser의 모든 게시글 조회
+        List<Board> boardList = boardRepository.findByUser(otherUser);
+
+        // feed에서 해당 게시글들을 삭제 (더 빠른 삭제 가능)
+        if (!boardList.isEmpty()) {
+            feedRepository.deleteByUserAndBoardIn(user.getId(), boardList);
+        }
+    }
+
 }
