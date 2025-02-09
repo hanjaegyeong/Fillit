@@ -1,6 +1,7 @@
 package com.social.a406.domain.chat.repository;
 
 import com.social.a406.domain.chat.entity.ChatParticipants;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,7 +59,17 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
             @Param("userIdList") List<String> userIdList
     );
 
-
+    @Query("SELECT cp FROM ChatParticipants cp " +
+            "JOIN FETCH cp.chatRoom cr " +
+            "JOIN FETCH cp.user u " +  // user를 명시적으로 JOIN
+            "WHERE u.id != :userId " +
+            "AND (:word IS NULL OR :word = '' OR u.name LIKE %:word% OR u.personalId LIKE %:word%) " +
+            "AND (:cursorId IS NULL OR cp.id > :cursorId)")
+    List<ChatParticipants> findByUserIdWithChatRoomFetchAndSearch(
+            @Param("userId") String userId,
+            @Param("word") String word,
+            @Param("cursorId") Long cursorId,
+            Pageable pageable);
 }
 
 

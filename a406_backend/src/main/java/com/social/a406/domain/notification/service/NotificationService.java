@@ -154,11 +154,12 @@ public class NotificationService {
         System.out.println("Generate notification about comment like");
     }
 
-    public void generateChatNotification(CommentLike like) {
-        User receiver = like.getComment().getUser(); // 게시글 작성자
-        User sender = like.getUser(); // 댓글 작성자
-        Long referenceId = like.getComment().getId();
-        createNotification(receiver, sender, NotificationType.COMMENTLIKE, referenceId);
+    public void generateChatNotification(String receiverId, String senderId, Long chatRoomId) {
+        User receiver = userRepository.findById(receiverId).orElseThrow(
+                () -> new IllegalArgumentException("Not found receiver")); // 채팅 보내는 사람
+        User sender = userRepository.findById(senderId).orElseThrow(
+                () -> new IllegalArgumentException("Not found receiver")); // 체팅
+        createNotification(receiver, sender, NotificationType.CHAT, chatRoomId);
         System.out.println("Generate notification about chat");
     }
 }

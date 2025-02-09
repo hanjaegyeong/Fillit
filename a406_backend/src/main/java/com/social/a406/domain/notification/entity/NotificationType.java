@@ -4,7 +4,7 @@ public enum NotificationType {
     FOLLOW,
     COMMENT,
     RECOMMENT,
-    MESSAGE,
+    CHAT,
     VOICEREPLY,
     BOARDLIKE,
     COMMENTLIKE;

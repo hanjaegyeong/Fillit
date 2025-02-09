@@ -11,4 +11,5 @@ import java.util.List;
 public class UnreadMessageEvent {
     private ChatMessageRequest request;
     private List<String> personalIdList;
+    private String personalId;
 }

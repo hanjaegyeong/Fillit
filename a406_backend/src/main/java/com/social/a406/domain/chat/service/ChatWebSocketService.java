@@ -9,6 +9,7 @@ import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.repository.ChatMessageRepository;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.repository.ChatRoomRepository;
+import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,7 @@ public class ChatWebSocketService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 메세지 저장
     @Transactional
@@ -67,7 +69,7 @@ public class ChatWebSocketService {
     
     // 메세지 증가시키기
     @Transactional
-    public void increaseUnreadMessageAndUpdateRoom(ChatMessageRequest request, List<String> personalIdList) {
+    public void increaseUnreadMessageAndUpdateRoom(ChatMessageRequest request, List<String> personalIdList, String personalId) {
         // 채팅방 마지막 메시지 정보 업데이트
         Long chatRoomId = request.getChatRoomId();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
@@ -88,6 +90,9 @@ public class ChatWebSocketService {
         // 변경된 엔티티 저장
         chatParticipantsRepository.saveAll(chatParticipantsList);
 
+        for(String receiverId : personalIdList) {
+            notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+        }
     }
 
     

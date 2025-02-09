@@ -92,8 +92,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
             // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
             eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
-            eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList));
-            System.out.println("personalIdList: "+personalIdList);
+            eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList, personalId));
 
         }
     }
