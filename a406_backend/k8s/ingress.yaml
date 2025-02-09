@@ -25,4 +25,4 @@ spec:
               service:
                 name: fillit-service
                 port:
-                  number: 8081 #백엔드에서 서비스하는 외부포트로 변경
+                  number: 8080
