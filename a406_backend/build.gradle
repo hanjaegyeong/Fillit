@@ -47,7 +47,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:auth:2.20.112'
 
 	//Swagger
-	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.2.1'
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
