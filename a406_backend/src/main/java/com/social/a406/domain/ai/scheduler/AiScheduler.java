@@ -172,11 +172,17 @@ public class AiScheduler {
     // like 랜덤생성
     @Scheduled(fixedDelay = MINUTE * 60) // 60분마다 실행
     public void callGenerateAiLikeController() {
+        // 랜덤한 지연 시간 생성
+        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
+
         try{
-        String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_LIKE_ENDPOINT, String.class);
-        System.out.println("Response from EC2: " + response);
+            System.out.println("Waiting for " + delay + " seconds before board triggering...");
+            Thread.sleep(delay * 10L);
+
+            String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_LIKE_ENDPOINT, String.class);
+            System.out.println("Response from EC2: " + response);
         } catch (Exception e) {
-            System.err.println("like Failed to call EC2 controller: " + e.getMessage());
+            System.err.println("like Failed to call EC2` controller: " + e.getMessage());
         }
 
     }
