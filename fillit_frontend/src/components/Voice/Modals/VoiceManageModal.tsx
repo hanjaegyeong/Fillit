@@ -3,17 +3,22 @@ import { motion } from 'framer-motion';
 import { speaker, pressedSpeaker, caution } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
+import { deleteVoice } from '@/api/voice';
+
+// 보이스 삭제 시 api 함수 deletvoice를 호출출
 
 interface VoiceManageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeleteComplete: () => void;
+  voiceId: number;
 }
 
 const VoiceManageModal = ({
   isOpen,
   onClose,
   onDeleteComplete,
+  voiceId,
 }: VoiceManageModalProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
@@ -35,10 +40,14 @@ const VoiceManageModal = ({
     onClose();
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: 실제 삭제 로직 구현
-    console.log('Delete voice confirmed');
-    onDeleteComplete();
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteVoice(voiceId);
+      onDeleteComplete();
+      console.log('보이스 제거 성공');
+    } catch (error) {
+      console.error('보이스 제거 실패', error);
+    }
   };
 
   const handlePlayClick = () => {
@@ -64,7 +73,7 @@ const VoiceManageModal = ({
       >
         {!isDeleteMode ? (
           <>
-            {/* Duration */}
+            {/* Duration  - 실제 데이터 사용 시 변경 필요요*/}
             <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
               29"
             </div>

@@ -4,14 +4,12 @@ import VoiceBaseModal from './VoiceBaseModal';
 import { useNavigate } from 'react-router-dom';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
+import { Voice } from '@/types/voice';
+
+// api에서 내려오는 음원 url과 프로필 이미지 사용
 
 interface VoiceListenModalProps {
-  voiceData:
-    | {
-        name: string;
-        personalId: string;
-      }
-    | undefined;
+  voiceData: Voice | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,6 +23,7 @@ const VoiceListenModal = ({
   const { isPlaying, isFinished, currentDuration, handlePlay } =
     useVoiceControl({
       isModalOpen: isOpen,
+      audioUrl: voiceData?.audioUrl,
     });
 
   if (!voiceData) return null;
@@ -57,7 +56,7 @@ const VoiceListenModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={profileBubble}
+            src={voiceData.profileImageUrl || profileBubble}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

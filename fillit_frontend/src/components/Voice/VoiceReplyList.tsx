@@ -1,25 +1,30 @@
 import { useState } from 'react';
-import VoiceReplyItem, {
-  VoiceReplyData,
-} from '@/components/Voice/VoiceReplyItem';
+import VoiceReplyItem from '@/components/Voice/VoiceReplyItem';
 import VoiceReplyModal from '@/components/Voice/Modals/VoiceReplyModal';
 import { replyBar } from '@/assets/assets';
+import { VoiceReply } from '@/types/voice';
 
-const VoiceReplyList = () => {
-  const [selectedReplyId, setSelectedReplyId] = useState<string | null>(null);
+interface VoiceReplyListProps {
+  voiceReplies: VoiceReply[];
+}
+
+const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
+  const [selectedReplyId, setSelectedReplyId] = useState<VoiceReply | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 임시 데이터 배열
-  const mockReplies: VoiceReplyData[] = Array.from({ length: 10 }, (_, i) => ({
-    id: `${i + 1}`,
-    audioUrl: `https://example.com/audio${i + 1}.mp3`,
-    createdAt: new Date().toISOString(),
-    userId: `user${i + 1}`,
-    voiceId: 'voice1',
-  }));
+  // const mockReplies: VoiceReplyData[] = Array.from({ length: 10 }, (_, i) => ({
+  //   id: `${i + 1}`,
+  //   audioUrl: `https://example.com/audio${i + 1}.mp3`,
+  //   createdAt: new Date().toISOString(),
+  //   userId: `user${i + 1}`,
+  //   voiceId: 'voice1',
+  // }));
 
-  const handleReplyClick = (replyId: string) => {
-    setSelectedReplyId(replyId);
+  const handleReplyClick = (voiceReply: VoiceReply) => {
+    setSelectedReplyId(voiceReply);
     setIsModalOpen(true);
   };
 
@@ -38,9 +43,9 @@ const VoiceReplyList = () => {
         >
           <div className="max-w-full overflow-x-auto hide-scrollbar -translate-x-1 rounded-full px-2">
             <div className="flex items-center space-x-4">
-              {mockReplies.map((reply) => (
+              {voiceReplies.map((reply) => (
                 <VoiceReplyItem
-                  key={reply.id}
+                  key={reply.voiceReplyId}
                   data={reply}
                   onReplyClick={handleReplyClick}
                 />
@@ -50,7 +55,7 @@ const VoiceReplyList = () => {
         </div>
       </div>
       <VoiceReplyModal
-        replyData={mockReplies.find((reply) => reply.id === selectedReplyId)}
+        replyData={selectedReplyId || undefined}
         isOpen={isModalOpen}
         onClose={handleModalClose}
       />
