@@ -1,4 +1,4 @@
-import { getFormattedDate } from '@/utils/getFormattedDate';
+import { formatDate } from '@/utils/formatDate';
 
 interface TimeStampProps {
   date: string;
@@ -12,7 +12,7 @@ const TimeStamp = ({ date, size = 'large' }: TimeStampProps) => {
         size === 'large' ? 'text-xs' : 'text-small'
       }`}
     >
-      {getFormattedDate(date)}
+      {formatDate(date)}
     </div>
   );
 };
