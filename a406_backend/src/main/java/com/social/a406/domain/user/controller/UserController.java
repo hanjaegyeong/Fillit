@@ -45,7 +45,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<?> loginUser(@RequestBody UserLoginRequest userLoginRequest) {
         try {
             Map<String, String> tokens = userService.login(userLoginRequest);
 
@@ -55,11 +55,14 @@ public class UserController {
 
             // Refresh Token은 쿠키에 세팅
             ResponseCookie refreshTokenCookie = createCookie("refreshToken", tokens.get("refreshToken"), refreshTokenMaxage);
-
+            UserLoginResponse response = UserLoginResponse.builder()
+                    .accessToken(tokens.get("accessToken"))
+                    .personalId(tokens.get("personalId"))
+                    .build();
             return ResponseEntity.ok()
                     .headers(headers)
                     .header("Set-Cookie", refreshTokenCookie.toString())
-                    .body(tokens.get("accessToken")); //추후 "Login successful"로 수정!
+                    .body(response); //추후 "Login successful"로 수정!
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
