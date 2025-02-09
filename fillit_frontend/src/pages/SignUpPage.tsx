@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import useTypingEffect from '@/hooks/useTypingEffect';
 
 import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
@@ -12,103 +11,24 @@ import ImageUpload from '@/components/common/ImageUpload';
 import Textarea from '@/components/common/TextArea';
 import BirthInput from '@/components/common/Input/BirthInput';
 import InterestTags from '@/components/common/InterestTags';
+import { steps } from '@/constants/signupSteps';
 import { SignupForm, SignupState } from '@/types/signup';
 import { postSignUp } from '@/api/signup';
 import { postInterest } from '@/api/interest';
 
-// 회원가입 단계별 메세지
-const steps = [
-  {
-    message1: 'Hi! It’s your first time here, huh?',
-    message2: 'What’s your name? 😎',
-    message3: '',
-    placeholder: 'Enter your name',
-    rule: '영어 최대 8글자, 특수기호 불가',
-    inputType: 'text',
-  },
-  {
-    message1: 'Oh, my bad! I meant to ask',
-    message2: 'what ID you wanna go with😅',
-    message3: '',
-    placeholder: 'Enter your ID',
-    rule: '영어 5~20자, 소문자/숫자/‘_’ 사용 가능',
-    inputType: 'text',
-  },
-  {
-    message1: 'Alright, now',
-    message2: 'let’s pick a password! 🔒✨',
-    message3: '',
-    placeholder: 'Enter your password',
-    rule: '영어 8~16자, 대,소문자/숫자 사용 가능',
-    inputType: 'text',
-  },
-  {
-    message1: 'Wait, what was the password',
-    message2: 'you just said again? 🤔💬',
-    message3: '',
-    placeholder: 'Enter your password again',
-    rule: '',
-    inputType: 'text',
-  },
-  {
-    message1: 'Drop your email too 📧✨',
-    message2: '',
-    message3: '',
-    placeholder: 'Enter your email',
-    rule: '',
-    inputType: 'email',
-  },
-  {
-    message1: 'Yeah, that’s it, for sure! 😎',
-    message2: 'Do you have a pic of yourself? 🤔📷',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'choice',
-  },
-  {
-    message1: 'Oh, then drop your',
-    message2: 'most slay pic! 😎📸',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'file',
-  },
-  {
-    message1: "We're almost done signing up!",
-    message2: 'When’s your b-day? 🎂',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'date',
-  },
-  {
-    message1: 'So, like, what kinda vibe',
-    message2: 'are you giving off? 🤔✨',
-    message3: '',
-    placeholder: 'Introduce yourself',
-    rule: '',
-    inputType: 'textarea',
-  },
-  {
-    message1: 'Alright, last thing—  ',
-    message2: 'what’s your fave stuff? 🧐✨',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'tags',
-  },
-  {
-    message1: 'Thanks for the info!',
-    message2: 'Yo, you’re like, our new bestie now.',
-    message3: 'Catch ya later, fam! 😎✌️',
-    placeholder: '',
-    rule: '',
-    inputType: '',
-  },
-];
+interface ValidationRule {
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: {
+    value: RegExp;
+    message: string;
+  };
+  validate?: (value: string, formValues: SignupState) => boolean | string;
+}
 
-const validationRules = {
+const validationRules: Record<keyof SignupState['regist'], ValidationRule> = {
+  type: { required: true },
   name: {
     required: true,
     maxLength: 8,
@@ -155,27 +75,24 @@ const validationRules = {
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    formState: { errors },
-  } = useForm<SignupState>({
-    mode: 'onChange',
-    defaultValues: {
-      regist: {
-        type: 'user',
-        password: '',
-        passwordConfirm: '',
-        name: '',
-        personalId: '',
-        birthDate: new Date(),
-        email: '',
-        introduction: '',
-        interest: [],
-      },
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  // 폼 상태 관리
+  const [signupState, setSignupState] = useState<SignupState>({
+    regist: {
+      type: 'user',
+      password: '',
+      passwordConfirm: '',
+      name: '',
+      personalId: '',
+      birthDate: new Date(),
+      email: '',
+      introduction: '',
+      interest: [],
     },
+    profileImage: undefined,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // 현재 단계의 필드 이름 반환하는 함수
   const getCurrentField = (): keyof SignupState['regist'] | null => {
@@ -210,48 +127,59 @@ const SignUpPage = () => {
 
     // 이미지 선택 단계는 검증 스킵
     if (step === 5 || step === 6) {
-      console.log('Skipping validation for image selection step');
       return true;
     }
 
     // 마지막 완료 단계는 검증 스킵
     if (step === steps.length - 1) {
-      console.log('Skipping validation for final step');
       return true;
     }
 
     if (!currentField) {
-      console.log('No validation needed for this step');
       return true;
     }
 
-    try {
-      const result = await trigger(`regist.${currentField}`);
-      console.log(`Validation result for ${currentField}:`, result);
-      return result;
-    } catch (error) {
-      console.error('Validation error:', error);
+    // 현재 필드의 값 가져오기
+    const currentValue = signupState.regist[currentField];
+
+    // 값이 비어있거나 유효하지 않은 경우
+    if (
+      !currentValue ||
+      (typeof currentValue === 'string' && currentValue.trim() === '')
+    ) {
       return false;
     }
+
+    // 현재 필드에 대한 유효성 규칙 가져오기
+    const rule = validationRules[currentField];
+    if (!rule) return true;
+
+    // 비밀번호 확인 검증
+    if (currentField === 'passwordConfirm') {
+      if (currentValue !== signupState.regist.password) {
+        setErrors((prev) => ({
+          ...prev,
+          passwordConfirm: '비밀번호가 일치하지 않습니다',
+        }));
+        return false;
+      }
+    }
+
+    // 패턴 검사
+    if (rule.pattern && typeof currentValue === 'string') {
+      if (!rule.pattern.value.test(currentValue)) {
+        return false;
+      }
+    }
+
+    // 길이 검사
+    if (typeof currentValue === 'string') {
+      if (rule.minLength && currentValue.length < rule.minLength) return false;
+      if (rule.maxLength && currentValue.length > rule.maxLength) return false;
+    }
+
+    return true;
   };
-
-  // 폼 상태 관리
-  const [signupState, setSignupState] = useState<SignupState>({
-    regist: {
-      type: 'user',
-      password: '',
-      passwordConfirm: '',
-      name: '',
-      personalId: '',
-      birthDate: new Date(),
-      email: '',
-      introduction: '',
-      interest: [],
-    },
-    profileImage: undefined,
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
 
   // 입력값 변경 핸들러
   const handleInputChange = (
@@ -356,6 +284,52 @@ const SignUpPage = () => {
 
   const typedMessages = useTypingEffect(messages, step, 30);
 
+  // 현재 필드의 유효성 검사
+  const validateField = async (
+    field: keyof SignupState['regist'],
+    value: string
+  ) => {
+    const rule = validationRules[field];
+    if (!rule) return true;
+
+    let isValid = true;
+    let errorMessage = '';
+
+    if (rule.required && !value) {
+      isValid = false;
+      errorMessage = '필수 입력 항목입니다';
+    } else if (rule.minLength && value.length < rule.minLength) {
+      isValid = false;
+      errorMessage = `최소 ${rule.minLength}자 이상 입력하세요`;
+    } else if (rule.maxLength && value.length > rule.maxLength) {
+      isValid = false;
+      errorMessage = `최대 ${rule.maxLength}자까지 입력 가능합니다`;
+    } else if (rule.pattern && !rule.pattern.value.test(value)) {
+      isValid = false;
+      errorMessage = rule.pattern.message;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: errorMessage,
+    }));
+
+    return isValid;
+  };
+
+  // 버튼 비활성화 상태를 관리하는 state 추가
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+
+  // useEffect를 사용하여 각 단계별 유효성 검증 실행
+  useEffect(() => {
+    const validateStep = async () => {
+      const isValid = await validateCurrentStep();
+      setIsNextButtonDisabled(!isValid);
+      console.log('Button disabled:', !isValid); // 디버깅용 로그
+    };
+    validateStep();
+  }, [step, signupState.regist]);
+
   return (
     <div className="container-base justify-center">
       <header className="fixed top-0 w-full py-4 px-6 z-10">
@@ -372,20 +346,52 @@ const SignUpPage = () => {
       ))}
       <div className="pt-6">
         {steps[step].inputType === 'text' && (
-          <BasicInput
-            placeholder={steps[step].placeholder}
-            value={
-              signupState.regist[
-                getCurrentField() as keyof SignupState['regist']
-              ] as string
-            }
-            onChange={(e) =>
-              handleInputChange(
-                getCurrentField() as keyof SignupState['regist'],
-                e.target.value
-              )
-            }
-          />
+          <div className="w-full">
+            <BasicInput
+              type={
+                getCurrentField() === 'password' ||
+                getCurrentField() === 'passwordConfirm'
+                  ? 'password'
+                  : 'text'
+              }
+              placeholder={steps[step].placeholder}
+              value={
+                signupState.regist[
+                  getCurrentField() as keyof SignupState['regist']
+                ] as string
+              }
+              onChange={async (e) => {
+                const field = getCurrentField() as keyof SignupState['regist'];
+                const value = e.target.value;
+                handleInputChange(field, value);
+
+                // 비밀번호 확인 필드일 경우 추가 검증
+                if (field === 'passwordConfirm') {
+                  if (value !== signupState.regist.password) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '비밀번호가 일치하지 않습니다',
+                    }));
+                  } else {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '',
+                    }));
+                  }
+                }
+
+                await validateField(field, value);
+              }}
+              className={
+                errors[getCurrentField() as string] ? 'border-red-500' : ''
+              }
+            />
+            {errors[getCurrentField() as string] && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors[getCurrentField() as string]}
+              </p>
+            )}
+          </div>
         )}
         {steps[step].inputType === 'email' && (
           <BasicInput
@@ -401,7 +407,12 @@ const SignUpPage = () => {
           />
         )}
         {steps[step].inputType === 'file' && <ImageUpload />}
-        {steps[step].inputType === 'textarea' && <Textarea />}
+        {steps[step].inputType === 'textarea' && (
+          <Textarea
+            value={signupState.regist.introduction}
+            onChange={(value) => handleInputChange('introduction', value)}
+          />
+        )}
         {steps[step].inputType === 'tags' && (
           <InterestTags
             selectedTags={signupState.regist.interest}
@@ -419,12 +430,23 @@ const SignUpPage = () => {
         <p className="flex justify-start text-xs">{steps[step].rule}</p>
         {steps[step].inputType !== 'choice' && (
           <div className="flex flex-row justify-center pt-10 gap-10">
-            <BasicButton text="Back" onClick={handleBack} />
-
+            <BasicButton
+              text="Back"
+              onClick={handleBack}
+              disabled={isLoading}
+            />
             {step === steps.length - 1 ? (
-              <BasicButton text="Login" onClick={handleLogin} />
+              <BasicButton
+                text="Login"
+                onClick={handleLogin}
+                disabled={isLoading}
+              />
             ) : (
-              <BasicButton text="Next" onClick={handleNext} />
+              <BasicButton
+                text="Next"
+                onClick={handleNext}
+                disabled={isLoading || isNextButtonDisabled}
+              />
             )}
           </div>
         )}
