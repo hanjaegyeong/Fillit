@@ -137,6 +137,6 @@ public class UserController {
     @PostMapping("/duplicate/nickname")
     public ResponseEntity<String> checkDuplicatePersonalId(@RequestBody DuplicateRequest request){
         userService.checkDuplicatePersonalId(request.getInput());
-        return ResponseEntity.ok("This nickname is available.");
+        return ResponseEntity.ok("Nickname is available.");
     }
 }
