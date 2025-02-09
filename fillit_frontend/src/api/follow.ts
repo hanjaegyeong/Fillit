@@ -16,7 +16,7 @@ export const postUnfollow = async (followeePersonalId: string) => {
   return response.data;
 };
 
-/* 팔로우 조회 */
+/* 팔로워 조회 */
 export const getFollowerList = async (personalId: string) => {
   const response = await axiosInstance.get('/api/follows/getfollower', {
     params: { personalId },
