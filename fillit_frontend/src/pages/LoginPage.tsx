@@ -15,8 +15,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await postLogin(email, password);
-      console.log('로그인 성공:', response);
+      await postLogin(email, password);
       navigate('/');
     } catch (error) {
       alert('등록된 이메일이 아니거나 비밀번호가 다릅니다.');

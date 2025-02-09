@@ -6,6 +6,13 @@ export const postLogin = async (email: string, password: string) => {
     email,
     password,
   });
+
+  const accessToken = response.data;
+
+  if (accessToken) {
+    localStorage.setItem('accessToken', accessToken.replace('Bearer ', ''));
+  }
+
   return response.data;
 };
 
@@ -23,4 +30,13 @@ export const postPersonalIdCheck = async (input: string) => {
     input,
   });
   return response.data;
+};
+
+/* 로그아웃 */ //추후 수정
+export const getLogout = async () => {
+  //const response = await axiosInstance.get('/api/users/logout');
+
+  localStorage.removeItem('accessToken');
+
+  //return response.data;
 };
