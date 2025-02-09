@@ -64,9 +64,9 @@ const NewArticlePage = () => {
           alt="paper background"
         />
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
-        <div className="relative m-4 z-10 p-20">
+        <div className="relative z-10 pt-20 pl-20 pr-5">
           <textarea
-            className="w-full min-h-[40vh] text-lg bg-transparent outline-none"
+            className="w-full min-h-[40vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-400"
             placeholder="What's happening?"
           />
           {/* 가로 스크롤 오버플로우 바 */}
@@ -86,7 +86,7 @@ const NewArticlePage = () => {
             </div>
           )}
         </div>
-        <div className="">
+        <div>
           <AiFilButton />
         </div>
       </div>
