@@ -5,13 +5,15 @@ metadata:
   annotations:
     # cert-manager가 ClusterIssuer를 사용하여 인증서를 발급하도록 지정
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    kubernetes.io/ingress.class: "traefik"    # Traefik을 명시
-    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"  # HTTPS entrypoint 지정
+    # Nginx Ingress Controller 사용
+    kubernetes.io/ingress.class: "nginx"
+    # HTTP로 접속 시 HTTPS로 강제 리다이렉트
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   tls:
     - hosts:
         - fillit.kro.kr
-      # cert-manager가 발급한 인증서와 키가 저장될 Secret 이름 - 실제 저장이 fillit-tls-qpr6s로 이루어져 변경
+      # cert-manager가 발급한 인증서와 키가 저장될 Secret 이름
       secretName: fillit-tls-qpr6s
   rules:
     - host: fillit.kro.kr
@@ -21,6 +23,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: fillit-service      # 백엔드 서비스 이름
+                name: fillit-service
                 port:
-                  number: 8080            # 백엔드 서비스 포트
+                  number: 8080
