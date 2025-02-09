@@ -11,11 +11,16 @@ import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.service.ReplyService;
 import com.social.a406.domain.interest.dto.InterestResponse;
 import com.social.a406.domain.interest.service.InterestService;
+import com.social.a406.domain.like.entity.BoardLike;
+import com.social.a406.domain.like.repository.BoardLikeRepository;
+import com.social.a406.domain.like.service.BoardLikeService;
+import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -32,6 +37,9 @@ public class AIFacadeService {
     private final YoutubeService youtubeService;
     private final FlickrService flickrService;
     private final InterestService interestService;
+    private final BoardLikeService boardLikeService;
+    private final UserRepository userRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final ReplyService replyService;
 
     /**
@@ -116,6 +124,21 @@ public class AIFacadeService {
                 boardService.getBoardAuthorPersonalIdById(boardId)
         ));
         return commentService.addAiComment(boardId, new CommentRequest(content), personalId);
+    }
+
+    /**
+     * AI가 특정 게시글에 좋아요 생성
+     */
+    public void generateAndSaveLike(Long boardId, String personalId){
+        String userId = userRepository.findByPersonalId(personalId).get().getId();
+
+        Optional<BoardLike> boardLike = boardLikeRepository.findByBoard_IdAndUser_Id(boardId, userId);
+        if(boardLike.isPresent()){
+            System.out.println("Ai User already liked this board");
+            return;
+        }
+
+        boardLikeService.addLike(personalId, boardId);
     }
 
     /**

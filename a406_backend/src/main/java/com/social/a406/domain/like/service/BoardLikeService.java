@@ -42,6 +42,7 @@ public class BoardLikeService {
         notificationService.generateBoardLikeNotification(like);
 
         board.increaseLikeCount();
+//        return board;
     }
 
     @Transactional
