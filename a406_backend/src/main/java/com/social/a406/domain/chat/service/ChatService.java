@@ -190,6 +190,36 @@ public class ChatService {
         );
     }
 
+    @Transactional
+    public List<ChatRoomResponse> searchChatRooms(String personalId, Pageable pageable, Long cursorId, String word) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new IllegalArgumentException("Not found User"));
+        // 1) (참여 테이블 + 방 테이블) JOIN FETCH로 한 번에 조회
+        List<ChatParticipants> participants =
+                chatParticipantsRepository.findByUserIdWithChatRoomFetchAndSearch(user.getId(), word, cursorId, pageable);
 
+        // 2) 채팅방 Id 목록 추출
+        Set<Long> chatRoomIds = participants.stream()
+                .map(cp -> cp.getChatRoom().getId())
+                .collect(Collectors.toSet());
 
+        // 3) 상대방 이름, 프로필 이미지 추출, chatRoomId를 key로한 Map 만들어놔서 Dto 변환할때 효율성 추구
+        Map<Long, User> otherUserInfoMap =
+                chatParticipantsRepository.findAllByChatRoomIdInAndNotUserId(chatRoomIds, user.getId()).stream()
+                        .collect(Collectors.toMap(
+                                cp -> cp.getChatRoom().getId(),     // key
+                                cp -> cp.getUser()) // value: DTO
+                        );
+
+        // 4) participants를 돌면서 DTO 구성
+        return participants.stream().map(cp -> {
+            ChatRoom cr = cp.getChatRoom();
+            Long roomId = cr.getId();
+
+            User userInfo = otherUserInfoMap.get(roomId);
+
+            return new ChatRoomResponse(roomId, userInfo.getName(), userInfo.getProfileImageUrl(), cr.getLastMessageContent(), cr.getLastMessageTime(), cp.getUnreadMessageCount());
+
+        }).collect(Collectors.toList());
+    }
 }

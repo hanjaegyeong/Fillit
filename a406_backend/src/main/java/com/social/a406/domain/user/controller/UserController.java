@@ -124,7 +124,7 @@ public class UserController {
     public ResponseEntity<List<UserSearchResponse>> searchUser(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String cursorId,
-            @RequestParam String word
+            @RequestParam(required = false) String word
     ){
         Pageable pageable = PageRequest.of(0,size);
         return ResponseEntity.ok(userService.searchUser(pageable, cursorId, word));
