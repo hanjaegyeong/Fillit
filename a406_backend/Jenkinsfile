@@ -47,34 +47,5 @@ pipeline {
                 """
             }
         }
-
-        // Docker Hub 로그인 단계
-        stage('Docker Hub Login') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
-                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                }
-            }
-        }
-
-        // 도커 이미지 레지스트리에 푸시
-        stage('Push Docker Image') {
-            steps {
-                sh """
-                    docker tag ${DOCKER_IMAGE_NAME}:latest jaegyeong223/fillit:${BUILD_NUMBER}
-                    docker push jaegyeong223/fillit:${BUILD_NUMBER}
-                """
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                // 템플릿 파일에 환경변수 치환
-                sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
-                // Kubernetes 클러스터에 매니페스트 적용
-                sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
-                sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
-            }
-        }
     }
 }
