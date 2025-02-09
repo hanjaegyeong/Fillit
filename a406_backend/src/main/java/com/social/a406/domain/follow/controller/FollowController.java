@@ -1,11 +1,12 @@
 package com.social.a406.domain.follow.controller;
 
 import com.social.a406.domain.follow.dto.FollowRequest;
+import com.social.a406.domain.follow.dto.FollowResponse;
 import  com.social.a406.domain.follow.service.FollowService;
 import  com.social.a406.domain.follow.entity.Follow;
 import  com.social.a406.domain.user.entity.User;
+import com.social.a406.util.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,32 +72,36 @@ public class FollowController {
 
     // 팔로워 가져오기
     @GetMapping("/getfollower")
-    public ResponseEntity<?> getFollowerlistById(@RequestParam String personalId) {
+    public ResponseEntity<?> getFollowerlistById(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String personalId) {
 
         User user = followService.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<Follow> followerList = followService.getFollowerList(user);
+        List<FollowResponse> followerList = followService.getFollowerList(userDetails.getUsername(), user);
 
         // 팔로워 없을때 how?
-        if(followerList != null && followerList.size() > 0) {
-            return new ResponseEntity<List<Follow>>(followerList, HttpStatus.OK);
+        if(followerList == null && followerList.size() == 0) {
+            throw new BadRequestException("Follower does not exist");
         }
-        return ResponseEntity.badRequest().body("Follower does not exist");
+        return ResponseEntity.ok(followerList);
     }
 
     // 팔로잉 가져오기
     @GetMapping("/getfollowee")
-    public ResponseEntity<?> getFolloweelistById(@RequestParam String personalId) {
+    public ResponseEntity<List<FollowResponse>> getFolloweelistById(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String personalId) {
         User user = followService.findByPersonalId(personalId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<Follow> followeeList = followService.getFolloweeList(user);
+        List<FollowResponse> followeeList = followService.getFolloweeList(userDetails.getUsername(), user);
 
-        if(followeeList != null && followeeList.size() > 0) {
-            return new ResponseEntity<List<Follow>>(followeeList, HttpStatus.OK);
+        if(followeeList == null && followeeList.size() == 0) {
+            throw new BadRequestException("Followee does not exist");
         }
-        return ResponseEntity.badRequest().body("Followee does not exist");
+        return ResponseEntity.ok(followeeList);
     }
 
 }
