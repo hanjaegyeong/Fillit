@@ -54,8 +54,8 @@ public class FeedService {
 
         // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 80% 비율)
         int followLimit = (int) Math.ceil(limit * 0.8);
-        PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("addedAt").descending());
-        List<Feed> feedEntries = feedRepository.findByUserIdAndAddedAtBefore(userId, cursor, followPageable);
+        PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("createdAt").descending());
+        List<Feed> feedEntries = feedRepository.findByUserIdAndcreatedAtBefore(userId, cursor, followPageable);
         List<Board> friendBoards = feedEntries.stream()
                 .map(Feed::getBoard)
                 .collect(Collectors.toList());
