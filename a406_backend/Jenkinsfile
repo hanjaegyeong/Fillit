@@ -28,11 +28,6 @@ pipeline {
                     sh """
                         chmod +x ./gradlew
                         ./gradlew clean build \
-                            -Djwt.secret-key=$JWT_SECRET_KEY \
-                            -Dspring.datasource.url=$DB_URL \
-                            -Dspring.datasource.username=$DB_USERNAME \
-                            -Dspring.datasource.password=$DB_PASSWORD \
-                            -Dspring.mail.password=$MAIL_PASSWORD
                             -Djwt.secret-key="$JWT_SECRET_KEY" \\
                             -Dspring.datasource.url="$DB_URL" \\
                             -Dspring.datasource.username="$DB_USERNAME" \\
