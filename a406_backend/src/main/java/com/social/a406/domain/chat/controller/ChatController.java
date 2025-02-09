@@ -74,7 +74,7 @@ public class ChatController {
             chatRoom = Optional.ofNullable(chatService.createChatRoom(userId, otherId));
         }
 
-        return ResponseEntity.ok(chatService.convertToChatRoomResponse(chatRoom.get(), userId,other)); // dto로 mapping 해서 반환
+        return ResponseEntity.ok(chatService.convertToChatRoomResponse(chatRoom.get(), userId, other)); // dto로 mapping 해서 반환
     }
 
     // 채팅방 목록 가져오기
@@ -93,17 +93,6 @@ public class ChatController {
 
     }
 
-//    // 마지막 메세지 읽음처리
-//    @PatchMapping("/rooms/read")
-//    public ResponseEntity<?> ReadMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long chatRoomId){
-//        User user = chatService.findByPersonalId(userDetails.getUsername())
-//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + userDetails.getUsername()));
-//        String userId = user.getId();
-//
-//        ChatParticipants participants = chatService.updateLastReadMessage( userId, chatRoomId);
-//
-//        return ResponseEntity.ok(participants);
-//    }
 
     @GetMapping("/rooms/search")
     public ResponseEntity<List<ChatRoomResponse>> searchChatRooms(
