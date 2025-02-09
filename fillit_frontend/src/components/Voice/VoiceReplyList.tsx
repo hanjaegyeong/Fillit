@@ -14,16 +14,8 @@ const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 임시 데이터 배열
-  // const mockReplies: VoiceReplyData[] = Array.from({ length: 10 }, (_, i) => ({
-  //   id: `${i + 1}`,
-  //   audioUrl: `https://example.com/audio${i + 1}.mp3`,
-  //   createdAt: new Date().toISOString(),
-  //   userId: `user${i + 1}`,
-  //   voiceId: 'voice1',
-  // }));
-
   const handleReplyClick = (voiceReply: VoiceReply) => {
+    console.log('[VoiceReplyList] 선택된 답장:', voiceReply);
     setSelectedReplyId(voiceReply);
     setIsModalOpen(true);
   };
@@ -31,6 +23,7 @@ const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedReplyId(null);
+    console.log('[VoiceReplyList] 모달 닫힘.');
   };
 
   return (

@@ -1,13 +1,5 @@
 import { VoiceReply } from '@/types/voice';
 
-// export interface VoiceReplyData {
-//   id: string;
-//   audioUrl: string;
-//   createdAt: string;
-//   userId: string;
-//   voiceId: string;
-// }
-
 interface VoiceReplyItemProps {
   data: VoiceReply;
   onReplyClick: (voiceReply: VoiceReply) => void;

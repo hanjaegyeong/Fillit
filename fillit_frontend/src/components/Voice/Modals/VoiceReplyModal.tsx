@@ -4,11 +4,6 @@ import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { VoiceReply } from '@/types/voice';
 
-// interface VoiceReplyData {
-//   id: string;
-//   userId: string; // ✅ user_id → userId (카멜 케이스 적용)
-// }
-
 interface VoiceReplyModalProps {
   replyData: VoiceReply | undefined;
   isOpen: boolean;

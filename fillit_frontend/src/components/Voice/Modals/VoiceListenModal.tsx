@@ -30,8 +30,14 @@ const VoiceListenModal = ({
 
   const handleClick = () => {
     if (isFinished) {
+      // 콘솔 추가
+      console.log(
+        '[VoiceListenModal] 오디오 재생 완료됨, 답장 페이지로 이동합니다.'
+      );
+      ///
       navigate('/voice/reply', { state: { voiceData } });
     } else {
+      console.log('[VoiceListenModal] 오디오 재생 시작됨.');
       handlePlay();
     }
   };
