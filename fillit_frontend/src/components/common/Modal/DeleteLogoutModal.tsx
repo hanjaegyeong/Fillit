@@ -1,4 +1,4 @@
-import BasicButton from '../Button/BasicButton';
+import BasicButton from '@/components/common/Button/BasicButton';
 import Modal from './Modal';
 import { caution } from '@/assets/assets';
 
