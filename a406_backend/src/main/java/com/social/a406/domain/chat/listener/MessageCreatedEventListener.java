@@ -22,7 +22,7 @@ public class MessageCreatedEventListener  {
     @Async
     @EventListener
     public void handleUnreadMessageEvent(UnreadMessageEvent event) {
-        chatWebSocketService.increaseUnreadMessageAndUpdateRoom(event.getRequest(), event.getPersonalIdList());
+        chatWebSocketService.increaseUnreadMessageAndUpdateRoom(event.getRequest(), event.getPersonalIdList(), event.getPersonalId());
     }
 
 }
