@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fillit-container
-        image: fillit:latest
+        image: jaegyeong223/fillit:120
         ports:
           - containerPort: 8080
         env:
