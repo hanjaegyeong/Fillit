@@ -9,6 +9,7 @@ import com.social.a406.domain.user.repository.EmailVerifyCodeRepository;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.JwtTokenUtil;
 import com.social.a406.util.VerifyEmailUtil;
+import com.social.a406.util.exception.DuplicateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -398,13 +399,13 @@ public class UserService {
 
     public void checkDuplicateEmail(String email) {
         if (existsByEmail(email)) {
-            throw new IllegalArgumentException("Somebody is already using this email.");
+            throw new DuplicateException("Somebody is already using this email.");
         }
     }
 
     public void checkDuplicatePersonalId(String personalId) {
         if (existsByPersonalId(personalId)) {
-            throw new IllegalArgumentException("This nickname is already taken.");
+            throw new DuplicateException("This nickname is already taken.");
         }
     }
 }
