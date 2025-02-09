@@ -5,6 +5,8 @@ metadata:
   annotations:
     # cert-manager가 ClusterIssuer를 사용하여 인증서를 발급하도록 지정
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: "traefik"    # Traefik을 명시
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"  # HTTPS entrypoint 지정
 spec:
   tls:
     - hosts:
