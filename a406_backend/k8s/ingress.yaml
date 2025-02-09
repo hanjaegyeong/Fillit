@@ -5,8 +5,6 @@ metadata:
   annotations:
     # cert-manager가 ClusterIssuer를 사용하여 인증서를 발급하도록 지정
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    # HTTP 요청을 HTTPS로 강제 리다이렉트 (선택 사항)
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
     - hosts:
