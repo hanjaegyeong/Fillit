@@ -137,26 +137,6 @@ public class ChatService {
 
     }
 
-//    // 채팅참여 테이블, 메세지 읽음 처리
-//    @Transactional
-//    public ChatParticipants updateLastReadMessage(String personalId, Long chatRoomId) {
-//        //userId 찾기
-//        User user = findByPersonalId(personalId)
-//                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
-//        String userId = user.getId();
-//
-//        // ChatParticipants 엔티티 찾기
-//        ChatParticipants participant = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoomId, userId)
-//                .orElseThrow(() -> new IllegalArgumentException("Chat participant not found"));
-//        // 가장 최근의 상대방 메세지 찾기
-//        Long messageId = chatMessageRepository.findLastMessageIdByChatMessageId_ChatRoomIdAndNotUserId(chatRoomId, userId);
-//        // 마지막으로 읽은 메시지 ID 업데이트 - 상대방 기준으로 업데이트해야함
-//        participant.updateLastReadMessageId(messageId);
-//
-//        return participant;
-//    }
-
-
     public Optional<User> findByPersonalId(String personalId) {
         return userRepository.findByPersonalId(personalId);
     }
@@ -172,11 +152,14 @@ public class ChatService {
     }
 
     public ChatRoomResponse convertToChatRoomResponse(ChatRoom chatRoom, String currentUserId, User other) {
-        // 현재 사용자에 해당하는 ChatParticipants 찾기 (참여자 목록은 join fetch로 이미 로딩되어 있다고 가정)
-        ChatParticipants currentParticipant = chatRoom.getParticipants().stream()
-                .filter(cp -> cp.getUser().getId().equals(currentUserId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("현재 사용자의 채팅 참여자 정보가 없습니다."));
+        // 현재 사용자에 해당하는 ChatParticipants 찾기
+//        ChatParticipants currentParticipant = chatRoom.getParticipants().stream()
+//                .filter(cp -> cp.getUser().getId().equals(currentUserId))
+//                .findFirst()
+//                .orElseThrow(() -> new IllegalStateException("현재 사용자의 채팅 참여자 정보가 없습니다."));
+        ChatParticipants currentParticipant = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoom.getId(), currentUserId)
+                .orElseThrow(() -> new IllegalStateException("ChatPaticipants not found by chatRoomId and userId: " + chatRoom.getId() + ", " +currentUserId));
+
 
         Long unreadCount = currentParticipant.getUnreadMessageCount();
 
