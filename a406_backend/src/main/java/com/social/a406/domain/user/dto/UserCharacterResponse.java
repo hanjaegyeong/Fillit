@@ -17,4 +17,5 @@ public class UserCharacterResponse {
     private String birthDate; // 생년월일 (yyyy-MM-dd)
     private Long followerCount;
     private Long followeeCount;
+    private boolean isFollow;
 }

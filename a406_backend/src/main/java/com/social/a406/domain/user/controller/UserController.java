@@ -78,8 +78,10 @@ public class UserController {
 
     // 유저 조회
     @GetMapping("/{personalId}")
-    public ResponseEntity<UserCharacterResponse> getUserInfo(@PathVariable String personalId) {
-        UserCharacterResponse response = userService.getUserInfoByPersonalId(personalId);
+    public ResponseEntity<UserCharacterResponse> getUserInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String personalId) {
+        UserCharacterResponse response = userService.getUserInfoByPersonalId(userDetails.getUsername() ,personalId);
         return ResponseEntity.ok(response);
     }
 
