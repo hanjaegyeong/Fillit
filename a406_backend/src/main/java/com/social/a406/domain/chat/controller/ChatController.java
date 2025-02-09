@@ -9,6 +9,8 @@ import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.chat.service.ChatWebSocketService;
 import com.social.a406.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -102,6 +104,17 @@ public class ChatController {
 //
 //        return ResponseEntity.ok(participants);
 //    }
+
+    @GetMapping("/rooms/search")
+    public ResponseEntity<List<ChatRoomResponse>> searchChatRooms(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(required = false) String word
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(chatService.searchChatRooms(userDetails.getUsername(), pageable, cursorId, word));
+    }
 
 }
 
