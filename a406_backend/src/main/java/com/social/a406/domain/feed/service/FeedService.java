@@ -1,6 +1,7 @@
 package com.social.a406.domain.feed.service;
 
 import com.social.a406.domain.board.entity.Board;
+import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.feed.dto.FeedResponseDto;
@@ -100,6 +101,10 @@ public class FeedService {
     }
 
     private PostDto convertToDto(Board board, Boolean isRecommended) {
+        String boardImageUrl = boardService.findFirstByBoardIdOrderByIdAsc(board.getId())
+                .map(BoardImage::getImageUrl)
+                .orElse(null);
+
         PostDto dto = PostDto.builder()
                 .boardId(board.getId())
                 .content(board.getContent())
@@ -109,7 +114,7 @@ public class FeedService {
                 .likeCount(board.getLikeCount())
                 .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .keyword(board.getKeyword())
-                .imageUrl(boardService.findFirstByBoardIdOrderByIdAsc(board.getId()).getImageUrl())
+                .imageUrl(boardImageUrl)
                 .createdAt(board.getCreatedAt())
                 .isRecommended(isRecommended)
                 .build();
