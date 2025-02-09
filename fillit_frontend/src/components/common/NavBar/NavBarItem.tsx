@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import useNavStore from '@/store/navStore';
+import useNavStore from '@/store/useNavStore';
 
 interface NavBarItemProps {
   navItemId: string;
