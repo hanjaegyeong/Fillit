@@ -11,56 +11,48 @@ import {
   MyPageActiveIcon,
 } from '@/assets/assets';
 import NavBarItem from '@/components/common/NavBar/NavBarItem';
-import { useLocation } from 'react-router-dom';
-
-const navItems = [
-  {
-    navItemId: 'home',
-    inactiveIcon: HomeInactiveIcon,
-    activeIcon: HomeActiveIcon,
-    alt: 'home icon',
-    to: '/',
-  },
-  {
-    navItemId: 'voice',
-    inactiveIcon: VoiceInactiveIcon,
-    activeIcon: VoiceActiveIcon,
-    alt: 'voice icon',
-    to: '/voice',
-  },
-  {
-    navItemId: 'search',
-    inactiveIcon: SearchInactiveIcon,
-    activeIcon: SearchActiveIcon,
-    alt: 'search icon',
-    to: '/search',
-  },
-  {
-    navItemId: 'message',
-    inactiveIcon: MessageInactiveIcon,
-    activeIcon: MessageActiveIcon,
-    alt: 'message icon',
-    to: '/message',
-  },
-  {
-    navItemId: 'myPage',
-    inactiveIcon: MyPageInactiveIcon,
-    activeIcon: MyPageActiveIcon,
-    alt: 'myPage icon',
-    to: '/profile/mynameis',
-  },
-];
+import { useUserStore } from '@/store/useUserStore';
 
 const NavBar = () => {
-  const { pathname } = useLocation();
+  const { user } = useUserStore();
 
-  if (
-    pathname.includes('edit') ||
-    pathname.includes('customize') ||
-    pathname.includes('newarticle')
-  ) {
-    return null;
-  }
+  const navItems = [
+    {
+      navItemId: 'home',
+      inactiveIcon: HomeInactiveIcon,
+      activeIcon: HomeActiveIcon,
+      alt: 'home icon',
+      to: '/',
+    },
+    {
+      navItemId: 'voice',
+      inactiveIcon: VoiceInactiveIcon,
+      activeIcon: VoiceActiveIcon,
+      alt: 'voice icon',
+      to: '/voice',
+    },
+    {
+      navItemId: 'search',
+      inactiveIcon: SearchInactiveIcon,
+      activeIcon: SearchActiveIcon,
+      alt: 'search icon',
+      to: '/search',
+    },
+    {
+      navItemId: 'message',
+      inactiveIcon: MessageInactiveIcon,
+      activeIcon: MessageActiveIcon,
+      alt: 'message icon',
+      to: '/message',
+    },
+    {
+      navItemId: 'myPage',
+      inactiveIcon: MyPageInactiveIcon,
+      activeIcon: MyPageActiveIcon,
+      alt: 'myPage icon',
+      to: `/profile/${user?.personalId}`,
+    },
+  ];
 
   return (
     <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">
