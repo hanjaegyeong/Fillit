@@ -2,14 +2,15 @@ import { motion } from 'framer-motion';
 import { sound, playIcon2, soundWave } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
+import { VoiceReply } from '@/types/voice';
 
-interface VoiceReplyData {
-  id: string;
-  userId: string; // ✅ user_id → userId (카멜 케이스 적용)
-}
+// interface VoiceReplyData {
+//   id: string;
+//   userId: string; // ✅ user_id → userId (카멜 케이스 적용)
+// }
 
 interface VoiceReplyModalProps {
-  replyData: VoiceReplyData | undefined;
+  replyData: VoiceReply | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -21,6 +22,7 @@ const VoiceReplyModal = ({
 }: VoiceReplyModalProps) => {
   const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
     isModalOpen: isOpen,
+    audioUrl: replyData?.audioUrl,
   });
 
   if (!replyData) return null;
@@ -45,7 +47,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${replyData.userId}`} // ✅ user_id → userId
+            src={`https://i.pravatar.cc/150?u=${replyData.personalId}`} // ✅ user_id → userId
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

@@ -3,6 +3,9 @@ import { micBig, pressedMic, soundWave } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
+import { postVoice } from '@/api/voice';
+
+// 녹음 완료 시 녹음 파일을 api로 업로드드
 
 interface VoiceRecordModalProps {
   isOpen: boolean;
@@ -21,6 +24,7 @@ const VoiceRecordModal = ({
     currentDuration,
     handleRecord,
     reset,
+    recordedFile,
   } = useVoiceControl({
     isModalOpen: isOpen,
     onComplete: () => {
@@ -38,9 +42,17 @@ const VoiceRecordModal = ({
     reset();
   };
 
-  const handleSubmit = () => {
-    onRecordComplete();
-    onClose();
+  const handleSubmit = async () => {
+    if (recordedFile) {
+      try {
+        await postVoice(recordedFile);
+        onRecordComplete();
+        onClose();
+        console.log('음성 업로드 성공');
+      } catch (error) {
+        console.error('음성 업로드 실패', error);
+      }
+    }
   };
 
   return (
