@@ -163,13 +163,20 @@ public class UserService {
         }
     }
 
-    public UserCharacterResponse getUserInfoByPersonalId(String personalId) {
+    public UserCharacterResponse getUserInfoByPersonalId(String myPersonalId, String personalId) {
         // UserRepository에서 닉네임으로 사용자 조회
         Optional<User> userOptional = userRepository.findByPersonalId(personalId);
 
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
+            boolean isFollow = false;
+            if(!myPersonalId.equals(personalId)){
+                User me = userRepository.findByPersonalId(myPersonalId).orElseThrow(
+                        () -> new IllegalArgumentException("Not found my information"));
+                isFollow = followRepository.existsByFolloweeIdAndFollowerId(user.getId(),me.getId());
+            }
             Long followerCount = followRepository.countFollowers(user);
             Long followeeCount = followRepository.countFollowees(user);
             return UserCharacterResponse.builder()
@@ -182,6 +189,7 @@ public class UserService {
                     .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
                     .followerCount(followerCount)
                     .followeeCount(followeeCount)
+                    .isFollow(isFollow)
                     .build();
         }
 

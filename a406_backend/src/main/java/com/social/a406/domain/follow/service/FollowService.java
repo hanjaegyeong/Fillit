@@ -1,6 +1,7 @@
 package  com.social.a406.domain.follow.service;
 
 
+import com.social.a406.domain.follow.dto.FollowResponse;
 import  com.social.a406.domain.follow.entity.Follow;
 import  com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.notification.entity.NotificationType;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,17 +51,52 @@ public class FollowService {
         return false; // 삭제 실패 (존재하지 않는 관계)
     }
 
-    // 나의 팔로워
-    public List<Follow> getFollowerList (User user) {
+    public List<FollowResponse> getFollowerList(String myPersonalId, User user) {
         List<Follow> userList = followRepository.findByFollowee(user); // 팔로우 당한사람에서 가져오기
-        // UserList로 바꿔주기
-        return userList;
+
+        // 내 정보 조회
+        User me = userRepository.findByPersonalId(myPersonalId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found my info"));
+
+        // 응답 리스트 초기화
+        List<FollowResponse> responses = new ArrayList<>();
+
+        for (Follow follower : userList) {
+            boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
+                    follower.getFollower().getId(), me.getId());
+
+            responses.add(FollowResponse.builder()
+                    .personalId(follower.getFollower().getPersonalId())
+                    .profileImageUrl(follower.getFollower().getProfileImageUrl())
+                    .isFollow(isFollow)
+                    .build());
+        }
+
+        return responses;
     }
 
+
     // 나의 팔로잉
-    public List<Follow> getFolloweeList (User user) {
+    public List<FollowResponse> getFolloweeList (String myPersonalId, User user) {
         List<Follow> userList = followRepository.findByFollower(user); // 팔로우 당한사람에서 가져오기
-        return userList;
+        // 내 정보 조회
+        User me = userRepository.findByPersonalId(myPersonalId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found my info"));
+
+        // 응답 리스트 초기화
+        List<FollowResponse> responses = new ArrayList<>();
+
+        for (Follow followee : userList) {
+            boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
+                    followee.getFollower().getId(), me.getId());
+
+            responses.add(FollowResponse.builder()
+                    .personalId(followee.getFollower().getPersonalId())
+                    .profileImageUrl(followee.getFollower().getProfileImageUrl())
+                    .isFollow(isFollow)
+                    .build());
+        }
+        return responses;
     }
 
     // email로 userId 찾기
