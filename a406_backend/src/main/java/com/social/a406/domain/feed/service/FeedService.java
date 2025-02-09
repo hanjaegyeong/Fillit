@@ -1,6 +1,8 @@
 package com.social.a406.domain.feed.service;
 
 import com.social.a406.domain.board.entity.Board;
+import com.social.a406.domain.board.service.BoardService;
+import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.feed.dto.FeedResponseDto;
 import com.social.a406.domain.feed.dto.PostDto;
 import com.social.a406.domain.feed.entity.Feed;
@@ -28,6 +30,8 @@ public class FeedService {
     private final UserInterestRepository userInterestRepository;
     private final FeedBoardRepository feedBoardRepository;
     private final FeedRepository feedRepository;
+    private final CommentService commentService;
+    private final BoardService boardService;
 
 
     /**
@@ -98,9 +102,14 @@ public class FeedService {
     private PostDto convertToDto(Board board, Boolean isRecommended) {
         PostDto dto = PostDto.builder()
                 .boardId(board.getId())
-                .userId(board.getUser().getId())
                 .content(board.getContent())
+                .personalId(board.getUser().getPersonalId())
+                .profileImageUrl(board.getUser().getProfileImageUrl())
+
                 .likeCount(board.getLikeCount())
+                .commentCount(commentService.getCommentCountByBoard(board.getId()))
+                .keyword(board.getKeyword())
+                .imageUrl(boardService.findFirstByBoardIdOrderByIdAsc(board.getId()).getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .isRecommended(isRecommended)
                 .build();
