@@ -1,15 +1,15 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-prod
+  name: letsencrypt-nginx
 spec:
   acme:
     # 프로덕션용 Let's Encrypt ACME 서버 URL
     server: https://acme-v02.api.letsencrypt.org/directory
-    email:  hjg000223@naver.com    # 실제 사용하는 이메일 주소
+    email: hjg000223@naver.com
     privateKeySecretRef:
-      name: letsencrypt-prod
+      name: letsencrypt-nginx
     solvers:
       - http01:
           ingress:
-            class: nginx             # 사용 중인 Ingress Controller의 클래스 (보통 "nginx")
+            class: nginx  # 사용 중인 Ingress Controller의 클래스
