@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import Header from '../components/common/Header/Header';
+import Header from '@/components/common/Header/Header';
 import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
 import { BackIcon } from '@/assets/assets';
 import ArticleImage from '@/mocks/images/article-image.png';
 
-const ProfileCustomize = () => {
+const ProfileCustomPage = () => {
   const tempImages = [
     ArticleImage,
     ArticleImage,
@@ -79,4 +79,4 @@ const ProfileCustomize = () => {
   );
 };
 
-export default ProfileCustomize;
+export default ProfileCustomPage;

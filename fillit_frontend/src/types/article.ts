@@ -11,6 +11,20 @@ export interface Article {
   keyword: string;
   pageNumber: number;
   imageUrls: string[];
+  interests: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ArticlePostForm {
+  board: {
+    content: string;
+    x?: number;
+    y?: number;
+    z?: number;
+    keyword: string;
+    pageNumber?: number;
+    interests?: string[];
+  };
+  boardImages?: File[];
 }

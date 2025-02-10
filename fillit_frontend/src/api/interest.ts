@@ -11,3 +11,9 @@ export const postInterest = async (
   });
   return response.data;
 };
+
+/* 관심사 조회 */
+export const getInterest = async () => {
+  const response = await axiosInstance.get('/api/interests/user');
+  return response.data;
+};
