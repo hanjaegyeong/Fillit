@@ -20,7 +20,7 @@ export const TagSelectModal = ({
         <span className="text-2xl pt-4 pb-4 flex justify-center items-center">
           Please select a category
         </span>
-        <InterestTags selectedTags={selectedTags} onChange={() => {}} />
+        <InterestTags selectedTags={selectedTags} />
         <div className="pt-4 flex justify-center items-center">
           <BasicButton text="Done" width="92px" onClick={onClose} />
         </div>
