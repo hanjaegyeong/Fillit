@@ -90,9 +90,12 @@ public class ChatWebSocketService {
         // 변경된 엔티티 저장
         chatParticipantsRepository.saveAll(chatParticipantsList);
 
-        for(String receiverId : personalIdList) {
-            notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+        if(personalIdList != null){
+            for(String receiverId : personalIdList) {
+                notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+            }
         }
+
     }
 
     
