@@ -8,6 +8,7 @@ import com.social.a406.domain.oauth.service.KakaoOauthService;
 import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
+import com.social.a406.util.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ public class OauthController {
     private final KakaoOauthService kakaoOauthService;
     private final GoogleOauthService googleOauthService;
     private final NaverOauthService naverOauthService;
+    private final RedisService redisService;
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
@@ -48,6 +50,9 @@ public class OauthController {
                     .personalId(tokens.get("personalId"))
                     .accessToken(tokens.get("accessToken"))
                     .build();
+
+            // Redis에 리프레시 토큰 저장
+            redisService.saveRefreshToken(tokens.get("refreshToken"), tokens.get("personalId"));
             return ResponseEntity.ok()
                     .headers(headers)
                     .header("Set-Cookie", refreshTokenCookie.toString())

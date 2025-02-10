@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +15,10 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtil {
 
     private final JwtConfig jwtConfig;
-
-    public JwtTokenUtil(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-    }
 
     // 서명에 사용할 키 반환
     private Key getSigningKey() {
