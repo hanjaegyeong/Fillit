@@ -77,6 +77,7 @@ public class ChatService {
                 .build();
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom); // 채팅방 저장
 
+        System.out.println("ChatRoom Created: "+savedChatRoom.getId());
 
         // 참여자 목록 생성 (userId와 otherId를 포함)
         List<String> participantIds = Arrays.asList(new String[]{userId, otherId});
@@ -148,7 +149,12 @@ public class ChatService {
     }
 
     private ChatMessageDto convertToChatMessageDto (ChatMessage message) {
-        return new ChatMessageDto(message.getId(), message.getChatParticipants().getUser().getName(), message.getMessageContent(), message.getCreatedAt());
+        User user = message.getChatParticipants().getUser();
+        return new ChatMessageDto(message.getId(),
+                user.getName(),
+                user.getPersonalId(),
+                message.getMessageContent(),
+                message.getCreatedAt());
     }
 
     public ChatRoomResponse convertToChatRoomResponse(ChatRoom chatRoom, String currentUserId, User other) {
