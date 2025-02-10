@@ -10,6 +10,7 @@ import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.JwtTokenUtil;
 import com.social.a406.util.VerifyEmailUtil;
 import com.social.a406.util.exception.DuplicateException;
+import com.social.a406.util.exception.UnregisteredUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -415,6 +416,12 @@ public class UserService {
     public void checkDuplicatePersonalId(String personalId) {
         if (existsByPersonalId(personalId)) {
             throw new DuplicateException("This nickname is already taken.");
+        }
+    }
+
+    public void oauthRegistCheck(String socialId) {
+        if(!userRepository.existsBySocialId(socialId)){
+            throw new UnregisteredUserException("You need registration first");
         }
     }
 }
