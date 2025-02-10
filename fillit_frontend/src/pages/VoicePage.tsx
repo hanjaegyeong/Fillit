@@ -1,5 +1,5 @@
 import Header from '@/components/common/Header/Header';
-import { BubbleBackground } from '@/components/decorations/BubbleBackground';
+import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
 import { micBack, mic } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
@@ -27,7 +27,7 @@ const VoicePage = () => {
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
-      <BubbleBackground />
+      <VoiceBackground />
       <VoiceReplyList />
       <VoiceBubbleList />
       <div className="fixed bottom-28 right-4 z-50">

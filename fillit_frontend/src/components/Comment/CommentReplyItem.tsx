@@ -2,14 +2,17 @@ import ProfileBadge from '@/components/common/Badge/ProfileBadge';
 import TimeStamp from '@/components/common/Timestamp';
 import LikeBadge from '@/components/common/Badge/LikeBadge';
 import ReplyImage from '@/assets/images/reply-bg.png';
-import { Reply } from '@/types/reply';
+import { CommentReply } from '@/types/comment';
 
-interface ReplyItemProps {
-  reply: Reply;
+interface CommentReplyItemProps {
+  commentReply: CommentReply;
   position?: 'left' | 'right';
 }
 
-const ReplyItem = ({ reply, position = 'left' }: ReplyItemProps) => {
+const CommentReplyItem = ({
+  commentReply,
+  position = 'left',
+}: CommentReplyItemProps) => {
   return (
     <div
       className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-12 ${
@@ -25,21 +28,25 @@ const ReplyItem = ({ reply, position = 'left' }: ReplyItemProps) => {
       >
         <div className={`flex items-center gap-4`}>
           <ProfileBadge
-            profileImageUrl={reply.profileImageUrl}
-            personalId={reply.personalId}
+            profileImageUrl={commentReply.profileImageUrl}
+            personalId={commentReply.personalId}
             imageSize={27}
           />
-          <TimeStamp date={reply.createdAt} />
+          <TimeStamp date={commentReply.createdAt} />
         </div>
         <div className="font-extralight text-xxs w-[13.4rem]">
-          {reply.content}
+          {commentReply.content}
         </div>
         <div className="flex justify-end">
-          <LikeBadge likeCount={reply.likeCount} isLiked={true} size="small" />
+          <LikeBadge
+            likeCount={commentReply.likeCount}
+            isLiked={true}
+            size="small"
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default ReplyItem;
+export default CommentReplyItem;
