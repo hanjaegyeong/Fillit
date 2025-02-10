@@ -144,4 +144,9 @@ public class UserController {
         userService.checkDuplicatePersonalId(request.getInput());
         return ResponseEntity.ok("Nickname is available.");
     }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> checkTestController1(){
+        return ResponseEntity.ok("Nickname is available.");
+    }
 }
