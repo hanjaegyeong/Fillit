@@ -1,22 +1,57 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-interface UseVoiceControlProps {
+// 공통 기본 프로퍼티
+interface UseVoiceControlPropsBase {
   duration?: number; // 재생 시뮬레이션용, 녹음 모드에서는 사용되지 않음
   onComplete?: () => void;
   isModalOpen?: boolean;
   audioUrl?: string;
 }
 
-// recordingMode 옵션이 true이면 실제 녹음 기능을 사용합니다.
-export const useVoiceControl = ({
+// 재생(Playback) 모드에서 반환할 속성
+export interface PlaybackControl extends UseVoiceControlPropsBase {
+  isPlaying: boolean;
+  isFinished: boolean;
+  currentDuration: number;
+  handlePlay: () => void;
+  handleRecord: () => void;
+  reset: () => void;
+  recordedFile: File | null;
+}
+
+// 녹음(Recording) 모드에서 반환할 속성
+export interface RecordingControl extends UseVoiceControlPropsBase {
+  isPlaying: boolean;
+  isFinished: boolean;
+  currentDuration: number;
+  handleRecord: () => void;
+  handleStop: () => void;
+  reset: () => void;
+  recordedFile: File | null;
+}
+
+// 오버로드 선언: recordingMode가 true인 경우
+export function useVoiceControl(
+  props: UseVoiceControlPropsBase & { recordingMode: true }
+): RecordingControl;
+
+// 오버로드 선언: recordingMode가 false 또는 생략된 경우
+export function useVoiceControl(
+  props?: UseVoiceControlPropsBase & { recordingMode?: false }
+): PlaybackControl;
+
+// 함수 구현
+export function useVoiceControl({
   duration = 3000,
   onComplete,
   isModalOpen = false,
   audioUrl,
   recordingMode = false,
-}: UseVoiceControlProps & { recordingMode?: boolean } = {}) => {
-  // 녹음 모드일 경우
+}: UseVoiceControlPropsBase & { recordingMode?: boolean } = {}):
+  | PlaybackControl
+  | RecordingControl {
   if (recordingMode) {
+    // 녹음 모드
     const [isRecording, setIsRecording] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [currentDuration, setCurrentDuration] = useState(0);
@@ -25,7 +60,6 @@ export const useVoiceControl = ({
     const intervalRef = useRef<number | null>(null);
     const timerRef = useRef<number | null>(null);
 
-    // 실제 녹음을 시작하는 함수
     const handleRecord = useCallback(async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -44,11 +78,11 @@ export const useVoiceControl = ({
           setIsRecording(true);
           setIsFinished(false);
           setCurrentDuration(0);
-          // 1초 간격으로 녹음 시간을 업데이트
+          // 1초 간격으로 녹음 시간 업데이트
           intervalRef.current = window.setInterval(() => {
             setCurrentDuration((prev) => prev + 1);
           }, 1000);
-          // 60초 후 자동 정지 (최대 녹음 시간)
+          // 최대 60초 후 자동 정지
           timerRef.current = window.setTimeout(() => {
             console.log(
               '[useVoiceControl] 최대 녹음 시간(1분) 도달, 자동 정지.'
@@ -72,6 +106,7 @@ export const useVoiceControl = ({
           setIsRecording(false);
           setIsFinished(true);
           setCurrentDuration((prev) => Math.min(prev, 60));
+          // 스트림 종료 처리
           mediaRecorder.stream.getTracks().forEach((track) => track.stop());
           const reader = new FileReader();
           reader.onload = () => {
@@ -91,7 +126,6 @@ export const useVoiceControl = ({
       }
     }, [onComplete]);
 
-    // 녹음을 중지하는 함수
     const handleStop = useCallback(() => {
       if (mediaRecorderRef.current && isRecording) {
         mediaRecorderRef.current.stop();
@@ -123,7 +157,6 @@ export const useVoiceControl = ({
       console.log('[useVoiceControl] 녹음 상태 리셋됨.');
     }, []);
 
-    // 녹음 모드가 활성화된 경우, localStorage에 저장된 녹음 파일 복원 시도
     useEffect(() => {
       if (recordingMode) {
         const storedData = localStorage.getItem('recordedVoiceData');
@@ -147,7 +180,6 @@ export const useVoiceControl = ({
       }
     }, [recordingMode]);
 
-    // 모달이 닫힐 때, 이미 녹음된 파일이 있다면 유지하고, 없으면 초기화
     useEffect(() => {
       if (!isModalOpen) {
         if (!recordedFile) {
@@ -158,7 +190,7 @@ export const useVoiceControl = ({
     }, [isModalOpen, reset, recordedFile]);
 
     return {
-      isPlaying: isRecording, // 녹음 모드에서는 isPlaying을 녹음 여부로 사용합니다.
+      isPlaying: isRecording,
       isFinished,
       currentDuration,
       handleRecord,
@@ -167,7 +199,7 @@ export const useVoiceControl = ({
       recordedFile,
     };
   } else {
-    // audioUrl이 있는 경우(재생 모드)의 기존 로직 (생략 – 기존 코드와 동일)
+    // 재생(Playback) 모드
     const [isPlaying, setIsPlaying] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [currentDuration, setCurrentDuration] = useState(0);
@@ -301,4 +333,4 @@ export const useVoiceControl = ({
       recordedFile,
     };
   }
-};
+}
