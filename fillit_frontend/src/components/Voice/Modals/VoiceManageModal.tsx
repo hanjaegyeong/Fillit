@@ -4,6 +4,7 @@ import { speaker, pressedSpeaker, caution } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { deleteVoice } from '@/api/voice';
+import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 // 보이스 삭제 시 api 함수 deletvoice를 호출
 
@@ -20,14 +21,12 @@ const VoiceManageModal = ({
   onDeleteComplete,
   voiceId,
 }: VoiceManageModalProps) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
   // isOpen이 false가 될 때 isDeleteMode 초기화
   useEffect(() => {
     if (!isOpen) {
       setIsDeleteMode(false);
-      setIsPlaying(false);
     }
   }, [isOpen]);
 
@@ -45,6 +44,8 @@ const VoiceManageModal = ({
   const handleDeleteConfirm = async () => {
     try {
       await deleteVoice(voiceId);
+      // [추가] 삭제 성공 후 localStorage 녹음 데이터 제거
+      localStorage.removeItem('recordedVoiceData');
       onDeleteComplete();
       console.log('보이스 제거 성공');
     } catch (error) {
@@ -52,15 +53,16 @@ const VoiceManageModal = ({
     }
   };
 
-  const handlePlayClick = () => {
-    setIsPlaying(true);
-    console.log('[VoiceManageModal] 보이스 재생 시작됨.');
+  const recordedVoiceData = localStorage.getItem('recordedVoiceData');
+  const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
+    isModalOpen: isOpen,
+    audioUrl: recordedVoiceData || undefined,
+    recordingMode: false, // 재생 모드로 동작
+  });
 
-    // 3초 후에 재생 종료
-    setTimeout(() => {
-      setIsPlaying(false);
-      console.log('[VoiceManageModal] 보이스 재생 종료됨.');
-    }, 3000);
+  const handlePlayClick = () => {
+    handlePlay();
+    console.log('[VoiceManageModal] 보이스 재생 시작됨.');
   };
 
   return (
@@ -77,7 +79,7 @@ const VoiceManageModal = ({
           <>
             {/* Duration  - 실제 데이터 사용 시 변경 필요요*/}
             <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-              29"
+              {Math.floor(currentDuration)}"
             </div>
 
             {/* 스피커 이미지 */}
