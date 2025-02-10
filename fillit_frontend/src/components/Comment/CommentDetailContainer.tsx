@@ -1,6 +1,6 @@
 import { commentList } from '@/mocks/fixtures/commentList';
 import CommentContent from '@/components/Comment/CommentItem';
-import ReplyListContainer from '@/components/Reply/ReplyListContainer';
+import CommentReplyListContainer from '@/components/Comment/CommentReplyListContainer';
 
 const CommentDetailContainer = () => {
   return (
@@ -8,7 +8,7 @@ const CommentDetailContainer = () => {
       <div className="pb-1">
         <CommentContent comment={commentList[0]} isDetail />
       </div>
-      <ReplyListContainer />
+      <CommentReplyListContainer />
     </div>
   );
 };
