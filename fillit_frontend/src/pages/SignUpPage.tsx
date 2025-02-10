@@ -108,6 +108,7 @@ const SignUpPage = () => {
           handleNext={handleNext}
           handleLogin={handleLogin}
           totalSteps={steps.length}
+          showBackButton={step !== steps.length - 1}
         />
       )}
     </div>
