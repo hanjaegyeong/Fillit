@@ -58,6 +58,8 @@ dependencies {
 
 	//websocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
+
 }
 
 tasks.named('test') {
