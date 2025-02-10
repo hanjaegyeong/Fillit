@@ -52,7 +52,7 @@ const VoiceRecordModal = ({
       try {
         await postVoice(recordedFile);
         console.log('음성 업로드 성공');
-        localStorage.removeItem('recordedVoiceData');
+        // localStorage.removeItem('recordedVoiceData');
         onRecordComplete();
         onClose();
       } catch (error) {
