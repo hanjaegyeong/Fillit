@@ -15,6 +15,7 @@ export const article: Article = {
   keyword: 'fillit',
   pageNumber: 1,
   imageUrls: [],
+  interests: [],
   createdAt: '2025-01-28T19:13:53.588Z',
   updatedAt: '2025-01-29T19:13:53.588Z',
 };
