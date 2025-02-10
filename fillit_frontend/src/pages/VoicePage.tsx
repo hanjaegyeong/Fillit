@@ -41,6 +41,7 @@ const VoicePage = () => {
       console.log('[VoicePage] 보이스 답장 패치 성공:', replies);
       ///
     } catch (error) {
+      setVoiceReplyList([]);
       ///
       console.error('[VoicePage] 보이스 답장 패치 실패:', error);
       ///

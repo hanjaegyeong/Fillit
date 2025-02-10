@@ -72,7 +72,18 @@ export const useVoiceControl = ({
           setIsRecording(false);
           setIsFinished(true);
           setCurrentDuration((prev) => Math.min(prev, 60));
+          mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataURL = reader.result as string;
+            localStorage.setItem('recordedVoiceData', dataURL);
+            console.log('[useVoiceControl] 녹음 파일 데이터 저장됨.');
+          };
+          reader.readAsDataURL(file);
           onComplete?.();
+          console.log(
+            '[useVoiceControl] 녹음 파일 생성 및 스트림 종료 완료됨.'
+          );
         };
         mediaRecorder.start();
       } catch (error) {
@@ -94,6 +105,7 @@ export const useVoiceControl = ({
       setIsFinished(false);
       setCurrentDuration(0);
       setRecordedFile(null);
+      localStorage.removeItem('recordedVoiceData');
       if (
         mediaRecorderRef.current &&
         mediaRecorderRef.current.state !== 'inactive'
@@ -111,13 +123,39 @@ export const useVoiceControl = ({
       console.log('[useVoiceControl] 녹음 상태 리셋됨.');
     }, []);
 
-    // 모달이 닫힐 때 녹음 상태 초기화
+    // 녹음 모드가 활성화된 경우, localStorage에 저장된 녹음 파일 복원 시도
+    useEffect(() => {
+      if (recordingMode) {
+        const storedData = localStorage.getItem('recordedVoiceData');
+        if (storedData) {
+          fetch(storedData)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], 'recorded.mp3', {
+                type: 'audio/mp3',
+              });
+              setRecordedFile(file);
+              console.log('[useVoiceControl] 저장된 녹음 파일 복원됨.');
+            })
+            .catch((error) => {
+              console.error(
+                '[useVoiceControl] 저장된 녹음 파일 복원 실패:',
+                error
+              );
+            });
+        }
+      }
+    }, [recordingMode]);
+
+    // 모달이 닫힐 때, 이미 녹음된 파일이 있다면 유지하고, 없으면 초기화
     useEffect(() => {
       if (!isModalOpen) {
-        reset();
+        if (!recordedFile) {
+          reset();
+        }
         console.log('[useVoiceControl] 모달 종료로 녹음 상태 초기화됨.');
       }
-    }, [isModalOpen, reset]);
+    }, [isModalOpen, reset, recordedFile]);
 
     return {
       isPlaying: isRecording, // 녹음 모드에서는 isPlaying을 녹음 여부로 사용합니다.
@@ -227,7 +265,7 @@ export const useVoiceControl = ({
           type: 'audio/mp3',
         });
         const file = new File([dummyBlob], 'recorded.mp3', {
-          type: 'audio/mp3',
+          type: 'audio/mpeg',
         });
         setRecordedFile(file);
         onComplete?.();

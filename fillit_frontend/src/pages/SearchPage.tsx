@@ -1,5 +1,6 @@
 import Header from '@/components/common/Header/Header';
 import { useState } from 'react';
+import TestButton from '@/components/common/Button/TestButton';
 
 interface Post {
   id: number;
@@ -49,6 +50,7 @@ const SearchPage = () => {
           </div>
         ))}
       </div>
+      <TestButton />
     </div>
   );
 };

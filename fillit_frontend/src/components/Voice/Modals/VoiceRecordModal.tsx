@@ -52,10 +52,14 @@ const VoiceRecordModal = ({
       try {
         await postVoice(recordedFile);
         console.log('음성 업로드 성공');
+        localStorage.removeItem('recordedVoiceData');
         onRecordComplete();
         onClose();
       } catch (error) {
         console.error('음성 업로드 실패', error);
+        // 임시 우회: 업로드 실패시에도 Manage로 전환
+        onRecordComplete();
+        onClose();
       }
     }
   };
