@@ -1,20 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: fillit-ingress
   annotations:
-    # cert-manager가 ClusterIssuer를 사용하여 인증서를 발급하도록 지정
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    # Nginx Ingress Controller 사용
-    kubernetes.io/ingress.class: "nginx"
-    # HTTP로 접속 시 HTTPS로 강제 리다이렉트
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-nginx
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+  name: backend-ingress
+  namespace: default
 spec:
+  ingressClassName: "nginx"
   tls:
     - hosts:
         - fillit.kro.kr
-      # cert-manager가 발급한 인증서와 키가 저장될 Secret 이름
-      secretName: fillit-tls-qpr6s
+      secretName: tls-secret
   rules:
     - host: fillit.kro.kr
       http:
