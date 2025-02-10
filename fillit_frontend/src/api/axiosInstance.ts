@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.error(error);
+    // console.error(error);
 
     throw error;
   }
