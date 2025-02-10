@@ -21,4 +21,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(UnregisteredUserException.class)
+    public ResponseEntity<String> handleUnregisteredUserException(UnregisteredUserException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
 }
