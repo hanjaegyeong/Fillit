@@ -2,13 +2,18 @@ import { useState } from 'react';
 import PhotoBorder from '@/assets/images/photo-border.png';
 import Camera from '@/assets/images/camera.png';
 
-const ImageUpload = () => {
+interface ImageUploadProps {
+  onImageUpload: (file: File) => void;
+}
+
+const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
   const [image, setImage] = useState<string | null>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setImage(URL.createObjectURL(file)); // 업로드된 이미지 미리보기
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImage(URL.createObjectURL(file));
+      onImageUpload(file);
     }
   };
 
