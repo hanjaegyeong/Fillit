@@ -35,7 +35,7 @@ export const deleteVoice = async (voiceId: number) => {
 /* 팔로위 보이스 리스트 조회 */
 export const getFolloweeVoiceList = async (): Promise<Voice[]> => {
   const response = await axiosInstance.get('/api/voice/list');
-  return response.data;
+  return response.data.voices || [];
 };
 
 /* 보이스 답장 업로드 */
@@ -71,7 +71,7 @@ export const getVoiceReply = async (
 /* 보이스 답장 조회 */
 export const getVoiceReplyList = async (): Promise<VoiceReply[]> => {
   const response = await axiosInstance.get('/api/voice/reply');
-  return response.data;
+  return response.data.voiceReplies || [];
 };
 
 /* 보이스 답장 삭제 */
