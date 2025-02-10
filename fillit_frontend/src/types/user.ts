@@ -11,3 +11,11 @@ export interface User {
   followersCount: number;
   followingCount: number;
 }
+
+export interface UserUpdateForm {
+  update: {
+    name: string;
+    introduction: string;
+  };
+  profileImage?: File;
+}
