@@ -6,6 +6,8 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
+import com.social.a406.domain.voiceBubble.entity.VoiceReply;
+import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +32,17 @@ public class VoiceService {
     private final UserRepository userRepository;
     private final S3Client s3Client;
     private final FollowRepository followRepository;
+    private final VoiceReplyRepository voiceReplyRepository;
+    private final VoiceReplyService voiceReplyService;
 
     @Autowired
-    public VoiceService(VoiceRepository voiceRepository, UserRepository userRepository, S3Client s3Client, FollowRepository followRepository) {
+    public VoiceService(VoiceRepository voiceRepository, UserRepository userRepository, S3Client s3Client, FollowRepository followRepository, VoiceReplyRepository voiceReplyRepository, VoiceReplyService voiceReplyService) {
         this.voiceRepository = voiceRepository;
         this.userRepository = userRepository;
         this.s3Client = s3Client;
         this.followRepository = followRepository;
+        this.voiceReplyRepository = voiceReplyRepository;
+        this.voiceReplyService = voiceReplyService;
     }
 
     // AWS S3 환경 변수
@@ -101,6 +107,10 @@ public class VoiceService {
     // 음성 스토리 삭제
     public void deleteVoice(Long voiceId) {
         Voice voice = voiceRepository.findById(voiceId).orElse(null);
+        List<VoiceReply> voiceReplies = voiceReplyRepository.findByVoiceId(voiceId);
+
+        voiceReplies.forEach(
+                vr -> voiceReplyService.deleteVoiceReply(vr.getId()));
         if (voice != null) {
             deleteFromS3(voice.getAudioUrl());
             voiceRepository.delete(voice);  // 해당 유저의 모든 음성 삭제
