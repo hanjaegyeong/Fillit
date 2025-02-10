@@ -1,7 +1,7 @@
-import { Reply } from '@/types/reply';
 import ProfileImage from '@/mocks/images/profile-image.png';
+import { CommentReply } from '@/types/comment';
 
-export const replyList: Reply[] = [
+export const commentReplyList: CommentReply[] = [
   {
     replyId: 0,
     content: 'Today the wind was just perfect!',
