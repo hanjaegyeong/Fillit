@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useTypingEffect from '@/hooks/useTypingEffect';
 
 import { steps } from '@/constants/signupSteps';
-import { useSignupForm } from '@/hooks/useSignUpForm';
+import { useSignupForm } from '@/hooks/useSignupForm';
 import SignupInput from '@/components/Signup/SignupInput';
 
 import FilTakeOn from '@/assets/images/fil-takeon.png';
