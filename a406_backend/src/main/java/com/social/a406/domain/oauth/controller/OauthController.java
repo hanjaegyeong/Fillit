@@ -6,6 +6,7 @@ import com.social.a406.domain.oauth.service.KakaoOauthService;
 import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
+import com.social.a406.domain.user.service.UserService;
 import com.social.a406.util.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class OauthController {
     private final GoogleOauthService googleOauthService;
     private final NaverOauthService naverOauthService;
     private final RedisService redisService;
+    private final UserService userService;
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
