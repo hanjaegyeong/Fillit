@@ -124,13 +124,7 @@ public class VoiceService {
     }
 
     public Voice findVoice(String personalId) {
-        Voice voice = voiceRepository.findByUserPersonalId(personalId).orElse(null);
-
-        if(voice != null){
-            return voice;
-        }else{
-            throw new IllegalArgumentException("Voice not found for user with personalId: " + personalId);
-        }
+        return voiceRepository.findByUserPersonalId(personalId).orElse(null);
     }
 
 }
