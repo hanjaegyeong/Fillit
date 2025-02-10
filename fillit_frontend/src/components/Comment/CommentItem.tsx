@@ -64,7 +64,7 @@ const CommentItem = ({
             size={!isDetail ? 'small' : 'large'}
           />
           <CommentBadge
-            commentCount={comment.commentCount}
+            commentCount={comment.commentReplyCount}
             size={!isDetail ? 'small' : 'large'}
           />
         </div>
