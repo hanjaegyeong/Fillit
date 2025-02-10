@@ -1,6 +1,7 @@
 package com.social.a406.filter;
 
 import com.social.a406.util.JwtTokenUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +39,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // JWT 토큰이 Authorization 헤더에 있는지 확인
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);  // "Bearer " 접두사 제거
-            username = jwtTokenUtil.extractUsername(jwt);  // JWT에서 사용자 이름 추출
+            try {
+                username = jwtTokenUtil.extractUsername(jwt); // JWT에서 사용자 이름 추출
+            } catch (ExpiredJwtException e) {
+                // JWT가 만료된 경우 401 응답 반환
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Access token expired");
+                return;
+            }
         }
 
         // username이 있고, SecurityContext에서 아직 인증되지 않은 경우 처리
