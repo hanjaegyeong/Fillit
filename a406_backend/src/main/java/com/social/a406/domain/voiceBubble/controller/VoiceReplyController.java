@@ -36,12 +36,13 @@ public class VoiceReplyController {
     @GetMapping
     public ResponseEntity<List<VoiceReplyResponse>> findVoiceReply(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
-
-        List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getId());
-
-        List<VoiceReplyResponse> responses = voiceReplies.stream()
-                .map(VoiceReplyResponse::new)
-                .toList();
+        List<VoiceReplyResponse> responses = null;
+        if(voice != null) {
+            List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getId());
+            responses = voiceReplies.stream()
+                    .map(VoiceReplyResponse::new)
+                    .toList();
+        }
         return ResponseEntity.ok(responses);
     }
 

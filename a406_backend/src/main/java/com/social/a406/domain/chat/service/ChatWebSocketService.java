@@ -90,15 +90,22 @@ public class ChatWebSocketService {
         // 변경된 엔티티 저장
         chatParticipantsRepository.saveAll(chatParticipantsList);
 
-        for(String receiverId : personalIdList) {
-            notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+        if(personalIdList != null){
+            for(String receiverId : personalIdList) {
+                notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+            }
         }
+
     }
 
     
-    
     private ChatMessageDto convertToChatMessageDto (ChatMessage message) {
-        return new ChatMessageDto(message.getId(), message.getChatParticipants().getUser().getName(), message.getMessageContent(), message.getCreatedAt());
+        User user = message.getChatParticipants().getUser();
+        return new ChatMessageDto(message.getId(),
+                user.getName(),
+                user.getPersonalId(),
+                message.getMessageContent(),
+                message.getCreatedAt());
     }
 
     public Optional<User> findByPersonalId(String personalId) {

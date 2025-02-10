@@ -33,6 +33,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
         String token = request.getHeaders().getFirst("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             response.setStatusCode(HttpStatus.FORBIDDEN);
+            System.err.println("Error: Theres No Invalid Token");
             return false; // 인증 실패
         }
         token = token.substring(7); // "Bearer " 제거
@@ -42,6 +43,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             String personalId = jwtTokenUtil.extractUsername(token); // personalId
             if (personalId == null) {
                 response.setStatusCode(HttpStatus.FORBIDDEN);
+                System.err.println("Error: Theres No Invalid personalId");
                 return false;
             }
 
@@ -49,6 +51,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             UserDetails userDetails = userDetailsService.loadUserByUsername(personalId);
             if (!jwtTokenUtil.validateToken(token, userDetails)) {
                 response.setStatusCode(HttpStatus.FORBIDDEN);
+                System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername() );
                 return false;
             }
 
@@ -67,16 +70,20 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             // 검증 및 저장 (chatRoomId가 없거나 personalId와 맞는 chatRoomId가 아닌경우)
             if (chatRoomId == null || !chatService.isParticipantInChatRoom(personalId, chatRoomId)) {
                 response.setStatusCode(HttpStatus.BAD_REQUEST);
+                System.err.println("Error: chatRoomId mismatch! Message chatRoomId: " + chatRoomId);
+
                 return false; // chatRoomId가 없거나 유효하지 않은 경우
             }
             attributes.put("chatRoomId", chatRoomId);
 
-            System.out.println("WebSocketHandShake Success! ChatRoomId:" +chatRoomId);
+            System.err.println("WebSocketHandShake Success! ChatRoomId:" +chatRoomId);
             return true; // 인증 성공 및 chatRoomId 설정 완료
 
         } catch (Exception e) {
             // 예외 발생 시 403 응답
             response.setStatusCode(HttpStatus.FORBIDDEN);
+            System.err.println("WebSocketHandShake Failed: " + e.getMessage());
+
             return false;
         }
     }
