@@ -10,3 +10,18 @@ export interface SignupForm {
   };
   profileImage?: File;
 }
+
+export interface SignupState {
+  regist: {
+    type: 'user';
+    password: string;
+    passwordConfirm: string;
+    name: string;
+    personalId: string;
+    birthDate: Date;
+    email: string;
+    introduction: string;
+    interest: string[];
+  };
+  profileImage?: File;
+}
