@@ -21,27 +21,27 @@ import {
 
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
-  const navigate = useNavigate();
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+  const navigate = useNavigate();
 
   const messages = [
     steps[step].message1,
     steps[step].message2,
     steps[step].message3,
   ];
-
   const typedMessages = useTypingEffect(messages, step, 30);
 
   const {
     signupState,
+    setSignupState,
     errors,
     isLoading,
     handleInputChange,
-    handleSignup,
-    handleInterestSubmit,
-    handlePasswordConfirmBlur,
-    handlePersonalIdBlur,
     handleEmailBlur,
+    handlePersonalIdBlur,
+    handlePasswordConfirmBlur,
+    handleInterestSubmit,
+    handleSignup,
     setErrors,
   } = useSignupForm(setStep);
 
@@ -89,6 +89,7 @@ const SignUpPage = () => {
       <SignupInput
         step={step}
         signupState={signupState}
+        setSignupState={setSignupState}
         getCurrentField={() => getCurrentField(step)}
         handleInputChange={handleInputChange}
         handlePersonalIdBlur={handlePersonalIdBlur}
