@@ -2,11 +2,14 @@ import TagButton from '@/components/common/Button/TagButton';
 import { INTEREST_TAGS } from '@/constants/interestTags';
 
 interface InterestTagsProps {
-  selectedTags: string[];
-  onChange: (tags: string[]) => void;
+  selectedTags?: string[];
+  onChange?: (tags: string[]) => void;
 }
 
-const InterestTags = ({ selectedTags, onChange }: InterestTagsProps) => {
+const InterestTags = ({
+  selectedTags = [],
+  onChange = () => {},
+}: InterestTagsProps) => {
   const handleTagClick = (tag: string) => {
     if (selectedTags.includes(tag)) {
       onChange(selectedTags.filter((t) => t !== tag));
