@@ -161,6 +161,7 @@ export const useSignupForm = (
 
   return {
     signupState,
+    setSignupState,
     errors,
     isLoading,
     handleInputChange,
