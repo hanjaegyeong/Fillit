@@ -14,8 +14,9 @@ import BirthInput from '@/components/common/Input/BirthInput';
 import InterestTags from '@/components/common/InterestTags';
 import { steps } from '@/constants/signupSteps';
 import { SignupForm, SignupState } from '@/types/signup';
-import { postSignUp } from '@/api/signup';
+import { postEmailCheck, postPersonalIdCheck, postSignUp } from '@/api/signup';
 import { postInterest } from '@/api/interest';
+import axios from 'axios';
 
 interface ValidationRule {
   required?: boolean;
@@ -228,6 +229,71 @@ const SignUpPage = () => {
       setIsLoading(false);
     }
   };
+  // 아이디 중복  체크 핸들러
+  const handlePersonalIdBlur = async () => {
+    try {
+      await postPersonalIdCheck(signupState.regist.personalId);
+      setErrors((prev) => ({
+        ...prev,
+        personalId: '',
+      }));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          // 409 에러인 경우, 이미 등록된 아이디라는 에러 메시지만 업데이트하고 콘솔에는 출력하지 않음
+          setErrors((prev) => ({
+            ...prev,
+            personalId: '이미 등록된 아이디입니다.',
+          }));
+        } else {
+          console.error('아이디 중복 체크 실패:', error);
+        }
+      } else {
+        console.error('아이디 중복 체크 실패:', error);
+      }
+    }
+  };
+
+  // 이메일 중복 체크 핸들러
+  const handleEmailBlur = async () => {
+    try {
+      await postEmailCheck(signupState.regist.email);
+      setErrors((prev) => ({
+        ...prev,
+        email: '',
+      }));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          // 409 에러인 경우 이미 등록된 이메일이라는 메세지만 업데이트
+          setErrors((prev) => ({
+            ...prev,
+            email: '이미 등록된 이메일입니다.',
+          }));
+        } else {
+          // 그 외 에러는 콘솔에 출력
+          console.error('이메일 중복 체크 실패:', error);
+        }
+      } else {
+        console.error('이메일 중복 체크 실패:', error);
+      }
+    }
+  };
+
+  const handlePasswordConfirmBlur = async () => {
+    const passwordConfirmValue = signupState.regist.passwordConfirm;
+    if (passwordConfirmValue !== signupState.regist.password) {
+      setErrors((prev) => ({
+        ...prev,
+        passwordConfirm: '비밀번호가 일치하지 않습니다',
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        passwordConfirm: '',
+      }));
+    }
+  };
 
   // 관심사 등록 API 호출
   const handleInterestSubmit = async () => {
@@ -325,11 +391,19 @@ const SignUpPage = () => {
   useEffect(() => {
     const validateStep = async () => {
       const isValid = await validateCurrentStep();
-      setIsNextButtonDisabled(!isValid);
-      console.log('Button disabled:', !isValid); // 디버깅용 로그
+      // 이메일이나 personalId 필드에서 중복 에러 메시지가 있다면 무조건 비활성화
+      if (
+        (getCurrentField() === 'email' && errors.email) ||
+        (getCurrentField() === 'personalId' && errors.personalId)
+      ) {
+        setIsNextButtonDisabled(true);
+      } else {
+        setIsNextButtonDisabled(!isValid);
+      }
+      console.log('Button disabled:', !isValid);
     };
     validateStep();
-  }, [step, signupState.regist]);
+  }, [step, signupState.regist, errors]);
 
   return (
     <div className="container-base justify-center">
@@ -365,24 +439,18 @@ const SignUpPage = () => {
                 const field = getCurrentField() as keyof SignupState['regist'];
                 const value = e.target.value;
                 handleInputChange(field, value);
-
-                // 비밀번호 확인 필드일 경우 추가 검증
-                if (field === 'passwordConfirm') {
-                  if (value !== signupState.regist.password) {
-                    setErrors((prev) => ({
-                      ...prev,
-                      passwordConfirm: '비밀번호가 일치하지 않습니다',
-                    }));
-                  } else {
-                    setErrors((prev) => ({
-                      ...prev,
-                      passwordConfirm: '',
-                    }));
-                  }
+                // 비밀번호 확인 필드는 onBlur에서 검증하도록 하여 onChange에서는 validateField 호출을 하지 않음
+                if (field !== 'passwordConfirm') {
+                  await validateField(field, value);
                 }
-
-                await validateField(field, value);
               }}
+              onBlur={
+                getCurrentField() === 'personalId'
+                  ? handlePersonalIdBlur
+                  : getCurrentField() === 'passwordConfirm'
+                  ? handlePasswordConfirmBlur
+                  : undefined
+              }
               className={
                 errors[getCurrentField() as string] ? 'border-red-500' : ''
               }
@@ -399,8 +467,11 @@ const SignUpPage = () => {
             placeholder={steps[step].placeholder}
             value={signupState.regist.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
+            onBlur={handleEmailBlur} // 포커스 벗어날 때 중복 체크 실행
+            className={errors.email ? 'border-red-500' : ''}
           />
         )}
+
         {steps[step].inputType === 'date' && (
           <BirthInput
             value={signupState.regist.birthDate}
