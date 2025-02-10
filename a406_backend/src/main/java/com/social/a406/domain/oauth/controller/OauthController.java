@@ -1,13 +1,12 @@
 package com.social.a406.domain.oauth.controller;
 
-import com.social.a406.domain.oauth.dto.OauthLoginResponse;
-import com.social.a406.domain.oauth.dto.OauthResponse;
-import com.social.a406.domain.oauth.dto.OauthUserInfo;
+import com.social.a406.domain.oauth.dto.*;
 import com.social.a406.domain.oauth.service.GoogleOauthService;
 import com.social.a406.domain.oauth.service.KakaoOauthService;
 import com.social.a406.domain.oauth.service.NaverOauthService;
 import com.social.a406.domain.oauth.service.OauthService;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
+import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +26,7 @@ public class OauthController {
     private final KakaoOauthService kakaoOauthService;
     private final GoogleOauthService googleOauthService;
     private final NaverOauthService naverOauthService;
+    private final UserService userService;
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
@@ -57,6 +57,14 @@ public class OauthController {
         }
     }
 
+    // 소셜 회원가입 여부 확인
+    @GetMapping("/check")
+    public ResponseEntity<String> oauthRegistCheck(@RequestBody OauthRequest request){
+        userService.oauthRegistCheck(request.getSocialId());
+        return ResponseEntity.ok("You already registration");
+    }
+
+
     // 쿠키 생성 메서드
     private ResponseCookie createCookie(String name, String value, int maxAge) {
         return ResponseCookie.from(name, value)
@@ -70,11 +78,10 @@ public class OauthController {
 
     @PostMapping("/kakao")
     public ResponseEntity<OauthResponse> kakaoLogin(
-            @RequestParam("access_token") String code
+            @RequestParam("code") String code
     ) {
-        // 프론트 개발 후 사용
-//        final OauthToken token = kakaoOauthService.getKakaoToken(code);
-        final OauthUserInfo userInfo = kakaoOauthService.getKakaoInfo(code);
+        final OauthToken token = kakaoOauthService.getKakaoToken(code);
+        final OauthUserInfo userInfo = kakaoOauthService.getKakaoInfo(token.accessToken());
 
         final OauthResponse kakaoResponse = OauthResponse.of(userInfo.socialId(),
                                                              userInfo.socialDomain());
@@ -83,11 +90,10 @@ public class OauthController {
 
     @PostMapping("/google")
     public ResponseEntity<OauthResponse> googleLogin(
-            @RequestParam("access_token") String code
+            @RequestParam("code") String code
     ) {
-        // 프론트 개발 후 사용
-//        final OauthToken token = googleOauthService.getGoogleToken(code);
-        final OauthUserInfo userInfo = googleOauthService.getGoogleInfo(code);
+        final OauthToken token = googleOauthService.getGoogleToken(code);
+        final OauthUserInfo userInfo = googleOauthService.getGoogleInfo(token.accessToken());
 
         final OauthResponse googleResponse = OauthResponse.of(userInfo.socialId(),
                                                               userInfo.socialDomain());
@@ -96,11 +102,10 @@ public class OauthController {
 
     @PostMapping("/naver")
     public ResponseEntity<OauthResponse> naverLogin(
-            @RequestParam("access_token") String code
+            @RequestParam("code") String code
     ) {
-        // 프론트 개발 후 사용
-//        final OauthToken token = naverOauthService.getNaverToken(code);
-        final OauthUserInfo userInfo = naverOauthService.getNaverInfo(code);
+        final OauthToken token = naverOauthService.getNaverToken(code);
+        final OauthUserInfo userInfo = naverOauthService.getNaverInfo(token.accessToken());
 
         final OauthResponse naverResponse = OauthResponse.of(userInfo.socialId(),
                                                              userInfo.socialDomain());

@@ -40,4 +40,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     WHERE u.personalId IN :personalIdList
     """)
     List<String> findUserIdsByPersonalIds(@Param("personalIdList") List<String> personalIdList);
+
+    boolean existsBySocialId(String socialId);
 }
