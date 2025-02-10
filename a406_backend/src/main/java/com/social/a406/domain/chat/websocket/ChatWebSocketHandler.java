@@ -151,11 +151,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         ChatParticipants otherParticipants = chatParticipantsRepository. findOtherParticipants(chatRoomId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("ChatParticipants not found with chatRoomId: " + chatRoomId));
 
-        User otherUser = otherParticipants.getUser();
+        User aiUser = otherParticipants.getUser();
         // ai 면 메세지생성
-        if(otherUser.getMainPrompt() != null) {
+        if(aiUser.getMainPrompt() != null) {
             System.out.println("Receiver is AI. Start to create Message.");
-            eventPublisher.publishEvent(new AIChatMessageEvent(otherUser, chatMessageRequest));
+            eventPublisher.publishEvent(new AIChatMessageEvent(aiUser, user.getName(),chatMessageRequest));
         }
 
     }
