@@ -18,6 +18,7 @@ import {
   validateField,
   validateNextButtonState,
 } from '@/utils/signupValidation';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
@@ -83,6 +84,7 @@ const SignUpPage = () => {
 
   return (
     <div className="container-base justify-center">
+      {isLoading && <LoadingSpinner />}
       <SignUpHeader />
       <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
       <SignupMessages messages={messages} typedMessages={typedMessages} />
@@ -103,12 +105,14 @@ const SignUpPage = () => {
         <SignupButtons
           step={step}
           isLoading={isLoading}
-          isNextButtonDisabled={isNextButtonDisabled}
+          isNextButtonDisabled={isNextButtonDisabled || isLoading}
           handleBack={handleBack}
           handleNext={handleNext}
           handleLogin={handleLogin}
           totalSteps={steps.length}
-          showBackButton={step !== steps.length - 1}
+          showBackButton={
+            step !== steps.length - 1 && step !== steps.length - 2
+          }
         />
       )}
     </div>
