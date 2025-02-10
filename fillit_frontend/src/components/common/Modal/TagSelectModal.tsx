@@ -1,6 +1,6 @@
-import BasicButton from '../Button/BasicButton';
-import Modal from './Modal';
-import InterestTags from '../InterestTags';
+import BasicButton from '@/components/common/Button/BasicButton';
+import Modal from '@/components/common/Modal/Modal';
+import InterestTags from '@/components/common/InterestTags';
 
 interface TagSelectModalProps {
   isOpen: boolean;
