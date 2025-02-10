@@ -16,6 +16,7 @@ public class AIChatEventListener {
     @Async
     @EventListener
     public void handleAiChatMessage(AIChatMessageEvent event) {
-        aiChatService.processAiMessage(event.getAiUser(), event.getChatMessageRequest());
+        System.out.println("Ai Chat Event is published");
+        aiChatService.processAiMessage(event.getAiUser(), event.getOtherUserName(), event.getChatMessageRequest());
     }
 }

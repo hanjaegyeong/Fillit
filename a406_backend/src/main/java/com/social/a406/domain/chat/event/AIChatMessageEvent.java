@@ -9,5 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AIChatMessageEvent {
     private User aiUser;
+    private String otherUserName;
     private ChatMessageRequest chatMessageRequest;
 }

@@ -1,19 +1,18 @@
 package com.social.a406.domain.ai.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
+import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.repository.ChatMessageRepository;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
-import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.websocket.ChatWebSocketHandler;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Random;
 
 @Service
@@ -22,32 +21,32 @@ public class AIChatService {
     private final AIService aiService;
     private final ChatWebSocketHandler webSocketHandler;
     private final ChatMessageRepository chatMessageRepository;
-    private final TaskScheduler chatTaskScheduler;
+    private final ThreadPoolTaskScheduler chatTaskScheduler;
     private final UserService userService;
     private final ChatParticipantsRepository chatParticipantsRepository;
     private final MessageQueueService messageQueueService;
 
 
     private final Random random = new Random();
-    private final int MINUTE = 60000;
+    private final int MINUTE = 60;
 
-    private static final String PROMPT_SUFFIX = "Please respond within 100 characters." +
-            " Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
-
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private static final String PROMPT_CHAT =
+            "Please keep your response engaging and match the length of the message you're responding to. "
+                    + "If the message is short, keep it casual and snappy. If it's long, provide a more detailed and expressive response. "
+                    + "Use Gen-Z slang, pop culture references, or trending topics where appropriate. "
+                    + "If the message is not in English, respond appropriately based on your personality, such as saying 'I don’t speak this language well' or 'Can we chat in English?'. "
+                    + "Keep your response within 200 characters when possible.";
 
     // AI 메시지 생성 비동기 실행
-    public void processAiMessage(User aiUser, ChatMessageRequest chatMessageRequest) {
+    public void processAiMessage(User aiUser, String otherUserName, ChatMessageRequest chatMessageRequest) {
 
-        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
+        int delay = random.nextInt(MINUTE) + MINUTE / 6; // 10초 ~ 1분 delay
         System.out.println("Waiting for " + delay + " seconds before chat triggering...");
 
-//        chatTaskScheduler.schedule(() -> {
+        chatTaskScheduler.schedule(() -> {
             String content = chatMessageRequest.getMessageContent(); // 상대방 메세지
-//            String aiReply = generateChatReply(aiUser.getMainPrompt(), content); // AI 메세지 생성
-            String aiReply = "It's AI Message"; // AI 메세지 생성
+            String aiReply = generateChatReply(aiUser.getMainPrompt(), otherUserName, content); // AI 메세지 생성
+
 
             // 메시지 큐를 통해 WebSocket으로 메시지 전송
             ChatMessageRequest newRequest = new ChatMessageRequest(chatMessageRequest.getChatRoomId(), aiReply, ChatMessageRequest.MessageType.TEXT);
@@ -58,7 +57,7 @@ public class AIChatService {
                     System.err.println("Failed to send AI Message: " + e.getMessage());
                 }
             });
-//        }, Instant.now().plusSeconds(delay));
+        }, Instant.now().plusSeconds(delay));
 
 
     }
@@ -66,9 +65,27 @@ public class AIChatService {
     /**
      * AI 챗봇 자동 응답 생성
      */
-    public String generateChatReply(String aiPrompt, String content) {
-        String finalPrompt = aiPrompt + " You are having a conversation. Respond naturally to this message: "
-                + content + " " + PROMPT_SUFFIX;
+    public String generateChatReply(String aiPrompt, String otherUserName, String content) {
+        int messageLength = content.length();
+
+        String lengthPrompt;
+        if (messageLength < 20) {
+            lengthPrompt = "Reply casually, like a quick text message.";
+        } else if (messageLength < 100) {
+            lengthPrompt = "Respond naturally, keeping it engaging and slightly detailed.";
+        } else {
+            lengthPrompt = "Respond with a thoughtful and engaging answer, adding depth to your reply.";
+        }
+
+        // ✅ 자연스러운 문장 구조로 개선
+        String finalPrompt = aiPrompt + "\n\n"
+                + "### Conversation ###\n"
+                + otherUserName + " wrote: \"" + content + "\"\n\n"
+                + "### Your response ###\n"
+                + lengthPrompt + "\n\n"
+                + PROMPT_CHAT;
+
+
         return aiService.generateContent(finalPrompt);
     }
 
