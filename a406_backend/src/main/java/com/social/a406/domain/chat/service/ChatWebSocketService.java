@@ -99,9 +99,13 @@ public class ChatWebSocketService {
     }
 
     
-    
     private ChatMessageDto convertToChatMessageDto (ChatMessage message) {
-        return new ChatMessageDto(message.getId(), message.getChatParticipants().getUser().getName(), message.getMessageContent(), message.getCreatedAt());
+        User user = message.getChatParticipants().getUser();
+        return new ChatMessageDto(message.getId(),
+                user.getName(),
+                user.getPersonalId(),
+                message.getMessageContent(),
+                message.getCreatedAt());
     }
 
     public Optional<User> findByPersonalId(String personalId) {
