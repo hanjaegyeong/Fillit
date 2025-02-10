@@ -90,6 +90,12 @@ const SocialSignUpPage = () => {
 
   const typedMessages = useTypingEffect(messages, step, 30);
 
+  // 이미지 업로드 핸들러 함수 추가
+  const handleImageUpload = (file: File) => {
+    // 나중에 실제 이미지 업로드 로직 구현
+    console.log('Image uploaded:', file);
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full py-4 px-6 z-10">
@@ -110,7 +116,7 @@ const SocialSignUpPage = () => {
             <BasicInput placeholder={steps[step].placeholder} />
           )}
           {steps[step].inputType === 'file' && (
-            <ImageUpload onImageUpload={() => {}} />
+            <ImageUpload onImageUpload={handleImageUpload} />
           )}
           {steps[step].inputType === 'textarea' && <Textarea />}
           {steps[step].inputType === 'tags' && <InterestTags />}
