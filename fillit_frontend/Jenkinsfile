@@ -32,7 +32,10 @@ pipeline {
         stage('Install & Build') {
             agent {
                 // Node.js와 npm이 포함된 공식 이미지 사용 (node:22)
-                docker { image 'node:22' }
+                docker { 
+                    image 'node:22'
+                    args '-u root'  // 루트 권한으로 실행하도록 추가
+                }
             }
             steps {
                 // 프로젝트 폴더가 "fillit_frontend"에 있다고 가정합니다.
