@@ -70,9 +70,6 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // RBAC 먼저 적용 (권한 문제 방지)
-                    sh 'kubectl apply -f a406_backend/k8s/cert-manager-rbac.yaml'
-
                     // 템플릿 파일에 환경변수 치환
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
 
