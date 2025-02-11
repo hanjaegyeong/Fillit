@@ -5,6 +5,7 @@ interface ProfileFollowProps {
   followersCount: number;
   followingCount: number;
   personalId: string;
+  onFollowChange: (isFollowing: boolean) => void;
 }
 
 const ProfileFollow = ({

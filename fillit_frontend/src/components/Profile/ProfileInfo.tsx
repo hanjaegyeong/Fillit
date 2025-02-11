@@ -9,6 +9,7 @@ interface ProfileInfoProps {
   profileData: User;
   paperImage: string | null;
   isMyProfile: boolean;
+  onFollowChange: (isFollowing: boolean) => void;
 }
 
 const ProfileInfo = ({
@@ -35,6 +36,7 @@ const ProfileInfo = ({
               <>
                 <FollowButton
                   isFollowing={false}
+                  followeePersonalId={profileData.personalId}
                   width="3.4rem"
                   height="1.25rem"
                   fontSize="9px"
@@ -51,6 +53,9 @@ const ProfileInfo = ({
           followersCount={profileData.followersCount}
           followingCount={profileData.followingCount}
           personalId={profileData.personalId}
+          onFollowChange={(isFollowing) =>
+            console.log('팔로우 상태 변경:', isFollowing)
+          }
         />
       </div>
     </div>
