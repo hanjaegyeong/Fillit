@@ -76,25 +76,6 @@ pipeline {
                     // Kubernetes 클러스터에 매니페스트 적용
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
-
-                    // cert-manager가 정상적으로 실행될 때까지 대기 (최대 120초)
-                    sh '''
-                    set -e
-                    for i in {1..12}; do
-                        if kubectl get pods -n cert-manager | grep -E "Running|Completed" | grep -v "0/" > /dev/null; then
-                            echo "cert-manager is running!"
-                            break
-                        fi
-                        echo "Waiting for cert-manager to be ready..."
-                        sleep 10
-                    done
-                    '''
-
-                    // cert-manager 적용 (ClusterIssuer 필요)
-                    sh 'kubectl apply -f a406_backend/k8s/clusterissuer.yaml'
-
-                    // Ingress 적용
-                    sh 'kubectl apply -f a406_backend/k8s/ingress.yaml'
                 }
             }
         }
