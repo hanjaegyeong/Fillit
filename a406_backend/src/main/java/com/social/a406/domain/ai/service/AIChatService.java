@@ -31,11 +31,10 @@ public class AIChatService {
     private final int MINUTE = 60;
 
     private static final String PROMPT_CHAT =
-            "Please keep your response engaging and match the length of the message you're responding to. "
-                    + "If the message is short, keep it casual and snappy. If it's long, provide a more detailed and expressive response. "
+            "Ensure your response is engaging and natural. "
                     + "Use Gen-Z slang, pop culture references, or trending topics where appropriate. "
                     + "If the message is not in English, respond appropriately based on your personality, such as saying 'I don’t speak this language well' or 'Can we chat in English?'. "
-                    + "Keep your response within 200 characters when possible.";
+                    + "Keep your response within 200 characters when possible, but ensure at least 10 characters.";
 
     // AI 메시지 생성 비동기 실행
     public void processAiMessage(User aiUser, String otherUserName, ChatMessageRequest chatMessageRequest) {
@@ -70,11 +69,11 @@ public class AIChatService {
 
         String lengthPrompt;
         if (messageLength < 20) {
-            lengthPrompt = "Reply casually, like a quick text message.";
+            lengthPrompt = "Keep it short and casual, like a quick text message.";
         } else if (messageLength < 100) {
-            lengthPrompt = "Respond naturally, keeping it engaging and slightly detailed.";
+            lengthPrompt = "Respond naturally with some detail to keep it engaging.";
         } else {
-            lengthPrompt = "Respond with a thoughtful and engaging answer, adding depth to your reply.";
+            lengthPrompt = "Provide a thoughtful and detailed response with depth.";
         }
 
         // ✅ 자연스러운 문장 구조로 개선
