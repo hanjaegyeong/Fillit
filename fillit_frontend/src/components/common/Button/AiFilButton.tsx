@@ -4,6 +4,7 @@ import SlideUpModal from '../Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { postChatbot } from '@/api/chatbot';
+import { SendIcon } from '@/assets/assets';
 
 export interface Message {
   id: number;
@@ -98,7 +99,7 @@ const AiFilButton = () => {
       <button
         className={
           pathname.includes('newarticle') || pathname.includes('edit')
-            ? 'w-full max-w-[600px] px-4 fixed bottom-28'
+            ? 'w-full max-w-[600px] px-4 fixed bottom-20'
             : 'fixed bottom-44'
         }
         onClick={() => setIsOpen(true)}
@@ -106,8 +107,7 @@ const AiFilButton = () => {
         <img src={AiFilImg} alt="ai-fil-img" />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
-        <h2 className="text-xl font-bold mb-4">AI Fil</h2>
-        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-340px)] z-50 hide-scrollbar">
+        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-245px)] z-50 hide-scrollbar">
           {messages.map((msg, index) => (
             <div
               key={msg.id}
@@ -134,20 +134,20 @@ const AiFilButton = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div className="p-6 flex items-center border-t border-gray-300">
+        <div className="relative flex pt-4 px-4 items-center border-t border-gray-300">
           <input
             type="text"
             placeholder="Type a message..."
-            className="flex-grow p-3 border rounded-lg focus:outline-none"
+            className="flex-grow p-3 border text- border-black rounded-full placeholder:text-sm  placeholder:text-gray-300 placeholder:font-light focus:outline-none"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
           />
           <button
             onClick={sendMessage}
-            className="ml-3 bg-blue-500 text-white p-3 rounded-lg"
+            className="absolute right-6 p-3 rounded-lg"
           >
-            Send
+            <img src={SendIcon} alt="send icon" />
           </button>
         </div>
       </SlideUpModal>
