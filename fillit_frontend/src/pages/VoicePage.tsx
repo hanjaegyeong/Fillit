@@ -6,7 +6,7 @@ import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
 import { useState, useEffect } from 'react';
-import { getFolloweeVoiceList, getVoiceReplyList } from '@/api/voice';
+import { getFolloweeVoiceList, getVoiceReplyList, getVoice } from '@/api/voice';
 import { Voice, VoiceReply } from '@/types/voice';
 
 const VoicePage = () => {
@@ -43,10 +43,30 @@ const VoicePage = () => {
     fetchVoiceReplies();
   }, [hasRecordedVoice]);
 
-  const handleMicClick = () => {
+  const handleMicClick = async () => {
+    try {
+      const myVoice = await getVoice();
+      if (myVoice && myVoice.voiceId) {
+        setHasRecordedVoice(true);
+        setMyVoiceId(myVoice.voiceId);
+        console.log(
+          '[VoicePage] 기존 음성 데이터 존재, ManageModal 호출:',
+          myVoice.voiceId
+        );
+      } else {
+        setHasRecordedVoice(false);
+        setMyVoiceId(null);
+        console.log('[VoicePage] 음성 데이터 없음, RecordModal 호출.');
+      }
+    } catch (error) {
+      console.error('[VoicePage] getVoice API 호출 실패:', error);
+      setHasRecordedVoice(false);
+      setMyVoiceId(null);
+    }
     setIsModalOpen(true);
     console.log('[VoicePage] 마이크 버튼 클릭, 모달 열림.');
   };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     console.log('[VoicePage] 모달 닫힘.');
