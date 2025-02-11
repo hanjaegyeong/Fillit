@@ -70,9 +70,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+                    // Redis 배포 (Kubernetes 매니페스트 파일 적용)
+                    sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
+
                     // 템플릿 파일에 환경변수 치환
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
-
                     // Kubernetes 클러스터에 매니페스트 적용
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
