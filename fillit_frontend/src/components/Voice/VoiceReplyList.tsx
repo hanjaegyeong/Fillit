@@ -32,7 +32,7 @@ const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
         <h4 className="text-lg pl-4 mb-2">Voice Replies</h4>
         {voiceReplies.length === 0 ? (
           <div className="flex justify-center items-center w-full py-4">
-            <p className="text-gray-500 text-lg">아직 답장이 없습니다.</p>
+            <p className="text-gray-500 text-lg">No reply yet.</p>
           </div>
         ) : (
           <div
