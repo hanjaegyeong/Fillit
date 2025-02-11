@@ -1,9 +1,6 @@
 package com.social.a406.domain.board.service;
 
-import com.social.a406.domain.board.dto.BoardProfileResponse;
-import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
-import com.social.a406.domain.board.dto.BoardRequest;
-import com.social.a406.domain.board.dto.BoardResponse;
+import com.social.a406.domain.board.dto.*;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.event.BoardCreatedEvent;
@@ -11,6 +8,9 @@ import com.social.a406.domain.board.event.BoardDeletedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.interest.entity.UserInterest;
+import com.social.a406.domain.interest.repository.InterestRepository;
+import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -29,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class BoardService {
     private final InterestService interestService;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final UserInterestRepository userInterestRepository;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -199,13 +201,12 @@ public class BoardService {
     }
 
     // Board 엔티티를 Response DTO로 변환
-    // Board 엔티티를 Response DTO로 변환
     private BoardResponse mapToResponseDto(Board board, List<String> imageUrls, List<String> interests) {
         return BoardResponse.builder()
                 .boardId(board.getId())
                 .content(board.getContent())
                 .personalId(board.getUser().getPersonalId())
-                .profileImage(board.getUser().getProfileImageUrl())
+                .profileImageUrl(board.getUser().getProfileImageUrl())
                 .likeCount(board.getLikeCount())
                 .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .x(board.getX())
@@ -375,14 +376,14 @@ public class BoardService {
                 .build();
     }
 
-    public List<BoardResponse> searchBoard(Pageable pageable, Long cursorId, String word) {
+    public List<BoardRecommendResonse> searchBoard(Pageable pageable, Long cursorId, String word) {
         List<Board> boards = boardRepository.searchBoard(word, cursorId, pageable);
 
         return boards.stream()
-                .map(board -> mapToResponseDto(
+                .map(board -> mapRecommendBoard(
                         board,
-                        boardImageRepository.findAllById(board.getId()),
-                        interestService.getBoardInterests(board.getId())
+                        boardImageRepository.findFirstById(board.getId()),
+                        0L
                 ))
                 .toList();
     }
@@ -417,4 +418,37 @@ public class BoardService {
     }
 
 
+    public List<BoardRecommendResonse> recommendBoard(Pageable pageable, Long cursorLikeCount, Long cursorId, Long interestId, String personalId) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new IllegalArgumentException("Not found User"));
+        if(interestId == null || interestId == 0){
+            interestId = getRandomUserInterest(userInterestRepository.findByUser_Id(user.getId()));
+        }
+
+        List<Object[]> results = boardRepository.findBoardsWithFirstImageByInterestId(interestId, cursorLikeCount, cursorId, pageable);
+        Long finalInterestId = interestId;
+        return results.stream().map(
+                r -> mapRecommendBoard((Board) r[0], (String) r[1], finalInterestId)
+        ).toList();
+    }
+
+    public BoardRecommendResonse mapRecommendBoard(Board board, String imageUrl, Long interestId){
+        return BoardRecommendResonse.builder()
+                .boardId(board.getId())
+                .personalId(board.getUser().getPersonalId())
+                .likeCount(board.getLikeCount())
+                .commentCount(commentService.getCommentCountByBoard(board.getId()))
+                .keyword(board.getKeyword())
+                .imageUrl(imageUrl)
+                .interestId(interestId)
+                .build();
+    }
+
+    public Long getRandomUserInterest(List<UserInterest> userInterests) {
+        if (userInterests == null || userInterests.isEmpty()) {
+            return ThreadLocalRandom.current().nextLong(1, 19);
+        }
+        int randomIndex = ThreadLocalRandom.current().nextInt(userInterests.size());
+        return userInterests.get(randomIndex).getInterest().getId();
+    }
 }
