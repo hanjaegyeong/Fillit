@@ -26,104 +26,61 @@ import NotificationPage from '@/pages/NotificationPage';
 
 import Layout from '@/components/common/Layout/Layout';
 
+import ProtectedRoute from '@/ProtectedRoute';
+import PublicRoute from '@/PublicRoute';
+
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Layout />,
+    // 보호된 경로: 토큰이 있을 경우에만 접근 가능
+    element: <ProtectedRoute />,
     children: [
       {
-        path: '',
-        element: <HomePage />,
-      },
-      {
-        path: 'article/:boardId',
+        path: '/',
+        element: <Layout />,
         children: [
+          { path: '', element: <HomePage /> },
           {
-            path: '',
-            element: <ArticleDetailPage />,
+            path: 'article/:boardId',
+            children: [
+              { path: '', element: <ArticleDetailPage /> },
+              { path: 'comment/:commentId', element: <CommentDetailPage /> },
+            ],
           },
           {
-            path: 'comment/:commentId',
-            element: <CommentDetailPage />,
+            path: 'message',
+            children: [
+              { path: '', element: <MessageListPage /> },
+              { path: ':chatId', element: <MessagePage /> },
+            ],
           },
+          {
+            path: 'profile/:personalId',
+            children: [
+              { path: '', element: <ProfilePage /> },
+              { path: 'follower', element: <FollowerPage /> },
+              { path: 'following', element: <FollowingPage /> },
+            ],
+          },
+          { path: 'search', element: <SearchPage /> },
+          { path: 'voice', element: <VoicePage /> },
+          { path: 'notification', element: <NotificationPage /> },
+          { path: 'newmessage', element: <NewMessagePage /> },
         ],
       },
-      {
-        path: 'message',
-        children: [
-          {
-            path: '',
-            element: <MessageListPage />,
-          },
-          {
-            path: ':chatId',
-            element: <MessagePage />,
-          },
-        ],
-      },
-      {
-        path: 'profile/:personalId',
-        children: [
-          {
-            path: '',
-            element: <ProfilePage />,
-          },
-          {
-            path: 'follower',
-            element: <FollowerPage />,
-          },
-          {
-            path: 'following',
-            element: <FollowingPage />,
-          },
-        ],
-      },
-
-      {
-        path: 'search',
-        element: <SearchPage />,
-      },
-      {
-        path: 'voice',
-        element: <VoicePage />,
-      },
-      {
-        path: 'notification',
-        element: <NotificationPage />,
-      },
-      {
-        path: 'newmessage',
-        element: <NewMessagePage />,
-      },
+      { path: 'newarticle', element: <NewArticlePage /> },
+      { path: 'edit', element: <ProfileEditPage /> },
+      { path: 'customize', element: <ProfileCustomPage /> },
     ],
   },
   {
-    path: 'login',
-    element: <LoginPage />,
-  },
-  {
-    path: 'find',
-    element: <FindPasswordPage />,
-  },
-  {
-    path: 'signup',
-    element: <SignUpPage />,
-  },
-  {
-    path: 'socialsignup',
-    element: <SocialSignUpPage />,
-  },
-  {
-    path: 'newarticle',
-    element: <NewArticlePage />,
-  },
-  {
-    path: 'edit',
-    element: <ProfileEditPage />,
-  },
-  {
-    path: 'customize',
-    element: <ProfileCustomPage />,
+    // 공개 경로: 로그인하지 않은 사용자만 접근 가능
+    element: <PublicRoute />,
+    children: [
+      { path: 'login', element: <LoginPage /> },
+      { path: 'find', element: <FindPasswordPage /> },
+      { path: 'signup', element: <SignUpPage /> },
+      { path: 'socialsignup', element: <SocialSignUpPage /> },
+    ],
   },
 ]);
 
