@@ -6,9 +6,9 @@ import ArticleDetailPage from '@/pages/ArticleDetailPage';
 import CommentDetailPage from '@/pages/CommentDetailPage';
 
 import LoginPage from '@/pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
+import SignUpPage from '@/pages/SignUpPage';
 import SocialSignUpPage from '@/pages/SocialSignUpPage';
-import FindPasswordPage from './pages/FindPasswordPage';
+import FindPasswordPage from '@/pages/FindPasswordPage';
 
 import MessageListPage from '@/pages/MessageListPage';
 import MessagePage from '@/pages/MessagePage';
@@ -24,7 +24,7 @@ import SearchPage from '@/pages/SearchPage';
 import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 
-import Layout from './components/common/Layout/Layout';
+import Layout from '@/components/common/Layout/Layout';
 
 const router = createBrowserRouter([
   {
