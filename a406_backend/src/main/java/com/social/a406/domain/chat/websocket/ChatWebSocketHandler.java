@@ -101,8 +101,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         Long chatRoomId = chatMessageRequest.getChatRoomId();
         WebSocketSessionSet sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
 
-        // 메세지 broadCast
-        if (sessionSet != null) {
             // 보낸 사람(User) 정보 조회
             User sender = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -116,11 +114,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     LocalDateTime.now()
             );
 
+        // 메세지 broadCast
+        List<String> personalIdList = new ArrayList<>(); // 현재 채팅방에 접속중인 personalId 목록
+
+        if (sessionSet != null) {
             // ChatMessageDto를 JSON으로 변환
             String chatMessageJson = objectMapper.writeValueAsString(chatMessageDto);
             TextMessage textMessage = new TextMessage(chatMessageJson);
 
-            List<String> personalIdList = new ArrayList<>(); // 현재 채팅방에 접속중인 personalId 목록
             for (WebSocketSession session : sessionSet.getWebSocketSessions()) {
                 synchronized (session) { // ✅ WebSocket 세션을 동기화하여 중복 실행 방지
                     if (session.isOpen()) {
@@ -129,12 +130,13 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
             }// end of for
+        }
 
             // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
             eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
             eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList, personalId));
 
-        }
+
     }
 
     private void leaveChatRoom(String personalId, WebSocketSession session, Long chatRoomId) {
