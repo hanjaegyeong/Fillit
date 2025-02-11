@@ -4,7 +4,6 @@ import ProfileImage from '@/components/common/ProfileImage';
 import { SendIcon } from '@/assets/assets';
 import CommentListContainer from '@/components/Comment/CommentListContainer';
 import useGetArticle from '@/hooks/useGetArticle';
-import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 type RouteParams = {
   boardId: string;
@@ -12,11 +11,7 @@ type RouteParams = {
 
 const ArticleDetailContainer = () => {
   const { boardId } = useParams() as RouteParams;
-  const { data: article, isLoading } = useGetArticle(boardId);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  const { data: article } = useGetArticle(boardId);
 
   return (
     <div className="w-full overflow-auto">
