@@ -1,5 +1,5 @@
 import { commentList } from '@/mocks/fixtures/commentList';
-import CommentItem from '@/components/Comment/CommentItem';
+import CommentCard from '@/components/Comment/CommentCard';
 
 const CommentListContainer = () => {
   return (
@@ -7,7 +7,7 @@ const CommentListContainer = () => {
       {commentList.map((comment, index) => {
         const position = index % 2 ? 'right' : 'left';
         return (
-          <CommentItem
+          <CommentCard
             key={comment.commentId}
             comment={comment}
             position={position}

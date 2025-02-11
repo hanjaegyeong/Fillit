@@ -4,15 +4,15 @@ import LikeBadge from '@/components/common/Badge/LikeBadge';
 import ReplyImage from '@/assets/images/reply-bg.png';
 import { CommentReply } from '@/types/comment';
 
-interface CommentReplyItemProps {
+interface CommentReplyCardProps {
   commentReply: CommentReply;
   position?: 'left' | 'right';
 }
 
-const CommentReplyItem = ({
+const CommentReplyCard = ({
   commentReply,
   position = 'left',
-}: CommentReplyItemProps) => {
+}: CommentReplyCardProps) => {
   return (
     <div
       className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-12 ${
@@ -49,4 +49,4 @@ const CommentReplyItem = ({
   );
 };
 
-export default CommentReplyItem;
+export default CommentReplyCard;

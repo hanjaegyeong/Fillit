@@ -1,4 +1,4 @@
-import ArticleCard from '@/components/Article/ArticleCard';
+import ArticleWrapper from '@/components/Article/ArticleWrapper';
 import useGetFeed from '@/hooks/useGetFeed';
 import useIntersect from '@/hooks/useIntersect';
 import { FeedArticle } from '@/types/article';
@@ -25,7 +25,7 @@ const ArticleListContainer = () => {
               const position = index % 2 ? 'left' : 'right';
 
               return (
-                <ArticleCard
+                <ArticleWrapper
                   key={article.boardId}
                   article={article}
                   position={position}
