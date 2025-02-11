@@ -1,10 +1,10 @@
-import { Article } from '@/types/article';
+import { FeedArticle } from '@/types/article';
 import { getBackgroundImage } from '@/utils/getBackgroundImage';
 import { useNavigate } from 'react-router-dom';
 import ArticleContent from './ArticleContent';
 
 interface ArticleItemProps {
-  article: Article;
+  article: FeedArticle;
   position: 'left' | 'right';
 }
 
@@ -15,12 +15,12 @@ const ArticleCard = ({ article, position }: ArticleItemProps) => {
     navigate(`/article/${article.boardId}`);
   };
 
-  const hasImage = !!article.imageUrls[0];
+  const hasImage = !!article.imageUrls;
 
   return (
     <div
       className={`bg-contain bg-no-repeat bg-center w-[380px] flex items-center drop-shadow-md ${
-        position === 'left' ? 'mr-16' : 'ml-16'
+        position === 'left' ? 'ml-8' : 'ml-20'
       } -mb-12 pb-1`}
       style={{
         backgroundImage: `url(${getBackgroundImage(hasImage)})`,
