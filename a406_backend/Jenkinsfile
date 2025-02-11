@@ -25,7 +25,11 @@ pipeline {
         // 테스트용 Redis 실행: 빌드(테스트) 전에 로컬 Docker에서 Redis를 실행합니다.
         stage('Start Redis for Tests') {
             steps {
+
                 echo 'Starting Redis for tests...'
+                // 기존의 redis-test 컨테이너가 있으면 삭제
+                sh 'docker rm -f redis-test || true'
+                // 새 Redis 컨테이너 실행
                 sh 'docker run -d --name redis-test -p 6379:6379 redis:6.2'
             }
         }
