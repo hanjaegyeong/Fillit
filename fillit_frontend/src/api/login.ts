@@ -16,11 +16,11 @@ export const postLogin = async (email: string, password: string) => {
   return response.data;
 };
 
-/* 로그아웃 */ //추후 수정
+/* 로그아웃 */
 export const getLogout = async () => {
-  //const response = await axiosInstance.get('/api/users/logout');
+  const response = await axiosInstance.post('/api/users/logout');
 
   localStorage.removeItem('accessToken');
 
-  //return response.data;
+  return response.data;
 };
