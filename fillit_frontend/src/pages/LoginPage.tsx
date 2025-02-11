@@ -4,7 +4,7 @@ import { useState } from 'react';
 import loginImg from '@/assets/images/login-img.png';
 import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
-import SocialLogin from '@/components/common/SocialLogin';
+// import SocialLogin from '@/components/common/SocialLogin';
 import { postLogin } from '@/api/login';
 import { useUserStore } from '@/store/useUserStore';
 
@@ -52,7 +52,7 @@ const LoginPage = () => {
       <button className="text-xs font-light" onClick={() => navigate('/find')}>
         Find Password
       </button>
-      <SocialLogin />
+      {/* <SocialLogin /> */}
     </div>
   );
 };
