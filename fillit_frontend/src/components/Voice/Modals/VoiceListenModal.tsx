@@ -4,14 +4,10 @@ import VoiceBaseModal from './VoiceBaseModal';
 import { useNavigate } from 'react-router-dom';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
+import { Voice } from '@/types/voice';
 
 interface VoiceListenModalProps {
-  voiceData:
-    | {
-        name: string;
-        personalId: string;
-      }
-    | undefined;
+  voiceData: Voice | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,14 +21,20 @@ const VoiceListenModal = ({
   const { isPlaying, isFinished, currentDuration, handlePlay } =
     useVoiceControl({
       isModalOpen: isOpen,
+      audioUrl: voiceData?.audioUrl,
+      recordingMode: false, // 재생 모드
     });
 
   if (!voiceData) return null;
 
   const handleClick = () => {
     if (isFinished) {
+      console.log(
+        '[VoiceListenModal] 오디오 재생 완료됨, 답장 페이지로 이동합니다.'
+      );
       navigate('/voice/reply', { state: { voiceData } });
     } else {
+      console.log('[VoiceListenModal] 오디오 재생 시작됨.');
       handlePlay();
     }
   };
@@ -40,12 +42,9 @@ const VoiceListenModal = ({
   return (
     <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
-        {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
           {currentDuration}"
         </div>
-
-        {/* 프로필 이미지 */}
         <div className="relative">
           <motion.img
             src={soundWave}
@@ -57,7 +56,7 @@ const VoiceListenModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={profileBubble}
+            src={voiceData.profileImageUrl || profileBubble}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -66,8 +65,6 @@ const VoiceListenModal = ({
             className="w-[190px] h-[190px] rounded-full object-cover"
           />
         </div>
-
-        {/* 재생/답장 버튼 */}
         {isFinished ? (
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
