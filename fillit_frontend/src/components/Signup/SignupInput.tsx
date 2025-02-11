@@ -10,11 +10,13 @@ import BasicButton from '@/components/common/Button/BasicButton';
 interface SignupInputProps {
   step: number;
   signupState: SignupState;
+  setSignupState: React.Dispatch<React.SetStateAction<SignupState>>;
   getCurrentField: () => keyof SignupState['regist'] | null;
   handleInputChange: (
     field: keyof SignupState['regist'],
     value: string | Date | string[]
   ) => void;
+
   handlePersonalIdBlur: () => void;
   handlePasswordConfirmBlur: () => void;
   handleEmailBlur: () => void;
@@ -30,6 +32,7 @@ interface SignupInputProps {
 const SignupInput = ({
   step,
   signupState,
+  setSignupState,
   getCurrentField,
   handleInputChange,
   handlePersonalIdBlur,
@@ -104,7 +107,16 @@ const SignupInput = ({
         />
       )}
 
-      {steps[step].inputType === 'file' && <ImageUpload />}
+      {steps[step].inputType === 'file' && (
+        <ImageUpload
+          onImageUpload={(file) => {
+            setSignupState((prev) => ({
+              ...prev,
+              profileImage: file,
+            }));
+          }}
+        />
+      )}
 
       {steps[step].inputType === 'textarea' && (
         <Textarea
