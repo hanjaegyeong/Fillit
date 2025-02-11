@@ -39,6 +39,7 @@ const SlideUpModal = ({
         } overflow-y-auto ${height}`}
       >
         <div className="p-6">
+          <h2 className="text-xl font-bold mb-4">AI Fil</h2>
           <button
             className="absolute top-4 right-4 text-gray-500 text-lg"
             onClick={onClose}
