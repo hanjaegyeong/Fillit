@@ -39,7 +39,33 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                             @Param("cursorId") Long cursorId,
                             Pageable pageable);
 
+
+
     List<Board> findByUser(User otherUser);
+
+    @Query("""
+    SELECT b, 
+           (SELECT bi.imageUrl 
+            FROM BoardImage bi 
+            WHERE bi.board = b 
+            ORDER BY bi.id ASC 
+            LIMIT 1) 
+    FROM BoardInterest bi
+    JOIN bi.board b
+    WHERE bi.interest.id = :interestId 
+      AND (
+          (:cursorLikeCount IS NULL AND :cursorId IS NULL) 
+          OR (b.likeCount < :cursorLikeCount) 
+          OR (b.likeCount = :cursorLikeCount AND b.id < :cursorId)
+      )
+    ORDER BY b.likeCount DESC, b.id DESC
+""")
+    List<Object[]> findBoardsWithFirstImageByInterestId(
+            @Param("interestId") Long interestId,
+            @Param("cursorLikeCount") Long cursorLikeCount,
+            @Param("cursorId") Long cursorId,
+            Pageable pageable
+    );
 
     //부분 문자열 검색 가능
 //    @Query(value = "SELECT * FROM board " +
