@@ -2,7 +2,7 @@ import axiosInstance from '@/api/axiosInstance';
 import { Article, ArticlePostForm } from '@/types/article';
 
 /* 피드 게시글 조회 */
-export const getFeed = async (limit: number, cursor: string) => {
+export const getFeed = async (limit: number, cursor: string | null) => {
   const response = await axiosInstance.get('/api/feed', {
     params: { limit, cursor },
   });
