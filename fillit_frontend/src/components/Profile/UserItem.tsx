@@ -20,7 +20,13 @@ const UserItem = ({ userData, type }: UserItemProps) => {
         </div>
       </div>
       <div className="shrink-0">
-        <FollowButton isFollowing={type === 'following'} />
+        <FollowButton
+          isFollowing={type === 'following'}
+          followeePersonalId={userData.personalId}
+          onFollowChange={(isFollowing) =>
+            console.log('팔로우 상태 변경:', isFollowing)
+          }
+        />
       </div>
     </div>
   );
