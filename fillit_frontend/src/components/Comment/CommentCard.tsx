@@ -6,17 +6,17 @@ import { Comment } from '@/types/comment';
 import { useNavigate } from 'react-router-dom';
 import CommentImage from '@/assets/images/comment-bg.png';
 
-interface CommentItemProps {
+interface CommentCardProps {
   comment: Comment;
   position?: 'left' | 'right';
   isDetail?: boolean;
 }
 
-const CommentItem = ({
+const CommentCard = ({
   comment,
   position = 'left',
   isDetail = false,
-}: CommentItemProps) => {
+}: CommentCardProps) => {
   const navigate = useNavigate();
 
   const handleGoCommentDetail = () => {
@@ -73,4 +73,4 @@ const CommentItem = ({
   );
 };
 
-export default CommentItem;
+export default CommentCard;
