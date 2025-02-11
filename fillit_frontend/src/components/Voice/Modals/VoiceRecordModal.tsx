@@ -50,24 +50,20 @@ const VoiceRecordModal = ({
       try {
         await postVoice(recordedFile);
         console.log('[VoiceRecordModal] 음성 업로드 성공.');
-        setTimeout(async () => {
-          try {
-            const myVoice = await getVoice();
-            console.log('[VoiceRecordModal] 내 음성 데이터 fetched:', myVoice);
-            if (myVoice && myVoice.voiceId) {
-              onRecordComplete(myVoice.voiceId);
-            } else {
-              console.warn('[VoiceRecordModal] 내 음성 데이터 없음.');
-              onRecordComplete(0);
-            }
-          } catch (error) {
-            console.error(
-              '[VoiceRecordModal] 내 음성 데이터 fetch 실패:',
-              error
-            );
+        try {
+          const myVoice = await getVoice();
+          console.log('[VoiceRecordModal] 내 음성 데이터 fetched:', myVoice);
+          if (myVoice && myVoice.voiceId) {
+            onRecordComplete(myVoice.voiceId);
+          } else {
+            console.warn('[VoiceRecordModal] 내 음성 데이터 없음.');
             onRecordComplete(0);
           }
-        }, 2000);
+        } catch (error) {
+          console.error('[VoiceRecordModal] 내 음성 데이터 fetch 실패:', error);
+          onRecordComplete(0);
+        }
+
         onClose();
       } catch (error) {
         console.error('[VoiceRecordModal] 음성 업로드 실패:', error);
