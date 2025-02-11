@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Random;
 
@@ -52,7 +51,7 @@ public class AIChatService {
             messageQueueService.addMessageToQueue(() -> {
                 try {
                     webSocketHandler.sendMessageToChatRoom(aiUser.getPersonalId(), newRequest);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     System.err.println("Failed to send AI Message: " + e.getMessage());
                 }
             });

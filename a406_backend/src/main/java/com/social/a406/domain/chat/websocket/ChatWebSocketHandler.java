@@ -7,11 +7,12 @@ import com.social.a406.domain.chat.entity.ChatParticipants;
 import com.social.a406.domain.chat.event.AIChatMessageEvent;
 import com.social.a406.domain.chat.event.MessageCreatedEvent;
 import com.social.a406.domain.chat.event.UnreadMessageEvent;
+import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.service.ChatWebSocketService;
-import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper; // ✅ Spring이 자동으로 등록한 ObjectMapper 사용
     private final MessageQueueService messageQueueService;
+    private final JsonUtil jsonUtil;
 
 
 
@@ -84,7 +86,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 messageQueueService.addMessageToQueue(() -> {
                     try {
                         sendMessageToChatRoom(personalId, chatMessageRequest);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         System.err.println("Failed to send User Message: " + e.getMessage());
                     }
                 });
@@ -97,7 +99,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
 
-    public void sendMessageToChatRoom(String personalId, ChatMessageRequest chatMessageRequest) throws IOException {
+    public void sendMessageToChatRoom(String personalId, ChatMessageRequest chatMessageRequest) throws Exception {
         Long chatRoomId = chatMessageRequest.getChatRoomId();
         WebSocketSessionSet sessionSet = webSocketSessionMap.getWebSocketSet(chatRoomId);
 
@@ -119,7 +121,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
         if (sessionSet != null) {
             // ChatMessageDto를 JSON으로 변환
-            String chatMessageJson = objectMapper.writeValueAsString(chatMessageDto);
+            String chatMessageJson = jsonUtil.toJson(chatMessageDto);
             TextMessage textMessage = new TextMessage(chatMessageJson);
 
             for (WebSocketSession session : sessionSet.getWebSocketSessions()) {
