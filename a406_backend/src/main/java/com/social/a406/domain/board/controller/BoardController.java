@@ -1,9 +1,6 @@
 package com.social.a406.domain.board.controller;
 
-import com.social.a406.domain.board.dto.BoardProfileResponse;
-import com.social.a406.domain.board.dto.BoardProfileUpdateRequest;
-import com.social.a406.domain.board.dto.BoardRequest;
-import com.social.a406.domain.board.dto.BoardResponse;
+import com.social.a406.domain.board.dto.*;
 import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +43,24 @@ public class BoardController {
         return ResponseEntity.ok(boardResponse);
     }
 
+    // 검색 창 추천 게시글 조회
+    @GetMapping("/recommend")
+    public ResponseEntity<List<BoardRecommendResonse>> recommendBoard(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long cursorLikeCount,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(required = false) Long interestId
+    ){
+        Pageable pageable = PageRequest.of(0,size);
+        return ResponseEntity.ok(
+                boardService.recommendBoard(pageable, cursorLikeCount, cursorId, interestId, userDetails.getUsername()));
+    }
+
     // 게시글 검색
     //cursorId -> boardId 최신순
     @GetMapping("/search")
-    public ResponseEntity<List<BoardResponse>> searchBoard(
+    public ResponseEntity<List<BoardRecommendResonse>> searchBoard(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorId,
             @RequestParam String word
