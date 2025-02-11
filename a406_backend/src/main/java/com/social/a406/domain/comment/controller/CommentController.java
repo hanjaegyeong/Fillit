@@ -4,6 +4,7 @@ import com.social.a406.domain.ai.scheduler.AiScheduler;
 import com.social.a406.domain.comment.dto.CommentRequest;
 import com.social.a406.domain.comment.dto.CommentResponse;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.commentReply.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ public class CommentController {
 
     private final CommentService commentService;
     private final AiScheduler aiScheduler;
+    private final ReplyService replyService;
 
     @PostMapping
     public ResponseEntity<CommentResponse> addComment(
@@ -60,6 +62,7 @@ public class CommentController {
     public ResponseEntity<String> deleteComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetails userDetails) {
+        replyService.deleteAllReplyByComment(commentId, userDetails); // 하위 대댓글들 먼저 삭제
         commentService.deleteComment(commentId, userDetails);
         return ResponseEntity.ok("Success to delete comment");
     }
