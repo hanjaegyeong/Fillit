@@ -1,6 +1,6 @@
 import { bubble1, bubble2, bubble3 } from '@/assets/assets';
 
-export const BubbleBackground = () => {
+const VoiceBackground = () => {
   return (
     <div>
       <img
@@ -21,3 +21,5 @@ export const BubbleBackground = () => {
     </div>
   );
 };
+
+export default VoiceBackground;

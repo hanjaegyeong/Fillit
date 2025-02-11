@@ -1,5 +1,5 @@
 import Header from '@/components/common/Header/Header';
-import { BubbleBackground } from '@/components/decorations/BubbleBackground';
+import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
 import { micBack, mic } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
@@ -79,10 +79,8 @@ const VoicePage = () => {
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
-      <BubbleBackground />
-      {/* 내 음성 답장 목록 */}
+      <VoiceBackground />
       <VoiceReplyList voiceReplies={voiceReplyList} />
-      {/* 팔로위 음성 스토리 목록 */}
       <VoiceBubbleList voices={voiceList} />
       <div className="fixed bottom-28 right-4 z-50">
         <button onClick={handleMicClick} className="relative w-[72px] h-[72px]">

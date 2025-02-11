@@ -13,8 +13,8 @@ import InterestTags from '@/components/common/InterestTags';
 
 const steps = [
   {
-    message1: 'Oh, you’re from somewhere else, huh?',
-    message2: 'What’s your name? 🌍✨',
+    message1: "Oh, you're from somewhere else, huh?",
+    message2: "What's your name? 🌍✨",
     message3: '',
     placeholder: 'Enter your name',
     rule: '영어 최대 8글자, 특수기호 불가',
@@ -46,7 +46,7 @@ const steps = [
   },
   {
     message1: 'Alright, last thing—',
-    message2: 'what’s your fave stuff? 🧐✨',
+    message2: "what's your fave stuff? 🧐✨",
     message3: '',
     placeholder: '',
     rule: '',
@@ -54,7 +54,7 @@ const steps = [
   },
   {
     message1: 'Thanks for the info!',
-    message2: 'Yo, you’re like, our new bestie now.',
+    message2: "Yo, you're like, our new bestie now.",
     message3: 'Catch ya later, fam! 😎✌️',
     placeholder: '',
     rule: '',
@@ -90,6 +90,12 @@ const SocialSignUpPage = () => {
 
   const typedMessages = useTypingEffect(messages, step, 30);
 
+  // 이미지 업로드 핸들러 함수 추가
+  const handleImageUpload = (file: File) => {
+    // 나중에 실제 이미지 업로드 로직 구현
+    console.log('Image uploaded:', file);
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full py-4 px-6 z-10">
@@ -109,9 +115,12 @@ const SocialSignUpPage = () => {
           {steps[step].inputType === 'text' && (
             <BasicInput placeholder={steps[step].placeholder} />
           )}
-          {steps[step].inputType === 'file' && <ImageUpload />}
+          {steps[step].inputType === 'file' && (
+            <ImageUpload onImageUpload={handleImageUpload} />
+          )}
           {steps[step].inputType === 'textarea' && <Textarea />}
           {steps[step].inputType === 'tags' && <InterestTags />}
+
           {steps[step].inputType === 'choice' && (
             <div className="flex gap-10">
               <BasicButton text="Yes" onClick={() => setStep(2)} />
