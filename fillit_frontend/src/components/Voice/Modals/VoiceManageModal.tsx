@@ -3,53 +3,64 @@ import { motion } from 'framer-motion';
 import { speaker, pressedSpeaker, caution } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
+import { deleteVoice } from '@/api/voice';
+import { useVoiceControl } from '@/hooks/useVoiceControl';
+
+// 보이스 삭제 시 api 함수 deletvoice를 호출
 
 interface VoiceManageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeleteComplete: () => void;
+  voiceId: number;
 }
 
 const VoiceManageModal = ({
   isOpen,
   onClose,
   onDeleteComplete,
+  voiceId,
 }: VoiceManageModalProps) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
   // isOpen이 false가 될 때 isDeleteMode 초기화
   useEffect(() => {
     if (!isOpen) {
       setIsDeleteMode(false);
-      setIsPlaying(false);
     }
   }, [isOpen]);
 
   const handleDelete = () => {
     setIsDeleteMode(true);
+    console.log('[VoiceManageModal] 삭제 모드 활성화됨.');
   };
 
   const handleModalClose = () => {
     setIsDeleteMode(false);
     onClose();
+    console.log('[VoiceManageModal] 모달 닫힘.');
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: 실제 삭제 로직 구현
-    console.log('Delete voice confirmed');
-    onDeleteComplete();
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteVoice(voiceId);
+      onDeleteComplete();
+      console.log('[VoiceManageModal] 보이스 삭제 성공.');
+    } catch (error) {
+      console.error('[VoiceManageModal] 보이스 삭제 실패:', error);
+    }
   };
+
+  const recordedVoiceData = localStorage.getItem('recordedVoiceData');
+  const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
+    isModalOpen: isOpen,
+    audioUrl: recordedVoiceData || undefined,
+    recordingMode: false, // 재생 모드로 동작
+  });
 
   const handlePlayClick = () => {
-    setIsPlaying(true);
-    console.log('Playing voice...');
-
-    // 3초 후에 재생 종료
-    setTimeout(() => {
-      setIsPlaying(false);
-      console.log('Voice playback ended');
-    }, 3000);
+    handlePlay();
+    console.log('[VoiceManageModal] 보이스 재생 시작됨.');
   };
 
   return (
@@ -64,9 +75,9 @@ const VoiceManageModal = ({
       >
         {!isDeleteMode ? (
           <>
-            {/* Duration */}
+            {/* Duration  - 실제 데이터 사용 시 변경 필요요*/}
             <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-              29"
+              {Math.floor(currentDuration)}"
             </div>
 
             {/* 스피커 이미지 */}
@@ -140,7 +151,10 @@ const VoiceManageModal = ({
             >
               <div className="flex gap-[85px]">
                 <VoiceButton
-                  onClick={() => setIsDeleteMode(false)}
+                  onClick={() => {
+                    setIsDeleteMode(false);
+                    console.log('[VoiceManageModal] 삭제 취소됨.');
+                  }}
                   text="No"
                   color="#D68DE1"
                 />

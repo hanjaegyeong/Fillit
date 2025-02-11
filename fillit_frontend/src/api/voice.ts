@@ -6,6 +6,12 @@ export const postVoice = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
+  // 데이터 확인을 위해 추가한 부분
+  for (const [key, value] of formData.entries()) {
+    console.log(`[postVoice] FormData entry: ${key}`, value);
+  }
+  ///////
+
   const response = await axiosInstance.post('/api/voice/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -29,7 +35,7 @@ export const deleteVoice = async (voiceId: number) => {
 /* 팔로위 보이스 리스트 조회 */
 export const getFolloweeVoiceList = async (): Promise<Voice[]> => {
   const response = await axiosInstance.get('/api/voice/list');
-  return response.data;
+  return response.data.voices || [];
 };
 
 /* 보이스 답장 업로드 */
@@ -65,7 +71,7 @@ export const getVoiceReply = async (
 /* 보이스 답장 조회 */
 export const getVoiceReplyList = async (): Promise<VoiceReply[]> => {
   const response = await axiosInstance.get('/api/voice/reply');
-  return response.data;
+  return response.data.voiceReplies || [];
 };
 
 /* 보이스 답장 삭제 */
