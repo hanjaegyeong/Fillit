@@ -155,11 +155,11 @@ public class NotificationService {
     }
 
     public void generateChatNotification(String receiverId, String senderId, Long chatRoomId) {
-        User receiver = userRepository.findByPersonalId(receiverId).orElseThrow(
-                () -> new IllegalArgumentException("Not found receiver:" +receiverId)); // 채팅 보내는 사람
+        User receiver = userRepository.findById(receiverId).orElseThrow(
+                () -> new IllegalArgumentException("Not found receiver:" +receiverId)); // 채팅 받는 사람
         User sender = userRepository.findByPersonalId(senderId).orElseThrow(
                 () -> new IllegalArgumentException("Not found sender:" + senderId)); // 체팅 보내는 사람
         createNotification(receiver, sender, NotificationType.CHAT, chatRoomId);
-        System.out.println("Generate notification about chat");
+        System.out.println("Generate notification about chat: "+ receiver.getName());
     }
 }
