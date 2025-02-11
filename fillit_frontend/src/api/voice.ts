@@ -6,12 +6,6 @@ export const postVoice = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  // 데이터 확인을 위해 추가한 부분
-  for (const [key, value] of formData.entries()) {
-    console.log(`[postVoice] FormData entry: ${key}`, value);
-  }
-  ///////
-
   const response = await axiosInstance.post('/api/voice/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
