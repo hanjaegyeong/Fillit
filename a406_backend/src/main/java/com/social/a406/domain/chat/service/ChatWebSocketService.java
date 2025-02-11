@@ -90,11 +90,17 @@ public class ChatWebSocketService {
         // 변경된 엔티티 저장
         chatParticipantsRepository.saveAll(chatParticipantsList);
 
-        if(personalIdList != null){
-            for(String receiverId : personalIdList) {
-                notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+        // 알람생성
+        if(chatParticipantsList != null){
+            for(ChatParticipants chatParticipant : chatParticipantsList) {
+                notificationService.generateChatNotification(chatParticipant.getUser().getId(), personalId, chatRoomId);
             }
         }
+//        if(personalIdList != null){
+//            for(String receiverId : personalIdList) {
+//                notificationService.generateChatNotification(receiverId, personalId, chatRoomId);
+//            }
+//        }
 
     }
 
