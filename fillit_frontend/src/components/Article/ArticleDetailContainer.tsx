@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import ArticleContent from '@/components/Article/ArticleContent';
-import { articleList } from '@/mocks/fixtures/articleList';
 import ProfileImage from '@/components/common/ProfileImage';
 import { SendIcon } from '@/assets/assets';
 import CommentListContainer from '@/components/Comment/CommentListContainer';
+import useGetArticle from '@/hooks/useGetArticle';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 type RouteParams = {
   boardId: string;
@@ -11,12 +12,17 @@ type RouteParams = {
 
 const ArticleDetailContainer = () => {
   const { boardId } = useParams() as RouteParams;
+  const { data: article, isLoading } = useGetArticle(boardId);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="w-full overflow-auto">
       <div className="m-5 bg-white border border-black rounded-md">
         <div className="p-5 space-y-6">
-          <ArticleContent article={articleList[Number(boardId)]} isDetail />
+          {article && <ArticleContent article={article} isDetail />}
         </div>
         <hr className="border-t border-black" />
         <div className="p-4">
