@@ -5,6 +5,7 @@ import com.social.a406.domain.comment.repository.CommentRepository;
 import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.like.entity.BoardLike;
 import com.social.a406.domain.like.entity.CommentLike;
+import com.social.a406.domain.like.entity.ReplyLike;
 import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.repository.NotificationRepository;
@@ -147,11 +148,19 @@ public class NotificationService {
     }
 
     public void generateCommentLikeNotification(CommentLike like) {
-        User receiver = like.getComment().getUser(); // 게시글 작성자
-        User sender = like.getUser(); // 댓글 작성자
+        User receiver = like.getComment().getUser(); // 댓글 작성자
+        User sender = like.getUser(); // 좋아요 누른사람
         Long referenceId = like.getComment().getId();
         createNotification(receiver, sender, NotificationType.COMMENTLIKE, referenceId);
         System.out.println("Generate notification about comment like");
+    }
+
+    public void generateReplyLikeNotification(ReplyLike like) {
+        User receiver = like.getReply().getUser(); // 대댓글 작성자
+        User sender = like.getUser(); // 좋아요 누른사람
+        Long referenceId = like.getReply().getId();
+        createNotification(receiver, sender, NotificationType.REPLYLIKE, referenceId);
+        System.out.println("Generate notification about reply like");
     }
 
     public void generateChatNotification(String receiverId, String senderId, Long chatRoomId) {

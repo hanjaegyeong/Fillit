@@ -7,5 +7,6 @@ public enum NotificationType {
     CHAT,
     VOICEREPLY,
     BOARDLIKE,
-    COMMENTLIKE;
+    COMMENTLIKE,
+    REPLYLIKE;
 }
