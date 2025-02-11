@@ -44,12 +44,10 @@ const VoiceManageModal = ({
   const handleDeleteConfirm = async () => {
     try {
       await deleteVoice(voiceId);
-      // [추가] 삭제 성공 후 localStorage 녹음 데이터 제거
-      localStorage.removeItem('recordedVoiceData');
       onDeleteComplete();
-      console.log('보이스 제거 성공');
+      console.log('[VoiceManageModal] 보이스 삭제 성공.');
     } catch (error) {
-      console.error('보이스 제거 실패', error);
+      console.error('[VoiceManageModal] 보이스 삭제 실패:', error);
     }
   };
 
@@ -153,7 +151,10 @@ const VoiceManageModal = ({
             >
               <div className="flex gap-[85px]">
                 <VoiceButton
-                  onClick={() => setIsDeleteMode(false)}
+                  onClick={() => {
+                    setIsDeleteMode(false);
+                    console.log('[VoiceManageModal] 삭제 취소됨.');
+                  }}
                   text="No"
                   color="#D68DE1"
                 />

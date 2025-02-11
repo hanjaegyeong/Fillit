@@ -11,15 +11,10 @@ import { Voice, VoiceReply } from '@/types/voice';
 
 const VoicePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // hasRecordedVoice는 오직 로컬 스토리지의 "recordedVoiceData" 존재 여부로 판단
+  // 내 음성 데이터 여부는 RecordModal의 onRecordComplete를 통해 업데이트됨
   const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
-
-  // [수정] 내 음성 데이터는 API의 결과가 아니라 로컬 스토리지 기반으로 판단합니다.
-  // (예: 백엔드에서 내 음성 데이터를 별도 제공하지 않는 경우)
-  // 따라서, currentVoiceId는 본인의 음성 id가 아니라, ManageModal 호출에 사용할 값입니다.
-  // 여기서는 간단하게 로컬 스토리지에 "myVoiceId"가 있다면 그 값을 사용하도록 가정합니다.
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
 
   const fetchVoices = async () => {
@@ -43,27 +38,6 @@ const VoicePage = () => {
     }
   };
 
-  // 컴포넌트 마운트 시 로컬 스토리지에서 내 녹음 데이터와 내 음성 id 확인
-  useEffect(() => {
-    const recordedData = localStorage.getItem('recordedVoiceData');
-    if (recordedData) {
-      setHasRecordedVoice(true);
-      console.log('[VoicePage] 저장된 녹음 데이터가 발견됨.');
-    } else {
-      setHasRecordedVoice(false);
-      console.log('[VoicePage] 저장된 녹음 데이터가 없음.');
-    }
-    // 내 음성 id가 있다면 가져오기 (만약 업로드 후 서버에서 반환하는 값이 localStorage에 "myVoiceId"로 저장된다면)
-    const myVoiceIdStr = localStorage.getItem('myVoiceId');
-    if (myVoiceIdStr) {
-      setMyVoiceId(Number(myVoiceIdStr));
-      console.log('[VoicePage] 저장된 내 음성 ID:', myVoiceIdStr);
-    } else {
-      setMyVoiceId(null);
-      console.log('[VoicePage] 저장된 내 음성 ID가 없음.');
-    }
-  }, []);
-
   useEffect(() => {
     fetchVoices();
     fetchVoiceReplies();
@@ -78,15 +52,11 @@ const VoicePage = () => {
     console.log('[VoicePage] 모달 닫힘.');
   };
 
-  // onRecordComplete: 녹음 완료 시 호출되어 내 음성 데이터가 있다고 표시
-  const handleRecordComplete = () => {
-    console.log(
-      '[VoicePage] handleRecordComplete 실행됨. hasRecordedVoice를 true로 설정합니다.'
-    );
+  // onRecordComplete: RecordModal에서 내 보이스 데이터의 voiceId를 받아 상태 업데이트
+  const handleRecordComplete = (voiceId: number) => {
+    console.log('[VoicePage] handleRecordComplete 실행됨.', voiceId);
     setHasRecordedVoice(true);
-    // 여기서 만약 백엔드에서 내 음성 업로드 후 내 음성 id를 반환한다면,
-    // 해당 값을 localStorage에 "myVoiceId"로 저장하고 상태로 업데이트합니다.
-    // 예: localStorage.setItem('myVoiceId', voiceId.toString());
+    setMyVoiceId(voiceId);
     setIsModalOpen(false);
     fetchVoices();
     console.log('[VoicePage] 녹음 완료, 보이스 목록 갱신.');
@@ -94,22 +64,23 @@ const VoicePage = () => {
 
   const handleDeleteComplete = () => {
     console.log(
-      '[VoicePage] handleDeleteComplete 실행됨. hasRecordedVoice를 false로 설정합니다.'
+      '[VoicePage] handleDeleteComplete 실행됨. 내 음성 데이터 삭제.'
     );
     setHasRecordedVoice(false);
-    // 내 음성 id도 제거
-    localStorage.removeItem('myVoiceId');
     setMyVoiceId(null);
     setIsModalOpen(false);
     fetchVoices();
-    console.log('[VoicePage] 보이스 삭제 완료, 보이스 목록 갱신.');
+    setVoiceReplyList([]);
+    console.log(
+      '[VoicePage] 보이스 삭제 완료, 보이스 및 내 음성 답장 목록 갱신.'
+    );
   };
 
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
       <BubbleBackground />
-      {/* 내 음성 답장 목록 (내가 올린 음성에 대한 답장) */}
+      {/* 내 음성 답장 목록 */}
       <VoiceReplyList voiceReplies={voiceReplyList} />
       {/* 팔로위 음성 스토리 목록 */}
       <VoiceBubbleList voices={voiceList} />
@@ -130,14 +101,13 @@ const VoicePage = () => {
             />
           </div>
         </button>
-        {/* 모달 선택: 내 녹음 데이터(recordedVoiceData)가 있으면 ManageModal, 없으면 RecordModal */}
-        {hasRecordedVoice ? (
+        {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
+        {hasRecordedVoice && myVoiceId !== null ? (
           <VoiceManageModal
             isOpen={isModalOpen}
             onClose={handleModalClose}
             onDeleteComplete={handleDeleteComplete}
-            // ManageModal에 내 음성 id 전달 (null이면 관리 모달 대신 녹음 모달이 뜰 수 있음)
-            voiceId={myVoiceId || 0}
+            voiceId={myVoiceId}
           />
         ) : (
           <VoiceRecordModal
