@@ -108,6 +108,8 @@ pipeline {
                     // 애플리케이션 Deployment와 Service 적용
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
+                    // 강제 롤아웃 재시작으로 최신 이미지 적용
+                    sh 'kubectl rollout restart deployment fillit-deployment'
                 }
             }
         }
