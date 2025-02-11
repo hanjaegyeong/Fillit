@@ -1,14 +1,14 @@
 import { FeedArticle } from '@/types/article';
 import { getBackgroundImage } from '@/utils/getBackgroundImage';
 import { useNavigate } from 'react-router-dom';
-import ArticleContent from './ArticleContent';
+import ArticleContent from '@/components/Article/ArticleContent';
 
-interface ArticleItemProps {
+interface ArticleWrapperProps {
   article: FeedArticle;
   position: 'left' | 'right';
 }
 
-const ArticleCard = ({ article, position }: ArticleItemProps) => {
+const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
   const navigate = useNavigate();
 
   const handleGoArticleDetail = () => {
@@ -38,4 +38,4 @@ const ArticleCard = ({ article, position }: ArticleItemProps) => {
   );
 };
 
-export default ArticleCard;
+export default ArticleWrapper;

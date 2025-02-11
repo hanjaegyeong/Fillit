@@ -1,5 +1,5 @@
 import { commentReplyList } from '@/mocks/fixtures/commentReplyList';
-import CommentReplyItem from '@/components/Comment/CommentReplyItem';
+import CommentReplyCard from '@/components/Comment/CommentReplyCard';
 
 const CommentReplyListContainer = () => {
   return (
@@ -7,7 +7,7 @@ const CommentReplyListContainer = () => {
       {commentReplyList.map((commentReply, index) => {
         const position = index % 2 ? 'left' : 'right';
         return (
-          <CommentReplyItem
+          <CommentReplyCard
             key={commentReply.replyId}
             commentReply={commentReply}
             position={position}
