@@ -57,10 +57,21 @@ public class ReplyService {
 
         // 접근가능 권한 검증
         if(!user.equals(reply.getUser())) throw new SecurityException("User not authorized to update this reply");
-
         reply.updateReplyContent(request.getContent()); // 수정
 
         return mapToResponse(reply);
+    }
+
+    // 댓글 삭제될때 대댓글도 함께 삭제
+    @Transactional
+    public void deleteAllReplyByComment(Long commentId, UserDetails userDetails){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
+        User user = userRepository.findByPersonalId(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
+
+        replyRepository.deleteAllByComment_Id(commentId);
+
     }
 
     // 대댓글 삭제
