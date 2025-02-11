@@ -3,14 +3,12 @@ import { micBig, soundWave } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
-import { postVoice } from '@/api/voice';
-
-// 녹음 완료 시 녹음 파일을 api로 업로드
+import { postVoice, getVoice } from '@/api/voice';
 
 interface VoiceRecordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onRecordComplete: () => void;
+  onRecordComplete: (voiceId: number) => void;
 }
 
 const VoiceRecordModal = ({
@@ -51,14 +49,29 @@ const VoiceRecordModal = ({
     if (recordedFile) {
       try {
         await postVoice(recordedFile);
-        console.log('음성 업로드 성공');
-        // localStorage.removeItem('recordedVoiceData');
-        onRecordComplete();
+        console.log('[VoiceRecordModal] 음성 업로드 성공.');
+        setTimeout(async () => {
+          try {
+            const myVoice = await getVoice();
+            console.log('[VoiceRecordModal] 내 음성 데이터 fetched:', myVoice);
+            if (myVoice && myVoice.voiceId) {
+              onRecordComplete(myVoice.voiceId);
+            } else {
+              console.warn('[VoiceRecordModal] 내 음성 데이터 없음.');
+              onRecordComplete(0);
+            }
+          } catch (error) {
+            console.error(
+              '[VoiceRecordModal] 내 음성 데이터 fetch 실패:',
+              error
+            );
+            onRecordComplete(0);
+          }
+        }, 2000);
         onClose();
       } catch (error) {
-        console.error('음성 업로드 실패', error);
-        // 임시 우회: 업로드 실패시에도 Manage로 전환
-        onRecordComplete();
+        console.error('[VoiceRecordModal] 음성 업로드 실패:', error);
+        onRecordComplete(0);
         onClose();
       }
     }
