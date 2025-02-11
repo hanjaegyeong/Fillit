@@ -74,11 +74,8 @@ pipeline {
                     echo 'Deploying application to Kubernetes...'
                     // 환경변수 치환을 통해 deployment 템플릿 파일 생성
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
-                    // 애플리케이션 Deployment와 Service 적용
+                    // 애플리케이션 Deployment
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
-                    sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
-                    // 강제 롤아웃 재시작으로 최신 이미지 적용
-                    sh 'kubectl rollout restart deployment fillit-deployment'
                     sh """
                         kubectl set env deployment/fillit-deployment \\
                             JWT_SECRET_KEY="$JWT_SECRET_KEY" \\
