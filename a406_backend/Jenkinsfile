@@ -63,8 +63,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                    docker build -t ${DOCKER_IMAGE_NAME}:latest \\
-                                 -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \\
+                    docker build -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \\
                                  -f a406_backend/Dockerfile a406_backend
                 """
             }
@@ -83,7 +82,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh """
-                    docker tag ${DOCKER_IMAGE_NAME}:latest jaegyeong223/fillit:${BUILD_NUMBER}
+                    docker tag ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} jaegyeong223/fillit:${BUILD_NUMBER}
                     docker push jaegyeong223/fillit:${BUILD_NUMBER}
                 """
             }
