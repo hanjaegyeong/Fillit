@@ -3,6 +3,7 @@ import AiFil from '@/assets/images/ai-fil.png';
 import SlideUpModal from '../Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { postChatbot } from '@/api/chatbot';
 
 export interface Message {
   id: number;
@@ -28,7 +29,10 @@ export const mockChatData: ChatData[] = [
         id: 1,
         sender: 'ai',
         content: "What's the problem?",
-        timestamp: '10:00 AM',
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       },
     ],
   },
@@ -56,8 +60,9 @@ const AiFilButton = () => {
   }, [messages]);
 
   // 메세지 전송
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputMessage.trim()) return;
+
     const newMessage: Message = {
       id: messages.length + 1,
       sender: 'me',
@@ -67,8 +72,24 @@ const AiFilButton = () => {
         minute: '2-digit',
       }),
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setInputMessage('');
+
+    try {
+      const chatbotResponse = await postChatbot(newMessage.content);
+      const aiMessage: Message = {
+        id: messages.length + 2,
+        sender: 'ai',
+        content: chatbotResponse.message,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      };
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('챗봇 API 호출 중 에러 발생:', error);
+    }
   };
   const { pathname } = useLocation();
 
@@ -122,7 +143,10 @@ const AiFilButton = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
           />
-          <button className="ml-3 bg-blue-500 text-white p-3 rounded-lg">
+          <button
+            onClick={sendMessage}
+            className="ml-3 bg-blue-500 text-white p-3 rounded-lg"
+          >
             Send
           </button>
         </div>
