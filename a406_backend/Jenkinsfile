@@ -21,19 +21,6 @@ pipeline {
                 }
             }
         }
-
-        // 테스트용 Redis 실행: 빌드(테스트) 전에 로컬 Docker에서 Redis를 실행합니다.
-        stage('Start Redis for Tests') {
-            steps {
-
-                echo 'Starting Redis for tests...'
-                // 기존의 redis-test 컨테이너가 있으면 삭제
-                sh 'docker rm -f redis-test || true'
-                // 새 Redis 컨테이너 실행
-                sh 'docker run -d --name redis-test -p 6379:6379 redis:6.2'
-            }
-        }
-
         // 애플리케이션 빌드 및 테스트 (Redis가 실행 중이어야 테스트가 성공함)
         stage('Build') {
             steps {
@@ -48,14 +35,6 @@ pipeline {
                             -Dspring.mail.password="$MAIL_PASSWORD"
                     """
                 }
-            }
-        }
-
-        // 테스트 완료 후 테스트용 Redis 컨테이너 정리
-        stage('Stop Redis for Tests') {
-            steps {
-                echo 'Stopping Redis test container...'
-                sh 'docker rm -f redis-test'
             }
         }
 
@@ -85,15 +64,6 @@ pipeline {
                     docker tag ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} jaegyeong223/fillit:${BUILD_NUMBER}
                     docker push jaegyeong223/fillit:${BUILD_NUMBER}
                 """
-            }
-        }
-
-        // Kubernetes 클러스터에 Redis 배포
-        stage('Deploy Redis to Kubernetes') {
-            steps {
-                echo 'Deploying Redis to Kubernetes...'
-                // a406_backend/k8s/redis.yaml 파일에는 Deployment와 Service가 모두 포함.
-                sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
             }
         }
 
@@ -140,9 +110,7 @@ pipeline {
                             YOUTUBE_API_URL="$YOUTUBE_API_URL" \\
                             GEMINI_API_KEY="$GEMINI_API_KEY" \\
                             EC2_SERVER_URL="$EC2_SERVER_URL" \\
-                            FLICKR_API_KEY="$FLICKR_API_KEY" \\
-                            SPRING_REDIS_HOST="redis" \\
-                            SPRING_REDIS_PORT="6379"
+                            FLICKR_API_KEY="$FLICKR_API_KEY"
                     """
                 }
             }
