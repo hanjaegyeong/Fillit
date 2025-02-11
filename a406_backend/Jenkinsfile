@@ -22,12 +22,21 @@ pipeline {
             }
         }
 
+        // 테스트용 Redis 실행: 빌드(테스트) 전에 로컬 Docker에서 Redis를 실행합니다.
+        stage('Start Redis for Tests') {
+            steps {
+                echo 'Starting Redis for tests...'
+                sh 'docker run -d --name redis-test -p 6379:6379 redis:6.2'
+            }
+        }
+
+        // 애플리케이션 빌드 및 테스트 (Redis가 실행 중이어야 테스트가 성공함)
         stage('Build') {
             steps {
                 dir('a406_backend') {
                     sh """
                         chmod +x ./gradlew
-                        ./gradlew clean build \
+                        ./gradlew clean build \\
                             -Djwt.secret-key="$JWT_SECRET_KEY" \\
                             -Dspring.datasource.url="$DB_URL" \\
                             -Dspring.datasource.username="$DB_USERNAME" \\
@@ -38,17 +47,26 @@ pipeline {
             }
         }
 
+        // 테스트 완료 후 테스트용 Redis 컨테이너 정리
+        stage('Stop Redis for Tests') {
+            steps {
+                echo 'Stopping Redis test container...'
+                sh 'docker rm -f redis-test'
+            }
+        }
+
+        // Docker 이미지 빌드
         stage('Build Docker Image') {
             steps {
                 sh """
-                    docker build -t ${DOCKER_IMAGE_NAME}:latest \
-                                 -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \
+                    docker build -t ${DOCKER_IMAGE_NAME}:latest \\
+                                 -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} \\
                                  -f a406_backend/Dockerfile a406_backend
                 """
             }
         }
 
-        // Docker Hub 로그인 단계
+        // Docker Hub 로그인
         stage('Docker Hub Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
@@ -57,7 +75,7 @@ pipeline {
             }
         }
 
-        // 도커 이미지 레지스트리에 푸시
+        // Docker Hub에 이미지 푸시
         stage('Push Docker Image') {
             steps {
                 sh """
@@ -67,20 +85,27 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        // Kubernetes 클러스터에 Redis 배포
+        stage('Deploy Redis to Kubernetes') {
+            steps {
+                echo 'Deploying Redis to Kubernetes...'
+                // a406_backend/k8s/redis.yaml 파일에는 Deployment와 Service가 모두 포함.
+                sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
+            }
+        }
+
+        // Kubernetes 클러스터에 애플리케이션 배포
+        stage('Deploy Application to Kubernetes') {
             steps {
                 script {
-                    // Redis 배포 (Kubernetes 매니페스트 파일 적용)
-                    sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
-
-                    // 템플릿 파일에 환경변수 치환
+                    echo 'Deploying application to Kubernetes...'
+                    // 환경변수 치환을 통해 deployment 템플릿 파일 생성
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
-                    // Kubernetes 클러스터에 매니페스트 적용
+                    // 애플리케이션 Deployment와 Service 적용
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
                 }
             }
         }
-
     }
 }
