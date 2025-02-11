@@ -10,7 +10,7 @@ export const postLogin = async (email: string, password: string) => {
   const accessToken = response.data.accessToken;
 
   if (accessToken) {
-    localStorage.setItem('accessToken', accessToken.replace('Bearer ', ''));
+    sessionStorage.setItem('accessToken', accessToken.replace('Bearer ', ''));
   }
 
   return response.data;
@@ -20,7 +20,7 @@ export const postLogin = async (email: string, password: string) => {
 export const getLogout = async () => {
   const response = await axiosInstance.post('/api/users/logout');
 
-  localStorage.removeItem('accessToken');
+  sessionStorage.removeItem('accessToken');
 
   return response.data;
 };
