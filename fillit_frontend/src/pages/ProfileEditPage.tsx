@@ -1,64 +1,77 @@
-import { CameraIcon, IntroIcon, NameIcon } from '@/assets/assets';
-import BasicInput from '@/components/common/Input/BasicInput';
-import BasicButton from '@/components/common/Button/BasicButton';
+import React, { useCallback } from 'react';
 import Header from '@/components/common/Header/Header';
-import ProfileImage from '@/components/common/ProfileImage';
-import { useRef, useState } from 'react';
+import BasicButton from '@/components/common/Button/BasicButton';
+import ProfileImageUploader from '@/components/Profile/ProfileImageUploader';
+import ProfileEditForm from '@/components/Profile/ProfileEditForm';
 import { useNavigate } from 'react-router-dom';
+import { useProfile } from '@/hooks/useProfile';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    profile,
+    setProfile,
+    setProfileImageFile,
+    updateProfile,
+    currentUser,
+    isLoading,
+  } = useProfile();
 
-  const handleEditClick = () => {
-    navigate('/profile');
-  };
-
-  const handleCameraClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+  // 이미지 변경시 URL 생성
+  const handleFileChange = useCallback(
+    (file: File) => {
+      setProfileImageFile(file);
+      // 브라우저 메모리 상에서 보여주기 위한 URL 생성
       const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
+      setProfile((prev) => ({ ...prev, profileImageUrl: imageUrl }));
+    },
+    [setProfile, setProfileImageFile]
+  );
+
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setProfile((prev) => ({ ...prev, name: value }));
+    },
+    [setProfile]
+  );
+
+  const handleIntroductionChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setProfile((prev) => ({ ...prev, introduction: value }));
+    },
+    [setProfile]
+  );
+
+  const handleEditClick = useCallback(async () => {
+    try {
+      await updateProfile();
+      navigate(`/profile/${currentUser.personalId}`);
+    } catch (error) {
+      console.error('프로필 수정 실패:', error);
     }
-  };
+  }, [updateProfile, navigate, currentUser.personalId]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <div className="container-header ">
+    <div className="container-header">
       <Header left="back" />
       <div className="flex flex-col items-center">
-        <div className="mt-16 flex flex-col items-center">
-          <ProfileImage src={profileImage} size={101} />
-          <button
-            onClick={handleCameraClick}
-            className="w-10 h-10 bg-white rounded-[1.3rem] shadow-[5px_6px_18px_#00000014] -mt-8 ml-20"
-          >
-            <img src={CameraIcon} alt="camera" className="scale-125 ml-2.5" />
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={handleImageUpload}
-          />
-        </div>
-        <div>
-          <div className="flex mt-5 ">
-            <img src={NameIcon} alt="name" />
-            <p className="font-light ml-1">name</p>
-          </div>
-          <BasicInput placeholder="Enter your name" />
-          <div className="flex mt-5">
-            <img src={IntroIcon} alt="intro" />
-            <p className="font-light ml-1.5">introduction</p>
-          </div>
-          <BasicInput height={100} placeholder="Introduce yourself!" />
-        </div>
+        <ProfileImageUploader
+          imageUrl={profile.profileImageUrl}
+          onFileChange={handleFileChange}
+        />
+        <ProfileEditForm
+          name={profile.name}
+          introduction={profile.introduction}
+          onNameChange={handleNameChange}
+          onIntroductionChange={handleIntroductionChange}
+        />
         <div className="mt-10">
           <BasicButton text="Edit" onClick={handleEditClick} width="6rem" />
         </div>
