@@ -4,10 +4,10 @@ import { Comment, CommentReply } from '@/types/comment';
 /* 댓글 작성 */
 export const postComment = async (
   boardId: number,
-  comments: string
+  content: string
 ): Promise<Comment> => {
   const response = await axiosInstance.post(`/api/board/${boardId}/comment`, {
-    comments,
+    content,
   });
   return response.data;
 };
@@ -24,7 +24,7 @@ export const getComment = async (
   commentId: number
 ): Promise<Comment> => {
   const response = await axiosInstance.get(
-    `/api/board/${boardId}/comment/${commentId}`
+    `/api/board/${boardId}/comment/get/${commentId}`
   );
   return response.data;
 };
@@ -41,12 +41,12 @@ export const deleteComment = async (boardId: number, commentId: number) => {
 export const postCommentReply = async (
   boardId: number,
   commentId: number,
-  comments: string
+  content: string
 ): Promise<CommentReply> => {
   const response = await axiosInstance.post(
     `/api/board/${boardId}/comment/${commentId}/replies`,
     {
-      comments,
+      content,
     }
   );
   return response.data;
