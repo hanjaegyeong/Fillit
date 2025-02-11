@@ -401,7 +401,9 @@ public class UserService {
 
         user.updateUserProfile(userUpdateRequest.getName(), userUpdateRequest.getIntroduction());
         if(file != null){
-            deleteProfileImageFromS3(user.getProfileImageUrl());
+            if(user.getProfileImageUrl() != null) {
+                deleteProfileImageFromS3(user.getProfileImageUrl());
+            }
             String newProfileImageUrl = saveProfileImageAtS3(file);
             user.updateUserProfileImage(newProfileImageUrl);
         }
