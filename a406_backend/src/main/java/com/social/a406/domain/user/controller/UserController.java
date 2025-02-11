@@ -2,7 +2,7 @@ package com.social.a406.domain.user.controller;
 
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
-import com.social.a406.util.RedisService;
+//import com.social.a406.util.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-    private final RedisService redisService;
+//    private final RedisService redisService;
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
@@ -66,7 +66,7 @@ public class UserController {
                     .build();
 
             // Redis에 리프레시 토큰 저장
-            redisService.saveRefreshToken(tokens.get("refreshToken"), tokens.get("personalId"));
+//            redisService.saveRefreshToken(tokens.get("refreshToken"), tokens.get("personalId"));
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -88,7 +88,7 @@ public class UserController {
                     String refreshToken = cookie.getValue();
 
                     // Redis에서 Refresh Token 삭제
-                    redisService.deleteRefreshToken(refreshToken);
+//                    redisService.deleteRefreshToken(refreshToken);
 
                     // 쿠키 삭제 (브라우저에서도 삭제)
                     Cookie deleteCookie = new Cookie("refreshToken", null);
