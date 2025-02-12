@@ -37,6 +37,9 @@ const ProfileInfo = ({
                 <FollowButton
                   isFollowing={false}
                   followeePersonalId={profileData.personalId}
+                  onFollowChange={(isFollowing) =>
+                    console.log('팔로우 상태 변경:', isFollowing)
+                  }
                   width="3.4rem"
                   height="1.25rem"
                   fontSize="9px"
