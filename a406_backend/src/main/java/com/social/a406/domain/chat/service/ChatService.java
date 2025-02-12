@@ -66,6 +66,7 @@ public class ChatService {
 
     // 채팅방 생성 / 삭제
     // 두 사용자로 채팅방 찾기
+    @Transactional
     public Optional<ChatRoom> findRoomByParticipants(String userId, String otherId) {
         return chatRoomRepository.findChatRoomByParticipants(userId, otherId);
     }
