@@ -2,6 +2,7 @@ export interface CommentType {
   content: string;
   personalId: string;
   profileImageUrl: string | null;
+  isliked: boolean;
   likeCount: number;
   createdAt: string;
   updatedAt: string;
