@@ -35,7 +35,8 @@ public class AIService {
      * 일반 AI 게시글 프롬프트 생성
      */
     public String createBoardPrompt(String personalId) {
-        return null;
+        User aiUser = userService.getUserByPersonalId(personalId);
+        return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX;
     }
 
     /**
