@@ -66,7 +66,7 @@ public class UserController {
                     .build();
 
             // Redis에 리프레시 토큰 저장
-//            redisService.saveRefreshToken(tokens.get("refreshToken"), tokens.get("personalId"));
+            redisService.saveRefreshToken(tokens.get("refreshToken"), tokens.get("personalId"));
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -88,7 +88,7 @@ public class UserController {
                     String refreshToken = cookie.getValue();
 
                     // Redis에서 Refresh Token 삭제
-//                    redisService.deleteRefreshToken(refreshToken);
+                    redisService.deleteRefreshToken(refreshToken);
 
                     // 쿠키 삭제 (브라우저에서도 삭제)
                     Cookie deleteCookie = new Cookie("refreshToken", null);
