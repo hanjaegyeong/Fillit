@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -59,7 +60,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);  // 자격 증명 허용
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));  // 도메인 설정
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://fillit.kro.kr",
+                "http://3.34.191.50:3000"));
         config.setAllowedMethods(Collections.singletonList("*"));  // 모든 HTTP 메서드 허용
         config.setAllowedHeaders(Collections.singletonList("*"));  // 모든 헤더 허용
 
