@@ -50,8 +50,6 @@ const SearchPage = () => {
           </div>
         ))}
       </div>
-
-      <TestButton />
     </div>
   );
 };

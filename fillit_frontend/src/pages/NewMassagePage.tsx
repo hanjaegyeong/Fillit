@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
-import SearchInput from '@/components/common/Input/SearchInput';
 import ProfileImage from '@/mocks/images/profile-image.png';
+import SubmitInput from '@/components/common/Input/SubmitInput';
 
 interface UserList {
   id: number;
@@ -96,12 +96,7 @@ const NewMessagePage = () => {
     <div className="container-header bg-none">
       <Header left="back" text="New Message" isTitle={true} />
       <div className="p-4 flex flex-col justify-center items-center">
-        <SearchInput
-          className=""
-          onSearch={handleSearch}
-          placeholder="search"
-          width="w-[300px]"
-        />
+        <SubmitInput onSubmit={handleSearch} placeholder="Search" />
       </div>
       <div className="w-full px-4 overflow-y-auto max-h-[calc(100vh-220px)] hide-scrollbar">
         {userResults.map((chat) => (
