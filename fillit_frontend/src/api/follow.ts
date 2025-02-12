@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/api/axiosInstance';
 
 /* 팔로우 */
 export const postFollow = async (followeePersonalId: string) => {
