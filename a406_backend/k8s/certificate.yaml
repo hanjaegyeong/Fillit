@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-cert
+  namespace: default
+spec:
+  secretName: tls-secret           # Ingress에서 참조할 Secret 이름
+  issuerRef:
+    name: letsencrypt-prod          # 생성한 ClusterIssuer 이름
+    kind: ClusterIssuer
+  commonName: fillit.kro.kr           # 발급받을 인증서의 주체 (CN)
+  dnsNames:
+    - fillit.kro.kr
