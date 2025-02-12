@@ -9,9 +9,10 @@ import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.interest.entity.UserInterest;
-import com.social.a406.domain.interest.repository.InterestRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.interest.service.InterestService;
+import com.social.a406.domain.like.repository.BoardLikeRepository;
+import com.social.a406.domain.like.service.BoardLikeService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,8 @@ public class BoardService {
 
     private final ApplicationEventPublisher eventPublisher;
     private final UserInterestRepository userInterestRepository;
+    private final BoardLikeService boardLikeService;
+    private final BoardLikeRepository boardLikeRepository;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -100,10 +103,22 @@ public class BoardService {
         return mapToResponseDto(board, imageUrls, interests);
     }
 
+    // 게시글 단건 조회 + 좋아요 여부
+    @Transactional(readOnly = true)
+    public BoardResponse getBoardByIdAndUser(Long boardId, String personalId) {
+        Board board = findBoardById(boardId);
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new IllegalArgumentException("Not found user"));
+        List<String> imageUrls = getBoardImages(boardId);
+        List<String> interests = interestService.getBoardInterests(boardId);
+        boolean like = boardLikeRepository.existsByUser_IdAndBoard_Id(user.getId(),boardId);
+        return mapToResponseDtoAndLike(board, imageUrls, interests, like);
+    }
+
     // 게시글 수정
     @Transactional
-    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> newFiles) {
-        User user = findUserBypersonalId(userDetails.getUsername());
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, String personalId, List<MultipartFile> newFiles) {
+        User user = findUserBypersonalId(personalId);
         Board board = findBoardById(boardId);
 
         validateBoardOwnership(board, user);
@@ -125,7 +140,8 @@ public class BoardService {
             interestService.addBoardInterests(boardId, boardRequest.getInterests());
             newInterests = interestService.getBoardInterests(boardId);
         }
-        return mapToResponseDto(board, newImageUrls, newInterests);
+        boolean like = boardLikeRepository.existsByUser_IdAndBoard_Id(user.getId(), boardId);
+        return mapToResponseDtoAndLike(board, newImageUrls, newInterests, like);
     }
 
     // 게시글 내용 조회
@@ -218,6 +234,28 @@ public class BoardService {
                 .interests(interests)
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
+                .build();
+    }
+
+    private BoardResponse mapToResponseDtoAndLike(Board board, List<String> imageUrls,
+                                                  List<String> interests, boolean like) {
+        return BoardResponse.builder()
+                .boardId(board.getId())
+                .content(board.getContent())
+                .personalId(board.getUser().getPersonalId())
+                .profileImageUrl(board.getUser().getProfileImageUrl())
+                .likeCount(board.getLikeCount())
+                .commentCount(commentService.getCommentCountByBoard(board.getId()))
+                .x(board.getX())
+                .y(board.getY())
+                .z(board.getZ())
+                .keyword(board.getKeyword())
+                .pageNumber(board.getPageNumber())
+                .imageUrls(imageUrls)
+                .interests(interests)
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
+                .isLiked(like)
                 .build();
     }
 
@@ -376,14 +414,17 @@ public class BoardService {
                 .build();
     }
 
-    public List<BoardRecommendResonse> searchBoard(Pageable pageable, Long cursorId, String word) {
-        List<Board> boards = boardRepository.searchBoard(word, cursorId, pageable);
+    public List<BoardRecommendResonse> searchBoard(Pageable pageable, Long cursorId, String word, String personalId) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new IllegalArgumentException("Not found User"));
+        List<Object[]> boards = boardRepository.searchBoardWithLikeStatus(word, cursorId, user.getId(), pageable);
 
         return boards.stream()
                 .map(board -> mapRecommendBoard(
-                        board,
-                        boardImageRepository.findFirstById(board.getId()),
-                        0L
+                        (Board) board[0],
+                        boardImageRepository.findFirstById(((Board)board[0]).getId()),
+                        0L,
+                        (boolean) board[1]
                 ))
                 .toList();
     }
@@ -425,14 +466,14 @@ public class BoardService {
             interestId = getRandomUserInterest(userInterestRepository.findByUser_Id(user.getId()));
         }
 
-        List<Object[]> results = boardRepository.findBoardsWithFirstImageByInterestId(interestId, cursorLikeCount, cursorId, pageable);
+        List<Object[]> results = boardRepository.findBoardsWithFirstImageAndLikeStatusByInterestId(interestId, user.getId(), cursorLikeCount, cursorId, pageable);
         Long finalInterestId = interestId;
         return results.stream().map(
-                r -> mapRecommendBoard((Board) r[0], (String) r[1], finalInterestId)
+                r -> mapRecommendBoard((Board) r[0], (String) r[1], finalInterestId, (boolean) r[2])
         ).toList();
     }
 
-    public BoardRecommendResonse mapRecommendBoard(Board board, String imageUrl, Long interestId){
+    public BoardRecommendResonse mapRecommendBoard(Board board, String imageUrl, Long interestId, boolean like){
         return BoardRecommendResonse.builder()
                 .boardId(board.getId())
                 .personalId(board.getUser().getPersonalId())
@@ -441,6 +482,7 @@ public class BoardService {
                 .keyword(board.getKeyword())
                 .imageUrl(imageUrl)
                 .interestId(interestId)
+                .isLiked(like)
                 .build();
     }
 

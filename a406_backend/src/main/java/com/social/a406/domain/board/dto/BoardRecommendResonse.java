@@ -14,4 +14,5 @@ public class BoardRecommendResonse {
     private String keyword;
     private String imageUrl;
     private Long interestId;
+    private Boolean isLiked;
 }
