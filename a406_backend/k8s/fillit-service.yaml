@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: fillit-service
 spec:
+  type: ClusterIP
   selector:
     app: fillit
   ports:
