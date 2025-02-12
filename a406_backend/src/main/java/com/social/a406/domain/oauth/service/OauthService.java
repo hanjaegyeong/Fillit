@@ -3,6 +3,7 @@ package com.social.a406.domain.oauth.service;
 import com.social.a406.domain.user.dto.SocialLoginRequest;
 import com.social.a406.domain.user.service.CustomUserDetailsService;
 import com.social.a406.util.JwtTokenUtil;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +27,7 @@ public class OauthService {
         // 사용자 검증
         if (userDetails == null) {
             log.warn("Login failed. User not found with social ID: {}", socialLoginRequest.getSocialId());
-            throw new RuntimeException("Social ID does not exist");
+            throw new ForbiddenException("Social ID does not exist");
         }
 
         // JWT 토큰 생성
