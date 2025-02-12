@@ -14,6 +14,12 @@ export interface MessagePostForm {
   type: MessageType;
 }
 
+export interface MessageListResponse {
+  messages: Message[];
+  nextCursor: number;
+  hasNext: boolean;
+}
+
 export interface ChatRoom {
   chatRoomId: number;
   otherUser: string;
