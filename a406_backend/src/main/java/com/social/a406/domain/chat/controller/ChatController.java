@@ -28,7 +28,7 @@ public class ChatController {
     private final ChatWebSocketService chatWebSocketService;
 
     // 채팅방 정보가져오기
-    @GetMapping("/rooms/Info")
+    @GetMapping("/rooms/info")
     public ResponseEntity<?> getChatRoomInfo(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Long chatRoomId ) {
