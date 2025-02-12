@@ -106,6 +106,10 @@ pipeline {
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
                     // 애플리케이션 Deployment
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
+                    sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
+                    sh 'kubectl apply -f a406_backend/k8s/clusterissuer.yaml'
+                    sh 'kubectl apply -f a406_backend/k8s/certificate.yaml'
+                    sh 'kubectl apply -f a406_backend/k8s/fillit-ingress.yaml'
                     sh """
                         kubectl set env deployment/fillit-deployment \\
                             JWT_SECRET_KEY="$JWT_SECRET_KEY" \\
