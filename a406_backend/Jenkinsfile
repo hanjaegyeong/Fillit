@@ -77,7 +77,11 @@ pipeline {
                 sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
             }
         }
-
+        stage('Check YAML') {
+            steps {
+                sh 'cat a406_backend/k8s/clusterissuer.yaml'
+            }
+        }
         // Kubernetes 클러스터에 애플리케이션 배포
         stage('Deploy Application to Kubernetes') {
             steps {
@@ -88,7 +92,7 @@ pipeline {
                     // 애플리케이션 Deployment
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
-                    sh 'kubectl apply --server-side -f a406_backend/k8s/clusterissuer.yaml'
+                    sh 'kubectl apply --server-side --validate=false -f a406_backend/k8s/clusterissuer.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/certificate.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-ingress.yaml'
                     sh """
