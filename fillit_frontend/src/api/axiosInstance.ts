@@ -35,12 +35,12 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log('[API error] ', error);
-
     const status = error?.response?.status;
-    const errorCode = error?.response?.data;
+    const errorMessage = error?.response?.data;
 
-    if (status === 401 && errorCode === 'Access token expired') {
+    console.log(`[API error] ${status} ${errorMessage || ''}`);
+
+    if (status === 401 && errorMessage === 'Access token expired') {
       try {
         const { accessToken } = await getAccessToken();
         if (accessToken) {
