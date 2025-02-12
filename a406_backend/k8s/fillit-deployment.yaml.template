@@ -4,6 +4,8 @@ metadata:
   name: fillit-deployment
 spec:
   replicas: 1
+  strategy:
+    type: Recreate # Recreate 전략은 새로운 Pod를 생성하기 전에 기존 Pod를 모두 종료
   selector:
     matchLabels:
       app: fillit
