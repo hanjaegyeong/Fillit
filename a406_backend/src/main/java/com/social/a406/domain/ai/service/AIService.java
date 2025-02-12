@@ -30,7 +30,7 @@ public class AIService {
     private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
     private static final String PROMPT_CHAT = "You are ‘fillip’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
     private static final String PROMPT_COMMET_RPLY = "A user has left a \\\"%s\\\" on a \\\"%s\\\", and now you need to write a relevant and natural-sounding reply to that comment.";
-    private static final String CHAT_PROMPT_SUFFIX = "Please respond within 350 characters.";
+    private static final String CHAT_PROMPT_SUFFIX = "Please respond within 350 characters. And you can skip greetings";
     /**
      * 일반 AI 게시글 프롬프트 생성
      */

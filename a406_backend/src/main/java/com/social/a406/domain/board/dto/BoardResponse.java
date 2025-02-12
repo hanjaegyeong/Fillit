@@ -27,4 +27,6 @@ public class BoardResponse {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Boolean isLiked;
 }
