@@ -27,6 +27,21 @@ public class ChatController {
     private final ChatService chatService;
     private final ChatWebSocketService chatWebSocketService;
 
+    // 채팅방 정보가져오기
+    @GetMapping("/rooms/info")
+    public ResponseEntity<?> getChatRoomInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Long chatRoomId ) {
+        if(!chatService.isParticipantInChatRoom(userDetails.getUsername(), chatRoomId)){
+            return ResponseEntity.badRequest().body("You do not have permission to access this chat room: " + userDetails.getUsername() + ", " + chatRoomId);
+        }
+        String personalId = userDetails.getUsername();
+        User user = chatService.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+
+
+        return ResponseEntity.ok(chatService.getChatRoomInfo(user, chatRoomId));
+    }
 
     // 메세지 저장
     @PostMapping("/messages")
