@@ -1,5 +1,5 @@
 import CommentReplyCard from '@/components/Comment/CommentReplyCard';
-import useGetCommentReplyList from '@/hooks/useGetCommentReplyList';
+import useGetCommentReplyList from '@/hooks/query/useGetCommentReplyList';
 import { useParams } from 'react-router-dom';
 
 type RouteParams = {

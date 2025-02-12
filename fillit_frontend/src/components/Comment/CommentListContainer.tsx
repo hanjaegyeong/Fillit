@@ -1,6 +1,6 @@
 import CommentCard from '@/components/Comment/CommentCard';
 import { useParams } from 'react-router-dom';
-import useGetCommentList from '@/hooks/useGetCommentList';
+import useGetCommentList from '@/hooks/query/useGetCommentList';
 
 type RouteParams = {
   boardId: string;

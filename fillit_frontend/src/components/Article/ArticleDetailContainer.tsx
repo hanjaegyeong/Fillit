@@ -3,7 +3,7 @@ import ArticleContent from '@/components/Article/ArticleContent';
 import ProfileImage from '@/components/common/ProfileImage';
 import { SendIcon } from '@/assets/assets';
 import CommentListContainer from '@/components/Comment/CommentListContainer';
-import useGetArticle from '@/hooks/useGetArticle';
+import useGetArticle from '@/hooks/query/useGetArticle';
 
 type RouteParams = {
   boardId: string;

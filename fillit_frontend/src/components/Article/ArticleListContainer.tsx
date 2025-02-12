@@ -1,5 +1,5 @@
 import ArticleWrapper from '@/components/Article/ArticleWrapper';
-import useGetFeed from '@/hooks/useGetFeed';
+import useGetFeed from '@/hooks/query/useGetFeed';
 import useIntersect from '@/hooks/useIntersect';
 import { FeedArticle } from '@/types/article';
 
