@@ -25,8 +25,8 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         />
         <TimeStamp date={article.createdAt} />
       </div>
-      <div className="font-extralight text-s">
-        {isDetail ? article.content : truncateText(article.content, 130)}
+      <div className="font-extralight text-base">
+        {isDetail ? article.content : truncateText(article.content, 80)}
       </div>
       {article.imageUrls && (
         <ArticleThumbnail

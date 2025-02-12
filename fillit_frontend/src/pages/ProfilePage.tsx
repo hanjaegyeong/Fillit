@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useUserStore } from '@/store/useUserStore';
 import { User } from '@/types/user';
 import { getUserProfile } from '@/api/user';
-import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 const ProfilePage = () => {
   const { personalId } = useParams(); // URL 파라미터
@@ -49,7 +49,7 @@ const ProfilePage = () => {
   }, [personalId]);
 
   if (isLoading || !profileData) {
-    return <LoadingSpinner />;
+    return <LoadingOverlay />;
   }
 
   return (
@@ -65,16 +65,14 @@ const ProfilePage = () => {
           onClose={() => setIsDropdownOpen(false)}
         />
       )}
-      <div className="w-full flex flex-col items-center">
-        <ProfileInfo
-          profileData={profileData}
-          paperImage={paperImage}
-          isMyProfile={isMyProfile}
-        />
-        <ProfileIntroduction introduction={profileData.introduction} />
-        <div className="w-full object-cover flex justify-center scale-110 mt-[3rem]">
-          <img src={ProfilePagePaper} alt="profile page paper" />
-        </div>
+      <ProfileInfo
+        profileData={profileData}
+        paperImage={paperImage}
+        isMyProfile={isMyProfile}
+      />
+      <ProfileIntroduction introduction={profileData.introduction} />
+      <div className="w-full object-cover flex justify-center scale-110 mt-[3rem]">
+        <img src={ProfilePagePaper} alt="profile page paper" />
       </div>
     </div>
   );
