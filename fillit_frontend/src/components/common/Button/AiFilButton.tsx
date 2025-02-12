@@ -1,10 +1,10 @@
 import AiFilImg from '@/assets/images/ai-fil-img.png';
 import AiFil from '@/assets/images/ai-fil.png';
-import SlideUpModal from '../Modal/SlideUpModal';
+import SlideUpModal from '@/components/common/Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { postChatbot } from '@/api/chatbot';
-import { SendIcon } from '@/assets/assets';
+import SubmitInput from '@/components/common/Input/SubmitInput';
 
 export interface Message {
   id: number;
@@ -20,34 +20,30 @@ export interface ChatData {
   messages: Message[];
 }
 
-export const mockChatData: ChatData[] = [
-  {
-    chatId: 1,
-    image: AiFilImg,
-    userName: 'ai',
-    messages: [
-      {
-        id: 1,
-        sender: 'ai',
-        content: "What's the problem?",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      },
-    ],
-  },
-];
+const initialChatData = {
+  chatId: 1,
+  image: AiFilImg,
+  userName: 'ai',
+  messages: [
+    {
+      id: 1,
+      sender: 'ai',
+      content: "What's the problem?",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    },
+  ],
+};
 
 const AiFilButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const chatId = 1;
-  const chatData = mockChatData.find((chat) => chat.chatId === Number(chatId));
+  const chatData = initialChatData;
   const [messages, setMessages] = useState<Message[]>(
     chatData ? chatData.messages : []
   );
-  const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 연속 메세지 확인
@@ -61,20 +57,17 @@ const AiFilButton = () => {
   }, [messages]);
 
   // 메세지 전송
-  const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
+  const sendMessage = async (text: string) => {
     const newMessage: Message = {
       id: messages.length + 1,
       sender: 'me',
-      content: inputMessage,
+      content: text,
       timestamp: new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
       }),
     };
     setMessages((prev) => [...prev, newMessage]);
-    setInputMessage('');
 
     try {
       const chatbotResponse = await postChatbot(newMessage.content);
@@ -99,12 +92,12 @@ const AiFilButton = () => {
       <button
         className={
           pathname.includes('newarticle') || pathname.includes('edit')
-            ? 'w-full max-w-[600px] px-4 fixed bottom-20'
+            ? 'w-full max-w-[600px] px-4 fixed bottom-24'
             : 'fixed bottom-44'
         }
         onClick={() => setIsOpen(true)}
       >
-        <img src={AiFilImg} alt="ai-fil-img" />
+        <img src={AiFilImg} alt="ai-fil-img" className="drop-shadow-md" />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-245px)] z-50 hide-scrollbar">
@@ -134,21 +127,11 @@ const AiFilButton = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div className="relative flex pt-4 px-4 items-center border-t border-gray-300">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-grow p-3 border text- border-black rounded-full placeholder:text-sm  placeholder:text-gray-300 placeholder:font-light focus:outline-none"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        <div className="pt-3 border-t border-gray-300">
+          <SubmitInput
+            placeholder="Need help writing your thoughts?"
+            onSubmit={sendMessage}
           />
-          <button
-            onClick={sendMessage}
-            className="absolute right-6 p-3 rounded-lg"
-          >
-            <img src={SendIcon} alt="send icon" />
-          </button>
         </div>
       </SlideUpModal>
     </>

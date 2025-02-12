@@ -12,9 +12,9 @@ const ProfileBadge = ({
   imageSize = 44,
 }: ProfileBadgeProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center ${imageSize < 40 ? 'gap-2' : 'gap-3'}`}>
       <ProfileImage src={profileImageUrl} size={imageSize} />
-      <div className="font-medium text-sm">{personalId}</div>
+      <div className="font-medium text-base">{personalId}</div>
     </div>
   );
 };
