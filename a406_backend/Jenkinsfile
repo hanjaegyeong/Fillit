@@ -22,18 +22,6 @@ pipeline {
             }
         }
 
-        // 테스트용 Redis 실행: 빌드(테스트) 전에 로컬 Docker에서 Redis를 실행합니다.
-        stage('Start Redis for Tests') {
-            steps {
-
-                echo 'Starting Redis for tests...'
-                // 기존의 redis-test 컨테이너가 있으면 삭제
-                sh 'docker rm -f redis-test || true'
-                // 새 Redis 컨테이너 실행
-                sh 'docker run -d --name redis-test -p 6379:6379 redis:6.2'
-            }
-        }
-
         // 애플리케이션 빌드 및 테스트 (Redis가 실행 중이어야 테스트가 성공함)
         stage('Build') {
             steps {
@@ -48,14 +36,6 @@ pipeline {
                             -Dspring.mail.password="$MAIL_PASSWORD"
                     """
                 }
-            }
-        }
-
-        // 테스트 완료 후 테스트용 Redis 컨테이너 정리
-        stage('Stop Redis for Tests') {
-            steps {
-                echo 'Stopping Redis test container...'
-                sh 'docker rm -f redis-test'
             }
         }
 
