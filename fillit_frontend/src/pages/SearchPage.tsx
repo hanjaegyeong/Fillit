@@ -1,3 +1,4 @@
+import TestButton from '@/api/TestButton';
 import Header from '@/components/common/Header/Header';
 import { useState } from 'react';
 
@@ -39,7 +40,7 @@ const SearchPage = () => {
   };
   return (
     <div className="container-header-nav">
-      <Header center="search" onSearch={handleSearch} />
+      <Header center="search" onSubmit={handleSearch} />
 
       <div className="space-y-4 p-5">
         {searchResults.map((post) => (
@@ -49,6 +50,8 @@ const SearchPage = () => {
           </div>
         ))}
       </div>
+
+      <TestButton />
     </div>
   );
 };
