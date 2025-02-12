@@ -9,7 +9,10 @@ type RouteParams = {
 
 const CommentReplyListContainer = () => {
   const { boardId, commentId } = useParams() as RouteParams;
-  const { data: commentReplyList } = useGetCommentReplyList(boardId, commentId);
+  const { data: commentReplyList } = useGetCommentReplyList(
+    Number(boardId),
+    Number(commentId)
+  );
 
   return (
     <div className="flex flex-col items-center">
