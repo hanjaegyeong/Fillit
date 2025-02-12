@@ -19,4 +19,5 @@ public class PostDto {
     private String imageUrl;
     private LocalDateTime createdAt;
     private Boolean isRecommended;
+    private Boolean isLiked;
 }
