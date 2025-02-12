@@ -9,7 +9,9 @@ import com.social.a406.domain.user.repository.EmailVerifyCodeRepository;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.JwtTokenUtil;
 import com.social.a406.util.VerifyEmailUtil;
+import com.social.a406.util.exception.BadRequestException;
 import com.social.a406.util.exception.DuplicateException;
+import com.social.a406.util.exception.ForbiddenException;
 import com.social.a406.util.exception.UnregisteredUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,19 +64,19 @@ public class UserService {
             // 소셜 회원가입 처리
             handleSocialUserRegistration(socialRequest, file);
         } else {
-            throw new IllegalArgumentException("Unsupported registration type");
+            throw new ForbiddenException("Unsupported registration type");
         }
     }
 
     private void handleNormalUserRegistration(UserRegistrationRequest request, MultipartFile file) {
         if (existsByEmail(request.getEmail())) {
-            log.warn("Registration failed. Login ID already exists: {}", request.getEmail());
-            throw new IllegalArgumentException("Login ID already exists");
+            log.warn("Registration failed. Email already exists: {}", request.getEmail());
+            throw new DuplicateException("Email already exists");
         }
 
         if (existsByPersonalId(request.getPersonalId())) {
             log.warn("Registration failed. personalId duplicate: {}", request.getPersonalId());
-            throw new IllegalArgumentException("personalId duplicate");
+            throw new DuplicateException("personalId duplicate");
         }
         String profileImageUrl = null;
         if(file != null) {
@@ -97,12 +99,12 @@ public class UserService {
     private void handleSocialUserRegistration(SocialUserRegistrationRequest request, MultipartFile file) {
         if (userRepository.existsBySocialDomainAndSocialId(request.getSocialDomain(), request.getSocialId())) {
             log.warn("Registration failed. Social ID already exists: {} {}", request.getSocialDomain(), request.getSocialId());
-            throw new IllegalArgumentException("Social ID already exists");
+            throw new DuplicateException("Social ID already exists");
         }
 
         if (userRepository.existsByPersonalId(request.getPersonalId())) {
             log.warn("Registration failed. personalId duplicate: {}", request.getPersonalId());
-            throw new IllegalArgumentException("personalId duplicate");
+            throw new DuplicateException("personalId duplicate");
         }
 
         String profileImageUrl = null;
@@ -155,13 +157,13 @@ public class UserService {
     // 사용자 비밀번호 및 존재 여부 검증 메서드
     private void validateUser(UserDetails userDetails, String rawPassword) {
         if (userDetails == null) {
-            log.warn("Login failed. User not found with login ID: {}", rawPassword);
-            throw new RuntimeException("Login ID does not exist");
+            log.warn("Login failed. User not found with Email: {}", rawPassword);
+            throw new UnregisteredUserException("Email does not exist");
         }
 
         if (!passwordEncoder.matches(rawPassword, userDetails.getPassword())) {
             log.warn("Invalid password for user: {}", userDetails.getUsername());
-            throw new RuntimeException("Invalid password");
+            throw new UnregisteredUserException("Invalid password");
         }
     }
 
@@ -176,7 +178,7 @@ public class UserService {
             boolean isFollow = false;
             if(!myPersonalId.equals(personalId)){
                 User me = userRepository.findByPersonalId(myPersonalId).orElseThrow(
-                        () -> new IllegalArgumentException("Not found my information"));
+                        () -> new ForbiddenException("Not found my information"));
                 isFollow = followRepository.existsByFolloweeIdAndFollowerId(user.getId(),me.getId());
             }
             Long followerCount = followRepository.countFollowers(user);
@@ -196,13 +198,13 @@ public class UserService {
         }
 
         // 닉네임에 해당하는 사용자가 없을 경우 예외 발생
-        throw new IllegalArgumentException("User or AI not found for personalId: " + personalId);
+        throw new ForbiddenException("User or AI not found for personalId: " + personalId);
     }
 
     public User getUserByPersonalId(String personalId) {
         // UserRepository에서 닉네임으로 사용자 조회
         return userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User or AI not found for personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User or AI not found for personalId: " + personalId));
     }
 
     // AI 유저 반환
@@ -288,7 +290,7 @@ public class UserService {
 
             return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
         } catch(IOException e){
-            throw new RuntimeException("Failed to store the file", e);
+            throw new BadRequestException("Failed to store the file");
         }
     }
     // 파일 확장자에 맞는 MIME 타입을 반환하는 메서드
@@ -340,14 +342,14 @@ public class UserService {
 
     public User checkEmailAndPersonalId(EmailRequest emailRequest){
         User userEmail = userRepository.findByEmail(emailRequest.getEmail()).orElseThrow(
-                ()->new IllegalArgumentException("User Not found with email : " + emailRequest.getEmail())
+                ()->new ForbiddenException("User Not found with email : " + emailRequest.getEmail())
         );
         User userPersonalId = userRepository.findByPersonalId(emailRequest.getPersonalId()).orElseThrow(
-                () -> new IllegalArgumentException("User Not found with personalId : " + emailRequest.getPersonalId())
+                () -> new ForbiddenException("User Not found with personalId : " + emailRequest.getPersonalId())
         );
 
         if(userEmail != userPersonalId){
-            throw new RuntimeException("Not matched email and personalId");
+            throw new UnregisteredUserException("Not matched email and personalId");
         }
         return userEmail;
     }
@@ -363,20 +365,20 @@ public class UserService {
     // 비밀번호 변경 - 이메일 코드 인증
     public String verifyEmailcode(EmailVerifyRequest emailVerifyRequest) {
         User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("User Not found with email : " + emailVerifyRequest.getEmail())
+                () -> new ForbiddenException("User Not found with email : " + emailVerifyRequest.getEmail())
         );
         final boolean isValidVerifyCode = emailVerifyCodeRepository.findByUserId(user.getId(), emailVerifyRequest.getCode(), LocalDateTime.now());
         if (isValidVerifyCode) {
             return "Email verification successful!!";
         } else {
-            throw new IllegalArgumentException("Email verification fail!!");
+            throw new ForbiddenException("Email verification fail!!");
         }
     }
 
     //비밀번호 변경
     public String changeUserPassword(UserPasswordRequset userPasswordRequest) {
         User user = userRepository.findByEmail(userPasswordRequest.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("User Not found with email : " + userPasswordRequest.getEmail())
+                () -> new ForbiddenException("User Not found with email : " + userPasswordRequest.getEmail())
         );
         user.updatePassword(passwordEncoder.encode(userPasswordRequest.getPassword()));
         userRepository.save(user);
@@ -397,7 +399,7 @@ public class UserService {
     @Transactional
     public void updateUser(String personalId, UserUpdateRequest userUpdateRequest, MultipartFile file) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                ()-> new IllegalArgumentException("Not found user"));
+                ()-> new ForbiddenException("Not found user"));
 
         user.updateUserProfile(userUpdateRequest.getName(), userUpdateRequest.getIntroduction());
         if(file != null){

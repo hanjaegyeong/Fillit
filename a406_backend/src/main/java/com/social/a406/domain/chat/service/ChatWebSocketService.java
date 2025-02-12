@@ -12,6 +12,7 @@ import com.social.a406.domain.chat.repository.ChatRoomRepository;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,14 +36,14 @@ public class ChatWebSocketService {
     public ChatMessageDto saveMessage(String personalId, ChatMessageRequest request) {
 
         User user = findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("Chat Participants not found with PersonalId: " + personalId));
         String userId = user.getId();
 
         Long chatRoomId = request.getChatRoomId();
 
         // 채팅참여 정보 가져오기
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoomId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
+                .orElseThrow(() -> new ForbiddenException("Chat Participants not found with ID: " + chatRoomId + "," + userId));
 
         // 메시지 저장
         ChatMessage Message = ChatMessage.builder()
@@ -59,10 +60,10 @@ public class ChatWebSocketService {
     @Transactional
     public void readAllMessage(Long chatRoomId, String personalId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("Chat Participants not found with PersonalId: " + personalId));
 
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoomId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("ChatParticipants entity not found with ChatRoomId and UserId: " + chatRoomId +"," + user.getId()));
+                .orElseThrow(() -> new ForbiddenException("ChatParticipants entity not found with ChatRoomId and UserId: " + chatRoomId +"," + user.getId()));
 
         chatParticipants.resetUnreadMessageCount();
     }
@@ -73,7 +74,7 @@ public class ChatWebSocketService {
         // 채팅방 마지막 메시지 정보 업데이트
         Long chatRoomId = request.getChatRoomId();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found with ID: " + chatRoomId));
+                .orElseThrow(() -> new ForbiddenException("Chat room not found with ID: " + chatRoomId));
         chatRoom.updateLastMessageContent(request.getMessageContent());
 
         // 채팅 비참여자 안읽은 메세지 증가시키기
