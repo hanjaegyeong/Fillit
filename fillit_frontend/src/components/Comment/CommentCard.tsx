@@ -5,56 +5,55 @@ import CommentBadge from '@/components/common/Badge/CommentBadge';
 import { Comment } from '@/types/comment';
 import { useNavigate } from 'react-router-dom';
 import CommentImage from '@/assets/images/comment-bg.png';
+import SubmitInput from '@/components/common/Input/SubmitInput';
+import { COMMENT_REPLY_MAX_LENGTH } from '@/constants/system';
 
 interface CommentCardProps {
   comment: Comment;
   position?: 'left' | 'right';
   isDetail?: boolean;
+  onSubmit?: (content: string) => void;
 }
 
 const CommentCard = ({
   comment,
   position = 'left',
   isDetail = false,
+  onSubmit = () => {},
 }: CommentCardProps) => {
   const navigate = useNavigate();
 
   const handleGoCommentDetail = () => {
+    if (isDetail) return;
     navigate(`comment/${comment.commentId}`);
   };
 
   return (
     <div
       className={`bg-contain bg-no-repeat bg-center ${
-        isDetail ? 'w-[18.8rem]' : 'w-[16.6rem]'
-      } flex items-center -mt-8 ${position === 'left' ? 'mr-16' : 'ml-20'}`}
+        isDetail
+          ? 'w-[20.8rem] min-h-[14.5rem] ml-10 '
+          : 'w-[18.6rem] min-h-[11.5rem]'
+      } flex items-center -mt-10 ${position === 'left' ? 'mr-16' : 'ml-20'}`}
       style={{
         backgroundImage: `url(${CommentImage})`,
       }}
       onClick={handleGoCommentDetail}
     >
       <div
-        className={`flex flex-col space-y-2 
-          ${isDetail ? 'py-10' : 'py-10'} pl-16 pr-14
-        `}
+        className={`flex flex-col space-y-2 ${
+          isDetail ? 'py-8 pl-16 pr-8' : 'py-8 pl-16 pr-14'
+        } w-[19.5rem]`}
       >
-        <div
-          className={`flex items-center ${
-            isDetail ? 'justify-between' : 'gap-2'
-          }`}
-        >
+        <div className="flex items-center gap-3">
           <ProfileBadge
             profileImageUrl={comment.profileImageUrl}
             personalId={comment.personalId}
-            imageSize={isDetail ? 41 : 27}
+            imageSize={isDetail ? 44 : 30}
           />
           <TimeStamp date={comment.createdAt} />
         </div>
-        <div
-          className={`font-extralight ${
-            isDetail ? 'text-s w-[10rem]' : 'text-xxs w-[9rem]'
-          }`}
-        >
+        <div className="font-extralight text-sm px-2 break-words">
           {comment.content}
         </div>
         <div className="flex justify-end gap-4">
@@ -68,6 +67,15 @@ const CommentCard = ({
             size={!isDetail ? 'small' : 'large'}
           />
         </div>
+        {isDetail && (
+          <div className="pt-1">
+            <SubmitInput
+              placeholder="Write a comment..."
+              onSubmit={onSubmit}
+              maxLength={COMMENT_REPLY_MAX_LENGTH}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
