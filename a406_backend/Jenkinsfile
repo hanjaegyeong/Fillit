@@ -129,9 +129,7 @@ pipeline {
                             YOUTUBE_API_URL="$YOUTUBE_API_URL" \\
                             GEMINI_API_KEY="$GEMINI_API_KEY" \\
                             EC2_SERVER_URL="$EC2_SERVER_URL" \\
-                            FLICKR_API_KEY="$FLICKR_API_KEY" \\
-                            SPRING_REDIS_HOST="redis" \\
-                            SPRING_REDIS_PORT="6379"
+                            FLICKR_API_KEY="$FLICKR_API_KEY"
                     """
                 }
             }
