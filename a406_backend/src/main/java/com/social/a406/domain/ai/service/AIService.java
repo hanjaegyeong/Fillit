@@ -64,8 +64,8 @@ public class AIService {
     /**
      * AI 댓글 프롬프트 생성
      */
-    public String createCommentPrompt(String boardContent, String boardAuthorPersonalId) {
-        return String.format("Author: %s\nContent: %s\nPlease write a reply to this post. Please respond within 350 characters.", boardAuthorPersonalId, boardContent);
+    public String createCommentPrompt(String boardContent, String boardAuthorPersonalId, User aiUser) {
+        return String.format("Author: %s\nContent: %s\n %s Please write a reply to this post. Please respond within 350 characters.", boardAuthorPersonalId, boardContent, aiUser.getMainPrompt());
     }
 
     /**
