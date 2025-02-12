@@ -18,6 +18,7 @@ export default {
       colors: {
         'gray-300': '#D0D0D0',
         'gray-400': '#C6C6C6',
+        'gray-500': '#9A9A9A',
       },
     },
   },
