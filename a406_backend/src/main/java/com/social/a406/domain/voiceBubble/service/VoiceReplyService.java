@@ -8,6 +8,9 @@ import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
+import com.social.a406.util.exception.BadRequestException;
+import com.social.a406.util.exception.DuplicateException;
+import com.social.a406.util.exception.ForbiddenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,13 +54,13 @@ public class VoiceReplyService {
         if(voiceReply != null){
             return voiceReply;
         }else{
-            throw new IllegalArgumentException("No voices reply found with id: " + voiceReplyId);
+            throw new ForbiddenException("No voices reply found with id: " + voiceReplyId);
         }
     }
 
     public void deleteVoiceReply(Long voiceReplyId) {
         VoiceReply voiceReply = voiceReplyRepository.findVoiceReplyById(voiceReplyId).orElseThrow(
-                () -> new IllegalArgumentException("No voices reply found with id: " + voiceReplyId)
+                () -> new ForbiddenException("No voices reply found with id: " + voiceReplyId)
         );
 
         deleteFromS3(voiceReply.getAudioUrl());
@@ -82,12 +85,12 @@ public class VoiceReplyService {
         try {
             // 유저 존재 여부 확인
             User user = userRepository.findByPersonalId(personalId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    .orElseThrow(() -> new ForbiddenException("User not found"));
 
             Voice voice = voiceRepository.findById(voiceId)
-                    .orElseThrow(() -> new IllegalArgumentException("Voice not found"));
+                    .orElseThrow(() -> new ForbiddenException("Voice not found"));
             if(Objects.equals(user.getId(), voice.getUser().getId())){
-                throw new IllegalArgumentException("You can't send yourself a voice reply");
+                throw new DuplicateException("You can't send yourself a voice reply");
             }
 
             String fileName = "voicereply/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -112,7 +115,7 @@ public class VoiceReplyService {
 
             return "Success to store the file";
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store the file", e);
+            throw new BadRequestException("Failed to store the file");
         }
     }
 }

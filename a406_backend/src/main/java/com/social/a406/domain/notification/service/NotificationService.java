@@ -12,6 +12,7 @@ import com.social.a406.domain.notification.repository.NotificationRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -83,7 +84,7 @@ public class NotificationService {
 
     public List<Notification> getNotifications(UserDetails userDetails, Long cursorId, Pageable pageable) {
         User user = userRepository.findByPersonalId(userDetails.getUsername()).orElseThrow(
-                () -> new IllegalArgumentException("User Not found")
+                () -> new ForbiddenException("User Not found")
         );
 
         List<Notification> notifications = notificationRepository.findAllByReceiverAndIsReadFalse(user, cursorId, pageable);
@@ -94,7 +95,7 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationId).orElse(null);
 
         if(notification == null){
-            throw new IllegalArgumentException("Notification not found");
+            throw new ForbiddenException("Notification not found");
         }
 
         notification.readNotification();
@@ -104,7 +105,7 @@ public class NotificationService {
 
     public void generateCommentReplyNotification(Reply reply, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("Not found comment"));
+                () -> new ForbiddenException("Not found comment"));
         User boardReceiver = comment.getBoard().getUser(); // 대댓글을 단 게시글 작성자
         User commentReceiver = comment.getUser(); // 대댓글을 단 댓글 작성자
         User sender = reply.getUser();
@@ -165,9 +166,9 @@ public class NotificationService {
 
     public void generateChatNotification(String receiverId, String senderId, Long chatRoomId) {
         User receiver = userRepository.findById(receiverId).orElseThrow(
-                () -> new IllegalArgumentException("Not found receiver:" +receiverId)); // 채팅 받는 사람
+                () -> new ForbiddenException("Not found receiver:" +receiverId)); // 채팅 받는 사람
         User sender = userRepository.findByPersonalId(senderId).orElseThrow(
-                () -> new IllegalArgumentException("Not found sender:" + senderId)); // 체팅 보내는 사람
+                () -> new ForbiddenException("Not found sender:" + senderId)); // 체팅 보내는 사람
         createNotification(receiver, sender, NotificationType.CHAT, chatRoomId);
         System.out.println("Generate notification about chat: "+ receiver.getName());
     }

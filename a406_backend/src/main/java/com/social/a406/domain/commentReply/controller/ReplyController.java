@@ -52,7 +52,9 @@ public class ReplyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReplyResponse>> getReplyByComment (@PathVariable Long commentId){
-        return ResponseEntity.ok(replyService.getReplyList(commentId));
+    public ResponseEntity<List<ReplyResponse>> getReplyByComment (
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long commentId){
+        return ResponseEntity.ok(replyService.getReplyList(commentId, userDetails.getUsername()));
     }
 }

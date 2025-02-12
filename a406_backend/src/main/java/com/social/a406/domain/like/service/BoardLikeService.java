@@ -8,6 +8,7 @@ import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +28,13 @@ public class BoardLikeService {
     @Transactional
     public void addLike(String personalId, Long boardId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         if (boardLikeRepository.existsByUserAndBoard(user, board)) {
-            throw new IllegalStateException("User already liked this board");
+            throw new ForbiddenException("User already liked this board");
         }
 
         BoardLike like = new BoardLike(user, board);
@@ -48,13 +49,13 @@ public class BoardLikeService {
     @Transactional
     public void removeLike(String personalId, Long boardId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         BoardLike like = boardLikeRepository.findByUserAndBoard(user, board)
-                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+                .orElseThrow(() -> new ForbiddenException("Like not found"));
 
         boardLikeRepository.delete(like);
 
@@ -64,7 +65,7 @@ public class BoardLikeService {
     @Transactional(readOnly = true)
     public List<LikedUserResponse> getUsersWhoLikedBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         return boardLikeRepository.findByBoard(board).stream()
                 .map(like -> {

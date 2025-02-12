@@ -11,6 +11,7 @@ import com.social.a406.domain.interest.repository.InterestRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class InterestService {
     public void addUserInterests(String personalId, List<String> interestContents) {
         // 유저 확인
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         // 관심사 리스트를 DB에서 가져오거나, 존재하지 않으면 새로 추가
         List<Interest> interests = interestContents.stream()
@@ -56,7 +57,7 @@ public class InterestService {
 
     public List<InterestResponse> getUserInterests(String personalId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
 
         List<UserInterest> userInterests = userInterestRepository.findByUser_Id(user.getId());
 
@@ -72,7 +73,7 @@ public class InterestService {
     @Transactional
     public void deleteAllUserInterests(String personalId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
 
         // 해당 유저의 모든 관심사 매핑 삭제
         userInterestRepository.deleteByUser_Id(user.getId());
@@ -81,7 +82,7 @@ public class InterestService {
     public void addBoardInterests(Long boardId, List<String> interestContents) {
         // 게시글 확인
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         // 관심사 리스트를 DB에서 가져오거나, 존재하지 않으면 새로 추가
         List<Interest> interests = interestContents.stream()
@@ -100,7 +101,7 @@ public class InterestService {
     public List<String> getBoardInterests(Long boardId) {
         // 게시글 확인
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         List<BoardInterest> boardInterests = boardInterestRepository.findByBoard_Id(board.getId());
         List<String> Interests = new ArrayList<>();
@@ -115,7 +116,7 @@ public class InterestService {
     public void deleteAllBoardInterests(Long boardId) {
         // 게시글 확인
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+                .orElseThrow(() -> new ForbiddenException("Board not found"));
 
         // 해당 유저의 모든 관심사 매핑 삭제
         boardInterestRepository.deleteByBoard_Id(board.getId());

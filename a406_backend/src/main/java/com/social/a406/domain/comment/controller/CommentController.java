@@ -38,15 +38,19 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getCommentsByBoard(@PathVariable Long boardId) {
+    public ResponseEntity<List<CommentResponse>> getCommentsByBoard(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long boardId) {
         return ResponseEntity.ok(
-                commentService.getCommentsByBoard(boardId));
+                commentService.getCommentsByBoard(userDetails.getUsername(), boardId));
     }
 
     @GetMapping("/get/{commentId}")
-    public ResponseEntity<CommentResponse> getComment(@PathVariable Long commentId){
+    public ResponseEntity<CommentResponse> getComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long commentId){
         return ResponseEntity.ok(
-                commentService.getComment(commentId));
+                commentService.getCommentWithLiked(userDetails.getUsername(), commentId));
     }
 
     @PutMapping("/{commentId}")
