@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
-import SearchInput from '@/components/common/Input/SearchInput';
 import MockProfileImage from '@/mocks/images/profile-image.png';
 import ProfileImage from '@/components/common/ProfileImage';
 import { NewMessage } from '@/assets/assets';
 import { truncateText } from '@/utils/truncateText';
+import SubmitInput from '@/components/common/Input/SubmitInput';
 
 interface ChatRoom {
   id: number;
@@ -77,19 +77,18 @@ const MessageListPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="container-header-nav relative flex flex-col min-h-screen items-center">
+    <div className="container-header-nav">
       <Header left="home" right="notification" />
 
-      <div className="p-6 flex justify-center">
-        <SearchInput
-          className="w-full max-w-[380px]"
-          onSearch={handleSearch}
-          placeholder="search"
-          width="min-w-[343px]"
+      <div className="py-7 px-4 w-full max-w-[22rem]">
+        <SubmitInput
+          type="search"
+          placeholder="Search"
+          onSubmit={handleSearch}
         />
       </div>
 
-      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
+      <div className="w-full max-w-[22rem] px-4 overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
         {chatResults.map((chat) => (
           <div
             key={chat.id}
