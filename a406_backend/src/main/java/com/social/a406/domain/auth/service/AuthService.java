@@ -4,6 +4,7 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.user.service.CustomUserDetailsService;
 import com.social.a406.util.JwtTokenUtil;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class AuthService {
 
     public String createAccessToken(String personalId){
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("Not found user"));
+                () -> new ForbiddenException("Not found user"));
 
         UserDetails userDetails = null;
         if(user.getEmail() != null) {

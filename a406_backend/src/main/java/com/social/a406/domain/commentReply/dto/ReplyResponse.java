@@ -16,4 +16,5 @@ public class ReplyResponse {
     private Long likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean isLiked;
  }

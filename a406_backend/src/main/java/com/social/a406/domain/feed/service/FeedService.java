@@ -15,10 +15,10 @@ import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +48,7 @@ public class FeedService {
 
         // 1. 사용자 조회
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
         String userId = user.getId();
 
         // 2. 사용자 관심사 조회 (매핑 테이블)
