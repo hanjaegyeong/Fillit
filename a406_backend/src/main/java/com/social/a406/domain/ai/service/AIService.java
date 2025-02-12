@@ -10,8 +10,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +33,32 @@ public class AIService {
     private static final String PROMPT_CHAT = "You are ‘fillip’, a chatty English teacher from the US. Please answer the following questions in English. Please only answer questions related to English.";
     private static final String PROMPT_COMMET_RPLY = "A user has left a \\\"%s\\\" on a \\\"%s\\\", and now you need to write a relevant and natural-sounding reply to that comment.";
     private static final String CHAT_PROMPT_SUFFIX = "Please respond within 350 characters.";
+
     /**
      * 일반 AI 게시글 프롬프트 생성
      */
     public String createBoardPrompt(String personalId) {
+        // aiUser의 mainPrompt를 가져옴
         User aiUser = userService.getUserByPersonalId(personalId);
-        return aiUser.getMainPrompt() + " " + DEFAULT_POST_PROMPT + " " + PROMPT_SUFFIX;
+
+        // 현재 시각에 따른 시간 카테고리
+        Random random = new Random();
+        String timeCategory = getTimeCategory();
+        if(random.nextInt(10) >= 7) timeCategory = null; // 일정확률로 시간과 관계없는 메세지가 생성되도록
+        System.out.println("Date Time: "+ timeCategory);
+
+        // 랜덤 상황 선택
+        String randomSituation = SITUATIONS[random.nextInt(SITUATIONS.length)];
+        if(random.nextInt(10) >= 7) randomSituation = "randomSituation"; // 일정확률로 관심사에 대한 메세지가 생성되도록
+        System.out.println("Situation: "+ randomSituation);
+
+
+        // 예시 프롬프트: 페르소나 + 시간 정보 + 상황 + 기본 요청사항 + 추가 요청사항
+        return aiUser.getMainPrompt()
+                + " It is " + timeCategory + "."
+                + " " + randomSituation + "."
+                + " " + DEFAULT_POST_PROMPT
+                + " " + PROMPT_SUFFIX;
     }
 
     /**
@@ -50,7 +72,7 @@ public class AIService {
      * AI 챗봇 답장 생성
      */
     public String generateChat(String message) {
-        String finalPrompt = PROMPT_CHAT + " " + message + " " +CHAT_PROMPT_SUFFIX;
+        String finalPrompt = PROMPT_CHAT + " " + message + " " + CHAT_PROMPT_SUFFIX;
         return generateContent(finalPrompt);
     }
 
@@ -114,6 +136,141 @@ public class AIService {
 
     public String createCommentReplyPrompt(String origin, String content, String personalId) {
         User aiUser = userService.getUserByPersonalId(personalId);
-        return String.format(aiUser.getMainPrompt()+PROMPT_COMMET_RPLY, content, origin) + PROMPT_SUFFIX;
+        return String.format(aiUser.getMainPrompt() + PROMPT_COMMET_RPLY, content, origin) + PROMPT_SUFFIX;
     }
+
+    // 100가지 간단한 상황 배열 (영어로)
+    private static final String[] SITUATIONS = {
+            "Bad weather situation",
+            "Having a meal",
+            "On a date",
+            "Meeting a friend",
+            "Heading out for a meal appointment",
+            "Weekend with no plans",
+            "A busy day at work",
+            "Being late for work",
+            "Spotting a stray cat",
+            "Catching up with family",
+            "Taking a walk in the park",
+            "Working from home",
+            "Attending a social event",
+            "Running errands",
+            "Having a quiet day indoors",
+            "A spontaneous road trip",
+            "Dealing with unexpected delays",
+            "Overcoming a small setback",
+            "A relaxing day at the beach",
+            "Preparing for an important meeting",
+            "Feeling under the weather",
+            "A day filled with surprises",
+            "Just finished a workout",
+            "Starting a new hobby",
+            "Exploring a new part of town",
+            "A day of self-reflection",
+            "An unplanned adventure",
+            "Experiencing heavy traffic",
+            "A day of minor mishaps",
+            "Catching a beautiful sunset",
+            "An unexpected encounter",
+            "A day of creative inspiration",
+            "Stuck in a long queue",
+            "A day at the library",
+            "Volunteering for a cause",
+            "A quiet morning at home",
+            "A sudden change in plans",
+            "Learning something new",
+            "Spending time with a pet",
+            "A day full of laughter",
+            "An unanticipated visit",
+            "A moment of solitude",
+            "A day of rediscovery",
+            "Attending a workshop",
+            "Feeling nostalgic",
+            "A day with clear skies",
+            "Enjoying a cup of coffee",
+            "An afternoon in the garden",
+            "Navigating through city crowds",
+            "A relaxing spa day",
+            "Dealing with hectic meetings",
+            "Trying a new restaurant",
+            "An impromptu shopping trip",
+            "Catching up on sleep",
+            "A day of surprising challenges",
+            "Experiencing mild traffic",
+            "A calm and peaceful day",
+            "An unusually quiet day",
+            "A day of routine tasks",
+            "Handling a minor crisis",
+            "A fun day at the home",
+            "Unexpectedly running into an old friend",
+            "A busy day running errands",
+            "A day full of positive energy",
+            "Overcoming a morning mishap",
+            "A day of simple pleasures",
+            "Feeling inspired by art",
+            "An ordinary day turned interesting",
+            "Enjoying the local market",
+            "A day spent reading",
+            "Participating in a community event",
+            "A day of unplanned fun",
+            "A reflective evening walk",
+            "A day with a surprise twist",
+            "Working on a creative project",
+            "A busy day with unexpected tasks",
+            "A day that started off slow",
+            "A delightful mid-day break",
+            "A day filled with small wins",
+            "Experiencing an unusual morning",
+            "A quick catch-up with a neighbor",
+            "A day of unexpected calls",
+            "A simple yet eventful day",
+            "A day with a minor setback",
+            "A pleasant encounter on the street",
+            "A spontaneous coffee break",
+            "A day that defied expectations",
+            "A typical workday with a twist",
+            "An impromptu visit to a local spot",
+            "A day marked by little surprises",
+            "Catching up with an old colleague",
+            "A quiet evening at home",
+            "An early evening stroll",
+            "A simple dinner with family",
+            "An impromptu game night",
+            "An interesting conversation with a stranger",
+            "A day with a light drizzle",
+            "A day to relax and recharge",
+            "A quick lunch break in the city",
+            "A day of small adventures"
+    };
+
+    /**
+     * 현재 시간을 기준으로 아래와 같이 분류합니다.
+     * - 00:00 ~ 04:59 : dawn
+     * - 05:00 ~ 07:59 : early morning
+     * - 08:00 ~ 10:59 : morning
+     * - 11:00 ~ 12:59 : lunch
+     * - 13:00 ~ 16:59 : afternoon
+     * - 17:00 ~ 20:59 : evening
+     * - 21:00 ~ 23:59 : night
+     */
+    public static String getTimeCategory() {
+        int hour = LocalDateTime.now().getHour();
+        System.out.println("This is Time : " + hour);
+        if (hour >= 0 && hour < 5) {
+            return "dawn";
+        } else if (hour >= 5 && hour < 8) {
+            return "early morning";
+        } else if (hour >= 8 && hour < 11) {
+            return "morning";
+        } else if (hour >= 11 && hour < 13) {
+            return "lunch";
+        } else if (hour >= 13 && hour < 17) {
+            return "afternoon";
+        } else if (hour >= 17 && hour < 21) {
+            return "evening";
+        } else {
+            return "night";
+        }
+    }
+
 }
