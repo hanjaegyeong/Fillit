@@ -12,6 +12,7 @@ import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.repository.ChatRoomRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class ChatService {
     public boolean isParticipantInChatRoom(String personalId, Long chatRoomId) {
         //userId 찾기
         User user = findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants not found with PersonalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("Chat Participants not found with PersonalId: " + personalId));
         String userId = user.getId();
 
         return chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoomId, userId).isPresent();
@@ -97,7 +98,7 @@ public class ChatService {
         // 참여자를 매핑 테이블에 추가
         for (String Id : participantIds) {
             User user = userRepository.findById(Id)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with Id: " + Id));
+                    .orElseThrow(() -> new ForbiddenException("User not found with Id: " + Id));
             ChatParticipants participant = ChatParticipants.builder()
                     .chatRoom(chatRoom)
                     .user(user)
@@ -144,7 +145,7 @@ public class ChatService {
 
     public ChatRoomInfoResponse getChatRoomInfo(User user, Long chatRoomId) {
         ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoomIdAndNotUserId(chatRoomId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Chat Participants Entity not found with userId: " + user.getId()));
+                .orElseThrow(() -> new ForbiddenException("Chat Participants Entity not found with userId: " + user.getId()));
         User otherUser = chatParticipants.getUser();
 
         return new ChatRoomInfoResponse
@@ -181,7 +182,7 @@ public class ChatService {
 //                .findFirst()
 //                .orElseThrow(() -> new IllegalStateException("현재 사용자의 채팅 참여자 정보가 없습니다."));
         ChatParticipants currentParticipant = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoom.getId(), currentUserId)
-                .orElseThrow(() -> new IllegalStateException("ChatPaticipants not found by chatRoomId and userId: " + chatRoom.getId() + ", " + currentUserId));
+                .orElseThrow(() -> new ForbiddenException("ChatPaticipants not found by chatRoomId and userId: " + chatRoom.getId() + ", " + currentUserId));
 
 
         Long unreadCount = currentParticipant.getUnreadMessageCount();
@@ -199,7 +200,7 @@ public class ChatService {
     @Transactional
     public List<ChatRoomResponse> searchChatRooms(String personalId, Pageable pageable, Long cursorId, String word) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("Not found User"));
+                () -> new ForbiddenException("Not found User"));
         // 1) (참여 테이블 + 방 테이블) JOIN FETCH로 한 번에 조회
         List<ChatParticipants> participants =
                 chatParticipantsRepository.findByUserIdWithChatRoomFetchAndSearch(user.getId(), word, cursorId, pageable);

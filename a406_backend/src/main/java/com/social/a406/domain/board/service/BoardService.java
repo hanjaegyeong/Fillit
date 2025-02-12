@@ -12,9 +12,10 @@ import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
-import com.social.a406.domain.like.service.BoardLikeService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.BadRequestException;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +46,6 @@ public class BoardService {
 
     private final ApplicationEventPublisher eventPublisher;
     private final UserInterestRepository userInterestRepository;
-    private final BoardLikeService boardLikeService;
     private final BoardLikeRepository boardLikeRepository;
 
     // AWS S3 환경 변수
@@ -108,7 +108,7 @@ public class BoardService {
     public BoardResponse getBoardByIdAndUser(Long boardId, String personalId) {
         Board board = findBoardById(boardId);
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("Not found user"));
+                () -> new ForbiddenException("Not found user"));
         List<String> imageUrls = getBoardImages(boardId);
         List<String> interests = interestService.getBoardInterests(boardId);
         boolean like = boardLikeRepository.existsByUser_IdAndBoard_Id(user.getId(),boardId);
@@ -159,13 +159,13 @@ public class BoardService {
     // 유저 조회 유틸 메서드
     private User findUserBypersonalId(String personalId) {
         return userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
     }
 
     // 게시글 조회 유틸 메서드
     private Board findBoardById(Long boardId) {
         return boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
+                .orElseThrow(() -> new ForbiddenException("Board not found with id: " + boardId));
     }
 
     // 랜덤 게시글 조회
@@ -212,7 +212,7 @@ public class BoardService {
     // 게시글 소유권 검증
     private void validateBoardOwnership(Board board, User user) {
         if (!board.getUser().equals(user)) {
-            throw new SecurityException("User is not authorized to update this board");
+            throw new ForbiddenException("User is not authorized to update this board");
         }
     }
 
@@ -262,7 +262,7 @@ public class BoardService {
     @Transactional
     public List<String> saveBoardImage(Long boardId, List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new IllegalArgumentException("Not found board to save Image")
+                () -> new ForbiddenException("Not found board to save Image")
         );
         List<String> imageUrls = new ArrayList<>();
         for(MultipartFile file : files){
@@ -304,7 +304,7 @@ public class BoardService {
 
             return fileUrl;
         } catch(IOException e){
-            throw new RuntimeException("Failed to store the file", e);
+            throw new BadRequestException("Failed to store the file");
         }
     }
     // 파일 확장자에 맞는 MIME 타입을 반환하는 메서드
@@ -350,13 +350,13 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new IllegalArgumentException("Not found board")
+                () -> new ForbiddenException("Not found board")
         );
         try {
             deleteBoardImage(boardId);  // 이미지 삭제
         } catch (Exception e) {
             // 이미지 삭제 실패 처리
-            throw new RuntimeException("Fail to delete board Image: " + e.getMessage(), e);
+            throw new BadRequestException("Fail to delete board Image: " );
         }
         interestService.deleteAllBoardInterests(boardId);
         eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
@@ -388,7 +388,7 @@ public class BoardService {
     public String getBoardAuthorPersonalIdById(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(board -> board.getUser().getPersonalId())
-                .orElseThrow(() -> new IllegalArgumentException("Not found board: " + boardId));
+                .orElseThrow(() -> new ForbiddenException("Not found board: " + boardId));
     }
 
 
@@ -416,7 +416,7 @@ public class BoardService {
 
     public List<BoardRecommendResonse> searchBoard(Pageable pageable, Long cursorId, String word, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("Not found User"));
+                () -> new ForbiddenException("Not found User"));
         List<Object[]> boards = boardRepository.searchBoardWithLikeStatus(word, cursorId, user.getId(), pageable);
 
         return boards.stream()
@@ -445,7 +445,7 @@ public class BoardService {
                     .filter(b -> b.getId().equals(request.getBoardId()))
                     .filter(b -> b.getUser().getPersonalId().equals(personalId)) // 자신의 게시글만 수정
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Not found Board with Id : " + request.getBoardId()));
+                    .orElseThrow(() -> new ForbiddenException("Not found Board with Id : " + request.getBoardId()));
 
             board.updateBoardLocation(request.getX(), request.getY(), request.getY(), request.getPageNumber());
         }
@@ -461,7 +461,7 @@ public class BoardService {
 
     public List<BoardRecommendResonse> recommendBoard(Pageable pageable, Long cursorLikeCount, Long cursorId, Long interestId, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("Not found User"));
+                () -> new ForbiddenException("Not found User"));
         if(interestId == null || interestId == 0){
             interestId = getRandomUserInterest(userInterestRepository.findByUser_Id(user.getId()));
         }

@@ -9,6 +9,8 @@ import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
+import com.social.a406.util.exception.BadRequestException;
+import com.social.a406.util.exception.ForbiddenException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +58,7 @@ public class VoiceService {
         try {
             // 유저 존재 여부 확인
             User user = userRepository.findByPersonalId(personalId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    .orElseThrow(() -> new ForbiddenException("User not found"));
 
             String fileName = "voice/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -80,14 +82,14 @@ public class VoiceService {
 
             return "File uploaded successfully";
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store the file", e);
+            throw new BadRequestException("Failed to store the file");
         }
     }
 
     // 팔로워들 음성 스토리 리스트 가져오기
     public List<VoiceResponse> findFollweeVoices(String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
-                () -> new IllegalArgumentException("User not found with personalId: " + personalId));
+                () -> new ForbiddenException("User not found with personalId: " + personalId));
         List<Follow> follows = followRepository.findByFollower(user);
         List<User> users = follows.stream().map(Follow::getFollowee)  // follower의 followee를 가져옴
                 .toList();
@@ -115,7 +117,7 @@ public class VoiceService {
             deleteFromS3(voice.getAudioUrl());
             voiceRepository.delete(voice);  // 해당 유저의 모든 음성 삭제
         } else {
-            throw new IllegalArgumentException("No voices found for voice with id: " + voiceId);
+            throw new ForbiddenException("No voices found for voice with id: " + voiceId);
         }
     }
 

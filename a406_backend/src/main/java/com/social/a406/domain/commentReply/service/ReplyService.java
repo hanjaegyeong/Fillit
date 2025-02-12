@@ -9,6 +9,7 @@ import com.social.a406.domain.commentReply.repository.ReplyRepository;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,10 @@ public class ReplyService {
     @Transactional
     public ReplyResponse saveReply(Long commentId, ReplyRequest request, String personalId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + personalId));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found with commentId: " + commentId));
+                .orElseThrow(() -> new ForbiddenException("Comment not found with commentId: " + commentId));
 
         Reply reply = Reply.builder()
                 .comment(comment)
@@ -51,9 +52,9 @@ public class ReplyService {
     @Transactional
     public ReplyResponse updateReply(Long replyId, ReplyRequest request, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + userDetails.getUsername()));
         Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply not found with id: " + replyId));
+                .orElseThrow(() -> new ForbiddenException("Reply not found with id: " + replyId));
 
         // 접근가능 권한 검증
         if(!user.equals(reply.getUser())) throw new SecurityException("User not authorized to update this reply");
@@ -66,9 +67,9 @@ public class ReplyService {
     @Transactional
     public void deleteAllReplyByComment(Long commentId, UserDetails userDetails){
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
+                .orElseThrow(() -> new ForbiddenException("Comment not found with id: " + commentId));
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with Email: " + userDetails.getUsername()));
+                .orElseThrow(() -> new ForbiddenException("User not found with Email: " + userDetails.getUsername()));
 
         replyRepository.deleteAllByComment_Id(commentId);
 
@@ -78,9 +79,9 @@ public class ReplyService {
     @Transactional
     public void deleteReply(Long replyId, UserDetails userDetails) {
         User user = userRepository.findByPersonalId(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with personalId: " + userDetails.getUsername()));
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + userDetails.getUsername()));
         Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply not found with id: " + replyId));
+                .orElseThrow(() -> new ForbiddenException("Reply not found with id: " + replyId));
 
         // 접근가능 권한 검증
         if(!user.equals(reply.getUser())) throw new SecurityException("User not authorized to delete this reply");
@@ -90,21 +91,21 @@ public class ReplyService {
 
     // 대댓글목록 가져오기
     @Transactional(readOnly = true)
-    public List<ReplyResponse> getReplyList(Long commentId) {
-        List<Reply> replys = replyRepository.findByComment_IdOrderByCreatedAtAsc(commentId);
-        return replys.stream().map(this::mapToResponse).collect(Collectors.toList());
+    public List<ReplyResponse> getReplyList(Long commentId, String personalId) {
+        List<Object[]> replys = replyRepository.findRepliesWithLikeStatus(commentId, personalId);
+        return replys.stream().map(this::mapToResponseWithLike).collect(Collectors.toList());
     }
 
     public String getReply(Long replyId) {
         Reply reply = replyRepository.findById(replyId).orElseThrow(
-                () -> new IllegalArgumentException("Not found reply"));
+                () -> new ForbiddenException("Not found reply"));
         return reply.getContent();
     }
 
     @Transactional(readOnly = true)
     public Comment getCommentByReplyId(Long replyId){
         Reply reply = replyRepository.findById(replyId).orElseThrow(
-                () -> new IllegalArgumentException("Not found reply"));
+                () -> new ForbiddenException("Not found reply"));
         return reply.getComment();
     }
 
@@ -120,10 +121,25 @@ public class ReplyService {
                 .build();
     }
 
+    public ReplyResponse mapToResponseWithLike(Object[] Object){
+        Reply reply = (Reply) Object[0];
+        boolean like = (boolean) Object[1];
+        return ReplyResponse.builder()
+                .replyId(reply.getId())
+                .personalId(reply.getUser().getPersonalId())
+                .profileImageUrl(reply.getUser().getProfileImageUrl())
+                .content(reply.getContent())
+                .likeCount(reply.getLikeCount())
+                .updatedAt(reply.getUpdatedAt())
+                .createdAt(reply.getCreatedAt())
+                .isLiked(like)
+                .build();
+    }
+
     // AI의 댓글인지 확인 후 70% 확률로 생성
     public boolean isAIAndRandomCreate(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("Not found comment"));
+                () -> new ForbiddenException("Not found comment"));
         User user = comment.getUser();
         if(isAiUser(user)){
             if(ThreadLocalRandom.current().nextInt(100) < 70){

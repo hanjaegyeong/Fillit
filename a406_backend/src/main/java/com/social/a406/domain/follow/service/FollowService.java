@@ -10,6 +10,7 @@ import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class FollowService {
 
         // 내 정보 조회
         User me = userRepository.findByPersonalId(myPersonalId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found my info"));
+                .orElseThrow(() -> new ForbiddenException("Not found my info"));
 
         // 응답 리스트 초기화
         List<FollowResponse> responses = new ArrayList<>();
@@ -86,7 +87,7 @@ public class FollowService {
         List<Follow> userList = followRepository.findByFollower(user); // 팔로우 당한사람에서 가져오기
         // 내 정보 조회
         User me = userRepository.findByPersonalId(myPersonalId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found my info"));
+                .orElseThrow(() -> new ForbiddenException("Not found my info"));
 
         // 응답 리스트 초기화
         List<FollowResponse> responses = new ArrayList<>();
