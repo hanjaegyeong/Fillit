@@ -1,5 +1,10 @@
 import axiosInstance from './axiosInstance';
-import { Message, MessageListResponse, MessagePostForm } from '@/types/message';
+import {
+  ChatRoom,
+  Message,
+  MessageListResponse,
+  MessagePostForm,
+} from '@/types/message';
 
 export const postMessage = async (
   messagePostForm: MessagePostForm
@@ -20,6 +25,24 @@ export const getMessage = async (
       chatRoomId,
       cursor,
     },
+  });
+  return response.data;
+};
+
+export const postRoom = async (otherPersonalId: string): Promise<ChatRoom> => {
+  if (process.env.NODE_ENV === 'development') {
+    return Promise.resolve({
+      chatRoomId: 1,
+      otherUser: 'tset',
+      profileImageUrl: 'test',
+      lastMessageContent: 'test',
+      lastMessageTime: new Date().toISOString(),
+      unreadMessageCount: 3,
+    });
+  }
+
+  const response = await axiosInstance.post('/api/chat/rooms/messages', {
+    params: otherPersonalId,
   });
   return response.data;
 };

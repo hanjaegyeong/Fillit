@@ -23,7 +23,7 @@ export interface MessageListResponse {
 export interface ChatRoom {
   chatRoomId: number;
   otherUser: string;
-  profileImageUrl: string;
+  profileImageUrl: string | null;
   lastMessageContent: string;
   lastMessageTime: string;
   unreadMessageCount: number;
@@ -34,7 +34,7 @@ export interface ChatRoomInfo {
   personalId: string;
   otherPersonalId: string;
   otherUserName: string;
-  otherProfileImageUrl: string;
+  otherProfileImageUrl: string | null;
 }
 
 export interface ChatSearch {
