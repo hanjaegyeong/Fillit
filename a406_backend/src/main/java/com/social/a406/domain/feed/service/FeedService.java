@@ -12,6 +12,7 @@ import com.social.a406.domain.feed.repository.FeedBoardRepository;
 import com.social.a406.domain.feed.repository.FeedRepository;
 import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
+import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class FeedService {
     private final CommentService commentService;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
 
     /**
      * 피드 조회 – 친구 게시물(푸시된 데이터)과 추천 게시물(풀 방식)을 4:1 비율로 결합하여 반환
@@ -89,11 +91,11 @@ public class FeedService {
         int friendIndex = 0, recIndex = 0;
         while (feedPosts.size() < limit && (friendIndex < friendBoards.size() || recIndex < recommendedBoards.size())) {
             for (int i = 0; i < 4 && friendIndex < friendBoards.size(); i++) {
-                feedPosts.add(convertToDto(friendBoards.get(friendIndex++), false));
+                feedPosts.add(convertToDto(friendBoards.get(friendIndex++), false, userId));
                 if (feedPosts.size() == limit) break;
             }
             if (recIndex < recommendedBoards.size() && feedPosts.size() < limit) {
-                feedPosts.add(convertToDto(recommendedBoards.get(recIndex++), true));
+                feedPosts.add(convertToDto(recommendedBoards.get(recIndex++), true, userId));
             }
         }
 
@@ -102,7 +104,7 @@ public class FeedService {
         return new FeedResponseDto(feedPosts, nextCursor);
     }
 
-    private PostDto convertToDto(Board board, Boolean isRecommended) {
+    private PostDto convertToDto(Board board, Boolean isRecommended, String userId) {
         String boardImageUrl = boardService.findFirstByBoardIdOrderByIdAsc(board.getId())
                 .map(BoardImage::getImageUrl)
                 .orElse(null);
@@ -119,6 +121,7 @@ public class FeedService {
                 .imageUrl(boardImageUrl)
                 .createdAt(board.getCreatedAt())
                 .isRecommended(isRecommended)
+                .isLiked(boardLikeRepository.existsByUser_IdAndBoard_Id(userId, board.getId()))
                 .build();
 
         return dto;
