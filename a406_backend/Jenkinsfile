@@ -40,7 +40,7 @@ pipeline {
                 dir('a406_backend') {
                     sh """
                         chmod +x ./gradlew
-                        ./gradlew clean build \\
+                        ./gradlew --no-daemon clean build \\
                             -Djwt.secret-key="$JWT_SECRET_KEY" \\
                             -Dspring.datasource.url="$DB_URL" \\
                             -Dspring.datasource.username="$DB_USERNAME" \\
