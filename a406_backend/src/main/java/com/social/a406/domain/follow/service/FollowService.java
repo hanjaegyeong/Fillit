@@ -1,4 +1,4 @@
-package  com.social.a406.domain.follow.service;
+package com.social.a406.domain.follow.service;
 
 
 import com.social.a406.domain.follow.dto.FollowResponse;
@@ -29,8 +29,8 @@ public class FollowService {
     private final NotificationService notificationService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public Optional<Follow> findByFollowerAndFollowee (User follower, User followee) {
-        return followRepository.findByFollowerAndFollowee(follower, followee) ;
+    public Optional<Follow> findByFollowerAndFollowee(User follower, User followee) {
+        return followRepository.findByFollowerAndFollowee(follower, followee);
     }
 
     public boolean followUser(User follower, User followee) {
@@ -38,7 +38,7 @@ public class FollowService {
         follow.setFollower(follower);
         follow.setFollowee(followee);
         follow.setCreatedAt(LocalDateTime.now());
-        Follow saveFollow =  followRepository.save(follow); // save는 기본이라 repository에 따로 안써도 되나?
+        Follow saveFollow = followRepository.save(follow); // save는 기본이라 repository에 따로 안써도 되나?
 
         generateFollowNotification(saveFollow); // 팔로우 알림 생성
         eventPublisher.publishEvent(new FollowEvent(follower, followee));
@@ -70,12 +70,12 @@ public class FollowService {
         for (Follow follower : userList) {
             boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
                     follower.getFollower().getId(), me.getId());
-
-            responses.add(FollowResponse.builder()
-                    .personalId(follower.getFollower().getPersonalId())
-                    .profileImageUrl(follower.getFollower().getProfileImageUrl())
-                    .isFollow(isFollow)
-                    .build());
+            User followerUser = follower.getFollower();
+            responses.add(new FollowResponse(
+                    followerUser.getPersonalId(),
+                    followerUser.getName(),
+                    followerUser.getProfileImageUrl(),
+                    isFollow));
         }
 
         return responses;
@@ -83,7 +83,7 @@ public class FollowService {
 
 
     // 나의 팔로잉
-    public List<FollowResponse> getFolloweeList (String myPersonalId, User user) {
+    public List<FollowResponse> getFolloweeList(String myPersonalId, User user) {
         List<Follow> userList = followRepository.findByFollower(user); // 팔로우 당한사람에서 가져오기
         // 내 정보 조회
         User me = userRepository.findByPersonalId(myPersonalId)
@@ -96,11 +96,12 @@ public class FollowService {
             boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
                     followee.getFollower().getId(), me.getId());
 
-            responses.add(FollowResponse.builder()
-                    .personalId(followee.getFollower().getPersonalId())
-                    .profileImageUrl(followee.getFollower().getProfileImageUrl())
-                    .isFollow(isFollow)
-                    .build());
+            User followeeUser = followee.getFollower();
+            responses.add(new FollowResponse(
+                    followeeUser.getPersonalId(),
+                    followeeUser.getName(),
+                    followeeUser.getProfileImageUrl(),
+                    isFollow));
         }
         return responses;
     }
@@ -115,7 +116,7 @@ public class FollowService {
         return userRepository.findByPersonalId(personalId);
     }
 
-    private void generateFollowNotification(Follow follow){
+    private void generateFollowNotification(Follow follow) {
         // referenceId -> followId
         notificationService.createNotification(follow.getFollowee(), follow.getFollower(), NotificationType.FOLLOW, follow.getId());
         System.out.println("Generate notification about follow");

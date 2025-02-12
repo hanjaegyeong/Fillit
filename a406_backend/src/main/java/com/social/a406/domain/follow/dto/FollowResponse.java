@@ -1,12 +1,15 @@
 package com.social.a406.domain.follow.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FollowResponse {
     private String personalId;
+    private String name;
     private String profileImageUrl;
     private boolean isFollow;
 }
