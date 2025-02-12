@@ -1,6 +1,9 @@
 package com.social.a406.domain.chat.service;
 
-import com.social.a406.domain.chat.dto.*;
+import com.social.a406.domain.chat.dto.ChatMessageDto;
+import com.social.a406.domain.chat.dto.ChatMessageListResponse;
+import com.social.a406.domain.chat.dto.ChatRoomInfoResponse;
+import com.social.a406.domain.chat.dto.ChatRoomResponse;
 import com.social.a406.domain.chat.entity.ChatMessage;
 import com.social.a406.domain.chat.entity.ChatParticipants;
 import com.social.a406.domain.chat.entity.ChatRoom;
@@ -77,7 +80,7 @@ public class ChatService {
                 .build();
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom); // 채팅방 저장
 
-        System.out.println("ChatRoom Created: "+savedChatRoom.getId());
+        System.out.println("ChatRoom Created: " + savedChatRoom.getId());
 
         // 참여자 목록 생성 (userId와 otherId를 포함)
         List<String> participantIds = Arrays.asList(new String[]{userId, otherId});
@@ -138,17 +141,30 @@ public class ChatService {
 
     }
 
+    public ChatRoomInfoResponse getChatRoomInfo(User user, Long chatRoomId) {
+        ChatParticipants chatParticipants = chatParticipantsRepository.findByChatRoomIdAndNotUserId(chatRoomId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Chat Participants Entity not found with userId: " + user.getId()));
+        User otherUser = chatParticipants.getUser();
+
+        return new ChatRoomInfoResponse
+                        (chatRoomId,
+                        user.getPersonalId(),
+                        otherUser.getPersonalId(),
+                        otherUser.getName(),
+                        otherUser.getProfileImageUrl());
+    }
+
     public Optional<User> findByPersonalId(String personalId) {
         return userRepository.findByPersonalId(personalId);
     }
 
     private List<ChatMessageDto> convertToDtoList(List<ChatMessage> messages) {
         return messages.stream()
-                .map(this :: convertToChatMessageDto  )
+                .map(this::convertToChatMessageDto)
                 .collect(Collectors.toList());
     }
 
-    private ChatMessageDto convertToChatMessageDto (ChatMessage message) {
+    private ChatMessageDto convertToChatMessageDto(ChatMessage message) {
         User user = message.getChatParticipants().getUser();
         return new ChatMessageDto(message.getId(),
                 user.getName(),
@@ -164,7 +180,7 @@ public class ChatService {
 //                .findFirst()
 //                .orElseThrow(() -> new IllegalStateException("현재 사용자의 채팅 참여자 정보가 없습니다."));
         ChatParticipants currentParticipant = chatParticipantsRepository.findByChatRoom_IdAndUser_Id(chatRoom.getId(), currentUserId)
-                .orElseThrow(() -> new IllegalStateException("ChatPaticipants not found by chatRoomId and userId: " + chatRoom.getId() + ", " +currentUserId));
+                .orElseThrow(() -> new IllegalStateException("ChatPaticipants not found by chatRoomId and userId: " + chatRoom.getId() + ", " + currentUserId));
 
 
         Long unreadCount = currentParticipant.getUnreadMessageCount();
