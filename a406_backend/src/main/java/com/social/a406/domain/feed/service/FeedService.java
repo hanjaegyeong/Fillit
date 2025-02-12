@@ -138,7 +138,7 @@ public class FeedService {
                         .user(user)
                         .board(board)
                         .isRecommended(false) // 기본값 설정
-                        .createdAt(LocalDateTime.now()) // 현재 시간 설정
+                        .createdAt(board.getCreatedAt()) // 현재 시간 설정
                         .build())
                 .collect(Collectors.toList());
 
