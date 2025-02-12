@@ -181,8 +181,8 @@ public class UserController {
         return ResponseEntity.ok("Nickname is available.");
     }
 
-    @PostMapping("/test2")
-    public ResponseEntity<String> checkTestController2(){
+    @PostMapping("/test3")
+    public ResponseEntity<String> checkTestController3(){
         return ResponseEntity.ok("Nickname is available.");
     }
 }
