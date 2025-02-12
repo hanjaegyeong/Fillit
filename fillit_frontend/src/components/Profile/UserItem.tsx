@@ -1,6 +1,7 @@
 import ProfileImage from '@/components/common/ProfileImage';
 import FollowButton from '../common/Button/FollowButton';
 import { User } from '@/types/user';
+import { useUserStore } from '@/store/useUserStore';
 
 interface UserItemProps {
   userData: User;
@@ -8,6 +9,9 @@ interface UserItemProps {
 }
 
 const UserItem = ({ userData, type }: UserItemProps) => {
+  const { user: currentUser } = useUserStore();
+  const isCurrentUser = currentUser.personalId === userData.personalId;
+
   return (
     <div className="flex items-center px-6 mb-[1.4rem] w-full">
       <div className="shrink-0 mr-2">
@@ -20,13 +24,15 @@ const UserItem = ({ userData, type }: UserItemProps) => {
         </div>
       </div>
       <div className="shrink-0">
-        <FollowButton
-          isFollowing={type === 'following'}
-          followeePersonalId={userData.personalId}
-          onFollowChange={(isFollowing) =>
-            console.log('팔로우 상태 변경:', isFollowing)
-          }
-        />
+        {!isCurrentUser && (
+          <FollowButton
+            isFollowing={type === 'following'}
+            followeePersonalId={userData.personalId}
+            onFollowChange={(isFollowing) =>
+              console.log('팔로우 상태 변경:', isFollowing)
+            }
+          />
+        )}
       </div>
     </div>
   );
