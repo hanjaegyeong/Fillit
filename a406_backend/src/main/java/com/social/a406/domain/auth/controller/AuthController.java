@@ -2,7 +2,7 @@ package com.social.a406.domain.auth.controller;
 
 import com.social.a406.domain.auth.service.AuthService;
 import com.social.a406.util.JwtTokenUtil;
-//import com.social.a406.util.RedisService;
+import com.social.a406.util.RedisService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
-//    private final RedisService redisService;
+    private final RedisService redisService;
     private final AuthService authService;
 
     @PostMapping("/reissue")
