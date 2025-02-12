@@ -2,7 +2,7 @@ package com.social.a406.domain.user.controller;
 
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
-//import com.social.a406.util.RedisService;
+import com.social.a406.util.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-//    private final RedisService redisService;
+    private final RedisService redisService;
 
     // refresh token 수명
     @Value("${refresh.token.max-age}")
