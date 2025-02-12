@@ -33,7 +33,8 @@ pipeline {
                             -Dspring.datasource.url="$DB_URL" \\
                             -Dspring.datasource.username="$DB_USERNAME" \\
                             -Dspring.datasource.password="$DB_PASSWORD" \\
-                            -Dspring.mail.password="$MAIL_PASSWORD"
+                            -Dspring.mail.password="$MAIL_PASSWORD" \\
+                            -Dspring.redis.host=redis
                     """
                 }
             }
