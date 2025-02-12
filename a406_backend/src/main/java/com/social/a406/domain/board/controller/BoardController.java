@@ -38,8 +38,9 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
-        BoardResponse boardResponse = boardService.getBoardById(boardId);
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId,
+                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        BoardResponse boardResponse = boardService.getBoardByIdAndUser(boardId, userDetails.getUsername());
         return ResponseEntity.ok(boardResponse);
     }
 
@@ -63,10 +64,11 @@ public class BoardController {
     public ResponseEntity<List<BoardRecommendResonse>> searchBoard(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorId,
-            @RequestParam String word
+            @RequestParam(required = false) String word,
+            @AuthenticationPrincipal UserDetails userDetails
     ){
         Pageable pageable = PageRequest.of(0,size);
-        return ResponseEntity.ok(boardService.searchBoard(pageable, cursorId, word));
+        return ResponseEntity.ok(boardService.searchBoard(pageable, cursorId, word, userDetails.getUsername()));
     }
 
     @PutMapping("/{boardId}")
@@ -75,7 +77,7 @@ public class BoardController {
             @RequestPart("board") BoardRequest boardRequest,
             @RequestPart(value = "boardImages", required = false) List<MultipartFile> newFiles,
             @AuthenticationPrincipal UserDetails userDetails) {
-        BoardResponse boardResponse = boardService.updateBoard(boardId, boardRequest, userDetails, newFiles);
+        BoardResponse boardResponse = boardService.updateBoard(boardId, boardRequest, userDetails.getUsername(), newFiles);
 
         return ResponseEntity.ok(boardResponse);
     }

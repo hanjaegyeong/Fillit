@@ -29,18 +29,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
     List<Board> findAllByPersonalId(@Param("personalId") String personalId);
 
-    //단어 검색
-    @Query(value = "SELECT * FROM board " +
-            "WHERE MATCH(content, keyword) AGAINST(:word IN BOOLEAN MODE) " +
-            "AND (:cursorId IS NULL OR board.board_id < :cursorId) " +
-            "ORDER BY board.board_id DESC",
-            nativeQuery = true)
-    List<Board> searchBoard(@Param("word") String word,
-                            @Param("cursorId") Long cursorId,
-                            Pageable pageable);
-
-
-
     List<Board> findByUser(User otherUser);
 
     @Query("""
@@ -49,9 +37,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             FROM BoardImage bi 
             WHERE bi.board = b 
             ORDER BY bi.id ASC 
-            LIMIT 1) 
+            LIMIT 1),
+           CASE 
+               WHEN bl.id IS NOT NULL THEN true 
+               ELSE false 
+           END 
     FROM BoardInterest bi
     JOIN bi.board b
+    LEFT JOIN BoardLike bl 
+           ON bl.board = b AND bl.user.id = :userId
     WHERE bi.interest.id = :interestId 
       AND (
           (:cursorLikeCount IS NULL AND :cursorId IS NULL) 
@@ -60,21 +54,29 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
       )
     ORDER BY b.likeCount DESC, b.id DESC
 """)
-    List<Object[]> findBoardsWithFirstImageByInterestId(
+    List<Object[]> findBoardsWithFirstImageAndLikeStatusByInterestId(
             @Param("interestId") Long interestId,
+            @Param("userId") String userId,
             @Param("cursorLikeCount") Long cursorLikeCount,
             @Param("cursorId") Long cursorId,
             Pageable pageable
     );
 
     //부분 문자열 검색 가능
-//    @Query(value = "SELECT * FROM board " +
-//            "WHERE (content LIKE %:word% OR keyword LIKE %:word%) " +
-//            "AND (:cursorId IS NULL OR board.board_id < :cursorId) " +
-//            "ORDER BY board.board_id DESC",
-//            nativeQuery = true)
-//    List<Board> searchBoard(@Param("word") String word,
-//                            @Param("cursorId") Long cursorId,
-//                            Pageable pageable);
-
+    @Query("""
+    SELECT b, 
+           CASE WHEN bl.id IS NOT NULL THEN true ELSE false END
+    FROM Board b
+    LEFT JOIN BoardLike bl
+           ON bl.board.id = b.id AND bl.user.id = :userId
+    WHERE (b.content LIKE %:word% OR b.keyword LIKE %:word%)
+    AND (:cursorId IS NULL OR b.id < :cursorId)
+    ORDER BY b.id DESC
+""")
+    List<Object[]> searchBoardWithLikeStatus(
+            @Param("word") String word,
+            @Param("cursorId") Long cursorId,
+            @Param("userId") String userId,
+            Pageable pageable
+    );
 }
