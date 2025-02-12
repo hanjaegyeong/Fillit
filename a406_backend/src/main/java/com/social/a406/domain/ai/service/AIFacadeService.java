@@ -121,7 +121,8 @@ public class AIFacadeService {
     public CommentResponse generateAndSaveComment(Long boardId, String personalId) {
         String content = aiService.generateContent(aiService.createCommentPrompt(
                 boardService.getBoardContentById(boardId),
-                boardService.getBoardAuthorPersonalIdById(boardId)
+                boardService.getBoardAuthorPersonalIdById(boardId),
+                userService.getUserByPersonalId(personalId)
         ));
         return commentService.addAiComment(boardId, new CommentRequest(content), personalId);
     }
