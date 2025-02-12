@@ -8,7 +8,7 @@ type RouteParams = {
 
 const CommentListContainer = () => {
   const { boardId } = useParams() as RouteParams;
-  const { data: commentList } = useGetCommentList(boardId);
+  const { data: commentList } = useGetCommentList(Number(boardId));
 
   return (
     <div className="flex flex-col items-center">
