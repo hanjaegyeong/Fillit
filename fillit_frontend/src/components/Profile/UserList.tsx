@@ -1,6 +1,6 @@
 import { FollowBackground } from '@/assets/assets';
 import UserItem from '@/components/Profile/UserItem';
-import SearchInput from '@/components/common/Input/SearchInput';
+import SubmitInput from '@/components/common/Input/SubmitInput';
 import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { getFollowerList, getFolloweeList } from '@/api/follow';
@@ -65,11 +65,11 @@ const UserList = ({ type, personalId }: UserListProps) => {
 
   return (
     <div>
-      <div className="flex justify-center w-full px-4">
-        <SearchInput
-          className="mt-[2.5rem]"
-          onSearch={handleSearch}
-          placeholder="search"
+      <div className="w-full p-4">
+        <SubmitInput
+          type="search"
+          placeholder="Search"
+          onSubmit={handleSearch}
         />
       </div>
       <div className="overflow-hidden grid h-full">

@@ -39,7 +39,7 @@ const SearchPage = () => {
   };
   return (
     <div className="container-header-nav">
-      <Header center="search" onSearch={handleSearch} />
+      <Header center="search" onSubmit={handleSearch} />
 
       <div className="space-y-4 p-5">
         {searchResults.map((post) => (
