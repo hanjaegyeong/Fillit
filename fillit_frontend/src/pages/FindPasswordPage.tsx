@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useTypingEffect from '@/hooks/useTypingEffect';
+import { FIND_PASSWORD_STEPS } from '@/constants/findPasswordSteps';
 
 import FillitLongLog from '@/assets/icons/fillit-long-logo.svg';
 import FilTakeOn from '@/assets/images/fil-takeon.png';
@@ -8,47 +9,12 @@ import FilTakeOn from '@/assets/images/fil-takeon.png';
 import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
 
-const steps = [
-  {
-    message1: 'Did you forget password?',
-    message2: 'Alright then, spill your name, email,',
-    message3: 'and username! 😎💻',
-    placeholder: '',
-    rule: '',
-    inputType: 'search',
-  },
-  {
-    message1: 'Yo, I just shot you an email',
-    message2: '—peep it and drop in the code! 📧🔑',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'check',
-  },
-  {
-    message1: 'Cool, found your account',
-    message2: 'Let’s set up a new password! 🔒✨',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'password',
-  },
-  {
-    message1: 'All good now,',
-    message2: 'Don’t lose it next time! 😎✌️',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: '',
-  },
-];
-
 const FindPasswordPage = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
   const handleNext = () => {
-    if (step < steps.length - 1) setStep((prev) => prev + 1);
+    if (step < FIND_PASSWORD_STEPS.length - 1) setStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -64,9 +30,9 @@ const FindPasswordPage = () => {
   };
 
   const messages = [
-    steps[step].message1,
-    steps[step].message2,
-    steps[step].message3,
+    FIND_PASSWORD_STEPS[step].message1,
+    FIND_PASSWORD_STEPS[step].message2,
+    FIND_PASSWORD_STEPS[step].message3,
   ];
 
   const typedMessages = useTypingEffect(messages, step, 30);
@@ -83,17 +49,17 @@ const FindPasswordPage = () => {
         </p>
       ))}
       <div className="pt-6">
-        {steps[step].inputType === 'search' && (
+        {FIND_PASSWORD_STEPS[step].inputType === 'search' && (
           <>
             <div>
-              <BasicInput placeholder="Enter your name" />
+              <BasicInput placeholder="Enter your personalId" />
             </div>
             <div className="pt-2">
               <BasicInput placeholder="Enter your Email" />
             </div>
           </>
         )}
-        {steps[step].inputType === 'check' && (
+        {FIND_PASSWORD_STEPS[step].inputType === 'check' && (
           <>
             <div>
               <BasicInput placeholder="Enter your code" />
@@ -103,7 +69,7 @@ const FindPasswordPage = () => {
             </div>
           </>
         )}
-        {steps[step].inputType === 'password' && (
+        {FIND_PASSWORD_STEPS[step].inputType === 'password' && (
           <>
             <div>
               <BasicInput placeholder="Enter your new password" />
@@ -113,12 +79,14 @@ const FindPasswordPage = () => {
             </div>
           </>
         )}
-        <p className="flex justify-start text-xs">{steps[step].rule}</p>
-        {steps[step].inputType !== 'check' && (
+        <p className="flex justify-start text-xs">
+          {FIND_PASSWORD_STEPS[step].rule}
+        </p>
+        {FIND_PASSWORD_STEPS[step].inputType !== 'check' && (
           <div className="flex flex-row pt-10 gap-10">
             <BasicButton text="Back" onClick={handleBack} />
 
-            {step === steps.length - 1 ? (
+            {step === FIND_PASSWORD_STEPS.length - 1 ? (
               <BasicButton text="Login" onClick={handleLogin} />
             ) : (
               <BasicButton text="Next" onClick={handleNext} />
