@@ -111,7 +111,7 @@ public class UserController {
                 .secure(true)
                 .path("/")
                 .maxAge(maxAge)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
