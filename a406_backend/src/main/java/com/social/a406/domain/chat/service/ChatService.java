@@ -112,12 +112,12 @@ public class ChatService {
 
         // 1) (참여 테이블 + 방 테이블) JOIN FETCH로 한 번에 조회
         List<ChatParticipants> participants =
-                chatParticipantsRepository.findByUserIdWithChatRoomFetch(userId);
+                chatParticipantsRepository.findByUserIdWithChatRoomFetch(userId); // 나의 채팅 참여정보
 
         // 2) 채팅방 Id 목록 추출
         Set<Long> chatRoomIds = participants.stream()
                 .map(cp -> cp.getChatRoom().getId())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet()); // 나의 채팅방 목록
 
 
         // 3) 상대방 이름, 프로필 이미지 추출, chatRoomId를 key로한 Map 만들어놔서 Dto 변환할때 효율성 추구
@@ -130,15 +130,23 @@ public class ChatService {
 
 
         // 4) participants를 돌면서 DTO 구성
-        return participants.stream().map(cp -> {
-            ChatRoom cr = cp.getChatRoom();
-            Long roomId = cr.getId();
+        return participants.stream()
+                .filter(cp -> cp.getChatRoom().getLastMessageContent() != null)
+                .map(cp -> {
+                    ChatRoom cr = cp.getChatRoom();
+                    Long roomId = cr.getId();
+                    User userInfo = otherUserInfoMap.get(roomId);
 
-            User userInfo = otherUserInfoMap.get(roomId);
-
-            return new ChatRoomResponse(roomId, userInfo.getName(), userInfo.getProfileImageUrl(), cr.getLastMessageContent(), cr.getLastMessageTime(), cp.getUnreadMessageCount());
-
-        }).collect(Collectors.toList());
+                    return new ChatRoomResponse(
+                            roomId,                           // 공유정보: 채팅방 ID
+                            userInfo.getName(),               // 상대방 이름
+                            userInfo.getProfileImageUrl(),    // 상대방 프로필 이미지 URL
+                            cr.getLastMessageContent(),       // 마지막 메세지 내용
+                            cr.getLastMessageTime(),          // 마지막 메세지 시간
+                            cp.getUnreadMessageCount()        // 읽지 않은 메세지 수
+                    );
+                })
+                .collect(Collectors.toList());
 
     }
 
@@ -148,7 +156,7 @@ public class ChatService {
         User otherUser = chatParticipants.getUser();
 
         return new ChatRoomInfoResponse
-                        (chatRoomId,
+                (chatRoomId,
                         user.getPersonalId(),
                         otherUser.getPersonalId(),
                         otherUser.getName(),
