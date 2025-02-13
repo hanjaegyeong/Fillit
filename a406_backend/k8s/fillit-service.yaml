@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fillit-service
+spec:
+  type: ClusterIP
+  selector:
+    app: fillit
+  ports:
+    - protocol: TCP
+      port: 8080         # 클러스터 내 서비스 포트
+      targetPort: 8080   # 컨테이너 포트
