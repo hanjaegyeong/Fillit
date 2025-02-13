@@ -59,7 +59,7 @@ const CommentCard = ({
         <div className="flex justify-end gap-4">
           <LikeBadge
             likeCount={comment.likeCount}
-            isLiked={true}
+            isLiked={comment.isliked}
             size={!isDetail ? 'small' : 'large'}
           />
           <CommentBadge
