@@ -1,9 +1,6 @@
 package com.social.a406.domain.chat.service;
 
-import com.social.a406.domain.chat.dto.ChatMessageDto;
-import com.social.a406.domain.chat.dto.ChatMessageListResponse;
-import com.social.a406.domain.chat.dto.ChatRoomInfoResponse;
-import com.social.a406.domain.chat.dto.ChatRoomResponse;
+import com.social.a406.domain.chat.dto.*;
 import com.social.a406.domain.chat.entity.ChatMessage;
 import com.social.a406.domain.chat.entity.ChatParticipants;
 import com.social.a406.domain.chat.entity.ChatRoom;
@@ -206,7 +203,7 @@ public class ChatService {
     }
 
     @Transactional
-    public List<ChatRoomResponse> searchChatRooms(String personalId, Pageable pageable, Long cursorId, String word) {
+    public ChatRoomSearchResponse searchChatRooms(String personalId, Pageable pageable, Long cursorId, String word) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
                 () -> new ForbiddenException("Not found User"));
         // 1) (참여 테이블 + 방 테이블) JOIN FETCH로 한 번에 조회
@@ -227,7 +224,7 @@ public class ChatService {
                         );
 
         // 4) participants를 돌면서 DTO 구성
-        return participants.stream().map(cp -> {
+        List<ChatRoomResponse> responses = participants.stream().map(cp -> {
             ChatRoom cr = cp.getChatRoom();
             Long roomId = cr.getId();
 
@@ -236,5 +233,11 @@ public class ChatService {
             return new ChatRoomResponse(roomId, userInfo.getName(), userInfo.getProfileImageUrl(), cr.getLastMessageContent(), cr.getLastMessageTime(), cp.getUnreadMessageCount());
 
         }).collect(Collectors.toList());
+
+        Long lastCursor = responses.isEmpty() ? null : participants.get(participants.size()-1).getId();
+        return ChatRoomSearchResponse.builder()
+                .cursorId(lastCursor)
+                .responses(responses)
+                .build();
     }
 }

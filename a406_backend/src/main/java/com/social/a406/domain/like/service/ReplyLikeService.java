@@ -9,6 +9,7 @@ import com.social.a406.domain.like.repository.ReplyLikeRepository;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +29,13 @@ public class ReplyLikeService {
     @Transactional
     public void addLike(String personalId, Long replyId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply not found"));
+                .orElseThrow(() -> new ForbiddenException("Reply not found"));
 
         if (replyLikeRepository.existsByUserAndReply(user, reply)) {
-            throw new IllegalStateException("User already liked this reply");
+            throw new ForbiddenException("User already liked this reply");
         }
 
         ReplyLike like = new ReplyLike(reply, user);
@@ -48,13 +49,13 @@ public class ReplyLikeService {
     @Transactional
     public void removeLike(String personalId, Long replyId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply not found"));
+                .orElseThrow(() -> new ForbiddenException("Reply not found"));
 
         ReplyLike like = replyLikeRepository.findByUserAndReply(user, reply)
-                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+                .orElseThrow(() -> new ForbiddenException("Like not found"));
 
         replyLikeRepository.delete(like);
 
@@ -64,7 +65,7 @@ public class ReplyLikeService {
     @Transactional(readOnly = true)
     public List<LikedUserResponse> getUsersWhoLikedReply(Long replyId) {
         Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply not found"));
+                .orElseThrow(() -> new ForbiddenException("Reply not found"));
 
         return replyLikeRepository.findByReply(reply).stream()
                 .map(like -> {

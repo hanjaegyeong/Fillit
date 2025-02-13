@@ -46,7 +46,7 @@ public class BoardController {
 
     // 검색 창 추천 게시글 조회
     @GetMapping("/recommend")
-    public ResponseEntity<List<BoardRecommendResonse>> recommendBoard(
+    public ResponseEntity<List<BoardRecommendResponse>> recommendBoard(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorLikeCount,
@@ -61,7 +61,7 @@ public class BoardController {
     // 게시글 검색
     //cursorId -> boardId 최신순
     @GetMapping("/search")
-    public ResponseEntity<List<BoardRecommendResonse>> searchBoard(
+    public ResponseEntity<BoardSearchResponse> searchBoard(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorId,
             @RequestParam(required = false) String word,
