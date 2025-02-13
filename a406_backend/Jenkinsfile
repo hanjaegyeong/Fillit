@@ -90,8 +90,9 @@ pipeline {
                     sh 'kubectl rollout status deployment/fillit-deployment'
                     // Deployment 강제 재시작 추가 (새로운 Pod가 생성되도록 강제)
                     sh 'kubectl rollout restart deployment fillit-deployment'
-                    // Prometheus 적용 (Deployment가 안정적으로 올라간 후 실행)
-                    sh 'kubectl apply -f a406_backend/k8s/prometheus.yml -n monitoring'
+                    // Prometheus, Grafana
+                    sh 'kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring'
+                    sh 'kubectl apply -f a406_backend/k8s/prometheus-deployment.yaml -n monitoring'
 
 //                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
 //                     sh 'kubectl apply --server-side --validate=false -f a406_backend/k8s/clusterissuer.yaml'
