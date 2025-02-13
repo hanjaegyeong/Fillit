@@ -26,7 +26,7 @@ export const validationRules: Record<
   },
   personalId: {
     required: true,
-    minLength: 5,
+    minLength: 4,
     maxLength: 20,
     pattern: {
       value: /^[a-z0-9_]+$/,
@@ -35,7 +35,7 @@ export const validationRules: Record<
   },
   password: {
     required: true,
-    minLength: 8,
+    minLength: 4,
     maxLength: 16,
     pattern: {
       value: /^[A-Za-z0-9]+$/,
@@ -49,12 +49,12 @@ export const validationRules: Record<
   },
   email: {
     required: true,
-    pattern: {
-      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: '올바른 이메일 형식이 아닙니다',
-    },
+    // pattern: {
+    //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+    //   message: '올바른 이메일 형식이 아닙니다',
+    // },
   },
-  birthDate: { required: true },
-  introduction: { required: true },
+  birthDate: { required: false }, // 임시
+  introduction: { required: false }, // 임시
   interest: { required: true },
 };
