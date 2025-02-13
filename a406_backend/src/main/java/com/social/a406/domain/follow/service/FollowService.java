@@ -57,8 +57,8 @@ public class FollowService {
         return false; // 삭제 실패 (존재하지 않는 관계)
     }
 
-    public List<FollowResponse> getFollowerList(String myPersonalId, User user) {
-        List<Follow> userList = followRepository.findByFollowee(user); // 팔로우 당한사람에서 가져오기
+    public List<FollowResponse> getFollowerList(String myPersonalId, User targetUser) {
+        List<Follow> followerList = followRepository.findByFollowee(targetUser); // target : followee -> List : follower
 
         // 내 정보 조회
         User me = userRepository.findByPersonalId(myPersonalId)
@@ -67,7 +67,7 @@ public class FollowService {
         // 응답 리스트 초기화
         List<FollowResponse> responses = new ArrayList<>();
 
-        for (Follow follower : userList) {
+        for (Follow follower : followerList) {
             boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
                     follower.getFollower().getId(), me.getId());
             User followerUser = follower.getFollower();
@@ -83,8 +83,8 @@ public class FollowService {
 
 
     // 나의 팔로잉
-    public List<FollowResponse> getFolloweeList(String myPersonalId, User user) {
-        List<Follow> userList = followRepository.findByFollower(user); // 팔로우 당한사람에서 가져오기
+    public List<FollowResponse> getFolloweeList(String myPersonalId, User targetUser) {
+        List<Follow> followeeList = followRepository.findByFollower(targetUser); // 팔로우 당한사람에서 가져오기
         // 내 정보 조회
         User me = userRepository.findByPersonalId(myPersonalId)
                 .orElseThrow(() -> new ForbiddenException("Not found my info"));
@@ -92,17 +92,18 @@ public class FollowService {
         // 응답 리스트 초기화
         List<FollowResponse> responses = new ArrayList<>();
 
-        for (Follow followee : userList) {
+        for (Follow followee : followeeList) {
             boolean isFollow = followRepository.existsByFolloweeIdAndFollowerId(
-                    followee.getFollower().getId(), me.getId());
+                    followee.getFollowee().getId(), me.getId());
 
-            User followeeUser = followee.getFollower();
+            User followeeUser = followee.getFollowee();
             responses.add(new FollowResponse(
                     followeeUser.getPersonalId(),
                     followeeUser.getName(),
                     followeeUser.getProfileImageUrl(),
                     isFollow));
         }
+
         return responses;
     }
 
