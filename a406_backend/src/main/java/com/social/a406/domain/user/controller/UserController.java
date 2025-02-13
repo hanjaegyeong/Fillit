@@ -116,6 +116,14 @@ public class UserController {
     }
 
     // 유저 조회
+    @GetMapping("/get")
+    public ResponseEntity<UserCharacterResponse> getMyInfo(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        UserCharacterResponse response = userService.getMyInfoByPersonalId(userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    // 유저 조회
     @GetMapping("/{personalId}")
     public ResponseEntity<UserCharacterResponse> getUserInfo(
             @AuthenticationPrincipal UserDetails userDetails,
