@@ -5,7 +5,6 @@ import com.social.a406.domain.user.service.UserService;
 import com.social.a406.util.RedisService;
 import com.social.a406.util.exception.BadRequestException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -162,7 +161,7 @@ public class UserController {
     // 유저 검색
     // cursorId -> personalId 사전순 검색
     @GetMapping("/search")
-    public ResponseEntity<List<UserSearchResponse>> searchUser(
+    public ResponseEntity<UserSearchResponse> searchUser(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String cursorId,
             @RequestParam(required = false) String word

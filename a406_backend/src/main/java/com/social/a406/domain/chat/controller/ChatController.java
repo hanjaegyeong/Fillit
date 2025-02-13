@@ -1,9 +1,6 @@
 package com.social.a406.domain.chat.controller;
 
-import com.social.a406.domain.chat.dto.ChatMessageDto;
-import com.social.a406.domain.chat.dto.ChatMessageListResponse;
-import com.social.a406.domain.chat.dto.ChatMessageRequest;
-import com.social.a406.domain.chat.dto.ChatRoomResponse;
+import com.social.a406.domain.chat.dto.*;
 import com.social.a406.domain.chat.entity.ChatRoom;
 import com.social.a406.domain.chat.service.ChatService;
 import com.social.a406.domain.chat.service.ChatWebSocketService;
@@ -110,7 +107,7 @@ public class ChatController {
 
 
     @GetMapping("/rooms/search")
-    public ResponseEntity<List<ChatRoomResponse>> searchChatRooms(
+    public ResponseEntity<ChatRoomSearchResponse> searchChatRooms(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorId,
@@ -119,6 +116,5 @@ public class ChatController {
         Pageable pageable = PageRequest.of(0,size);
         return ResponseEntity.ok(chatService.searchChatRooms(userDetails.getUsername(), pageable, cursorId, word));
     }
-
 }
 
