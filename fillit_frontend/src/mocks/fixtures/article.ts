@@ -12,6 +12,7 @@ export const article: Article = {
   x: 10,
   y: 10,
   z: 1,
+  isliked: false,
   keyword: 'fillit',
   pageNumber: 1,
   imageUrls: [],
