@@ -123,11 +123,15 @@ const MessagePage = () => {
               View Profile
             </button>
           </div>
-          {messages.map((msg) => {
+          {messages.map((msg, index) => {
+            const key =
+              msg.id !== null && msg.id !== undefined
+                ? msg.id
+                : `temp-${index}`;
             const isMyMessage = msg.personalId === currentUserPersonalId;
             return (
               <div
-                key={msg.id}
+                key={key}
                 className={`flex ${
                   isMyMessage ? 'justify-end' : 'justify-start'
                 }`}
