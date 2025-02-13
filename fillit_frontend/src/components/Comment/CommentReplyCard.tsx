@@ -40,7 +40,7 @@ const CommentReplyCard = ({
         <div className="flex justify-end">
           <LikeBadge
             likeCount={commentReply.likeCount}
-            isLiked={true}
+            isLiked={commentReply.isliked}
             size="small"
           />
         </div>

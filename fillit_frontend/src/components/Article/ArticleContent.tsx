@@ -38,7 +38,7 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         />
       )}
       <div className="flex gap-5">
-        <LikeBadge likeCount={article.likeCount} isLiked={true} />
+        <LikeBadge likeCount={article.likeCount} isLiked={article.isliked} />
         <CommentBadge commentCount={article.commentCount} />
       </div>
     </>
