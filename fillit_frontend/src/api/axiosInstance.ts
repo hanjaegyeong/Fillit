@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { getAccessToken } from '@/api/getAccessToken';
+import { getAccessToken } from '@/api/auth';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -35,19 +35,17 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log('[API error] ', error);
-
     const status = error?.response?.status;
-    const errorCode = error?.response?.data;
+    const errorMessage = error?.response?.data;
 
-    if (status === 401 && errorCode === 'Access token expired') {
+    console.log(`[API error] ${status} ${errorMessage || ''}`);
+
+    if (status === 401 && errorMessage === 'Access token expired') {
       try {
-        const { accessToken } = await getAccessToken();
+        const accessToken = await getAccessToken();
+
         if (accessToken) {
-          localStorage.setItem(
-            'accessToken',
-            accessToken.replace('Bearer ', '')
-          );
+          localStorage.setItem('accessToken', accessToken);
         }
       } catch (error) {
         window.location.replace('/login');
