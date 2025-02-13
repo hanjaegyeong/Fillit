@@ -41,10 +41,13 @@ export const getMessages = async (
 };
 
 export const postRoom = async (otherPersonalId: string): Promise<ChatRoom> => {
+  console.log(otherPersonalId);
   try {
-    const response = await axiosInstance.post('/api/chat/rooms/messages', {
-      params: otherPersonalId,
-    });
+    const response = await axiosInstance.post(
+      '/api/chat/rooms/messages',
+      null,
+      { params: { otherPersonalId } }
+    );
     return response.data;
   } catch (error) {
     console.error('postRoom 에러 : ', error);
