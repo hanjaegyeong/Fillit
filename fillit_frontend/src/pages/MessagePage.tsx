@@ -11,7 +11,6 @@ import { MessageType } from '@/enum/MessageType';
 import { WebSocketResponse } from '@/types/websocket';
 
 const MessagePage = () => {
-  console.log('MessagePage 렌더링:', new Date().toISOString());
   const { chatId } = useParams<{ chatId: string }>();
   const location = useLocation();
   const chatRoomId = Number(chatId);
@@ -56,12 +55,21 @@ const MessagePage = () => {
 
   // WebSocket 연결 및 실시간 메시지 수신 (roomInfo가 확보된 후)
   useEffect(() => {
-    if (!chatRoomId || !roomInfo) return;
+    if (!chatRoomId || !roomInfo) {
+      console.log('WebSocket 연결 대기: chatRoomId 또는 roomInfo 없음');
+      return;
+    }
+    console.log('WebSocket 연결 시도: chatRoomId=', chatRoomId);
     const ws = connectRoom(chatRoomId);
+
+    ws.addEventListener('open', () => {
+      console.log(`WebSocket 연결(${chatRoomId})이 OPEN 상태입니다.`);
+    });
 
     const messageListener = (event: MessageEvent) => {
       try {
         const data: WebSocketResponse = JSON.parse(event.data);
+        console.log('WebSocket 메시지 수신:', data);
         setMessages((prev) => [
           ...prev,
           {
@@ -88,8 +96,10 @@ const MessagePage = () => {
   // 초기 메시지 불러오기 (HTTP API 호출)
   useEffect(() => {
     if (!chatRoomId) return;
+    console.log('getMessages 호출:', chatRoomId, 'cursor=0');
     getMessages(chatRoomId, 0)
       .then((response) => {
+        console.log('getMessages 응답:', response);
         setMessages(response.messages);
       })
       .catch((error) =>
@@ -115,7 +125,7 @@ const MessagePage = () => {
     // 옵티미스틱 업데이트: 로컬 상태에 새 메시지 추가
     const newMessage: ApiMessage = {
       id: messages.length + 1, // 실제 id는 서버에서 부여됨
-      userName: '나', // 실제 사용자 이름으로 대체 (원하는 경우)
+      userName: currentUserPersonalId, // 실제 사용자 이름으로 대체 (원하는 경우)
       personalId: currentUserPersonalId,
       messageContent: inputMessage,
       createdAt: new Date().toISOString(),

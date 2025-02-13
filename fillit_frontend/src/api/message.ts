@@ -63,18 +63,9 @@ export const getSearchRooms = async (
 export const getRoomsInfo = async (
   chatRoomId: number
 ): Promise<ChatRoomInfo> => {
-  if (process.env.NODE_ENV === 'development') {
-    return Promise.resolve({
-      chatRoomId: 1,
-      personalId: 'test',
-      otherPersonalId: 'test',
-      otherUserName: 'rest',
-      otherProfileImageUrl: 'test',
-    });
-  }
   try {
     const response = await axiosInstance.get('/api/chat/rooms/info', {
-      params: chatRoomId,
+      params: { chatRoomId },
     });
     return response.data;
   } catch (error) {
