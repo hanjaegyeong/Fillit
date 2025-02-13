@@ -414,12 +414,12 @@ public class BoardService {
                 .build();
     }
 
-    public List<BoardRecommendResonse> searchBoard(Pageable pageable, Long cursorId, String word, String personalId) {
+    public BoardSearchResponse searchBoard(Pageable pageable, Long cursorId, String word, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
                 () -> new ForbiddenException("Not found User"));
         List<Object[]> boards = boardRepository.searchBoardWithLikeStatus(word, cursorId, user.getId(), pageable);
 
-        return boards.stream()
+        List<BoardRecommendResponse> responses = boards.stream()
                 .map(board -> mapRecommendBoard(
                         (Board) board[0],
                         boardImageRepository.findFirstById(((Board)board[0]).getId()),
@@ -427,6 +427,11 @@ public class BoardService {
                         (boolean) board[1]
                 ))
                 .toList();
+        Long lastCursor = responses.isEmpty() ? null : responses.get(responses.size()-1).getBoardId();
+        return BoardSearchResponse.builder()
+                .cursorId(lastCursor)
+                .responses(responses)
+                .build();
     }
 
     @Transactional
@@ -459,7 +464,7 @@ public class BoardService {
     }
 
 
-    public List<BoardRecommendResonse> recommendBoard(Pageable pageable, Long cursorLikeCount, Long cursorId, Long interestId, String personalId) {
+    public List<BoardRecommendResponse> recommendBoard(Pageable pageable, Long cursorLikeCount, Long cursorId, Long interestId, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
                 () -> new ForbiddenException("Not found User"));
         if(interestId == null || interestId == 0){
@@ -473,8 +478,8 @@ public class BoardService {
         ).toList();
     }
 
-    public BoardRecommendResonse mapRecommendBoard(Board board, String imageUrl, Long interestId, boolean like){
-        return BoardRecommendResonse.builder()
+    public BoardRecommendResponse mapRecommendBoard(Board board, String imageUrl, Long interestId, boolean like){
+        return BoardRecommendResponse.builder()
                 .boardId(board.getId())
                 .personalId(board.getUser().getPersonalId())
                 .likeCount(board.getLikeCount())
