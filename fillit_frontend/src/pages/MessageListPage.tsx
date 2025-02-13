@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
+import SearchInput from '@/components/common/Input/SubmitInput';
 import MockProfileImage from '@/mocks/images/profile-image.png';
 import ProfileImage from '@/components/common/ProfileImage';
 import { NewMessage } from '@/assets/assets';
@@ -39,13 +40,13 @@ const MessageListPage = () => {
   };
 
   return (
-    <div className="container-header-nav">
+    <div className="container-header-nav relative flex flex-col min-h-screen items-center">
       <Header left="home" right="notification" />
 
-      <div className="py-7 px-4 w-full max-w-[22rem]">
-        <SubmitInput
+      <div className="p-6 flex justify-center">
+        <SearchInput
           type="search"
-          placeholder="Search"
+          placeholder="search"
           onSubmit={handleSearch}
         />
       </div>

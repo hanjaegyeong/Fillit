@@ -10,7 +10,9 @@ export const connectRoom = (chatRoomId: number): WebSocket => {
     return existingSocket;
   }
 
-  const wsUrl = `ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}`;
+  const wsUrl = `ws://localhost:3000/ws/chat?chatRoomId=${chatRoomId}`;
+  console.log('Connecting to WebSocket URL:', wsUrl);
+
   const ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
