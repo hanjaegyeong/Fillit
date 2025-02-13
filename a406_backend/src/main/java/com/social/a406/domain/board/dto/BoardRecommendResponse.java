@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BoardRecommendResonse {
+public class BoardRecommendResponse {
     private Long boardId;
     private String personalId;
     private String profileImageUrl;

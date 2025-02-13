@@ -396,15 +396,20 @@ public class UserService {
         return "Password change success!!";
     }
 
-    public List<UserSearchResponse> searchUser(Pageable pageable, String cursorId, String word) {
+    public UserSearchResponse searchUser(Pageable pageable, String cursorId, String word) {
         List<User> users = userRepository.searchUsers(word, cursorId, pageable);
-        return users.stream()
-                .map(user -> new UserSearchResponse(
-                        user.getPersonalId(),
-                        user.getName(),
-                        user.getProfileImageUrl()
-                ))
-                .toList();
+        List<UserInfoResponse> responses = users.stream()
+                .map(user -> UserInfoResponse.builder()
+                        .personalId(user.getPersonalId())
+                        .profileImageUrl(user.getProfileImageUrl())
+                        .name(user.getName())
+                        .build()
+                ).toList();
+        String lstCursor = responses.isEmpty() ? null : responses.get(responses.size()-1).getPersonalId();
+        return UserSearchResponse.builder()
+                .cursorId(lstCursor)
+                .responses(responses)
+                .build();
     }
 
     @Transactional
