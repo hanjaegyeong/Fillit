@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/api/axiosInstance';
 
 /* 챗봇 답장 생성 */
 export const postChatbot = async (message: string) => {

@@ -28,7 +28,7 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
       onClick={handleGoArticleDetail}
     >
       <div
-        className={`flex flex-col h-full space-y-2 px-10 ${
+        className={`flex flex-col h-full space-y-2 pl-12 pr-16 ${
           hasImage ? ' pt-20 pb-12 -mt-6' : 'py-12'
         }`}
       >

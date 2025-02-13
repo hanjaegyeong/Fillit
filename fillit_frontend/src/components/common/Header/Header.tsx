@@ -4,7 +4,7 @@ import LogoButton from '@/components/common/Button/LogoButton';
 import NotificationButton from '@/components/common/Button/NotificationButton';
 import MenuTabButton from '@/components/common/Button/MenuTabButton';
 import RegistButton from '@/components/common/Button/RegistButton';
-import SearchInput from '@/components/common/Input/SearchInput';
+import SubmitInput from '@/components/common/Input/SubmitInput';
 
 interface HeaderProps {
   left?: 'back' | 'home';
@@ -13,8 +13,7 @@ interface HeaderProps {
   isTitle?: boolean;
   right?: 'notification' | 'menu' | 'regist';
   center?: 'search';
-  onSearch?: (term: string) => void;
-  searchPlaceholder?: string;
+  onSubmit?: (term: string) => void;
   onMenuClick?: () => void;
   onRegistClick?: () => void;
 }
@@ -26,8 +25,7 @@ const Header = ({
   isTitle = false,
   right,
   center,
-  onSearch,
-  searchPlaceholder = 'Search',
+  onSubmit = () => {},
   onMenuClick,
   onRegistClick,
 }: HeaderProps) => {
@@ -41,15 +39,11 @@ const Header = ({
           {text}
         </div>
       </div>
-      <div>
-        {center === 'search' && onSearch && (
-          <SearchInput
-            onSearch={onSearch}
-            placeholder={searchPlaceholder}
-            width="w-[353px]"
-          />
-        )}
-      </div>
+      {center === 'search' && (
+        <div className="w-full p-2">
+          <SubmitInput type="search" onSubmit={onSubmit} placeholder="Search" />
+        </div>
+      )}
       <div className="flex justify-end">
         {right === 'notification' && <NotificationButton />}
         {right === 'menu' && <MenuTabButton onClick={onMenuClick} />}

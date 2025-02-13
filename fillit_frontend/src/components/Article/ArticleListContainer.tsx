@@ -1,7 +1,8 @@
 import ArticleWrapper from '@/components/Article/ArticleWrapper';
-import useGetFeed from '@/hooks/useGetFeed';
+import useGetFeed from '@/hooks/query/useGetFeed';
 import useIntersect from '@/hooks/useIntersect';
 import { FeedArticle } from '@/types/article';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const ArticleListContainer = () => {
   const { data, hasNextPage, isFetching, fetchNextPage } = useGetFeed(10);
@@ -9,7 +10,7 @@ const ArticleListContainer = () => {
   const pageEnd = useIntersect(async (entry, observer) => {
     observer.unobserve(entry.target);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     if (hasNextPage && !isFetching) {
       fetchNextPage();
@@ -39,7 +40,11 @@ const ArticleListContainer = () => {
       )}
 
       {hasNextPage && <div ref={pageEnd} style={{ height: 1 }} />}
-      {isFetching && <p>loading...</p>}
+      {isFetching && (
+        <div className="h-8 pt-14">
+          <LoadingSpinner />
+        </div>
+      )}
     </div>
   );
 };

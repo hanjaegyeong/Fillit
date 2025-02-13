@@ -8,8 +8,8 @@ interface TimeStampProps {
 const TimeStamp = ({ date, size = 'large' }: TimeStampProps) => {
   return (
     <div
-      className={`font-extralight ${
-        size === 'large' ? 'text-xs' : 'text-small'
+      className={`font-extralight whitespace-nowrap ${
+        size === 'large' ? 'text-s' : 'text-xs'
       }`}
     >
       {formatDate(date)}

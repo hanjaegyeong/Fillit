@@ -11,6 +11,5 @@ export const getAccessToken = async () => {
       },
     }
   );
-  console.log(response);
   return response.data;
 };

@@ -1,5 +1,5 @@
 import CommentReplyCard from '@/components/Comment/CommentReplyCard';
-import useGetCommentReplyList from '@/hooks/useGetCommentReplyList';
+import useGetCommentReplyList from '@/hooks/query/useGetCommentReplyList';
 import { useParams } from 'react-router-dom';
 
 type RouteParams = {
@@ -9,7 +9,10 @@ type RouteParams = {
 
 const CommentReplyListContainer = () => {
   const { boardId, commentId } = useParams() as RouteParams;
-  const { data: commentReplyList } = useGetCommentReplyList(boardId, commentId);
+  const { data: commentReplyList } = useGetCommentReplyList(
+    Number(boardId),
+    Number(commentId)
+  );
 
   return (
     <div className="flex flex-col items-center">

@@ -1,6 +1,6 @@
 import CommentCard from '@/components/Comment/CommentCard';
 import { useParams } from 'react-router-dom';
-import useGetCommentList from '@/hooks/useGetCommentList';
+import useGetCommentList from '@/hooks/query/useGetCommentList';
 
 type RouteParams = {
   boardId: string;
@@ -8,7 +8,7 @@ type RouteParams = {
 
 const CommentListContainer = () => {
   const { boardId } = useParams() as RouteParams;
-  const { data: commentList } = useGetCommentList(boardId);
+  const { data: commentList } = useGetCommentList(Number(boardId));
 
   return (
     <div className="flex flex-col items-center">

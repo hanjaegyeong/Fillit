@@ -8,6 +8,7 @@ export interface Article {
   x: number;
   y: number;
   z: number;
+  isliked: boolean;
   keyword: string;
   pageNumber: number;
   imageUrls: string[];
@@ -39,5 +40,6 @@ export interface FeedArticle {
   keyword: string;
   imageUrls: string;
   createdAt: string;
+  isliked: boolean;
   isRecommended: boolean;
 }

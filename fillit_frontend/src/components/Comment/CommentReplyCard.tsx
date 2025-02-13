@@ -15,32 +15,32 @@ const CommentReplyCard = ({
 }: CommentReplyCardProps) => {
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-12 ${
-        position === 'left' ? 'ml-10' : 'ml-28'
+      className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-12 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)] ${
+        position === 'left' ? 'ml-8' : 'ml-24'
       }`}
       style={{
         backgroundImage: `url(${ReplyImage})`,
       }}
     >
       <div
-        className={`flex flex-col space-y-2 py-10 pl-14 pr-14
+        className={`flex flex-col space-y-2 py-9 px-14
         `}
       >
         <div className={`flex items-center gap-4`}>
           <ProfileBadge
             profileImageUrl={commentReply.profileImageUrl}
             personalId={commentReply.personalId}
-            imageSize={27}
+            imageSize={30}
           />
           <TimeStamp date={commentReply.createdAt} />
         </div>
-        <div className="font-extralight text-xxs w-[13.4rem]">
+        <div className="font-extralight text-s w-[13.4rem] break-words">
           {commentReply.content}
         </div>
         <div className="flex justify-end">
           <LikeBadge
             likeCount={commentReply.likeCount}
-            isLiked={true}
+            isLiked={commentReply.isliked}
             size="small"
           />
         </div>
