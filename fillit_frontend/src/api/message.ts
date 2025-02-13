@@ -1,26 +1,5 @@
 import axiosInstance from './axiosInstance';
-import {
-  ChatRoom,
-  ChatRoomInfo,
-  Message,
-  MessageListResponse,
-  MessagePostForm,
-} from '@/types/message';
-
-export const postMessage = async (
-  messagePostForm: MessagePostForm
-): Promise<Message> => {
-  try {
-    const response = await axiosInstance.post(
-      '/api/chat/messages',
-      messagePostForm
-    );
-    return response.data;
-  } catch (error) {
-    console.error('postMesssage 에러 : ', error);
-    throw error;
-  }
-};
+import { ChatRoom, ChatRoomInfo, MessageListResponse } from '@/types/message';
 
 export const getMessages = async (
   chatRoomId: number,
