@@ -55,9 +55,7 @@ const UserList = ({ type, personalId }: UserListProps) => {
     setFilteredUsers(filtered);
   };
 
-  useEffect(() => {
-    console.log('userData:', users);
-  }, [users]);
+  useEffect(() => {}, [users]);
 
   if (isLoading) {
     return <LoadingSpinner />;

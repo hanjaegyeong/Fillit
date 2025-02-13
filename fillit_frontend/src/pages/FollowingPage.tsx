@@ -1,4 +1,3 @@
-import { getFolloweeList } from '@/api/follow';
 import { getUserProfile } from '@/api/user';
 import Header from '@/components/common/Header/Header';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
@@ -20,10 +19,6 @@ const FollowingPage = () => {
         // 1. 유저 기본 정보 조회
         const userData = await getUserProfile(personalId);
         setUserName(userData.name);
-
-        // 2. 해당 유저가 팔로우하는 사람들의 목록 조회
-        const followeeData = await getFolloweeList(personalId);
-        console.log('팔로잉 목록:', followeeData); // 디버깅용
       } catch (error) {
         console.error('사용자 정보 조회 실패:', error);
       } finally {
