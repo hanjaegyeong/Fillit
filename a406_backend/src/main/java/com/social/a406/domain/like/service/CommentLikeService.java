@@ -8,6 +8,7 @@ import com.social.a406.domain.like.repository.CommentLikeRepository;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +28,13 @@ public class CommentLikeService {
     @Transactional
     public void addLike(String personalId, Long commentId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+                .orElseThrow(() -> new ForbiddenException("Comment not found"));
 
         if (commentLikeRepository.existsByUserAndComment(user, comment)) {
-            throw new IllegalStateException("User already liked this comment");
+            throw new ForbiddenException("User already liked this comment");
         }
 
         CommentLike like = new CommentLike(comment, user);
@@ -47,13 +48,13 @@ public class CommentLikeService {
     @Transactional
     public void removeLike(String personalId, Long commentId) {
         User user = userRepository.findByPersonalId(personalId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ForbiddenException("User not found"));
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+                .orElseThrow(() -> new ForbiddenException("Comment not found"));
 
         CommentLike like = commentLikeRepository.findByUserAndComment(user, comment)
-                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+                .orElseThrow(() -> new ForbiddenException("Like not found"));
 
         commentLikeRepository.delete(like);
 
