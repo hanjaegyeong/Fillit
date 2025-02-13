@@ -4,12 +4,14 @@ interface ProfileImageProps {
   src?: string | null;
   alt?: string;
   size?: number;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const ProfileImage = ({
   src,
   alt = 'profile image',
   size = 44,
+  onClick,
 }: ProfileImageProps) => {
   const defaultImage = NoProfileImage;
 
@@ -22,6 +24,7 @@ const ProfileImage = ({
         width: `${size}px`,
       }}
       className="rounded-full object-cover border-[0.06rem] border-gray-400"
+      onClick={onClick}
     />
   );
 };
