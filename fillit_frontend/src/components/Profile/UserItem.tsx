@@ -9,7 +9,7 @@ interface UserItemProps {
   type: 'followers' | 'following';
 }
 
-const UserItem = ({ userData, type }: UserItemProps) => {
+const UserItem = ({ userData }: UserItemProps) => {
   const { user: currentUser } = useUserStore();
   const isCurrentUser = currentUser.personalId === userData.personalId;
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const UserItem = ({ userData, type }: UserItemProps) => {
       <div className="shrink-0">
         {!isCurrentUser && (
           <FollowButton
-            isFollowing={type === 'following'}
+            isFollowing={userData.follow ?? false}
             followeePersonalId={userData.personalId}
             onFollowChange={(isFollowing) =>
               console.log('팔로우 상태 변경:', isFollowing)

@@ -4,12 +4,13 @@ import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
 import ProfileFollow from './ProfileFollow';
+import { useCallback, useEffect, useState } from 'react';
+import { getFolloweeList, getFollowerList } from '@/api/follow';
 
 interface ProfileInfoProps {
   profileData: User;
   paperImage: string | null;
   isMyProfile: boolean;
-  onFollowChange: (isFollowing: boolean) => void;
 }
 
 const ProfileInfo = ({
@@ -17,6 +18,35 @@ const ProfileInfo = ({
   paperImage,
   isMyProfile,
 }: ProfileInfoProps) => {
+  const [followersCount, setFollowersCount] = useState<number>(0);
+  const [followingCount, setFollowingCount] = useState<number>(0);
+
+  // 팔로워 수 및 팔로잉 수 업데이트 함수
+  // useCallback으로 메모이제이션
+  const updateFollowStats = useCallback(async () => {
+    try {
+      const followerList = await getFollowerList(profileData.personalId);
+      const followeeList = await getFolloweeList(profileData.personalId);
+
+      setFollowersCount(followerList.length);
+      setFollowingCount(followeeList.length);
+    } catch (error) {
+      console.error('팔로우 통계 가져오기 실패:', error);
+      // 에러 발생 시에도 null 상태 유지
+      setFollowersCount(0);
+      setFollowingCount(0);
+    }
+  }, [profileData.personalId]);
+
+  // 팔로우 상태 변경 시 팔로워 수와 팔로잉 수 업데이트
+  const handleFollowChange = () => {
+    updateFollowStats();
+  };
+
+  useEffect(() => {
+    updateFollowStats();
+  }, [updateFollowStats]);
+
   return (
     <div className="w-[22rem] ml-20 -mt-7">
       {paperImage && (
@@ -35,11 +65,9 @@ const ProfileInfo = ({
             {!isMyProfile && (
               <>
                 <FollowButton
-                  isFollowing={false}
+                  isFollowing={profileData.follow ?? false}
                   followeePersonalId={profileData.personalId}
-                  onFollowChange={(isFollowing) =>
-                    console.log('팔로우 상태 변경:', isFollowing)
-                  }
+                  onFollowChange={handleFollowChange} // 팔로우 상태 변경 시 호출
                   width="3.4rem"
                   height="1.25rem"
                   fontSize="9px"
@@ -53,12 +81,9 @@ const ProfileInfo = ({
           @{profileData.personalId}
         </p>
         <ProfileFollow
-          followersCount={profileData.followersCount}
-          followingCount={profileData.followingCount}
+          followersCount={followersCount}
+          followingCount={followingCount}
           personalId={profileData.personalId}
-          onFollowChange={(isFollowing) =>
-            console.log('팔로우 상태 변경:', isFollowing)
-          }
         />
       </div>
     </div>

@@ -25,16 +25,8 @@ const FollowButton = ({
   const navigate = useNavigate();
 
   const handleFollow = async () => {
-    // followeePersonalId 검증 추가
-    if (!followeePersonalId) {
-      console.error('followeePersonalId가 제공되지 않았습니다.');
-      return;
-    }
-
     // 로그인 체크 및 토큰 디버깅
     const accessToken = localStorage.getItem('accessToken');
-    console.log('현재 토큰:', accessToken);
-    console.log('팔로우할 유저 ID:', followeePersonalId); // 디버깅 추가
 
     if (!accessToken) {
       navigate('/login');
@@ -44,26 +36,20 @@ const FollowButton = ({
     try {
       setIsLoading(true);
       if (isFollowingState) {
-        console.log('Unfollow 요청:', followeePersonalId);
         await postUnfollow(followeePersonalId);
       } else {
-        console.log('Follow 요청:', followeePersonalId);
         await postFollow(followeePersonalId);
       }
+      // 팔로우 상태 변경
       setIsFollowingState(!isFollowingState);
+
+      // 부모 컴포넌트에 상태 변경 알림
       onFollowChange?.(!isFollowingState);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.log('에러 응답:', error.response);
         if (error.response?.status === 403) {
-          console.error('팔로우 권한이 없습니다:', error);
-          if (error.response?.data) {
-            console.log('에러 상세:', error.response.data);
-          }
           localStorage.removeItem('accessToken');
           navigate('/login');
-        } else {
-          console.error('팔로우 작업 실패:', error);
         }
       }
     } finally {

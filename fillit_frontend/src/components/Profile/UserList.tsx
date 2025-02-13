@@ -25,19 +25,16 @@ const UserList = ({ type, personalId }: UserListProps) => {
         }
 
         setIsLoading(true);
-        console.log('API 호출 파라미터:', { type, personalId });
 
         const response =
           type === 'followers'
             ? await getFollowerList(personalId)
             : await getFolloweeList(personalId);
 
-        console.log('API 응답:', response);
-
         setUsers(response);
         setFilteredUsers(response);
       } catch (error) {
-        console.error('사용자 목록 조회 실패:', error);
+        console.error('[UserList] 사용자 목록 조회 실패:', error);
       } finally {
         setIsLoading(false);
       }
@@ -83,7 +80,11 @@ const UserList = ({ type, personalId }: UserListProps) => {
         />
         <div className="row-start-1 col-start-1 z-10 mt-[8rem] overflow-y-auto h-[calc(100vh-23rem)] hide-scrollbar">
           {filteredUsers.map((userData) => (
-            <UserItem key={userData.id} userData={userData} type={type} />
+            <UserItem
+              key={userData.personalId}
+              userData={userData}
+              type={type}
+            />
           ))}
         </div>
       </div>
