@@ -14,6 +14,7 @@ const usePostCommentReply = () => {
   return useMutation({
     mutationFn: ({ boardId, commentId, content }: MutationVariables) =>
       postCommentReply(boardId, commentId, content),
+
     onSuccess: (_, { commentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.COMMENT_REPLY_LIST, commentId],
