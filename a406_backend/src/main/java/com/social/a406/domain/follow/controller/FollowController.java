@@ -72,7 +72,7 @@ public class FollowController {
 
     // 팔로워 가져오기
     @GetMapping("/getfollower")
-    public ResponseEntity<?> getFollowerlistById(
+    public ResponseEntity<?> getFollowerListById(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam String personalId) {
 
@@ -90,7 +90,7 @@ public class FollowController {
 
     // 팔로잉 가져오기
     @GetMapping("/getfollowee")
-    public ResponseEntity<List<FollowResponse>> getFolloweelistById(
+    public ResponseEntity<List<FollowResponse>> getFolloweeListById(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam String personalId) {
         User user = followService.findByPersonalId(personalId)
