@@ -77,11 +77,6 @@ pipeline {
                 sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
             }
         }
-        stage('Check YAML') {
-            steps {
-                sh 'cat a406_backend/k8s/clusterissuer.yaml'
-            }
-        }
         // Kubernetes 클러스터에 애플리케이션 배포
         stage('Deploy Application to Kubernetes') {
             steps {
