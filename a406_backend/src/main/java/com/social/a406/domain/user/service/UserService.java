@@ -13,6 +13,7 @@ import com.social.a406.util.exception.BadRequestException;
 import com.social.a406.util.exception.DuplicateException;
 import com.social.a406.util.exception.ForbiddenException;
 import com.social.a406.util.exception.UnregisteredUserException;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -167,38 +168,48 @@ public class UserService {
         }
     }
 
-    public UserCharacterResponse getUserInfoByPersonalId(String myPersonalId, String personalId) {
+    public UserCharacterResponse getMyInfoByPersonalId(String personalId) {
         // UserRepository에서 닉네임으로 사용자 조회
-        Optional<User> userOptional = userRepository.findByPersonalId(personalId);
+        Tuple result = userRepository.findUserFollowInfoByPersonalId(personalId);
 
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        if (result != null) {
+            return mapToResponseDto(result,false);
+        }
+        // 닉네임에 해당하는 사용자가 없을 경우 예외 발생
+        throw new ForbiddenException("User or AI not found for personalId: " + personalId);
+    }
+
+    public UserCharacterResponse getUserInfoByPersonalId(String myPersonalId, String personalId) {
+        // UserRepository에서 닉네임으로 사용자 조회
+        Tuple result = userRepository.findUserFollowInfoByPersonalId(personalId);
+
+        // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
+        if (result != null) {
 
             boolean isFollow = false;
             if(!myPersonalId.equals(personalId)){
-                User me = userRepository.findByPersonalId(myPersonalId).orElseThrow(
-                        () -> new ForbiddenException("Not found my information"));
-                isFollow = followRepository.existsByFolloweeIdAndFollowerId(user.getId(),me.getId());
+                isFollow = followRepository.existsByFolloweeIdAndFollowerId(personalId,myPersonalId);
             }
-            Long followerCount = followRepository.countFollowers(user);
-            Long followeeCount = followRepository.countFollowees(user);
-            return UserCharacterResponse.builder()
-                    .type(user.getEmail() == null && user.getPassword() == null ? "ai" : "user")
-                    .id(user.getId())
-                    .name(user.getName())
-                    .personalId(user.getPersonalId())
-                    .profileImageUrl(user.getProfileImageUrl())
-                    .introduction(user.getIntroduction())
-                    .birthDate(user.getBirthDate() != null ? user.getBirthDate().toString() : null)
-                    .followerCount(followerCount)
-                    .followeeCount(followeeCount)
-                    .isFollow(isFollow)
-                    .build();
+            return mapToResponseDto(result,isFollow);
         }
-
         // 닉네임에 해당하는 사용자가 없을 경우 예외 발생
         throw new ForbiddenException("User or AI not found for personalId: " + personalId);
+    }
+
+    public UserCharacterResponse mapToResponseDto(Tuple result, boolean isFollow){
+        return UserCharacterResponse.builder()
+                .type(result.get("hasMainPrompt", Boolean.class)? "ai" : "user")
+                .id(result.get("id", String.class))
+                .name(result.get("name", String.class))
+                .personalId(result.get("personalId", String.class))
+                .profileImageUrl(result.get("profileImageUrl", String.class))
+                .introduction(result.get("introduction", String.class))
+                .birthDate(result.get("birthDate").toString())
+                .followerCount(result.get("followerCount", Long.class))
+                .followeeCount(result.get("followeeCount", Long.class))
+                .isFollow(isFollow)
+                .build();
     }
 
     public User getUserByPersonalId(String personalId) {

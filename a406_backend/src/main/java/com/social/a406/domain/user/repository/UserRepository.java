@@ -1,6 +1,7 @@
 package com.social.a406.domain.user.repository;
 
 import com.social.a406.domain.user.entity.User;
+import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findBySocialId(String socialId);
 
     Optional<User> findByPersonalId(String personalId);
+
+    @Query("SELECT u.id as id, u.name as name, u.personalId as personalId, u.profileImageUrl as profileImageUrl, u.introduction as introduction, " +
+            "u.birthDate as birthDate, " +
+            "(SELECT COUNT(f) FROM Follow f WHERE f.followee.id = u.id) as followerCount, " +
+            "(SELECT COUNT(f) FROM Follow f WHERE f.follower.id = u.id) as followeeCount, " +
+            "CASE WHEN u.mainPrompt IS NOT NULL THEN true ELSE false END as hasMainPrompt " +
+            "FROM User u WHERE u.personalId = :personalId")
+    Tuple findUserFollowInfoByPersonalId(@Param("personalId") String personalId);
 
     boolean existsByEmail(String email); // 이메일 중복 체크 시
 
