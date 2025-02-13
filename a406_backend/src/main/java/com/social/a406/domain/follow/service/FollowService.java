@@ -76,7 +76,6 @@ public class FollowService {
                     followerUser.getProfileImageUrl(),
                     isFollow));
         }
-        System.out.println(responses);
 
         return responses;
     }
@@ -103,7 +102,6 @@ public class FollowService {
                     followeeUser.getProfileImageUrl(),
                     isFollow));
         }
-        System.out.println(responses);
 
         return responses;
     }
