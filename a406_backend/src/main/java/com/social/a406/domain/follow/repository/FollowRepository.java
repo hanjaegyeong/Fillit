@@ -24,4 +24,28 @@ public interface FollowRepository extends JpaRepository <Follow, Long> {
     Long countFollowees(@Param("user") User user);
 
     boolean existsByFolloweeIdAndFollowerId(String followeeId, String followerId);
+
+    @Query("SELECT f.follower, " +
+            "CASE WHEN EXISTS (SELECT 1 FROM Follow mf " +
+            "WHERE mf.followee.personalId = f.follower.personalId " +
+            "AND mf.follower.personalId = :myPersonalId) " +
+            "THEN true ELSE false END " +
+            "FROM Follow f " +
+            "WHERE f.followee.personalId = :personalId " +
+            "AND (f.follower.name LIKE %:word% OR f.follower.personalId LIKE %:word%)")
+    List<Object[]> searchFollowerWithFollowStatus(@Param("personalId") String personalId,
+                                                  @Param("word") String word,
+                                                  @Param("myPersonalId") String myPersonalId);
+
+    @Query("SELECT f.followee, " +
+            "CASE WHEN EXISTS (SELECT 1 FROM Follow mf " +
+            "WHERE mf.followee.personalId = f.followee.personalId " +
+            "AND mf.follower.personalId = :myPersonalId) " +
+            "THEN true ELSE false END " +
+            "FROM Follow f " +
+            "WHERE f.follower.personalId = :personalId " +
+            "AND (f.followee.name LIKE %:word% OR f.followee.personalId LIKE %:word%)")
+    List<Object[]> searchFolloweeWithFollowStatus(@Param("personalId") String personalId,
+                                                  @Param("word") String word,
+                                                  @Param("myPersonalId") String myPersonalId);
 }

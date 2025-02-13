@@ -1,6 +1,7 @@
 package com.social.a406.domain.follow.service;
 
 
+import com.social.a406.domain.follow.dto.FollowSearchResponse;
 import com.social.a406.domain.follow.dto.FollowResponse;
 import com.social.a406.domain.follow.entity.Follow;
 import com.social.a406.domain.follow.event.FollowEvent;
@@ -13,7 +14,9 @@ import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -123,4 +126,34 @@ public class FollowService {
         System.out.println("Generate notification about follow");
     }
 
+    @Transactional
+    public List<FollowSearchResponse> searchFollower(String myPersonalId, String personalId, String word) {
+        userRepository.findByPersonalId(personalId).orElseThrow(
+                ()-> new ForbiddenException("Not found user"));
+        List<Object[]> result = followRepository.searchFollowerWithFollowStatus(personalId, word, myPersonalId);
+        return  result.stream().map(r -> mapToSearchDto(
+                (User) r[0],
+                (boolean) r[1]
+                )).toList();
+    }
+
+    @Transactional
+    public List<FollowSearchResponse> searchFollowee(String myPersonalId, String personalId, String word) {
+        userRepository.findByPersonalId(personalId).orElseThrow(
+                ()-> new ForbiddenException("Not found user"));
+        List<Object[]> result = followRepository.searchFolloweeWithFollowStatus(personalId, word, myPersonalId);
+        return  result.stream().map(r -> mapToSearchDto(
+                (User) r[0],
+                (boolean) r[1]
+        )).toList();
+    }
+
+    public FollowSearchResponse mapToSearchDto(User user, boolean isFollow){
+        return FollowSearchResponse.builder()
+                .personalId(user.getPersonalId())
+                .name(user.getName())
+                .profileImageUrl(user.getProfileImageUrl())
+                .isFollow(isFollow)
+                .build();
+    }
 }

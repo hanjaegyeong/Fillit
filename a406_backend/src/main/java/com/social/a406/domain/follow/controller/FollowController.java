@@ -1,5 +1,6 @@
 package com.social.a406.domain.follow.controller;
 
+import com.social.a406.domain.follow.dto.FollowSearchResponse;
 import com.social.a406.domain.follow.dto.FollowRequest;
 import com.social.a406.domain.follow.dto.FollowResponse;
 import  com.social.a406.domain.follow.service.FollowService;
@@ -104,4 +105,25 @@ public class FollowController {
         return ResponseEntity.ok(followeeList);
     }
 
+    //팔로워 검색
+    @GetMapping("/search/follower")
+    public ResponseEntity<List<FollowSearchResponse>> searchFollower(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String personalId,
+            @RequestParam String word
+    ){
+        return ResponseEntity.ok(
+                followService.searchFollower(userDetails.getUsername(), personalId, word));
+    }
+
+    //팔로위 검색
+    @GetMapping("/search/followee")
+    public ResponseEntity<List<FollowSearchResponse>> searchFollowee(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String personalId,
+            @RequestParam String word
+    ){
+        return ResponseEntity.ok(
+                followService.searchFollowee(userDetails.getUsername(), personalId, word));
+    }
 }
