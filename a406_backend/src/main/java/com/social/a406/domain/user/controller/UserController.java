@@ -3,6 +3,7 @@ package com.social.a406.domain.user.controller;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.service.UserService;
 import com.social.a406.util.RedisService;
+import com.social.a406.util.exception.BadRequestException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -79,29 +80,22 @@ public class UserController {
 
     // 유저 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        // 쿠키에서 Refresh Token 가져오기
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    String refreshToken = cookie.getValue();
-
-                    // Redis에서 Refresh Token 삭제
-                    redisService.deleteRefreshToken(refreshToken);
-
-                    // 쿠키 삭제 (브라우저에서도 삭제)
-                    Cookie deleteCookie = new Cookie("refreshToken", null);
-                    deleteCookie.setMaxAge(0);
-                    deleteCookie.setPath("/");
-                    response.addCookie(deleteCookie);
-
-                    return ResponseEntity.ok("Logout successful");
-                }
-            }
+    public ResponseEntity<?> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null) {
+            throw new BadRequestException("No refresh token found");
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No refresh token found");
+        // Redis에서 Refresh Token 삭제
+        redisService.deleteRefreshToken(refreshToken);
+
+        // 쿠키 삭제 (ResponseCookie 활용)
+        Cookie deleteCookie = new Cookie("refreshToken", "");
+        deleteCookie.setHttpOnly(true);
+        deleteCookie.setSecure(true);
+        deleteCookie.setPath("/");
+        deleteCookie.setMaxAge(0);
+        response.addCookie(deleteCookie);
+        return ResponseEntity.ok("Logout successful");
     }
 
     // 쿠키 생성 메서드
