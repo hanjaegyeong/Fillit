@@ -42,12 +42,10 @@ axiosInstance.interceptors.response.use(
 
     if (status === 401 && errorMessage === 'Access token expired') {
       try {
-        const { accessToken } = await getAccessToken();
+        const accessToken = await getAccessToken();
+
         if (accessToken) {
-          localStorage.setItem(
-            'accessToken',
-            accessToken.replace('Bearer ', '')
-          );
+          localStorage.setItem('accessToken', accessToken);
         }
       } catch (error) {
         window.location.replace('/login');
