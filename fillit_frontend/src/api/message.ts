@@ -3,7 +3,7 @@ import { ChatRoom, ChatRoomInfo, MessageListResponse } from '@/types/message';
 
 export const getMessages = async (
   chatRoomId: number,
-  cursor: number
+  cursor: number | null
 ): Promise<MessageListResponse> => {
   try {
     const response = await axiosInstance.get('/api/chat/rooms/messages', {

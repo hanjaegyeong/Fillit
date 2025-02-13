@@ -19,7 +19,7 @@ const MessageListPage = () => {
     setLoading(true);
     getRooms()
       .then((rooms) => setChatResults(rooms))
-      .catch((error) => console.error('Error fetching chat rooms:', error))
+      .catch((error) => console.error('채팅방들 목록 반환 에러 :', error))
       .finally(() => setLoading(false));
   }, []);
 
@@ -32,7 +32,7 @@ const MessageListPage = () => {
     // 임의의 size, cursorId 값 사용 (필요 시 수정)
     getSearchRooms(10, 0, searchTerm)
       .then((rooms) => setChatResults(rooms))
-      .catch((error) => console.error('Error searching chat rooms:', error));
+      .catch((error) => console.error('채팅방 검색 에러 :', error));
   };
 
   const handleChatClick = (chatRoomId: number) => {
