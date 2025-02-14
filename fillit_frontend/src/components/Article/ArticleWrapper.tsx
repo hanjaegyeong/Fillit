@@ -5,10 +5,9 @@ import ArticleContent from '@/components/Article/ArticleContent';
 
 interface ArticleWrapperProps {
   article: FeedArticle;
-  position: 'left' | 'right';
 }
 
-const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
+const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
   const navigate = useNavigate();
 
   const handleGoArticleDetail = () => {
@@ -19,9 +18,7 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
 
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[23.75rem] flex items-center drop-shadow-md ${
-        position === 'left' ? 'ml-8' : 'ml-20'
-      } -mb-12`}
+      className={`bg-contain bg-no-repeat bg-center w-[23.75rem] flex items-center justify-center drop-shadow-md -mb-12`}
       style={{
         backgroundImage: `url(${getBackgroundImage(hasImage)})`,
       }}
@@ -29,7 +26,7 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
     >
       <div
         className={`flex flex-col h-full space-y-2 ${
-          hasImage ? ' pt-20 pb-10 px-12' : 'py-12 pl-12 pr-16'
+          hasImage ? ' pt-20 pb-10 ' : 'py-12'
         }`}
       >
         <ArticleContent article={article} />
