@@ -107,7 +107,7 @@ const MessagePage = () => {
 
   return (
     <div className="container-header flex flex-col min-h-screen">
-      <Header left="back" text={`Chat Room ${chatRoomId}`} isTitle={true} />
+      <Header left="back" text={roomInfo?.otherUserName} isTitle={true} />
       <div>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-250px)] hide-scrollbar">
           <div className="flex flex-col items-center justify-start pt-8 pb-4">
@@ -118,7 +118,7 @@ const MessagePage = () => {
             />
             <button
               onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
-              className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg"
+              className="bg-black/20 text-white px-4 py-2 mt-4 rounded-lg "
             >
               View Profile
             </button>
