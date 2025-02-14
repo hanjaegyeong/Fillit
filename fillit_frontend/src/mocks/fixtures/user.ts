@@ -13,6 +13,7 @@ export const user: User[] = [
     birthDate: '1990-05-15',
     followersCount: 100,
     followingCount: 100,
+    follow: false,
   },
 
   {
@@ -26,6 +27,7 @@ export const user: User[] = [
     birthDate: '1995-08-22',
     followersCount: 140,
     followingCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -38,6 +40,7 @@ export const user: User[] = [
     birthDate: '1990-05-15',
     followersCount: 1221,
     followingCount: 134,
+    follow: false,
   },
   {
     type: 'user',
@@ -51,6 +54,7 @@ export const user: User[] = [
     birthDate: '1998-11-03',
     followersCount: 100,
     followingCount: 100,
+    follow: false,
   },
 
   {
@@ -64,6 +68,7 @@ export const user: User[] = [
     birthDate: '1992-07-18',
     followersCount: 100,
     followingCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -77,6 +82,7 @@ export const user: User[] = [
     birthDate: '1994-03-11',
     followersCount: 100,
     followingCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -89,5 +95,6 @@ export const user: User[] = [
     birthDate: '1989-12-29',
     followersCount: 100,
     followingCount: 100,
+    follow: false,
   },
 ];
