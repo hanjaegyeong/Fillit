@@ -1,0 +1,3 @@
+<encoder>
+    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{10}</pattern>
+</encoder>
