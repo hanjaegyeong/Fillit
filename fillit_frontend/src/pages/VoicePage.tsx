@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header/Header';
 import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
-import { mic } from '@/assets/assets';
+import { micBack, mic, speaker } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
@@ -16,6 +16,8 @@ const VoicePage = () => {
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
 
   const fetchVoices = async () => {
     try {
@@ -37,9 +39,10 @@ const VoicePage = () => {
   };
 
   useEffect(() => {
+    // 최초 렌더링시에만 음성 목록을 가져옴
     fetchVoices();
     fetchVoiceReplies();
-  }, [hasRecordedVoice]);
+  }, []); // 빈 의존성 배열
 
   const handleMicClick = async () => {
     try {
@@ -62,6 +65,8 @@ const VoicePage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setSelectedVoice(null);
+    console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
   // onRecordComplete: RecordModal에서 내 보이스 데이터의 voiceId를 받아 상태 업데이트
@@ -76,22 +81,47 @@ const VoicePage = () => {
     setHasRecordedVoice(false);
     setMyVoiceId(null);
     setIsModalOpen(false);
-    fetchVoices();
+    // 삭제된 보이스를 현재 리스트에서 제거
+    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== myVoiceId));
     setVoiceReplyList([]);
   };
 
+  const handleVoiceRemove = (voiceId: number) => {
+    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== voiceId));
+  };
+
+  const handleReplyRemove = (replyId: number) => {
+    setVoiceReplyList((prev) =>
+      prev.filter((reply) => reply.voiceReplyId !== replyId)
+    );
+  };
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
       <VoiceBackground />
-      <VoiceReplyList voiceReplies={voiceReplyList} />
-      <VoiceBubbleList voices={voiceList} />
-      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
-        <button onClick={handleMicClick} className="relative w-20 h-20">
-          <div className="w-20 h-20 bg-white rounded-full border border-[#B5B4F2] shadow-md">
-            <div className="flex items-center justify-center pt-2.5">
-              <img src={mic} alt="mic" className="w-16 h-16 object-contain" />
-            </div>
+      <VoiceReplyList
+        voiceReplies={voiceReplyList}
+        onReplyRemove={handleReplyRemove}
+      />
+      <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
+      <div className="fixed bottom-28 right-4 z-50">
+        <button
+          onClick={handleMicClick}
+          className="relative w-[72px] h-[72px] transform transition-transform duration-100 active:scale-90"
+        >
+          <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
+            <img
+              src={micBack}
+              alt="mic-back"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={hasRecordedVoice ? speaker : mic}
+              alt="mic"
+              className="w-[65px] h-[65px] object-contain"
+            />
           </div>
         </button>
         {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
