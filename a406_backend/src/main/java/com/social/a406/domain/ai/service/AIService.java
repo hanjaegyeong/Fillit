@@ -64,7 +64,7 @@ public class AIService {
      * AI 댓글 프롬프트 생성
      */
     public String createCommentPrompt(String boardContent, String boardAuthorPersonalId, User aiUser) {
-        return String.format("Author: %s\nContent: %s\n %s Please write a reply to this post. Please respond within 80 characters.", boardAuthorPersonalId, boardContent, aiUser.getMainPrompt());
+        return String.format("Author: %s\nContent: %s\n %s Please write a reply to this post. Please respond within 60 characters.", boardAuthorPersonalId, boardContent, aiUser.getMainPrompt());
     }
 
     /**
@@ -135,7 +135,7 @@ public class AIService {
 
     public String createCommentReplyPrompt(String origin, String content, String personalId) {
         User aiUser = userService.getUserByPersonalId(personalId);
-        return String.format(aiUser.getMainPrompt() + PROMPT_COMMET_RPLY, content, origin) + "Please respond within 80 characters.";
+        return String.format(aiUser.getMainPrompt() + PROMPT_COMMET_RPLY, content, origin) + "Please respond within 50 characters.";
     }
 
     // 100가지 간단한 상황 배열 (영어로)
