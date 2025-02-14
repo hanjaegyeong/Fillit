@@ -6,6 +6,7 @@ import useGetArticle from '@/hooks/query/useGetArticle';
 import SubmitInput from '@/components/common/Input/SubmitInput';
 import usePostComment from '@/hooks/query/usePostComment';
 import { COMMENT_MAX_LENGTH } from '@/constants/system';
+import { useUserStore } from '@/store/useUserStore';
 
 type RouteParams = {
   boardId: string;
@@ -13,6 +14,8 @@ type RouteParams = {
 
 const ArticleDetailContainer = () => {
   const { boardId } = useParams() as RouteParams;
+  const { user } = useUserStore();
+  console.log(user.profileImageUrl);
   const { data: article } = useGetArticle(Number(boardId));
   const { mutate: addComment } = usePostComment();
 
@@ -28,7 +31,7 @@ const ArticleDetailContainer = () => {
         </div>
         <hr className="border-t border-black" />
         <div className="flex gap-3 p-4">
-          <ProfileImage size={40} />
+          <ProfileImage src={user.profileImageUrl} size={40} />
           <SubmitInput
             placeholder="Write a comment..."
             onSubmit={handleCommentSubmit}
