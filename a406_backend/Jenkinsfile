@@ -94,8 +94,7 @@ pipeline {
                     sh 'kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/prometheus-deployment.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/grafana-ingress.yaml'
-                    sh 'kubectl apply -f a406_backend/k8s/fillit-podmonitor.yaml
-'
+                    sh 'kubectl apply -f a406_backend/k8s/fillit-podmonitor.yaml'
 
 //                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
 //                     sh 'kubectl apply --server-side --validate=false -f a406_backend/k8s/clusterissuer.yaml'
