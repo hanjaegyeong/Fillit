@@ -46,7 +46,7 @@ public class BoardController {
 
     // 검색 창 추천 게시글 조회
     @GetMapping("/recommend")
-    public ResponseEntity<List<BoardRecommendResponse>> recommendBoard(
+    public ResponseEntity<BoardRecommendCursorResponse> recommendBoard(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorLikeCount,

@@ -13,6 +13,5 @@ public class BoardRecommendResponse {
     private Long commentCount;
     private String keyword;
     private String imageUrl;
-    private Long interestId;
     private Boolean isLiked;
 }
