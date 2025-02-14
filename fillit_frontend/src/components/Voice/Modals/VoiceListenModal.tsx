@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { sound, playIcon2, soundWave, profileBubble } from '@/assets/assets';
+import { sound, playIcon2, soundWave, NoProfile } from '@/assets/assets';
 import VoiceBaseModal from './VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
@@ -56,7 +56,7 @@ const VoiceListenModal = ({
               className="absolute -bottom-2 w-full h-7"
             />
             <motion.img
-              src={voiceData.profileImageUrl || profileBubble}
+              src={voiceData.profileImageUrl ?? NoProfile}
               alt="profile"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
