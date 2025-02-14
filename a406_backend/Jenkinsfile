@@ -92,7 +92,7 @@ pipeline {
                     sh 'kubectl rollout restart deployment fillit-deployment'
                     // Prometheus, Grafana
                     sh 'kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring'
-                    sh 'kubectl apply -f a406_backend/k8s/prometheus-deployment.yaml -n monitoring'
+                    sh 'kubectl apply -f a406_backend/k8s/prometheus.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/grafana-ingress.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-podmonitor.yaml'
 
