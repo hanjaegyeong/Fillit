@@ -67,15 +67,18 @@ public class FeedService {
 
         // 4. 추천 게시물 조회 – 풀 방식 (조건: 관심사 동일, 최근 3일, 좋아요 수 ≥ 10)
         int recommendedLimit = limit - friendBoards.size();
+        System.out.println("recommendedLimit: " +recommendedLimit);
         List<Board> recommendedBoards = new ArrayList<>();
         for (Long interest : interests) {
-            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 2, Sort.by("createdAt").descending());
+            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 3, Sort.by("createdAt").descending());
             List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
-                    0,
+                    0, // 일단 좋아요 0개로 수정
                     LocalDateTime.now().minusDays(7),
                     recommendedPageable);
             recommendedBoards.addAll(fetchedRecommended);
         }
+        System.out.println("recommendedBoards Size: " +recommendedBoards.size());
+
         // 중복 제거 및 랜덤 섞기
         Set<Long> recSet = new HashSet<>();
         recommendedBoards = recommendedBoards.stream()
@@ -100,7 +103,16 @@ public class FeedService {
         }
 
 
-        LocalDateTime nextCursor = feedPosts.isEmpty() ? null : friendBoards.get(friendBoards.size()-1).getCreatedAt();
+        LocalDateTime nextCursor;
+        if (!friendBoards.isEmpty()) {
+            nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
+        } else if (!feedPosts.isEmpty()) {
+            // 추천 게시물만 있는 경우 대체 로직 구현 (필요에 따라)
+            nextCursor = feedPosts.get(feedPosts.size() - 1).getCreatedAt();
+        } else {
+            nextCursor = null;
+        }
+
         return new FeedResponseDto(feedPosts, nextCursor);
     }
 
