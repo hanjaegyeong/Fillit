@@ -10,7 +10,7 @@ data:
     scrape_configs:
       - job_name: 'kubernetes'
         static_configs:
-          - targets: ['localhost:9090']
+          - targets: ['localhost:9091']
       - job_name: 'spring-app'
         metrics_path: '/actuator/prometheus'
         kubernetes_sd_configs:
