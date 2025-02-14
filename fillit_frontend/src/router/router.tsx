@@ -25,75 +25,94 @@ import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 
 import Layout from '@/components/common/Layout/Layout';
+import RequireAuth from './RequireAuth';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <RequireAuth />,
     children: [
       {
-        path: '',
-        element: <HomePage />,
-      },
-      {
-        path: 'article/:boardId',
+        path: '/',
+        element: <Layout />,
         children: [
           {
             path: '',
-            element: <ArticleDetailPage />,
+            element: <HomePage />,
           },
           {
-            path: 'comment/:commentId',
-            element: <CommentDetailPage />,
-          },
-        ],
-      },
-      {
-        path: 'message',
-        children: [
-          {
-            path: '',
-            element: <MessageListPage />,
-          },
-          {
-            path: ':chatId',
-            element: <MessagePage />,
-          },
-        ],
-      },
-      {
-        path: 'profile/:personalId',
-        children: [
-          {
-            path: '',
-            element: <ProfilePage />,
+            path: 'article/:boardId',
+            children: [
+              {
+                path: '',
+                element: <ArticleDetailPage />,
+              },
+              {
+                path: 'comment/:commentId',
+                element: <CommentDetailPage />,
+              },
+            ],
           },
           {
-            path: 'follower',
-            element: <FollowerPage />,
+            path: 'message',
+            children: [
+              {
+                path: '',
+                element: <MessageListPage />,
+              },
+              {
+                path: ':chatId',
+                element: <MessagePage />,
+              },
+            ],
           },
           {
-            path: 'following',
-            element: <FollowingPage />,
+            path: 'profile/:personalId',
+            children: [
+              {
+                path: '',
+                element: <ProfilePage />,
+              },
+              {
+                path: 'follower',
+                element: <FollowerPage />,
+              },
+              {
+                path: 'following',
+                element: <FollowingPage />,
+              },
+            ],
           },
-        ],
-      },
 
-      {
-        path: 'search',
-        element: <SearchPage />,
+          {
+            path: 'search',
+            element: <SearchPage />,
+          },
+          {
+            path: 'voice',
+            element: <VoicePage />,
+          },
+          {
+            path: 'notification',
+            element: <NotificationPage />,
+          },
+          {
+            path: 'newmessage',
+            element: <NewMessagePage />,
+          },
+        ],
       },
       {
-        path: 'voice',
-        element: <VoicePage />,
+        path: 'newarticle',
+        element: <NewArticlePage />,
       },
       {
-        path: 'notification',
-        element: <NotificationPage />,
+        path: 'edit',
+        element: <ProfileEditPage />,
       },
       {
-        path: 'newmessage',
-        element: <NewMessagePage />,
+        path: 'customize',
+        element: <ProfileCustomPage />,
       },
     ],
   },
@@ -112,18 +131,6 @@ const router = createBrowserRouter([
   {
     path: 'socialsignup',
     element: <SocialSignUpPage />,
-  },
-  {
-    path: 'newarticle',
-    element: <NewArticlePage />,
-  },
-  {
-    path: 'edit',
-    element: <ProfileEditPage />,
-  },
-  {
-    path: 'customize',
-    element: <ProfileCustomPage />,
   },
 ]);
 

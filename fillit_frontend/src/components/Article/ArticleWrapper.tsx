@@ -15,11 +15,11 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
     navigate(`/article/${article.boardId}`);
   };
 
-  const hasImage = !!article.imageUrls;
+  const hasImage = !!article.imageUrl;
 
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[380px] flex items-center drop-shadow-md ${
+      className={`bg-contain bg-no-repeat bg-center w-[23.75rem] flex items-center drop-shadow-md ${
         position === 'left' ? 'ml-8' : 'ml-20'
       } -mb-12`}
       style={{
@@ -28,8 +28,8 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
       onClick={handleGoArticleDetail}
     >
       <div
-        className={`flex flex-col h-full space-y-2 pl-12 pr-16 ${
-          hasImage ? ' pt-20 pb-12 -mt-6' : 'py-12'
+        className={`flex flex-col h-full space-y-2 ${
+          hasImage ? ' pt-20 pb-10 px-12' : 'py-12 pl-12 pr-16'
         }`}
       >
         <ArticleContent article={article} />
