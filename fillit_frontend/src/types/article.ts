@@ -38,7 +38,7 @@ export interface FeedArticle {
   likeCount: number;
   commentCount: number;
   keyword: string;
-  imageUrl: string;
+  imageUrls: string;
   createdAt: string;
   isLiked: boolean;
   isRecommended: boolean;
