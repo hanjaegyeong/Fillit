@@ -199,9 +199,10 @@ export function useVoiceControl({
           console.log('[useVoiceControl] 오디오 재생 시작됨.');
           timers.current.interval = window.setInterval(() => {
             if (audioRef.current) {
+              const currentTime = audioRef.current.currentTime;
               setVoiceState((prev) => ({
                 ...prev,
-                currentDuration: audioRef.current?.currentTime || 0,
+                currentDuration: Math.floor(currentTime) || 0,
               }));
             }
           }, 500);
@@ -305,7 +306,7 @@ export function useVoiceControl({
         }
         setVoiceState((prev) => ({
           ...prev,
-          currentDuration: audioRef.current?.duration || 29,
+          currentDuration: Math.floor(audioRef.current?.duration || 29),
         }));
         onComplete?.();
       };
