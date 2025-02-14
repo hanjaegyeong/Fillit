@@ -13,7 +13,7 @@ export const steps = [
     message2: 'what ID you wanna go with😅',
     message3: '',
     placeholder: 'Enter your ID',
-    rule: '영어 5~20자, 소문자/숫자/‘_’ 사용 가능',
+    rule: '영어 4~20자, 소문자/숫자/‘_’ 사용 가능',
     inputType: 'text',
   },
   {
@@ -21,7 +21,7 @@ export const steps = [
     message2: 'let’s pick a password! 🔒✨',
     message3: '',
     placeholder: 'Enter your password',
-    rule: '영어 8~16자, 대,소문자/숫자 사용 가능',
+    rule: '영어 4~16자, 대,소문자/숫자 사용 가능',
     inputType: 'text',
   },
   {
@@ -40,14 +40,14 @@ export const steps = [
     rule: '',
     inputType: 'email',
   },
-  {
-    message1: 'Yeah, that’s it, for sure! 😎',
-    message2: 'Do you have a pic of yourself? 🤔📷',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'choice',
-  },
+  // {
+  //   message1: 'Yeah, that’s it, for sure! 😎',
+  //   message2: 'Do you have a pic of yourself? 🤔📷',
+  //   message3: '',
+  //   placeholder: '',
+  //   rule: '',
+  //   inputType: 'choice',
+  // },
   {
     message1: 'Oh, then drop your',
     message2: 'most slay pic! 😎📸',

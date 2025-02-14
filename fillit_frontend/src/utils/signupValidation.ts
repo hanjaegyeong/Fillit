@@ -22,13 +22,12 @@ export const getCurrentField = (
     case 4:
       return 'email';
     case 5:
-    case 6:
       return null; // 프로필 이미지 선택 단계
-    case 7:
+    case 6:
       return 'birthDate';
-    case 8:
+    case 7:
       return 'introduction';
-    case 9:
+    case 8:
       return 'interest';
     default:
       return null;
@@ -59,6 +58,11 @@ export const validateCurrentStep = async (
 
   // 현재 필드의 값 가져오기
   const currentValue = signupState.regist[currentField];
+
+  // introduction 필드는 빈 값 허용
+  if (currentField === 'introduction') {
+    return true;
+  }
 
   // 값이 비어있거나 유효하지 않은 경우
   if (

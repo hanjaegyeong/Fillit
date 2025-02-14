@@ -10,7 +10,7 @@ export interface User {
   birthDate: string;
   followersCount: number;
   followingCount: number;
-  follow?: boolean | null;
+  follow: boolean | null;
 }
 
 export interface UserUpdateForm {
