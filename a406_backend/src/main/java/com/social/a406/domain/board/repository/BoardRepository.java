@@ -29,6 +29,18 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b FROM Board b WHERE b.user.personalId = :personalId")
     List<Board> findAllByPersonalId(@Param("personalId") String personalId);
 
+    @Query("""
+    SELECT b, 
+           CASE WHEN bl.id IS NOT NULL THEN true ELSE false END AS liked
+    FROM Board b 
+    LEFT JOIN BoardLike bl ON b.id = bl.board.id AND bl.user.personalId = :myPersonalId
+    WHERE b.user.personalId = :personalId
+    """)
+    List<Object[]> findAllByPersonalIdWithLike(
+            @Param("personalId") String personalId,
+            @Param("myPersonalId") String myPersonalId
+    );
+
     List<Board> findByUser(User otherUser);
 
     @Query("""
