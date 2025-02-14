@@ -1,194 +1,163 @@
 import Header from '@/components/common/Header/Header';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import ProfileImage from '@/mocks/images/profile-image.png';
 import AiFilButton from '@/components/common/Button/AiFilButton';
-
-interface Message {
-  id: number;
-  sender: string;
-  content: string;
-  timestamp: string;
-}
-
-interface ChatData {
-  chatId: number;
-  image: string;
-  userName: string;
-  messages: Message[];
-}
-
-const mockChatData: ChatData[] = [
-  {
-    chatId: 1,
-    image: ProfileImage,
-    userName: 'john_doe',
-    messages: [
-      {
-        id: 1,
-        sender: 'john_doe',
-        content: 'Hey, how are you?',
-        timestamp: '10:00 AM',
-      },
-      {
-        id: 2,
-        sender: 'me',
-        content: 'I am good! How about you?',
-        timestamp: '10:02 AM',
-      },
-      {
-        id: 3,
-        sender: 'john_doe',
-        content: 'Hey, how are you?',
-        timestamp: '10:00 AM',
-      },
-      {
-        id: 4,
-        sender: 'me',
-        content: 'I am good! How about you?',
-        timestamp: '10:02 AM',
-      },
-      {
-        id: 5,
-        sender: 'john_doe',
-        content: 'Hey, how are you?',
-        timestamp: '10:00 AM',
-      },
-      {
-        id: 6,
-        sender: 'me',
-        content: 'I am good! How about you?',
-        timestamp: '10:02 AM',
-      },
-      {
-        id: 7,
-        sender: 'john_doe',
-        content: 'Hey, how are you?',
-        timestamp: '10:00 AM',
-      },
-      {
-        id: 8,
-        sender: 'me',
-        content: 'I am good! How about you?',
-        timestamp: '10:02 AM',
-      },
-    ],
-  },
-  {
-    chatId: 2,
-    image: ProfileImage,
-    userName: 'alice_smith',
-    messages: [
-      {
-        id: 1,
-        sender: 'alice_smith',
-        content: 'Did you watch the movie?',
-        timestamp: '11:00 AM',
-      },
-      {
-        id: 2,
-        sender: 'me',
-        content: 'Yes! It was amazing!',
-        timestamp: '11:05 AM',
-      },
-    ],
-  },
-];
+import { getMessages, getRoomsInfo } from '@/api/message';
+import { Message as ApiMessage, ChatRoomInfo } from '@/types/message';
+import { connectRoom, sendMessage } from '@/api/webSocket';
+import { MessageType } from '@/enum/MessageType';
+import { WebSocketResponse } from '@/types/websocket';
 
 const MessagePage = () => {
   const { chatId } = useParams<{ chatId: string }>();
-  const chatData = mockChatData.find((chat) => chat.chatId === Number(chatId));
-  const [messages, setMessages] = useState<Message[]>(
-    chatData ? chatData.messages : []
+  const location = useLocation();
+  const chatRoomId = Number(chatId);
+
+  if (isNaN(chatRoomId)) {
+    return <div>Error: Invalid chat room ID.</div>;
+  }
+
+  // 현재 로그인한 사용자의 personalId ("user-info"에 저장된 정보 사용)
+  const userInfoStr = localStorage.getItem('user-info');
+  const currentUserPersonalId = userInfoStr
+    ? JSON.parse(userInfoStr).state.user.personalId
+    : '';
+
+  const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(
+    (location.state as ChatRoomInfo) || null
   );
+  const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 연속 메세지 확인
-  const isFirstMessage = (index: number) => {
-    if (index === 0) return true;
-    return messages[index].sender !== messages[index - 1].sender;
-  };
+  // 현재 방 정보가 없으면 방 정보 가져오기
+  useEffect(() => {
+    if (!roomInfo) {
+      getRoomsInfo(chatRoomId)
+        .then((info) => {
+          setRoomInfo(info);
+        })
+        .catch((error) => {
+          console.error('방 정보 가져오기 에러 : ', error);
+        });
+    } else {
+      console.log('라우터 state에서 roomInfo 받음:', roomInfo);
+    }
+  }, [chatRoomId, roomInfo]);
+
+  // WebSocket 연결 및 실시간 메시지 수신 (roomInfo가 확보된 후)
+  useEffect(() => {
+    if (!chatRoomId || !roomInfo) return;
+
+    // 현재 사용자의 personalId를 함께 전달
+    const ws = connectRoom(chatRoomId, currentUserPersonalId);
+    const messageListener = (event: MessageEvent) => {
+      try {
+        const data: WebSocketResponse = JSON.parse(event.data);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: data.id,
+            userName: data.userName,
+            personalId: data.personalId,
+            messageContent: data.messageContent,
+            createdAt: data.createdAt,
+          },
+        ]);
+      } catch (error) {
+        console.error('messageListener 에러 : ', error);
+      }
+    };
+
+    ws.addEventListener('message', messageListener);
+
+    return () => {
+      ws.removeEventListener('message', messageListener);
+    };
+  }, [chatRoomId, roomInfo, currentUserPersonalId]);
+
+  useEffect(() => {
+    if (!chatRoomId) return;
+    getMessages(chatRoomId, null)
+      .then((response) => {
+        // 내림차순으로 받아온 메시지를 reverse하여 오름차순으로 표시
+        setMessages(response.messages.reverse());
+      })
+      .catch((error) => console.error('메세지 패치 에러 :', error));
+  }, [chatRoomId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 메세지 전송
-  const sendMessage = () => {
+  const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
-    const newMessage: Message = {
-      id: messages.length + 1,
-      sender: 'me',
-      content: inputMessage,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+    const newMsgPayload = {
+      chatRoomId,
+      messageContent: inputMessage,
+      type: MessageType.TEXT,
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // 현재 사용자의 personalId를 포함하여 sendMessage 호출
+    sendMessage(chatRoomId, currentUserPersonalId, newMsgPayload);
     setInputMessage('');
   };
 
   return (
     <div className="container-header flex flex-col min-h-screen">
-      <Header
-        left="back"
-        text={chatData ? chatData.userName : 'Chat'}
-        isTitle={true}
-      />
+      <Header left="back" text={roomInfo?.otherUserName} isTitle={true} />
       <div>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-250px)] hide-scrollbar">
-          {/* 프로필 */}
           <div className="flex flex-col items-center justify-start pt-8 pb-4">
             <img
-              src={chatData?.image}
-              alt={chatData?.userName}
+              src={roomInfo?.otherProfileImageUrl || ProfileImage}
+              alt={roomInfo?.otherUserName || 'Profile'}
               className="w-24 h-24 rounded-full"
             />
             <button
-              onClick={() => navigate('/profile')}
-              className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg"
+              onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
+              className="bg-black/20 text-white px-4 py-2 mt-4 rounded-lg "
             >
               View Profile
             </button>
           </div>
-
-          {/* 메세지 */}
-          {messages.map((msg, index) => (
-            <div
-              key={msg.id}
-              className={`flex ${
-                msg.sender === 'me' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              {msg.sender !== 'me' && isFirstMessage(index) && (
-                <img
-                  src={chatData?.image}
-                  alt={msg.sender}
-                  onClick={() => navigate('/profile')}
-                  className="w-8 h-8 rounded-full mr-2 self-end"
-                />
-              )}
+          {messages.map((msg, index) => {
+            const key =
+              msg.id !== null && msg.id !== undefined
+                ? msg.id
+                : `temp-${index}`;
+            const isMyMessage = msg.personalId === currentUserPersonalId;
+            return (
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${
-                  msg.sender === 'me'
-                    ? 'bg-white/60 text-black font-light'
-                    : 'bg-white/60 text-black font-light'
+                key={key}
+                className={`flex ${
+                  isMyMessage ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <p className="text-sm">{msg.content}</p>
-                <span className="block text-xs text-gray-500 text-right mt-1">
-                  {msg.timestamp}
-                </span>
+                {!isMyMessage && (
+                  <img
+                    src={roomInfo?.otherProfileImageUrl || ProfileImage}
+                    alt={msg.userName}
+                    onClick={() =>
+                      navigate(`/profile/${roomInfo?.otherPersonalId}`)
+                    }
+                    className="w-8 h-8 rounded-full mr-2 self-end cursor-pointer"
+                  />
+                )}
+                <div className="max-w-[70%] p-3 rounded-lg bg-white/60 text-black font-light">
+                  <p className="text-sm">{msg.messageContent}</p>
+                  <span className="block text-xs text-gray-500 text-right mt-1">
+                    {msg.createdAt}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
         <AiFilButton />
-        {/* 메세지 입력 */}
         <div className="p-6 flex items-center border-t border-gray-300">
           <input
             type="text"
@@ -196,10 +165,10 @@ const MessagePage = () => {
             className="flex-grow p-3 border rounded-lg focus:outline-none"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
           />
           <button
-            onClick={sendMessage}
+            onClick={handleSendMessage}
             className="ml-3 bg-blue-500 text-white p-3 rounded-lg"
           >
             Send
