@@ -10,6 +10,7 @@ import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 import { postArticle } from '@/api/article';
 import { postInterest } from '@/api/interest';
 import { ArticlePostForm } from '@/types/article';
+import ImageSlider from '@/components/common/ImageSlider';
 
 const NewArticlePage = () => {
   const [content, setContent] = useState('');
@@ -37,11 +38,6 @@ const NewArticlePage = () => {
     setUploadedFiles((prev) => [...prev, ...files]);
     const newImages = files.map((file) => URL.createObjectURL(file));
     setUploadedImages((prev) => [...prev, ...newImages]);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   // 관심사 태그
@@ -102,7 +98,7 @@ const NewArticlePage = () => {
         right="regist"
         onRegistClick={handleOpenKeywordModal}
       />
-      <div className="w-full max-w-[600px] overflow-auto botton-[10rem]">
+      <div className="w-full overflow-auto botton-[10rem]">
         {/* 배경 종이 이미지 */}
         <img
           src={NewArticleImg}
@@ -112,28 +108,26 @@ const NewArticlePage = () => {
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
         <div className="relative z-10 pt-24 pl-24 pr-5">
           <textarea
-            className="w-full min-h-[40vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-400"
+            className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-400"
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
-          {/* 가로 스크롤 오버플로우 바 */}
-          {uploadedImages.length > 0 && (
-            <div className="mt-4 overflow-x-auto">
-              <div className="flex space-x-4">
-                {uploadedImages.map((img, index) => (
-                  <img
-                    key={index}
-                    src={img}
-                    alt={`upload preview ${index + 1}`}
-                    className="w-24 h-24 object-cover cursor-pointer"
-                    onClick={() => handleRemoveImage(index)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
+        {/* 가로 스크롤 오버플로우 바 */}
+        {uploadedImages.length > 0 && (
+          <div className="m-5 overflow-x-auto">
+            <div className="">
+              {uploadedImages.length > 0 && (
+                <ImageSlider
+                  images={uploadedImages}
+                  width="w-full"
+                  height="300px "
+                />
+              )}
+            </div>
+          </div>
+        )}
         <div>
           <AiFilButton />
         </div>
