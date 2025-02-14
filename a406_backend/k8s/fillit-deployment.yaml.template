@@ -23,5 +23,7 @@ spec:
         image: jaegyeong223/fillit:${BUILD_NUMBER}
         imagePullPolicy: Always
         ports:
-          - containerPort: 8080
+          - name: metrics
+            containerPort: 8080
             hostPort: 8090
+
