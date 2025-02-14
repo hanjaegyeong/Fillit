@@ -5,9 +5,10 @@ import { Voice } from '@/types/voice';
 
 interface VoiceBubbleListProps {
   voices: Voice[];
+  onVoiceRemove: (voiceId: number) => void;
 }
 
-const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
+const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -18,6 +19,9 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
   };
 
   const handleModalClose = () => {
+    if (selectedVoice) {
+      onVoiceRemove(selectedVoice.voiceId);
+    }
     setIsModalOpen(false);
     setSelectedVoice(null);
     console.log('[VoiceBubbleList] 모달 닫힘.');

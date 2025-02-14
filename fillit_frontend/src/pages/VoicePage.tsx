@@ -80,12 +80,24 @@ const VoicePage = () => {
     setVoiceReplyList([]);
   };
 
+  const handleVoiceRemove = (voiceId: number) => {
+    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== voiceId));
+  };
+
+  const handleReplyRemove = (replyId: number) => {
+    setVoiceReplyList((prev) =>
+      prev.filter((reply) => reply.voiceReplyId !== replyId)
+    );
+  };
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
       <VoiceBackground />
-      <VoiceReplyList voiceReplies={voiceReplyList} />
-      <VoiceBubbleList voices={voiceList} />
+      <VoiceReplyList
+        voiceReplies={voiceReplyList}
+        onReplyRemove={handleReplyRemove}
+      />
+      <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
       <div className="fixed bottom-28 right-4 z-50">
         <button onClick={handleMicClick} className="relative w-[72px] h-[72px]">
           <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
