@@ -20,7 +20,7 @@ const TagButton: React.FC<TagButtonProps> = ({
       onClick={() => onClick(id)}
       className={`px-4 py-2 rounded-full border text-xl transition-all flex items-center gap-2 ${
         isSelected
-          ? 'bg-white text-black shadow-md'
+          ? 'bg-gray-200 text-black shadow-md'
           : 'bg-transparent border-gray-400 text-gray-600'
       }`}
     >

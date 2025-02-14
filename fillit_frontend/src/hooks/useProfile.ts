@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getUserProfile, patchUserProfile } from '@/api/user';
+import { getUserInfo, getUserProfile, patchUserProfile } from '@/api/user';
 import { UserUpdateForm } from '@/types/user';
 import { useUserStore } from '@/store/useUserStore';
 
 export const useProfile = () => {
-  const { user: currentUser } = useUserStore();
+  const { user: currentUser, setUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: '',
@@ -45,7 +45,11 @@ export const useProfile = () => {
       if (profileImageFile) {
         updateForm.profileImage = profileImageFile;
       }
+
       await patchUserProfile(updateForm);
+
+      const response = await getUserInfo();
+      setUser(response);
     } catch (error) {
       console.error('프로필 수정 실패:', error);
       throw error;

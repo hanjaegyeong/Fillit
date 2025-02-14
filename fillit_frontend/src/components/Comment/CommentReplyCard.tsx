@@ -15,7 +15,7 @@ const CommentReplyCard = ({
 }: CommentReplyCardProps) => {
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-12 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)] ${
+      className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-10 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)] ${
         position === 'left' ? 'ml-8' : 'ml-24'
       }`}
       style={{
@@ -23,7 +23,7 @@ const CommentReplyCard = ({
       }}
     >
       <div
-        className={`flex flex-col space-y-2 py-9 px-14
+        className={`flex flex-col space-y-2 pt-6 pb-10 px-14
         `}
       >
         <div className={`flex items-center gap-4`}>
@@ -39,8 +39,10 @@ const CommentReplyCard = ({
         </div>
         <div className="flex justify-end">
           <LikeBadge
-            likeCount={commentReply.likeCount}
-            isLiked={commentReply.isliked}
+            type="reply"
+            id={commentReply.replyId}
+            initialLikeCount={commentReply.likeCount}
+            initialIsLiked={commentReply.isLiked}
             size="small"
           />
         </div>

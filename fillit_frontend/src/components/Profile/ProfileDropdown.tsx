@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DeleteLogoutModal } from '@/components/common/Modal/DeleteLogoutModal';
 import { useNavigate } from 'react-router-dom';
 import { getLogout } from '@/api/login';
+import { useUserStore } from '@/store/useUserStore';
 
 interface ProfileDropdownProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ProfileDropdownProps {
 
 export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const navigate = useNavigate();
+  const { reset } = useUserStore();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
@@ -31,6 +33,7 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
     console.log('로그아웃 확인');
 
     await getLogout();
+    reset();
 
     setIsLogoutModalOpen(false);
     onClose();
