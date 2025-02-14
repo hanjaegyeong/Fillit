@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { sound, playIcon2, soundWave } from '@/assets/assets';
+import { sound, playIcon2, soundWave, NoProfile } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { VoiceReply } from '@/types/voice';
@@ -42,7 +42,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${replyData.personalId}`} // ✅ user_id → userId
+            src={replyData.profileImageUrl ?? NoProfile}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
