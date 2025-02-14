@@ -10,7 +10,7 @@ export const postLogin = async (email: string, password: string) => {
   const accessToken = response.data.accessToken;
 
   if (accessToken) {
-    localStorage.setItem('accessToken', accessToken.replace('Bearer ', ''));
+    localStorage.setItem('accessToken', accessToken);
   }
 
   return response.data;
