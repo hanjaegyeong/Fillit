@@ -3,12 +3,17 @@ import VoiceReplyItem from '@/components/Voice/VoiceReplyItem';
 import VoiceReplyModal from '@/components/Voice/Modals/VoiceReplyModal';
 import { replyBar } from '@/assets/assets';
 import { VoiceReply } from '@/types/voice';
+import { deleteVoiceReply } from '@/api/voice';
 
 interface VoiceReplyListProps {
   voiceReplies: VoiceReply[];
+  onReplyRemove: (replyId: number) => void;
 }
 
-const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
+const VoiceReplyList = ({
+  voiceReplies,
+  onReplyRemove,
+}: VoiceReplyListProps) => {
   const [selectedReplyId, setSelectedReplyId] = useState<VoiceReply | null>(
     null
   );
@@ -20,7 +25,15 @@ const VoiceReplyList = ({ voiceReplies }: VoiceReplyListProps) => {
     setIsModalOpen(true);
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = async () => {
+    if (selectedReplyId) {
+      try {
+        await deleteVoiceReply(selectedReplyId.voiceReplyId);
+        onReplyRemove(selectedReplyId.voiceReplyId);
+      } catch (error) {
+        console.error('[VoiceReplyList] 답장 삭제 실패:', error);
+      }
+    }
     setIsModalOpen(false);
     setSelectedReplyId(null);
     console.log('[VoiceReplyList] 모달 닫힘.');
