@@ -107,15 +107,15 @@ const MessageListPage = () => {
           </div>
         ))}
       </div>
-      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-32">
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
         <button
           onClick={() => navigate('/newmessage')}
-          className="w-[64px] h-[64px] bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+          className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md border border-[#D68DE1]"
         >
           <img
             src={NewMessage}
-            alt="mic-back"
-            className="w-full h-full object-contain"
+            alt="message-icon"
+            className="w-10 h-10 object-contain pt-1"
           />
         </button>
       </div>
