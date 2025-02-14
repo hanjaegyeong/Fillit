@@ -12,6 +12,9 @@ interface ArticleContentProps {
 }
 
 const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
+  const imageUrl =
+    'imageUrl' in article ? article.imageUrl : article.imageUrls[0];
+
   return (
     <>
       <div
@@ -25,20 +28,19 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         />
         <TimeStamp date={article.createdAt} />
       </div>
-      <div className="font-extralight text-base">
-        {isDetail ? article.content : truncateText(article.content, 80)}
+      <div className="font-extralight text-base w-[18rem]">
+        {isDetail ? article.content : truncateText(article.content, 60)}
       </div>
-      {article.imageUrls && (
-        <ArticleThumbnail
-          imageUrl={
-            Array.isArray(article.imageUrls)
-              ? article.imageUrls[0]
-              : article.imageUrls
-          }
+      <div className="flex justify-center">
+        {imageUrl && <ArticleThumbnail imageUrl={imageUrl} />}
+      </div>
+      <div className="flex gap-5 pt-0.5">
+        <LikeBadge
+          type="article"
+          id={article.boardId}
+          initialLikeCount={article.likeCount}
+          initialIsLiked={article.isLiked}
         />
-      )}
-      <div className="flex gap-5">
-        <LikeBadge likeCount={article.likeCount} isLiked={article.isliked} />
         <CommentBadge commentCount={article.commentCount} />
       </div>
     </>

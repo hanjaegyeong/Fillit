@@ -8,6 +8,7 @@ const useGetFeed = (limit: number) => {
     queryFn: ({ pageParam = null }) => getFeed(limit, pageParam),
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    retry: 1,
   });
 };
 

@@ -63,23 +63,29 @@ const NewMessagePage = () => {
         />
       </div>
       <div className="w-full px-4 overflow-y-auto max-h-[calc(100vh-220px)] hide-scrollbar">
-        {filteredFollowees.map((user) => (
-          <div
-            key={user.id}
-            className="p-4 bg-white flex "
-            onClick={() => handleUserClick(user)}
-          >
-            <img
-              src={user.profileImageUrl || ProfileImage}
-              alt={user.personalId}
-              className="w-12 h-12 rounded-full mr-4"
-            />
-            <div className="flex flex-col justify-center">
-              <p className="text-m font-bold text-gray-600">{user.name}</p>
-              <p className="text-xs text-gray-500">{user.personalId}</p>
+        {filteredFollowees.map((user, index) => {
+          const key =
+            user.id !== null && user.id !== undefined
+              ? user.id
+              : `temp-${index}`;
+          return (
+            <div
+              key={key}
+              className="p-4 bg-white flex "
+              onClick={() => handleUserClick(user)}
+            >
+              <img
+                src={user.profileImageUrl || ProfileImage}
+                alt={user.personalId}
+                className="w-12 h-12 rounded-full mr-4"
+              />
+              <div className="flex flex-col justify-center">
+                <p className="text-m font-bold text-gray-600">{user.name}</p>
+                <p className="text-xs text-gray-500">{user.personalId}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
