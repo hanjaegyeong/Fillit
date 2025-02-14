@@ -82,6 +82,7 @@ import TechIcon from '@/assets/icons/tags-icon/tech.svg';
 import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 
 // profile
+import NoProfile from '@/assets/images/no-profile-image.png';
 import Keyword from '@/assets/images/keyword.png';
 import RippedProfile from '@/assets/icons/profile-ripped.svg';
 import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
@@ -96,6 +97,7 @@ import ArticleBg1 from '@/assets/icons/article-pic-bg1.svg';
 import ArticleBg2 from '@/assets/icons/article-pic-bg2.svg';
 import ArticleBg3 from '@/assets/icons/article-pic-bg3.svg';
 export {
+  NoProfile,
   HomeInactiveIcon,
   HomeActiveIcon,
   VoiceInactiveIcon,
