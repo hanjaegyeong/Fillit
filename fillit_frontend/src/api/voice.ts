@@ -65,7 +65,7 @@ export const getVoiceReply = async (
 /* 보이스 답장 조회 */
 export const getVoiceReplyList = async (): Promise<VoiceReply[]> => {
   const response = await axiosInstance.get('/api/voice/reply');
-  return response.data.voiceReplies || [];
+  return Array.isArray(response.data) ? response.data : [];
 };
 
 /* 보이스 답장 삭제 */
