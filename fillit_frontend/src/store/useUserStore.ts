@@ -3,19 +3,29 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface UserStore {
-  user: Pick<User, 'personalId'>;
-  setUser: (user: Pick<User, 'personalId'>) => void;
+  user: User;
+  setUser: (user: User) => void;
   reset: () => void;
 }
+
+const initialUser: User = {
+  type: 'user',
+  id: '',
+  name: '',
+  personalId: '',
+  profileImageUrl: '',
+  introduction: '',
+  birthDate: '',
+  followersCount: 0,
+  followingCount: 0,
+};
 
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      user: {
-        personalId: '',
-      },
+      user: initialUser,
       setUser: (user) => set({ user }),
-      reset: () => set({ user: { personalId: '' } }),
+      reset: () => set({ user: initialUser }),
     }),
     { name: 'user-info' }
   )

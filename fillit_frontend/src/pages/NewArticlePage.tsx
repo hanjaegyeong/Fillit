@@ -102,15 +102,15 @@ const NewArticlePage = () => {
         right="regist"
         onRegistClick={handleOpenKeywordModal}
       />
-      <div className="h-4/5 w-full max-w-[600px] overflow-auto botton-[10rem]">
+      <div className="w-full max-w-[600px] overflow-auto botton-[10rem]">
         {/* 배경 종이 이미지 */}
         <img
           src={NewArticleImg}
-          className="absolute h-full w-full max-w-[600px] top-0 object-cover origin-top"
+          className="fixed -left-2 bottom-0 max-w-[750px]"
           alt="paper background"
         />
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
-        <div className="relative z-10 pt-20 pl-20 pr-5">
+        <div className="relative z-10 pt-24 pl-24 pr-5">
           <textarea
             className="w-full min-h-[40vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-400"
             placeholder="What's happening?"

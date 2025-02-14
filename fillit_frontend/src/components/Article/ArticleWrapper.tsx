@@ -21,7 +21,7 @@ const ArticleWrapper = ({ article, position }: ArticleWrapperProps) => {
     <div
       className={`bg-contain bg-no-repeat bg-center w-[380px] flex items-center drop-shadow-md ${
         position === 'left' ? 'ml-8' : 'ml-20'
-      } -mb-12 pb-1`}
+      } -mb-12`}
       style={{
         backgroundImage: `url(${getBackgroundImage(hasImage)})`,
       }}

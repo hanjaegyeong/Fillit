@@ -26,7 +26,7 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         <TimeStamp date={article.createdAt} />
       </div>
       <div className="font-extralight text-base">
-        {isDetail ? article.content : truncateText(article.content, 80)}
+        {isDetail ? article.content : truncateText(article.content, 60)}
       </div>
       {article.imageUrls && (
         <ArticleThumbnail
@@ -37,8 +37,13 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
           }
         />
       )}
-      <div className="flex gap-5">
-        <LikeBadge likeCount={article.likeCount} isLiked={article.isliked} />
+      <div className="flex gap-5 pt-0.5">
+        <LikeBadge
+          type="article"
+          id={article.boardId}
+          initialLikeCount={article.likeCount}
+          initialIsLiked={article.isLiked}
+        />
         <CommentBadge commentCount={article.commentCount} />
       </div>
     </>

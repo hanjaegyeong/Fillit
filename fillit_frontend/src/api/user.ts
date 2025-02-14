@@ -27,3 +27,9 @@ export const patchUserProfile = async (userUpdateForm: UserUpdateForm) => {
   });
   return response.data;
 };
+
+/* 내 프로필 조회 */
+export const getUserInfo = async (): Promise<User> => {
+  const response = await axiosInstance.get('/api/users/get');
+  return response.data;
+};
