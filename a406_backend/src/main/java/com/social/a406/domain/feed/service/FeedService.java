@@ -71,8 +71,8 @@ public class FeedService {
         for (Long interest : interests) {
             PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 2, Sort.by("createdAt").descending());
             List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
-                    10,
-                    LocalDateTime.now().minusDays(3),
+                    1,
+                    LocalDateTime.now().minusDays(7),
                     recommendedPageable);
             recommendedBoards.addAll(fetchedRecommended);
         }
