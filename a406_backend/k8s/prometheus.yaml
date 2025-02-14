@@ -4,15 +4,9 @@ metadata:
   name: prometheus
   namespace: monitoring
 spec:
-  serviceMonitorNamespaceSelector:
-    matchNames:
-      - default
-      - monitoring
+  serviceMonitorNamespaceSelector: {}  # 모든 네임스페이스 선택
   serviceMonitorSelector: {}
-  podMonitorNamespaceSelector:
-    matchNames:
-      - default
-      - monitoring
+  podMonitorNamespaceSelector: {}        # 모든 네임스페이스 선택
   podMonitorSelector: {}
   replicas: 1
   resources:
