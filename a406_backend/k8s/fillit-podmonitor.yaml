@@ -15,5 +15,6 @@ spec:
       interval: 15s
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_host_ip]
+          regex: (.*)
           targetLabel: __address__
           replacement: '$1:8090'
