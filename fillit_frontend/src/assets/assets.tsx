@@ -55,7 +55,7 @@ import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
 // article
-import NewArticleIcon from '@/assets/icons/new-article.svg';
+import NewArticleIcon from '@/assets/images/write-outline.png';
 import NewArticleImg from '@/assets/images/new-article.png';
 
 //search
