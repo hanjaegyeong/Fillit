@@ -11,5 +11,5 @@ spec:
       app: fillit  # Deployment의 Pod 라벨
   podMetricsEndpoints:
     - path: /actuator/prometheus
-      port: 8080   # Spring Boot의 메트릭 엔드포인트가 열려 있는 포트
+      port: "8080"   # Spring Boot의 메트릭 엔드포인트가 열려 있는 포트
       interval: 15s
