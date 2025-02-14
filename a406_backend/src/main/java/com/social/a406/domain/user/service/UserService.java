@@ -289,12 +289,12 @@ public class UserService {
 
             // S3 업로드
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .contentType(contentType)
-                .contentDisposition("inline")
-                .build();
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(contentType)
+                    .contentDisposition("inline")
+                    .build();
 
             s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(
                     file.getInputStream(), file.getSize()));
