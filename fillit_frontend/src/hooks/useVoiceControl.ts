@@ -50,45 +50,63 @@ export function useVoiceControl({
 }: UseVoiceControlPropsBase & { recordingMode?: boolean } = {}):
   | PlaybackControl
   | RecordingControl {
-  // 공통 상태
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [currentDuration, setCurrentDuration] = useState(0);
-  const [recordedFile, setRecordedFile] = useState<File | null>(null);
+  // 관련 상태들을 하나의 객체로 관리
+  const [voiceState, setVoiceState] = useState({
+    isPlaying: false,
+    isFinished: false,
+    currentDuration: 0,
+    recordedFile: null as File | null,
+    isRecording: false,
+  });
 
-  // 녹음 모드 관련 상태 및 ref
-  const [isRecording, setIsRecording] = useState(false);
+  // 녹음 모드 관련 ref
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const intervalRef = useRef<number | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const timers = useRef({
+    interval: null as number | null,
+    timer: null as number | null,
+  });
 
   // 재생 모드 관련 ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const clearTimers = useCallback(() => {
+    if (timers.current.interval) {
+      clearInterval(timers.current.interval);
+      timers.current.interval = null;
+    }
+    if (timers.current.timer) {
+      clearTimeout(timers.current.timer);
+      timers.current.timer = null;
+    }
+  }, []);
+
   // 녹음 중지 핸들러
   const handleStop = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && voiceState.isRecording) {
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
+      setVoiceState((prev) => ({ ...prev, isRecording: false }));
     }
-  }, [isRecording]);
+  }, [voiceState.isRecording]);
 
   // 녹음 모드 핸들러
   const handleRecord = useCallback(async () => {
     if (!recordingMode) {
       // 재생 모드일 때의 시뮬레이션 녹음
-      setIsPlaying(true);
+      setVoiceState((prev) => ({ ...prev, isPlaying: true }));
       setTimeout(() => {
-        setIsPlaying(false);
-        setIsFinished(true);
-        setCurrentDuration(29);
+        setVoiceState((prev) => ({
+          ...prev,
+          isPlaying: false,
+          isFinished: true,
+          currentDuration: 29,
+        }));
         const dummyBlob = new Blob(['dummy audio content'], {
           type: 'audio/mp3',
         });
         const file = new File([dummyBlob], 'recorded.mp3', {
           type: 'audio/mpeg',
         });
-        setRecordedFile(file);
+        setVoiceState((prev) => ({ ...prev, recordedFile: file }));
         onComplete?.();
       }, duration);
       return;
@@ -112,15 +130,21 @@ export function useVoiceControl({
 
       // 녹음 시작
       mediaRecorder.onstart = () => {
-        setIsRecording(true);
-        setIsFinished(false);
-        setCurrentDuration(0);
+        setVoiceState((prev) => ({
+          ...prev,
+          isRecording: true,
+          isFinished: false,
+          currentDuration: 0,
+        }));
         // 1초 간격으로 녹음 시간 업데이트
-        intervalRef.current = window.setInterval(() => {
-          setCurrentDuration((prev) => prev + 1);
+        timers.current.interval = window.setInterval(() => {
+          setVoiceState((prev) => ({
+            ...prev,
+            currentDuration: prev.currentDuration + 1,
+          }));
         }, 1000);
         // 최대 60초 후 자동 정지
-        timerRef.current = window.setTimeout(() => {
+        timers.current.timer = window.setTimeout(() => {
           console.log('[useVoiceControl] 최대 녹음 시간(1분) 도달, 자동 정지.');
           handleStop();
         }, 60000);
@@ -128,20 +152,23 @@ export function useVoiceControl({
 
       // 녹음 종료
       mediaRecorder.onstop = () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
+        if (timers.current.interval) {
+          clearInterval(timers.current.interval);
+          timers.current.interval = null;
         }
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
+        if (timers.current.timer) {
+          clearTimeout(timers.current.timer);
+          timers.current.timer = null;
         }
         const blob = new Blob(chunks, { type: 'audio/mp3' });
         const file = new File([blob], 'recorded.mp3', { type: 'audio/mp3' });
-        setRecordedFile(file);
-        setIsRecording(false);
-        setIsFinished(true);
-        setCurrentDuration((prev) => Math.min(prev, 60));
+        setVoiceState((prev) => ({
+          ...prev,
+          recordedFile: file,
+          isRecording: false,
+          isFinished: true,
+          currentDuration: Math.min(prev.currentDuration, 60),
+        }));
         // 스트림 종료 처리
         mediaRecorder.stream.getTracks().forEach((track) => track.stop());
 
@@ -163,16 +190,19 @@ export function useVoiceControl({
 
   // 재생 모드 핸들러
   const handlePlay = useCallback(() => {
-    if (isFinished) return;
+    if (voiceState.isFinished) return;
     if (audioUrl && audioRef.current) {
       audioRef.current
         .play()
         .then(() => {
-          setIsPlaying(true);
+          setVoiceState((prev) => ({ ...prev, isPlaying: true }));
           console.log('[useVoiceControl] 오디오 재생 시작됨.');
-          intervalRef.current = window.setInterval(() => {
+          timers.current.interval = window.setInterval(() => {
             if (audioRef.current) {
-              setCurrentDuration(audioRef.current.currentTime);
+              setVoiceState((prev) => ({
+                ...prev,
+                currentDuration: audioRef.current?.currentTime || 0,
+              }));
             }
           }, 500);
         })
@@ -180,23 +210,29 @@ export function useVoiceControl({
           console.error('[useVoiceControl] 오디오 재생 에러:', error);
         });
     } else {
-      setIsPlaying(true);
+      setVoiceState((prev) => ({ ...prev, isPlaying: true }));
       setTimeout(() => {
-        setIsPlaying(false);
-        setIsFinished(true);
-        setCurrentDuration(29);
+        setVoiceState((prev) => ({
+          ...prev,
+          isPlaying: false,
+          isFinished: true,
+          currentDuration: 29,
+        }));
         onComplete?.();
         console.log('[useVoiceControl] 시뮬레이션 오디오 재생 완료됨.');
       }, duration);
     }
-  }, [duration, isFinished, onComplete, audioUrl]);
+  }, [duration, voiceState.isFinished, onComplete, audioUrl]);
 
   // 공통 상태 리셋 핸들러
   const reset = useCallback(() => {
-    setIsRecording(false);
-    setIsFinished(false);
-    setCurrentDuration(0);
-    setRecordedFile(null);
+    setVoiceState((prev) => ({
+      ...prev,
+      isRecording: false,
+      isFinished: false,
+      currentDuration: 0,
+      recordedFile: null,
+    }));
 
     // 녹음 모드 처리
     if (recordingMode) {
@@ -214,15 +250,8 @@ export function useVoiceControl({
       audioRef.current.currentTime = 0; // 재생 시간 초기화
     }
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [recordingMode]);
+    clearTimers();
+  }, [clearTimers, recordingMode]);
 
   // 저장된 녹음 파일 복원
   useEffect(() => {
@@ -235,7 +264,7 @@ export function useVoiceControl({
             const file = new File([blob], 'recorded.mp3', {
               type: 'audio/mp3',
             });
-            setRecordedFile(file);
+            setVoiceState((prev) => ({ ...prev, recordedFile: file }));
           })
           .catch((error) => {
             console.error(
@@ -249,11 +278,11 @@ export function useVoiceControl({
   // 모달 상태 변경
   useEffect(() => {
     if (!isModalOpen) {
-      if (!recordedFile) {
+      if (!voiceState.recordedFile) {
         reset();
       }
     }
-  }, [isModalOpen, reset, recordedFile]);
+  }, [isModalOpen, reset, voiceState.recordedFile]);
 
   // 오디오 URL 변경
   useEffect(() => {
@@ -265,13 +294,19 @@ export function useVoiceControl({
       audioRef.current = new Audio(audioUrl);
 
       const handleEnded = () => {
-        setIsPlaying(false);
-        setIsFinished(true);
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
+        setVoiceState((prev) => ({
+          ...prev,
+          isPlaying: false,
+          isFinished: true,
+        }));
+        if (timers.current.interval) {
+          clearInterval(timers.current.interval);
+          timers.current.interval = null;
         }
-        setCurrentDuration(audioRef.current?.duration || 29);
+        setVoiceState((prev) => ({
+          ...prev,
+          currentDuration: audioRef.current?.duration || 29,
+        }));
         onComplete?.();
       };
 
@@ -288,23 +323,37 @@ export function useVoiceControl({
     }
   }, [audioUrl, onComplete, recordingMode]);
 
+  useEffect(() => {
+    return () => {
+      clearTimers();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+        audioRef.current = null;
+      }
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, [clearTimers]);
+
   return recordingMode
     ? {
-        isPlaying: isRecording,
-        isFinished,
-        currentDuration,
+        isPlaying: voiceState.isRecording,
+        isFinished: voiceState.isFinished,
+        currentDuration: voiceState.currentDuration,
         handleRecord,
         handleStop,
         reset,
-        recordedFile,
+        recordedFile: voiceState.recordedFile,
       }
     : {
-        isPlaying,
-        isFinished,
-        currentDuration,
+        isPlaying: voiceState.isPlaying,
+        isFinished: voiceState.isFinished,
+        currentDuration: voiceState.currentDuration,
         handlePlay,
         handleRecord,
         reset,
-        recordedFile,
+        recordedFile: voiceState.recordedFile,
       };
 }
