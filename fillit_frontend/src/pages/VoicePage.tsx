@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header/Header';
 import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
-import { micBack, mic } from '@/assets/assets';
+import { mic } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
@@ -86,21 +86,12 @@ const VoicePage = () => {
       <VoiceBackground />
       <VoiceReplyList voiceReplies={voiceReplyList} />
       <VoiceBubbleList voices={voiceList} />
-      <div className="fixed bottom-28 right-4 z-50">
-        <button onClick={handleMicClick} className="relative w-[72px] h-[72px]">
-          <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
-            <img
-              src={micBack}
-              alt="mic-back"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img
-              src={mic}
-              alt="mic"
-              className="w-[72px] h-[72px] object-contain"
-            />
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
+        <button onClick={handleMicClick} className="relative w-20 h-20">
+          <div className="w-20 h-20 bg-white rounded-full border border-[#B5B4F2] shadow-md">
+            <div className="flex items-center justify-center pt-2.5">
+              <img src={mic} alt="mic" className="w-16 h-16 object-contain" />
+            </div>
           </div>
         </button>
         {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
