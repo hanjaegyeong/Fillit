@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header/Header';
 import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
-import { micBack, mic } from '@/assets/assets';
+import { micBack, mic, speaker } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
@@ -99,7 +99,10 @@ const VoicePage = () => {
       />
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
       <div className="fixed bottom-28 right-4 z-50">
-        <button onClick={handleMicClick} className="relative w-[72px] h-[72px]">
+        <button
+          onClick={handleMicClick}
+          className="relative w-[72px] h-[72px] transform transition-transform duration-100 active:scale-90"
+        >
           <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
             <img
               src={micBack}
@@ -109,9 +112,9 @@ const VoicePage = () => {
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <img
-              src={mic}
+              src={hasRecordedVoice ? speaker : mic}
               alt="mic"
-              className="w-[72px] h-[72px] object-contain"
+              className="w-[65px] h-[65px] object-contain"
             />
           </div>
         </button>
