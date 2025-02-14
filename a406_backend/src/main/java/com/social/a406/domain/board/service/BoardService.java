@@ -335,13 +335,14 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardResponse> getBoardByUser(String personalId) {
-        List<Board> boards = boardRepository.findAllByPersonalId(personalId);
+    public List<BoardResponse> getBoardByUser(String myPersonalId, String personalId) {
+        List<Object[]> objects = boardRepository.findAllByPersonalIdWithLike(personalId, myPersonalId);
         List<BoardResponse> responses = new ArrayList<>();
-        for(Board board : boards){
+        for(Object[] object : objects){
+            Board board = (Board) object[0];
             List<String> imageUrls = getBoardImages(board.getId());
             List<String> interests = interestService.getBoardInterests(board.getId());
-            responses.add(mapToResponseDto(board,imageUrls, interests));
+            responses.add(mapToResponseDtoAndLike(board,imageUrls, interests, (boolean) object[1]));
         }
         return responses;
     }
