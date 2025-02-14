@@ -110,14 +110,14 @@ public class NotificationService {
         User commentReceiver = comment.getUser(); // 대댓글을 단 댓글 작성자
         User sender = reply.getUser();
 
-        Long boardReferenceId = reply.getComment().getBoard().getId(); // 게시글의 id -> 알림 클릭 시 게시글로 이동
+        Long referenceId = reply.getComment().getId(); // 게시글의 id -> 알림 클릭 시 게시글로 이동
 
         // 댓글 작성자와 게시글 작성자가 동일한 경우 하나의 알림만 생성
-        createNotification(boardReceiver, sender,NotificationType.RECOMMENT, boardReferenceId);
+        createNotification(boardReceiver, sender,NotificationType.RECOMMENT, referenceId);
 
         // 댓글 작성자와 게시글 작성자가 다른 경우 두 개의 알림 생성
         if (!boardReceiver.equals(commentReceiver)) {
-            createNotification(commentReceiver, sender,NotificationType.RECOMMENT, boardReferenceId);
+            createNotification(commentReceiver, sender,NotificationType.RECOMMENT, referenceId);
         }
         System.out.println("Generate notification about comment reply");
     }
