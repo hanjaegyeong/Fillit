@@ -11,17 +11,3 @@ data:
       - job_name: 'kubernetes'
         static_configs:
           - targets: ['localhost:9090']
-      - job_name: 'spring-app'
-        metrics_path: '/actuator/prometheus'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - default
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_label_app]
-            action: keep
-            regex: fillit
-          - source_labels: [__meta_kubernetes_pod_ip]
-            target_label: __address__
-            replacement: '$1:8080'
