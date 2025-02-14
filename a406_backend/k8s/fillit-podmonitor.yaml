@@ -8,8 +8,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: fillit  # Deployment의 Pod 라벨
+      app: fillit
   podMetricsEndpoints:
-    - path: /actuator/prometheus
-      port: "metrics"   # Spring Boot의 메트릭 엔드포인트가 열려 있는 포트
+    - port: metrics
+      path: /actuator/prometheus
       interval: 15s
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_host_ip]
+          targetLabel: __address__
+          replacement: '$1:8090'
