@@ -135,22 +135,23 @@ const VoicePage = () => {
             </div>
           </div>
         </button>
-        {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
-        {hasRecordedVoice && myVoiceId !== null ? (
-          <VoiceManageModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onDeleteComplete={handleDeleteComplete}
-            voiceId={myVoiceId}
-          />
-        ) : (
-          <VoiceRecordModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onRecordComplete={handleRecordComplete}
-          />
-        )}
       </div>
+
+      {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
+      {hasRecordedVoice && myVoiceId !== null ? (
+        <VoiceManageModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onDeleteComplete={handleDeleteComplete}
+          voiceId={myVoiceId}
+        />
+      ) : (
+        <VoiceRecordModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onRecordComplete={handleRecordComplete}
+        />
+      )}
     </div>
   );
 };
