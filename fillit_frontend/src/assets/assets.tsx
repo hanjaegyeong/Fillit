@@ -84,7 +84,7 @@ import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 // profile
 import NoProfile from '@/assets/images/no-profile-image.png';
 import Keyword from '@/assets/images/keyword.png';
-import RippedProfile from '@/assets/icons/profile-ripped.svg';
+import RippedProfile from '@/assets/images/profile-ripped.png';
 import ProfilePagePaper from '@/assets/images/profile-page-paper.png';
 import DmIcon from '@/assets/icons/dm.svg';
 import NameIcon from '@/assets/icons/name.svg';
