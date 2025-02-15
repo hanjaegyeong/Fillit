@@ -18,13 +18,21 @@ const VoiceListenModal = ({
   isOpen,
   onClose,
 }: VoiceListenModalProps) => {
-  const [showReplyModal, setShowReplyModal] = useState(false);
   const { isPlaying, isFinished, currentDuration, handlePlay } =
     useVoiceControl({
       isModalOpen: isOpen,
       audioUrl: voiceData?.audioUrl,
       recordingMode: false, // 재생 모드
     });
+
+  const [showReplyModal, setShowReplyModal] = useState(false);
+
+  const handleClose = () => {
+    // 음성을 끝까지 듣거나 답장을 했을 때 삭제
+    if (isFinished || showReplyModal) {
+      onClose();
+    }
+  };
 
   if (!voiceData) return null;
 
@@ -40,7 +48,7 @@ const VoiceListenModal = ({
 
   return (
     <>
-      <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
+      <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
         <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
           <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
             {currentDuration}"
