@@ -30,32 +30,13 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 
         System.out.println("Interceptor Starting");
 
-        // 1. Authorization 헤더에서 JWT 추출
-//        String token = request.getHeaders().getFirst("Authorization");
-//        if (token == null || !token.startsWith("Bearer ")) {
-//            response.setStatusCode(HttpStatus.FORBIDDEN);
-//            System.err.println("Error: Theres No Invalid Token");
-//            return false; // 인증 실패
-//        }
-//        token = token.substring(7); // "Bearer " 제거
-
-
-        // chatRoomId 추출
-//        String query = request.getURI().getQuery(); // e.g., "chatRoomId=3"
-
-//        String token = Optional.ofNullable(query)
-//                .filter(q -> q.startsWith("jwt="))
-//                .map(q -> q.split("=")[1])
-//                .orElse(null);
         MultiValueMap<String, String> params = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams();
         String token = params.getFirst("jwt");
         Long chatRoomId = Long.valueOf(params.getFirst("chatRoomId"));
         System.out.println("jwt: "+token);
         System.out.println("chatRoomId: "+chatRoomId);
 
-
-
-//        try {
+        try {
             // 2. JWT에서 사용자 정보 추출
             String personalId = jwtTokenUtil.extractUsername(token); // personalId
             if (personalId == null) {
@@ -68,7 +49,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             UserDetails userDetails = userDetailsService.loadUserByUsername(personalId);
             if (!jwtTokenUtil.validateToken(token, userDetails)) {
                 response.setStatusCode(HttpStatus.FORBIDDEN);
-                System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername() );
+                System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername());
                 return false;
             }
 
@@ -85,7 +66,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 //                    .orElse(null);
 
 
-        // 검증 및 저장 (chatRoomId가 없거나 personalId와 맞는 chatRoomId가 아닌경우)
+            // 검증 및 저장 (chatRoomId가 없거나 personalId와 맞는 chatRoomId가 아닌경우)
             if (chatRoomId == null || !chatService.isParticipantInChatRoom(personalId, chatRoomId)) {
                 response.setStatusCode(HttpStatus.BAD_REQUEST);
                 System.err.println("Error: chatRoomId mismatch! Message chatRoomId: " + chatRoomId);
@@ -94,9 +75,13 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             }
             attributes.put("chatRoomId", chatRoomId);
 
-            System.err.println("WebSocketHandShake Success! ChatRoomId:" +chatRoomId);
-            return true; // 인증 성공 및 chatRoomId 설정 완료
+        }
+        catch (Exception e) {
+            System.err.println("WebInterceptor is borekn:" + e.getMessage());
+        }
 
+        System.out.println("WebSocketHandShake Success! ChatRoomId:" + chatRoomId);
+        return true; // 인증 성공 및 chatRoomId 설정 완료
 
     }
 
