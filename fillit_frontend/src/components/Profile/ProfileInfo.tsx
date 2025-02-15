@@ -20,6 +20,9 @@ const ProfileInfo = ({
 }: ProfileInfoProps) => {
   const [followersCount, setFollowersCount] = useState<number>(0);
   const [followingCount, setFollowingCount] = useState<number>(0);
+  const [isFollowing, setIsFollowing] = useState<boolean>(
+    profileData.follow ?? false
+  );
 
   // 팔로워 수 및 팔로잉 수 업데이트 함수
   // useCallback으로 메모이제이션
@@ -39,13 +42,15 @@ const ProfileInfo = ({
   }, [profileData.personalId]);
 
   // 팔로우 상태 변경 시 팔로워 수와 팔로잉 수 업데이트
-  const handleFollowChange = () => {
+  const handleFollowChange = (newFollowState: boolean) => {
+    setIsFollowing(newFollowState);
     updateFollowStats();
   };
 
   useEffect(() => {
     updateFollowStats();
-  }, [updateFollowStats]);
+    setIsFollowing(profileData.follow ?? false);
+  }, [updateFollowStats, profileData.follow]);
 
   return (
     <div className="max-w-[20rem] ml-10 -mt-7">
@@ -65,12 +70,16 @@ const ProfileInfo = ({
             {!isMyProfile && (
               <>
                 <FollowButton
-                  isFollowing={profileData.follow ?? false}
+                  isFollowing={isFollowing}
                   followeePersonalId={profileData.personalId}
-                  onFollowChange={handleFollowChange} // 팔로우 상태 변경 시 호출
+                  onFollowChange={handleFollowChange}
                   width="3.4rem"
                   height="1.25rem"
                   fontSize="9px"
+                  userData={{
+                    name: profileData.name,
+                    profileImageUrl: profileData.profileImageUrl,
+                  }}
                 />
                 <DmButton />
               </>

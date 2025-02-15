@@ -2,6 +2,7 @@ import { postFollow, postUnfollow } from '@/api/follow';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import UnfollowModal from '../Modal/UnfollowModal';
 
 interface FollowButtonProps {
   isFollowing: boolean;
@@ -10,6 +11,10 @@ interface FollowButtonProps {
   width?: string;
   height?: string;
   fontSize?: string;
+  userData?: {
+    name: string;
+    profileImageUrl: string | null;
+  };
 }
 
 const FollowButton = ({
@@ -19,13 +24,14 @@ const FollowButton = ({
   width = '78px',
   height = '26px',
   fontSize = '12px',
+  userData,
 }: FollowButtonProps) => {
   const [isFollowingState, setIsFollowingState] = useState(isFollowing);
   const [isLoading, setIsLoading] = useState(false);
+  const [showUnfollowModal, setShowUnfollowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleFollow = async () => {
-    // 로그인 체크 및 토큰 디버깅
     const accessToken = localStorage.getItem('accessToken');
 
     if (!accessToken) {
@@ -33,27 +39,44 @@ const FollowButton = ({
       return;
     }
 
+    // 팔로우 하는 경우
+    if (!isFollowingState) {
+      try {
+        setIsLoading(true);
+        await postFollow(followeePersonalId);
+        setIsFollowingState(true);
+        onFollowChange?.(true);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // 언팔로우 하는 경우 모달 표시
+      setShowUnfollowModal(true);
+    }
+  };
+
+  const handleUnfollow = async () => {
     try {
       setIsLoading(true);
-      if (isFollowingState) {
-        await postUnfollow(followeePersonalId);
-      } else {
-        await postFollow(followeePersonalId);
-      }
-      // 팔로우 상태 변경
-      setIsFollowingState(!isFollowingState);
-
-      // 부모 컴포넌트에 상태 변경 알림
-      onFollowChange?.(!isFollowingState);
+      await postUnfollow(followeePersonalId);
+      setIsFollowingState(false);
+      onFollowChange?.(false);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 403) {
-          localStorage.removeItem('accessToken');
-          navigate('/login');
-        }
-      }
+      handleError(error);
     } finally {
       setIsLoading(false);
+      setShowUnfollowModal(false);
+    }
+  };
+
+  const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 403) {
+        localStorage.removeItem('accessToken');
+        navigate('/login');
+      }
     }
   };
 
@@ -78,6 +101,16 @@ const FollowButton = ({
       >
         {isFollowingState ? 'UNFOLLOW' : 'FOLLOW'}
       </button>
+
+      {userData && (
+        <UnfollowModal
+          isOpen={showUnfollowModal}
+          onClose={() => setShowUnfollowModal(false)}
+          onConfirm={handleUnfollow}
+          name={userData.name}
+          profileImageUrl={userData.profileImageUrl ?? ''}
+        />
+      )}
     </div>
   );
 };
