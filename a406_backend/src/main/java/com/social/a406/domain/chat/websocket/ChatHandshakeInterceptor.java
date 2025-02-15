@@ -78,6 +78,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 
         }
         catch (Exception e) {
+            e.printStackTrace();
             System.err.println("WebInterceptor is borekn:" + e.getMessage());
             return false;
         }
