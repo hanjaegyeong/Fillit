@@ -4,8 +4,7 @@ import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
 import ProfileFollow from './ProfileFollow';
-import { useCallback, useEffect, useState } from 'react';
-import { getFolloweeList, getFollowerList } from '@/api/follow';
+import { useEffect, useState } from 'react';
 
 interface ProfileInfoProps {
   profileData: User;
@@ -18,39 +17,36 @@ const ProfileInfo = ({
   paperImage,
   isMyProfile,
 }: ProfileInfoProps) => {
-  const [followersCount, setFollowersCount] = useState<number>(0);
-  const [followingCount, setFollowingCount] = useState<number>(0);
+  const [followersCount, setFollowersCount] = useState<number>(
+    profileData?.followerCount ?? 0
+  );
+  const [followingCount, setFollowingCount] = useState<number>(
+    profileData?.followeeCount ?? 0
+  );
   const [isFollowing, setIsFollowing] = useState<boolean>(
-    profileData.follow ?? false
+    profileData?.follow ?? false
   );
 
-  // 팔로워 수 및 팔로잉 수 업데이트 함수
-  // useCallback으로 메모이제이션
-  const updateFollowStats = useCallback(async () => {
-    try {
-      const followerList = await getFollowerList(profileData.personalId);
-      const followeeList = await getFolloweeList(profileData.personalId);
-
-      setFollowersCount(followerList.length);
-      setFollowingCount(followeeList.length);
-    } catch (error) {
-      console.error('팔로우 통계 가져오기 실패:', error);
-      // 에러 발생 시에도 null 상태 유지
-      setFollowersCount(0);
-      setFollowingCount(0);
-    }
-  }, [profileData.personalId]);
-
-  // 팔로우 상태 변경 시 팔로워 수와 팔로잉 수 업데이트
+  // 팔로우 상태 변경 시 팔로워 수 업데이트
   const handleFollowChange = (newFollowState: boolean) => {
     setIsFollowing(newFollowState);
-    updateFollowStats();
+    // 팔로우/언팔로우에 따라 팔로워 수 업데이트
+    setFollowersCount((prev) => (newFollowState ? prev + 1 : prev - 1));
   };
 
   useEffect(() => {
-    updateFollowStats();
-    setIsFollowing(profileData.follow ?? false);
-  }, [updateFollowStats, profileData.follow]);
+    if (profileData) {
+      setFollowersCount(profileData.followerCount ?? 0);
+      setFollowingCount(profileData.followeeCount ?? 0);
+      setIsFollowing(profileData.follow ?? false);
+    }
+  }, [profileData]);
+
+  console.log('ProfileInfo render:', {
+    followersCount,
+    followingCount,
+    profileData,
+  }); // 디버깅용
 
   return (
     <div className="w-[22rem] ml-20 -mt-7">
@@ -90,8 +86,8 @@ const ProfileInfo = ({
           @{profileData.personalId}
         </p>
         <ProfileFollow
-          followersCount={followersCount}
-          followingCount={followingCount}
+          followersCount={Number(followersCount)}
+          followingCount={Number(followingCount)}
           personalId={profileData.personalId}
         />
       </div>
