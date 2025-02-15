@@ -60,7 +60,7 @@ const ProfileInfo = ({
         </div>
       )}
       <ProfileImage src={profileData.profileImageUrl} size={101} />
-      <div className="w-[12rem] h-[13.438rem] -mt-[9.57rem] -ml-[3.25rem]">
+      <div className="w-[12rem] h-[13.438rem] -mt-[10rem] -ml-[3.23rem]">
         <img src={RippedProfile} alt="ripped profile" />
       </div>
       <div className="ml-[9.2rem] -mt-[10.625rem]">
