@@ -1,4 +1,3 @@
-import { ProfilePagePaper } from '@/assets/assets';
 import { useEffect, useState } from 'react';
 import { getPaperText } from '@/utils/getPaperText';
 import Header from '@/components/common/Header/Header';
@@ -10,9 +9,14 @@ import { useUserStore } from '@/store/useUserStore';
 import { User } from '@/types/user';
 import { getUserProfile } from '@/api/user';
 import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
+import UserArticleListContainer from '@/components/Article/UserArticleListContainer';
+
+type RouteParams = {
+  personalId: string;
+};
 
 const ProfilePage = () => {
-  const { personalId } = useParams(); // URL 파라미터
+  const { personalId } = useParams() as RouteParams; // URL 파라미터
   const { user: currentUser } = useUserStore(); // 현재 로그인한 유저저
 
   const [paperImage, setPaperImage] = useState<string | null>(null);
@@ -53,7 +57,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container-header-nav overflow-hidden">
+    <div className="container-header-nav">
       <Header
         left="home"
         right={isMyProfile ? 'menu' : undefined}
@@ -65,18 +69,21 @@ const ProfilePage = () => {
           onClose={() => setIsDropdownOpen(false)}
         />
       )}
-      <ProfileInfo
-        profileData={profileData}
-        paperImage={paperImage}
-        isMyProfile={isMyProfile}
-      />
-      <ProfileIntroduction introduction={profileData.introduction} />
-      <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
+      <div className="w-full flex flex-col items-center overflow-x-hidden">
+        <ProfileInfo
+          profileData={profileData}
+          paperImage={paperImage}
+          isMyProfile={isMyProfile}
+        />
+        <ProfileIntroduction introduction={profileData.introduction} />
+        <UserArticleListContainer personalId={personalId} />
+        {/* <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
         <img
           src={ProfilePagePaper}
           alt="profile page paper"
           className="h-full"
         />
+      </div> */}
       </div>
     </div>
   );
