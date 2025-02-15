@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { getFollowerList, getFolloweeList } from '@/api/follow';
 import LoadingSpinner from '../common/Loading/LoadingSpinner';
+import { useUserStore } from '@/store/useUserStore';
+import { useQuery } from '@tanstack/react-query';
 
 interface UserListProps {
   type: 'followers' | 'following';
@@ -12,50 +14,46 @@ interface UserListProps {
 }
 
 const UserList = ({ type, personalId }: UserListProps) => {
-  const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user: currentUser } = useUserStore();
+
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users', type, personalId],
+    queryFn: async () => {
+      if (!personalId) {
+        throw new Error('persoanlId가 없습니다');
+      }
+      const response =
+        type === 'followers'
+          ? await getFollowerList(personalId)
+          : await getFolloweeList(personalId);
+
+      return [...response].sort((a, b) => {
+        if (a.personalId === currentUser.personalId) return -1;
+        if (b.personalId === currentUser.personalId) return 1;
+        return 0;
+      });
+    },
+    enabled: !!personalId,
+  });
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        if (!personalId) {
-          console.error('personalId가 없습니다');
-          return;
-        }
-
-        setIsLoading(true);
-
-        const response =
-          type === 'followers'
-            ? await getFollowerList(personalId)
-            : await getFolloweeList(personalId);
-
-        setUsers(response);
-        setFilteredUsers(response);
-      } catch (error) {
-        console.error('[UserList] 사용자 목록 조회 실패:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [type, personalId]);
+    if (users) {
+      setFilteredUsers(users);
+    }
+  }, [users]);
 
   const handleSearch = (term: string) => {
     const searchTerm = term.toLowerCase().trim();
-    const filtered = users.filter((userData) => {
+    const filtered = users?.filter((userData) => {
       const name = userData.name ? userData.name.toLowerCase() : '';
       const personalId = userData.personalId
         ? userData.personalId.toLowerCase()
         : '';
       return name.includes(searchTerm) || personalId.includes(searchTerm);
     });
-    setFilteredUsers(filtered);
+    setFilteredUsers(filtered || []);
   };
-
-  useEffect(() => {}, [users]);
 
   if (isLoading) {
     return <LoadingSpinner />;
