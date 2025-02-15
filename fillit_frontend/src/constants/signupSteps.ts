@@ -13,7 +13,7 @@ export const steps = [
     message2: 'what ID you wanna go with😅',
     message3: '',
     placeholder: 'Enter your ID',
-    rule: '영어 4~20자, 소문자/숫자/‘_’ 사용 가능',
+    rule: '영어 4~14자, 소문자/숫자/‘_’ 사용 가능',
     inputType: 'text',
   },
   {
