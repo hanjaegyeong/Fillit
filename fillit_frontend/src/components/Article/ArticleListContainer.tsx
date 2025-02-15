@@ -3,14 +3,14 @@ import useGetFeed from '@/hooks/query/useGetFeed';
 import useIntersect from '@/hooks/useIntersect';
 import { FeedArticle } from '@/types/article';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
+import { useRef } from 'react';
 
 const ArticleListContainer = () => {
   const { data, hasNextPage, isFetching, fetchNextPage } = useGetFeed(10);
+  const indexRef = useRef(0);
 
   const pageEnd = useIntersect(async (entry, observer) => {
     observer.unobserve(entry.target);
-
-    await new Promise((resolve) => setTimeout(resolve, 800));
 
     if (hasNextPage && !isFetching) {
       fetchNextPage();
@@ -22,15 +22,13 @@ const ArticleListContainer = () => {
       {data?.pages?.length ? (
         data.pages.map((page, pageIndex) => (
           <div key={pageIndex}>
-            {page.posts.map((article: FeedArticle, index: number) => {
-              const position = index % 2 ? 'left' : 'right';
+            {page.posts.map((article: FeedArticle) => {
+              indexRef.current++;
 
               return (
-                <ArticleWrapper
-                  key={article.boardId}
-                  article={article}
-                  position={position}
-                />
+                <div className={`${indexRef.current % 2 ? 'pl-20' : 'pr-20'}`}>
+                  <ArticleWrapper key={indexRef.current} article={article} />
+                </div>
               );
             })}
           </div>

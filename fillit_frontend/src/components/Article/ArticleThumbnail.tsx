@@ -8,7 +8,7 @@ const ArticleThumbnail = ({ imageUrl }: ArticleThumbnailProps) => {
       <img
         src={imageUrl}
         alt="thumbnail image"
-        className="px-1 h-48 w-full max-w-[320px] object-cover drop-shadow-lg"
+        className="px-1 h-[10.5rem] w-[15rem] object-cover drop-shadow-lg"
       />
     </div>
   );
