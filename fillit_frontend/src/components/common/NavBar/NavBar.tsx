@@ -55,7 +55,7 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t">
+    <nav className="fixed z-1 h-[6rem] bottom-0 w-full bg-white border-t px-1">
       <div className="flex justify-around">
         {navItems.map((item) => (
           <NavBarItem
