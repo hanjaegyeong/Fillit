@@ -11,6 +11,7 @@ interface ProfileEditFormProps {
   introduction: string;
   onNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onIntroductionChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  errors: { [key: string]: string };
 }
 
 const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
@@ -18,6 +19,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
   introduction,
   onNameChange,
   onIntroductionChange,
+  errors,
 }) => {
   return (
     <div>
@@ -29,7 +31,11 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
         placeholder="Enter your name"
         value={name}
         onChange={onNameChange}
+        className={errors.name ? 'border-red-500' : ''}
       />
+      {errors.name && (
+        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+      )}
       <div className="flex mt-5">
         <img src={IntroIcon} alt="intro" />
         <p className="font-light ml-1.5">introduction</p>

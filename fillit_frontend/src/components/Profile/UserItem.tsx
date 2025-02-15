@@ -40,6 +40,10 @@ const UserItem = ({ userData }: UserItemProps) => {
             onFollowChange={(isFollowing) =>
               console.log('팔로우 상태 변경:', isFollowing)
             }
+            userData={{
+              name: userData.name,
+              profileImageUrl: userData.profileImageUrl,
+            }}
           />
         )}
       </div>
