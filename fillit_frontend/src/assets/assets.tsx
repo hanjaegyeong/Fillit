@@ -42,7 +42,6 @@ import pressedMic from '@/assets/images/mic-pressed.png';
 import playIcon from '@/assets/icons/play.svg';
 import playIcon2 from '@/assets/icons/play2.svg';
 import profileBubble from '@/assets/icons/profile-bubble.svg';
-import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
 import bubble1 from '@/assets/images/bubble1.png';
 import bubble2 from '@/assets/images/bubble2.png';
 import bubble3 from '@/assets/images/bubble3.png';
@@ -57,6 +56,7 @@ import caution from '@/assets/icons/caution.svg';
 // article
 import NewArticleIcon from '@/assets/images/write-outline.png';
 import NewArticleImg from '@/assets/images/new-article.png';
+import ImageSlideIcon from '@/assets/images/image-arrow.png';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
@@ -128,7 +128,6 @@ export {
   playIcon,
   playIcon2,
   profileBubble,
-  voiceWrapper,
   bubble1,
   bubble2,
   bubble3,
@@ -174,4 +173,5 @@ export {
   AskToFilbotIcon,
   AddTagIcon,
   NewArticleImg,
+  ImageSlideIcon,
 };
