@@ -92,15 +92,15 @@ const AiFilButton = () => {
       <button
         className={
           pathname.includes('newarticle') || pathname.includes('edit')
-            ? 'w-full max-w-[600px] px-4 fixed bottom-24'
-            : 'fixed bottom-44'
+            ? 'max-w-[600px] px-4 fixed bottom-24'
+            : 'max-w-[600px] fixed bottom-44 px-2'
         }
         onClick={() => setIsOpen(true)}
       >
-        <img src={AiFilImg} alt="ai-fil-img" className="drop-shadow-md" />
+        <img src={AiFilImg} alt="ai-fil-img" className="size-20" />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-245px)] z-50 hide-scrollbar">
+        <div className="flex-grow overflow-y-auto pt-4 space-y-4 h-[calc(100vh-245px)] z-50 hide-scrollbar">
           {messages.map((msg, index) => (
             <div
               key={msg.id}
