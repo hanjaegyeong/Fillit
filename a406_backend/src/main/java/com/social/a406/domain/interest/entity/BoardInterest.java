@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -17,10 +19,12 @@ public class BoardInterest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Interest interest;
 
     @Builder
