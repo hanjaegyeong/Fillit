@@ -8,7 +8,6 @@ import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
 import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 
 import { postArticle } from '@/api/article';
-import { postInterest } from '@/api/interest';
 import { ArticlePostForm } from '@/types/article';
 import ImageSlider from '@/components/common/ImageSlider';
 
@@ -79,16 +78,7 @@ const NewArticlePage = () => {
       boardImages: uploadedFiles,
     };
 
-    try {
-      const articleData = await postArticle(articlePostForm);
-      console.log('게시글 정보 전송 성공', articleData);
-      if (selectedTags.length > 0) {
-        await postInterest(articleData.personalId, selectedTags);
-        console.log('관심사 태그 추가 완료');
-      }
-    } catch (error) {
-      console.error('게시글 작성 실패', error);
-    }
+    await postArticle(articlePostForm);
   };
 
   return (
@@ -117,7 +107,7 @@ const NewArticlePage = () => {
         {/* 가로 스크롤 오버플로우 바 */}
         {uploadedImages.length > 0 && (
           <div className="m-5 overflow-x-auto">
-            <div className="pl-10">
+            <div className="pl-14 pr-5">
               {uploadedImages.length > 0 && (
                 <ImageSlider images={uploadedImages} />
               )}
