@@ -25,6 +25,8 @@ public interface FollowRepository extends JpaRepository <Follow, Long> {
 
     boolean existsByFolloweeIdAndFollowerId(String followeeId, String followerId);
 
+    boolean existsByFollowee_PersonalIdAndFollower_PersonalId(String followeeId, String followerId);
+
     @Query("SELECT f.follower, " +
             "CASE WHEN EXISTS (SELECT 1 FROM Follow mf " +
             "WHERE mf.followee.personalId = f.follower.personalId " +
