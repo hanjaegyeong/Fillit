@@ -28,18 +28,16 @@ const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
   };
 
   return (
-    <>
-      <div className="z-10 pt-6">
-        <h4 className="text-lg mb-2">Voice Bubbles</h4>
-        <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-380px)] hide-scrollbar space-y-4">
-          {voices.map((voice) => (
-            <VoiceBubbleItem
-              key={voice.voiceId}
-              voice={voice}
-              onPlayClick={handlePlayClick}
-            />
-          ))}
-        </div>
+    <div className="z-10 pt-6 min-w-[22rem] px-4 flex flex-col items-center">
+      <h4 className="text-lg mb-2">Voice Bubbles</h4>
+      <div className="overflow-y-auto w-full max-h-[calc(100vh-380px)] hide-scrollbar space-y-4">
+        {voices.map((voice) => (
+          <VoiceBubbleItem
+            key={voice.voiceId}
+            voice={voice}
+            onPlayClick={handlePlayClick}
+          />
+        ))}
       </div>
 
       <VoiceListenModal
@@ -47,7 +45,7 @@ const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
       />
-    </>
+    </div>
   );
 };
 
