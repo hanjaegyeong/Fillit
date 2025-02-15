@@ -22,14 +22,12 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative h-full max-h-[15rem] w-full max-w-[20rem]">
-      <div className="overflow-auto">
-        <img
-          src={images[currentIndex]}
-          alt={`Slide ${currentIndex + 1}`}
-          className="w-full h-full object-cover rounded-md"
-        />
-      </div>
+    <div className="relative overflow-hidden max-w-[20rem]">
+      <img
+        src={images[currentIndex]}
+        alt={`Slide ${currentIndex + 1}`}
+        className="object-cover aspect-[1/1] rounded-md"
+      />
       {images.length > 1 && (
         <>
           <button
