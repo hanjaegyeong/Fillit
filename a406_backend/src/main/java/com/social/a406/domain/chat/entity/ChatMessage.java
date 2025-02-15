@@ -2,6 +2,8 @@ package com.social.a406.domain.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,6 +22,7 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_participants_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ChatParticipants chatParticipants;
 
     @Column(nullable = false, length = 1000)

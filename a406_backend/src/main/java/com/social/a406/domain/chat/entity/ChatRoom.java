@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -30,6 +32,7 @@ public class ChatRoom {
 
     // 채팅 참여자 목록 (양방향 연관관계로 관리하거나 단방향으로만 사용)
     @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ChatParticipants> participants = new ArrayList<>();
 
 
