@@ -10,6 +10,7 @@ pipeline {
         DOCKER_PORT = '3000'
         // 빌드 시 사용할 환경 변수 (Jenkins Global Properties 또는 파라미터에서 미리 설정)
         VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
+        VITE_WS_URL = "${env.VITE_WS_URL}"
         // WORKSPACE를 HOME으로 지정하여 npm 캐시 관련 권한 문제 회피
         HOME = "${env.WORKSPACE}"
     }
@@ -43,9 +44,10 @@ pipeline {
                     sh '''
                         echo "Using npm at: $(which npm) and version: $(npm -v)"
                         npm install --unsafe-perm=true
-                        VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' npm run build
+                        VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' VITE_WS_URL=''' + "${VITE_WS_URL}" + ''' npm run build
                     '''
                 }
+
             }
         }
         stage('Build Docker Image') {
