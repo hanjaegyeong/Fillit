@@ -13,7 +13,7 @@ export default {
         small: '10px',
       },
       backgroundImage: {
-        home: "url('/images/bg-image.png')",
+        home: 'linear-gradient(165deg, #9DE8FA 41.69%, #C8C4F5 67.3%, #FFC9F2 90.99%)',
       },
       colors: {
         'gray-300': '#D0D0D0',
