@@ -1,5 +1,5 @@
 import ProfileImage from '@/components/common/ProfileImage';
-import { RippedProfile } from '@/assets/assets';
+import { NoProfile, RippedProfile } from '@/assets/assets';
 import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
@@ -42,12 +42,6 @@ const ProfileInfo = ({
     }
   }, [profileData]);
 
-  console.log('ProfileInfo render:', {
-    followersCount,
-    followingCount,
-    profileData,
-  }); // 디버깅용
-
   return (
     <div className="w-[22rem] ml-20 -mt-7">
       {paperImage && (
@@ -77,7 +71,13 @@ const ProfileInfo = ({
                     profileImageUrl: profileData.profileImageUrl,
                   }}
                 />
-                <DmButton />
+                <DmButton
+                  otherPersonalId={profileData.personalId}
+                  otherUserName={profileData.name}
+                  otherProfileImageUrl={
+                    profileData.profileImageUrl ?? NoProfile
+                  }
+                />
               </>
             )}
           </div>
