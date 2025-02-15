@@ -10,6 +10,7 @@ import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 import { postArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
 import ImageSlider from '@/components/common/ImageSlider';
+import { ARTICLE_MAX_LENGTH } from '@/constants/system';
 
 const NewArticlePage = () => {
   const [content, setContent] = useState('');
@@ -102,6 +103,7 @@ const NewArticlePage = () => {
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            maxLength={ARTICLE_MAX_LENGTH}
           />
         </div>
         {/* 가로 스크롤 오버플로우 바 */}
