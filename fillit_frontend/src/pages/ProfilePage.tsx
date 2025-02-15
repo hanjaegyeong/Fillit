@@ -71,8 +71,12 @@ const ProfilePage = () => {
         isMyProfile={isMyProfile}
       />
       <ProfileIntroduction introduction={profileData.introduction} />
-      <div className="w-full object-cover flex justify-center scale-110 mt-[3rem]">
-        <img src={ProfilePagePaper} alt="profile page paper" />
+      <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
+        <img
+          src={ProfilePagePaper}
+          alt="profile page paper"
+          className="h-full"
+        />
       </div>
     </div>
   );
