@@ -1,23 +1,30 @@
 import { useState } from 'react';
 import { DeleteLogoutModal } from './Modal/DeleteLogoutModal';
 import { useNavigate } from 'react-router-dom';
+import { deleteArticle } from '@/api/article';
 
 interface ArticleDropdownProps {
+  boardId: number;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
+const ArticleDropdown = ({
+  boardId,
+  isOpen,
+  onClose,
+}: ArticleDropdownProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleArticleEdit = () => {
-    console.log('게시글 수정');
+    navigate('/newarticle');
     onClose();
   };
 
   // 게시글 삭제
   const handleDeleteArticle = () => {
+    deleteArticle(boardId);
     setIsDeleteModalOpen(true);
   };
 
@@ -25,6 +32,7 @@ const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
     console.log('게시글 삭제 확인');
     setIsDeleteModalOpen(false);
     onClose();
+    navigate('/');
   };
 
   const handleDeleteCancle = () => {
@@ -46,24 +54,12 @@ const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
         <ul className="py-[0.5rem] text-sm text-gray-700 dark:text-gray-200">
           <>
             <li>
-              <button
-                onClick={() => {
-                  navigate('/newarticle');
-                  handleArticleEdit;
-                }}
-                className={menuItemClass}
-              >
+              <button onClick={handleArticleEdit} className={menuItemClass}>
                 Edit Post
               </button>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  navigate('/');
-                  handleDeleteArticle;
-                }}
-                className={dangerItemClass}
-              >
+              <button onClick={handleDeleteArticle} className={dangerItemClass}>
                 Delete
               </button>
             </li>
