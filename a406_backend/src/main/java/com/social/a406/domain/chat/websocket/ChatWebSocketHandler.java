@@ -39,9 +39,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private final MessageQueueService messageQueueService;
     private final JsonUtil jsonUtil;
 
-
-
-
     // after
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
