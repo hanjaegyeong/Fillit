@@ -4,7 +4,7 @@ import SubmitInput from '@/components/common/Input/SubmitInput';
 import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { getFollowerList, getFolloweeList } from '@/api/follow';
-import LoadingSpinner from '../common/Loading/LoadingSpinner';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 interface UserListProps {
   type: 'followers' | 'following';
@@ -58,12 +58,12 @@ const UserList = ({ type, personalId }: UserListProps) => {
   useEffect(() => {}, [users]);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <LoadingOverlay />;
   }
 
   return (
     <div>
-      <div className="w-full p-4">
+      <div className="w-full p-4 pt-6">
         <SubmitInput
           type="search"
           placeholder="Search"
@@ -73,10 +73,10 @@ const UserList = ({ type, personalId }: UserListProps) => {
       <div className="overflow-hidden grid h-full">
         <img
           src={FollowBackground}
-          className="scale-[2.0] origin-top row-start-1 col-start-1"
+          className="scale-[1.7] origin-top row-start-1 col-start-1"
           alt="follow background"
         />
-        <div className="row-start-1 col-start-1 z-10 mt-[8rem] overflow-y-auto h-[calc(100vh-23rem)] hide-scrollbar">
+        <div className="row-start-1 col-start-1 z-10 mt-[6rem] overflow-y-auto h-[calc(100vh-23rem)] hide-scrollbar">
           {filteredUsers.map((userData) => (
             <UserItem
               key={userData.personalId}
