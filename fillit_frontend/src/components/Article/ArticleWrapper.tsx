@@ -28,7 +28,7 @@ const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
     >
       <div
         className={`flex flex-col h-full space-y-2 ${
-          hasImage ? ' pt-20 pb-10 ' : 'py-12'
+          hasImage ? ' pt-20 pb-10 ' : 'py-[2.7rem]'
         }`}
       >
         <ArticleContent article={article} />
