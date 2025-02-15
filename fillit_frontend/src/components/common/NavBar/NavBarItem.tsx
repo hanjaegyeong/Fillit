@@ -24,7 +24,11 @@ const NavBarItem = ({
         const finalActive = isActive || activeNavItem === navItemId;
         return (
           <div>
-            <img src={finalActive ? activeIcon : inactiveIcon} alt={alt} />
+            <img
+              src={finalActive ? activeIcon : inactiveIcon}
+              alt={alt}
+              className="max-w-16"
+            />
           </div>
         );
       }}
