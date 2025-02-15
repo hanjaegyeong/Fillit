@@ -33,7 +33,10 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         {'imageUrl' in article && article.imageUrl && (
           <ArticleThumbnail imageUrl={article.imageUrl} />
         )}
-        {'imageUrls' in article && article.imageUrls && (
+        {!isDetail && 'imageUrls' in article && article.imageUrls[0] && (
+          <ArticleThumbnail imageUrl={article.imageUrls[0]} />
+        )}
+        {isDetail && 'imageUrls' in article && article.imageUrls && (
           <ImageSlider images={article.imageUrls} />
         )}
       </div>

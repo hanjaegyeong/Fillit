@@ -71,3 +71,24 @@ export const deleteArticle = async (boardId: number) => {
   const response = await axiosInstance.delete(`/api/board/${boardId}`);
   return response.data;
 };
+
+/* 추천 게시글 리스트 조회 */
+export const getRecommendList = async (
+  size: number | null,
+  cursorLikeCount: number | null,
+  cursorId: number | null,
+  interestId: number | null
+) => {
+  const response = await axiosInstance.get('/api/board/recommend', {
+    params: { size, cursorLikeCount, cursorId, interestId },
+  });
+  return response.data;
+};
+
+/* 유저 게시글 리스트 조회 */
+export const getUserArticleList = async (
+  personalId: string
+): Promise<Article[]> => {
+  const response = await axiosInstance.get(`/api/board/${personalId}/user`);
+  return response.data;
+};
