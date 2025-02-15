@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import  com.social.a406.domain.user.entity.User;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -23,11 +25,13 @@ public class Follow {
     // 팔로우 건 사용자
     @ManyToOne
     @JoinColumn(name = "follower_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User follower;
 
     // 팔로우 당한 사용자
     @ManyToOne
     @JoinColumn(name = "followee_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User followee;
 
     @CreatedDate
