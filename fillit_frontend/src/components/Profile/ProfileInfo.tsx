@@ -53,9 +53,9 @@ const ProfileInfo = ({
   }, [updateFollowStats, profileData.follow]);
 
   return (
-    <div className="w-[22rem] ml-20 -mt-7">
+    <div className="max-w-[20rem] ml-10 -mt-7">
       {paperImage && (
-        <div className="w-[12rem] h-[3.125rem] mb-2 -ml-8 translate-y-28">
+        <div className="w-[12rem] h-[3.125rem] mb-2 -ml-9 translate-y-28">
           <img src={paperImage} alt="paper name" className="w-full" />
         </div>
       )}
@@ -63,10 +63,10 @@ const ProfileInfo = ({
       <div className="w-[12rem] h-[13.438rem] -mt-[9.57rem] -ml-[3.25rem]">
         <img src={RippedProfile} alt="ripped profile" />
       </div>
-      <div className="ml-[9.6rem] -mt-[10.625rem]">
+      <div className="ml-[9.2rem] -mt-[10.625rem]">
         <div className="flex items-center h-8">
           <h4 className="text-xl leading-tight">{profileData.name}</h4>
-          <div className="flex gap-1 w-[120px] ml-1">
+          <div className="flex gap-1 ml-1">
             {!isMyProfile && (
               <>
                 <FollowButton
