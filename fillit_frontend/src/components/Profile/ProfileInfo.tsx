@@ -72,10 +72,14 @@ const ProfileInfo = ({
                 <FollowButton
                   isFollowing={isFollowing}
                   followeePersonalId={profileData.personalId}
-                  onFollowChange={handleFollowChange} // 팔로우 상태 변경 시 호출
+                  onFollowChange={handleFollowChange}
                   width="3.4rem"
                   height="1.25rem"
                   fontSize="9px"
+                  userData={{
+                    name: profileData.name,
+                    profileImageUrl: profileData.profileImageUrl,
+                  }}
                 />
                 <DmButton />
               </>
