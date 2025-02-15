@@ -20,7 +20,8 @@ export const connectRoom = (
   const token = localStorage.getItem('accessToken');
 
   // WebSocket URL에는 chatRoomId만 전달 (백엔드에서는 JWT 토큰 등으로 인증 처리)
-  const wsUrl = `ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&jwt=${token}`;
+  const wsUrl =
+    import.meta.env.VITE_WS_URL + `?chatRoomId=${chatRoomId}&jwt=${token}`;
   const ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
