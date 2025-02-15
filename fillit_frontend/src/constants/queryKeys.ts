@@ -4,4 +4,5 @@ export const QUERY_KEYS = {
   COMMENT_LIST: 'comment-list',
   COMMENT: 'comment',
   COMMENT_REPLY_LIST: 'comment-reply-list',
+  PROFILE: 'profile',
 };
