@@ -24,7 +24,10 @@ const UserItem = ({ userData }: UserItemProps) => {
         className="shrink-0 mr-2 cursor-pointer"
         onClick={handleProfileClick}
       >
-        <ProfileImage src={userData.profileImageUrl} />
+        <ProfileImage
+          src={userData.profileImageUrl}
+          personalId={userData.personalId}
+        />
       </div>
       <div className="flex-1 flex items-center min-w-0">
         <div className="truncate mr-1 text-xl">{userData.name}</div>
