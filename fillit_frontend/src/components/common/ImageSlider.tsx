@@ -33,7 +33,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
-          className="object-cover aspect-[1/1] rounded-md"
+          className="object-cover w-full aspect-[1/1] rounded-md"
           onError={() => {
             setIsError(true);
           }}
