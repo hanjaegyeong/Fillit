@@ -27,7 +27,7 @@ export const validationRules: Record<
   personalId: {
     required: true,
     minLength: 4,
-    maxLength: 20,
+    maxLength: 14,
     pattern: {
       value: /^[a-z0-9_]+$/,
       message: '소문자, 숫자, 언더스코어만 사용 가능합니다',
