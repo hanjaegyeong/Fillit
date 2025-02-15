@@ -2,15 +2,9 @@ import { useState } from 'react';
 
 interface ImageSliderProps {
   images: string[];
-  width?: string | number;
-  height?: string | number;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({
-  images,
-  width = '500px',
-  height = '300px',
-}) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
@@ -28,8 +22,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   if (images.length === 0) return null;
 
   return (
-    <div className="relative" style={{ width, height }}>
-      <div className="overflow-auto w-full h-full">
+    <div className="relative h-full max-h-[15rem] w-full max-w-[20rem]">
+      <div className="overflow-auto">
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
