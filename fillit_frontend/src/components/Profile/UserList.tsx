@@ -6,6 +6,7 @@ import { User } from '@/types/user';
 import { getFollowerList, getFolloweeList } from '@/api/follow';
 import LoadingSpinner from '../common/Loading/LoadingSpinner';
 import { useUserStore } from '@/store/useUserStore';
+import { useQuery } from '@tanstack/react-query';
 
 interface UserListProps {
   type: 'followers' | 'following';
@@ -13,44 +14,34 @@ interface UserListProps {
 }
 
 const UserList = ({ type, personalId }: UserListProps) => {
-  const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser } = useUserStore();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        if (!personalId) {
-          console.error('personalId가 없습니다');
-          return;
-        }
-
-        setIsLoading(true);
-
-        const response =
-          type === 'followers'
-            ? await getFollowerList(personalId)
-            : await getFolloweeList(personalId);
-
-        // 현재 로그인한 사용자를 찾아 최상단으로
-        const sortedUsers = [...response].sort((a, b) => {
-          if (a.personalId === currentUser.personalId) return -1;
-          if (b.personalId === currentUser.personalId) return 1;
-          return 0;
-        });
-
-        setUsers(sortedUsers);
-        setFilteredUsers(sortedUsers);
-      } catch (error) {
-        console.error('[UserList] 사용자 목록 조회 실패:', error);
-      } finally {
-        setIsLoading(false);
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users', type, personalId],
+    queryFn: async () => {
+      if (!personalId) {
+        throw new Error('persoanlId가 없습니다');
       }
-    };
+      const response =
+        type === 'followers'
+          ? await getFollowerList(personalId)
+          : await getFolloweeList(personalId);
 
-    fetchUsers();
-  }, [type, personalId, currentUser.personalId]);
+      return [...response].sort((a, b) => {
+        if (a.personalId === currentUser.personalId) return -1;
+        if (b.personalId === currentUser.personalId) return 1;
+        return 0;
+      });
+    },
+    enabled: !!personalId,
+  });
+
+  useEffect(() => {
+    if (users) {
+      setFilteredUsers(users);
+    }
+  }, [users]);
 
   const handleSearch = (term: string) => {
     const searchTerm = term.toLowerCase().trim();
@@ -63,8 +54,6 @@ const UserList = ({ type, personalId }: UserListProps) => {
     });
     setFilteredUsers(filtered);
   };
-
-  useEffect(() => {}, [users]);
 
   if (isLoading) {
     return <LoadingSpinner />;
