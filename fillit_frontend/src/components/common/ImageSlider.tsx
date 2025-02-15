@@ -1,3 +1,4 @@
+import { ImageSlideIcon } from '@/assets/assets';
 import { useState } from 'react';
 
 interface ImageSliderProps {
@@ -22,27 +23,25 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative h-full max-h-[15rem] w-full max-w-[20rem]">
-      <div className="overflow-auto">
-        <img
-          src={images[currentIndex]}
-          alt={`Slide ${currentIndex + 1}`}
-          className="w-full h-full object-cover rounded-md"
-        />
-      </div>
+    <div className="relative max-w-[20rem]">
+      <img
+        src={images[currentIndex]}
+        alt={`Slide ${currentIndex + 1}`}
+        className="object-cover aspect-[1/1] rounded-md"
+      />
       {images.length > 1 && (
         <>
           <button
             onClick={handlePrev}
-            className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-700 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+            className="absolute top-1/2 pt-1 -left-5 transform rotate-180 -translate-y-1/2"
           >
-            &#8249;
+            <img src={ImageSlideIcon} alt="image-slide-icon" className="h-14" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-700 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+            className="absolute top-1/2 pt-1 -right-5 transform -translate-y-1/2"
           >
-            &#8250;
+            <img src={ImageSlideIcon} alt="image-slide-icon" className="h-14" />
           </button>
           <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
             {images.map((_, index) => (

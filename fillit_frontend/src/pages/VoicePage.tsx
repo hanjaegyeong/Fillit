@@ -1,7 +1,7 @@
 import Header from '@/components/common/Header/Header';
 import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
-import { micBack, mic, speaker } from '@/assets/assets';
+import { mic, speaker } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
@@ -101,24 +101,20 @@ const VoicePage = () => {
         onReplyRemove={handleReplyRemove}
       />
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
-      <div className="fixed bottom-28 right-4 z-50">
-        <button
-          onClick={handleMicClick}
-          className="relative w-[72px] h-[72px] transform transition-transform duration-100 active:scale-90"
-        >
-          <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
-            <img
-              src={micBack}
-              alt="mic-back"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img
-              src={hasRecordedVoice ? speaker : mic}
-              alt="mic"
-              className="w-[65px] h-[65px] object-contain"
-            />
+
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
+        <button onClick={handleMicClick} className="relative w-20 h-20">
+          <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
+            <div
+              className={`w-12 h-12 ${
+                hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
+              }`}
+            >
+              <img
+                src={hasRecordedVoice ? speaker : mic}
+                alt="voice-status-icon"
+              />
+            </div>
           </div>
         </button>
         {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}

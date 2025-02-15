@@ -1,4 +1,4 @@
-import { playIcon, voiceWrapper } from '@/assets/assets';
+import { playIcon } from '@/assets/assets';
 import { Voice } from '@/types/voice';
 import { useNavigate } from 'react-router-dom';
 import useNavStore from '@/store/useNavStore';
@@ -20,18 +20,9 @@ const VoiceBubbleItem = ({ voice, onPlayClick }: VoiceBubbleItemProps) => {
   };
 
   return (
-    <div
-      className="flex items-center bg-no-repeat bg-cover bg-center shadow-md rounded-xl p-4"
-      style={{
-        backgroundImage: `url(${voiceWrapper})`,
-        width: '100%',
-        maxWidth: '346px',
-        height: '73px',
-        position: 'relative',
-      }}
-    >
+    <div className="flex items-center bg-white opacity-80 shadow-md rounded-xl py-3 px-4">
       {/* 프로필 이미지*/}
-      <div className="w-12 h-12 rounded-full mr-4 cursor-pointer">
+      <div className="w-12 h-12 flex items-center rounded-full ml-1 mr-4 cursor-pointer">
         <ProfileImage
           src={voice.profileImageUrl}
           onClick={handleProfileClick}
