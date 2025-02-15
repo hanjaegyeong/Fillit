@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: fillit
-  namespace: monitoring
+  namespace: default  # fillit 애플리케이션과 동일한 네임스페이스로 변경
   labels:
     release: prometheus
 spec:
