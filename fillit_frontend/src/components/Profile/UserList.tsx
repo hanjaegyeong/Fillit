@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { getFollowerList, getFolloweeList } from '@/api/follow';
 import LoadingSpinner from '../common/Loading/LoadingSpinner';
+import { useUserStore } from '@/store/useUserStore';
 
 interface UserListProps {
   type: 'followers' | 'following';
@@ -15,6 +16,7 @@ const UserList = ({ type, personalId }: UserListProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user: currentUser } = useUserStore();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -31,8 +33,15 @@ const UserList = ({ type, personalId }: UserListProps) => {
             ? await getFollowerList(personalId)
             : await getFolloweeList(personalId);
 
-        setUsers(response);
-        setFilteredUsers(response);
+        // 현재 로그인한 사용자를 찾아 최상단으로
+        const sortedUsers = [...response].sort((a, b) => {
+          if (a.personalId === currentUser.personalId) return -1;
+          if (b.personalId === currentUser.personalId) return 1;
+          return 0;
+        });
+
+        setUsers(sortedUsers);
+        setFilteredUsers(sortedUsers);
       } catch (error) {
         console.error('[UserList] 사용자 목록 조회 실패:', error);
       } finally {
@@ -41,7 +50,7 @@ const UserList = ({ type, personalId }: UserListProps) => {
     };
 
     fetchUsers();
-  }, [type, personalId]);
+  }, [type, personalId, currentUser.personalId]);
 
   const handleSearch = (term: string) => {
     const searchTerm = term.toLowerCase().trim();
