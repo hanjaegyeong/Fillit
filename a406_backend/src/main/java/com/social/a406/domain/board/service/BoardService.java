@@ -494,11 +494,13 @@ public class BoardService {
         return BoardRecommendResponse.builder()
                 .boardId(board.getId())
                 .personalId(board.getUser().getPersonalId())
+                .content(board.getContent())
                 .likeCount(board.getLikeCount())
                 .commentCount(commentService.getCommentCountByBoard(board.getId()))
                 .keyword(board.getKeyword())
                 .imageUrl(imageUrl)
                 .isLiked(like)
+                .createdAt(board.getCreatedAt())
                 .build();
     }
 
