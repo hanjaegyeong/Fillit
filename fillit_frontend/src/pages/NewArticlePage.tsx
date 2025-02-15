@@ -102,7 +102,7 @@ const NewArticlePage = () => {
         {/* 배경 종이 이미지 */}
         <img
           src={NewArticleImg}
-          className="fixed -left-2 bottom-0 max-w-[750px]"
+          className="fixed -left-3.5 bottom-0 max-w-[750px]"
           alt="paper background"
         />
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
@@ -117,13 +117,9 @@ const NewArticlePage = () => {
         {/* 가로 스크롤 오버플로우 바 */}
         {uploadedImages.length > 0 && (
           <div className="m-5 overflow-x-auto">
-            <div className="">
+            <div className="pl-10">
               {uploadedImages.length > 0 && (
-                <ImageSlider
-                  images={uploadedImages}
-                  width="w-full"
-                  height="300px "
-                />
+                <ImageSlider images={uploadedImages} />
               )}
             </div>
           </div>
