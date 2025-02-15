@@ -5,6 +5,7 @@ import { truncateText } from '@/utils/truncateText';
 import ArticleThumbnail from '@/components/Article/ArticleThumbnail';
 import LikeBadge from '@/components/common/Badge/LikeBadge';
 import CommentBadge from '@/components/common/Badge/CommentBadge';
+import ImageSlider from '../common/ImageSlider';
 
 interface ArticleContentProps {
   article: FeedArticle | Article;
@@ -12,9 +13,6 @@ interface ArticleContentProps {
 }
 
 const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
-  const imageUrl =
-    'imageUrl' in article ? article.imageUrl : article.imageUrls[0];
-
   return (
     <>
       <div
@@ -31,9 +29,27 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
       <div className="font-extralight text-base w-[15.2rem]">
         {isDetail ? article.content : truncateText(article.content, 60)}
       </div>
-      <div className="flex justify-center">
-        {imageUrl && <ArticleThumbnail imageUrl={imageUrl} />}
-      </div>
+      {article.imageUrls && (
+        <>
+          {isDetail &&
+          Array.isArray(article.imageUrls) &&
+          article.imageUrls.length > 1 ? (
+            <ImageSlider
+              images={article.imageUrls}
+              width="w-full"
+              height="200px"
+            />
+          ) : (
+            <ArticleThumbnail
+              imageUrl={
+                Array.isArray(article.imageUrls)
+                  ? article.imageUrls[0]
+                  : article.imageUrls
+              }
+            />
+          )}
+        </>
+      )}
       <div className="flex gap-5 pt-0.5">
         <LikeBadge
           type="article"
