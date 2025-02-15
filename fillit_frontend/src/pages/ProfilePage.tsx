@@ -6,23 +6,22 @@ import ProfileInfo from '@/components/Profile/ProfileInfo';
 import ProfileIntroduction from '@/components/Profile/ProfileIntroduction';
 import { useParams } from 'react-router-dom';
 import { useUserStore } from '@/store/useUserStore';
-import { User } from '@/types/user';
-import { getUserProfile } from '@/api/user';
 import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 import UserArticleListContainer from '@/components/Article/UserArticleListContainer';
 
 type RouteParams = {
   personalId: string;
 };
+import { useGetProfile } from '@/hooks/query/useGetProfile';
 
 const ProfilePage = () => {
   const { personalId } = useParams() as RouteParams; // URL 파라미터
   const { user: currentUser } = useUserStore(); // 현재 로그인한 유저저
 
   const [paperImage, setPaperImage] = useState<string | null>(null);
-  const [profileData, setProfileData] = useState<User | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { data: profileData, isLoading } = useGetProfile(personalId ?? '');
 
   // 본인 프로필인지 확인
   const isMyProfile = currentUser.personalId === personalId;
@@ -32,25 +31,14 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        if (personalId) {
-          const data = await getUserProfile(personalId);
-          setProfileData(data);
-
-          // 프로필 데이터를 받아온 후 종이 이미지 생성
-          const image = await getPaperText(data.name, 192);
-          setPaperImage(image);
-        }
-      } catch (error) {
-        console.error('프로필 데이터 로딩 실패:', error);
-      } finally {
-        setIsLoading(false);
+    const generatePaperImage = async () => {
+      if (profileData?.name) {
+        const image = await getPaperText(profileData.name, 192);
+        setPaperImage(image);
       }
     };
-
-    fetchProfileData();
-  }, [personalId]);
+    generatePaperImage();
+  }, [profileData?.name]);
 
   if (isLoading || !profileData) {
     return <LoadingOverlay />;
