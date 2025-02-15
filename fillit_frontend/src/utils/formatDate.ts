@@ -1,5 +1,6 @@
 export const formatDate = (date: string): string => {
   const createdDate = new Date(date);
+  createdDate.setHours(createdDate.getHours() + 9);
   const nowDate = new Date();
 
   const secondDiff = Math.floor(
