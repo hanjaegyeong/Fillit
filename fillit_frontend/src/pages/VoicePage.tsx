@@ -16,8 +16,6 @@ const VoicePage = () => {
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
 
   const fetchVoices = async () => {
     try {
@@ -65,7 +63,6 @@ const VoicePage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setSelectedVoice(null);
     console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
