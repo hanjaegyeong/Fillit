@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
 import SearchInput from '@/components/common/Input/SubmitInput';
-import MockProfileImage from '@/mocks/images/profile-image.png';
 import ProfileImage from '@/components/common/ProfileImage';
 import { NewMessage } from '@/assets/assets';
 import { truncateText } from '@/utils/truncateText';
@@ -51,7 +50,7 @@ const MessageListPage = () => {
         />
       </div>
 
-      <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
+      <div className="max-w-[21.25rem] w-full px-3 overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
         {loading ? (
           <p>Loading...</p>
         ) : chatResults.length === 0 ? (
@@ -64,10 +63,7 @@ const MessageListPage = () => {
               onClick={() => handleChatClick(chat.chatRoomId)}
             >
               <div className="mr-3">
-                <ProfileImage
-                  src={chat.profileImageUrl || MockProfileImage}
-                  size={42}
-                />
+                <ProfileImage src={chat.profileImageUrl} size={42} />
               </div>
               <div>
                 <p className="text-sm font-medium">{chat.otherUser}</p>
@@ -79,6 +75,7 @@ const MessageListPage = () => {
           ))
         )}
       </div>
+
       <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
         <button
           onClick={() => navigate('/newmessage')}
