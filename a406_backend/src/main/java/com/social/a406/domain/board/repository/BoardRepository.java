@@ -35,6 +35,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     FROM Board b 
     LEFT JOIN BoardLike bl ON b.id = bl.board.id AND bl.user.personalId = :myPersonalId
     WHERE b.user.personalId = :personalId
+    ORDER BY b.id DESC 
     """)
     List<Object[]> findAllByPersonalIdWithLike(
             @Param("personalId") String personalId,
