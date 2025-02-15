@@ -44,7 +44,7 @@ const CommentCard = ({
     >
       <div
         className={`flex flex-col space-y-2 ${
-          isDetail ? 'py-8 pl-16 pr-8' : 'py-8 pl-16 pr-14'
+          isDetail ? 'pt-6 pb-8 pl-16 pr-8' : 'py-8 pl-16 pr-14'
         } w-[19.5rem]`}
       >
         <div className="flex items-center gap-3">
@@ -54,10 +54,10 @@ const CommentCard = ({
             imageSize={isDetail ? 44 : 30}
           />
         </div>
-        <div className="font-extralight text-sm px-2 break-words">
+        <div className="font-extralight text-sm px-2 break-words leading-tight">
           {comment.content}
         </div>
-        <div className="flex justify-between pt-2">
+        <div className="flex justify-between pt-1">
           <div className="flex justify-end gap-4">
             <LikeBadge
               type="comment"

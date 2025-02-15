@@ -26,7 +26,11 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         />
         <TimeStamp date={article.createdAt} />
       </div>
-      <div className="font-extralight text-base w-[15.2rem]">
+      <div
+        className={`font-extralight text-base w-[15.2rem] break-words ${
+          isDetail ? 'leading-snug' : 'leading-tight'
+        }`}
+      >
         {isDetail ? article.content : truncateText(article.content, 60)}
       </div>
       <div className="flex justify-center">

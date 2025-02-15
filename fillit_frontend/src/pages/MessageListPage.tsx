@@ -66,7 +66,7 @@ const MessageListPage = () => {
                 <ProfileImage src={chat.profileImageUrl} size={42} />
               </div>
               <div>
-                <p className="text-sm font-medium">{chat.otherUser}</p>
+                <p className="text-base font-medium">{chat.otherUser}</p>
                 <p className="text-sm font-extralight text-gray-600">
                   {truncateText(chat.lastMessageContent, 30)}
                 </p>
