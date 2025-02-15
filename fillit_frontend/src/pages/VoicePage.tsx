@@ -36,10 +36,27 @@ const VoicePage = () => {
     }
   };
 
+  const checkMyVoice = async () => {
+    try {
+      const myVoice = await getVoice();
+      if (myVoice && myVoice.voiceId) {
+        setHasRecordedVoice(true);
+        setMyVoiceId(myVoice.voiceId);
+      } else {
+        setHasRecordedVoice(false);
+        setMyVoiceId(null);
+      }
+    } catch (error) {
+      setHasRecordedVoice(false);
+      setMyVoiceId(null);
+    }
+  };
+
   useEffect(() => {
     // 최초 렌더링시에만 음성 목록을 가져옴
     fetchVoices();
     fetchVoiceReplies();
+    checkMyVoice();
   }, []); // 빈 의존성 배열
 
   const handleMicClick = async () => {
@@ -92,6 +109,7 @@ const VoicePage = () => {
       prev.filter((reply) => reply.voiceReplyId !== replyId)
     );
   };
+
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
