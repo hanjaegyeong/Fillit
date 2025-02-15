@@ -25,6 +25,9 @@ const ProfileImage = ({
       }}
       className="rounded-full object-cover border-[0.06rem] border-gray-400"
       onClick={onClick}
+      onError={(e) => {
+        e.currentTarget.src = defaultImage;
+      }}
     />
   );
 };

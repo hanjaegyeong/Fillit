@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
-import ProfileImage from '@/mocks/images/profile-image.png';
+import ProfileImage from '@/components/common/ProfileImage';
 import SubmitInput from '@/components/common/Input/SubmitInput';
 import { postRoom, getRoomsInfo } from '@/api/message';
 import { User } from '@/types/user';
@@ -74,11 +74,13 @@ const NewMessagePage = () => {
               className="p-4 bg-white flex "
               onClick={() => handleUserClick(user)}
             >
-              <img
-                src={user.profileImageUrl || ProfileImage}
-                alt={user.personalId}
-                className="w-12 h-12 rounded-full mr-4"
-              />
+              <div className="mr-4">
+                <ProfileImage
+                  src={user.profileImageUrl}
+                  alt="profile-image"
+                  size={48}
+                />
+              </div>
               <div className="flex flex-col justify-center">
                 <p className="text-m font-bold text-gray-600">{user.name}</p>
                 <p className="text-xs text-gray-500">{user.personalId}</p>
