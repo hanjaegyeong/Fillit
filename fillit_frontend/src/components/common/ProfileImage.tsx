@@ -23,7 +23,7 @@ const ProfileImage = ({
         height: `${size}px`,
         width: `${size}px`,
       }}
-      className="rounded-full object-cover border-[0.06rem] border-gray-400"
+      className="rounded-full object-cover border-[0.06rem] border-gray-500"
       onClick={onClick}
       onError={(e) => {
         e.currentTarget.src = defaultImage;
