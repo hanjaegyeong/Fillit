@@ -45,14 +45,14 @@ const UserList = ({ type, personalId }: UserListProps) => {
 
   const handleSearch = (term: string) => {
     const searchTerm = term.toLowerCase().trim();
-    const filtered = users.filter((userData) => {
+    const filtered = users?.filter((userData) => {
       const name = userData.name ? userData.name.toLowerCase() : '';
       const personalId = userData.personalId
         ? userData.personalId.toLowerCase()
         : '';
       return name.includes(searchTerm) || personalId.includes(searchTerm);
     });
-    setFilteredUsers(filtered);
+    setFilteredUsers(filtered || []);
   };
 
   if (isLoading) {
