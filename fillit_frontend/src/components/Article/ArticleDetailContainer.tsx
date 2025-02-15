@@ -1,26 +1,22 @@
-import { useParams } from 'react-router-dom';
 import ArticleContent from '@/components/Article/ArticleContent';
 import ProfileImage from '@/components/common/ProfileImage';
 import CommentListContainer from '@/components/Comment/CommentListContainer';
-import useGetArticle from '@/hooks/query/useGetArticle';
 import SubmitInput from '@/components/common/Input/SubmitInput';
 import usePostComment from '@/hooks/query/usePostComment';
 import { COMMENT_MAX_LENGTH } from '@/constants/system';
 import { useUserStore } from '@/store/useUserStore';
+import { Article } from '@/types/article';
 
-type RouteParams = {
-  boardId: string;
-};
+interface ArticleDetailContainerProps {
+  article: Article;
+}
 
-const ArticleDetailContainer = () => {
-  const { boardId } = useParams() as RouteParams;
+const ArticleDetailContainer = ({ article }: ArticleDetailContainerProps) => {
   const { user } = useUserStore();
-  console.log(user.profileImageUrl);
-  const { data: article } = useGetArticle(Number(boardId));
   const { mutate: addComment } = usePostComment();
 
   const handleCommentSubmit = (content: string) => {
-    addComment({ boardId: Number(boardId), content });
+    addComment({ boardId: article.boardId, content });
   };
 
   return (
