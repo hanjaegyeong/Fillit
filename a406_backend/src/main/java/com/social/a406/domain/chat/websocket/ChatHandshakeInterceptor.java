@@ -44,6 +44,8 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
                 System.err.println("Error: Theres No Invalid personalId");
                 return false;
             }
+            System.out.println(" 2. I found my Personal Id :" + personalId);
+
 
             // 3. UserDetails 로드 및 JWT 검증
             UserDetails userDetails = userDetailsService.loadUserByUsername(personalId);
@@ -52,19 +54,16 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
                 System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername());
                 return false;
             }
+            System.out.println(" 3. I check my Personal Id is vaild :" + personalId);
+
 
 
             // 4. 사용자 정보 WebSocketSession에 저장
             attributes.put("personalId", personalId);
 
             // 5. chatRoomId를 요청에서 추출하여 session에 저장
-
-            // chatRoomId 추출
-//            Long chatRoomId = Optional.ofNullable(query)
-//                    .filter(q -> q.startsWith("chatRoomId="))
-//                    .map(q -> Long.parseLong(q.split("=")[1]))
-//                    .orElse(null);
-
+            System.out.println(" 4. Personal Id is exist yet :" + personalId);
+            System.out.println(" 4. chatRoom Id is exist yet :" + personalId);
 
             // 검증 및 저장 (chatRoomId가 없거나 personalId와 맞는 chatRoomId가 아닌경우)
             if (chatRoomId == null || !chatService.isParticipantInChatRoom(personalId, chatRoomId)) {
@@ -74,14 +73,14 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
                 return false; // chatRoomId가 없거나 유효하지 않은 경우
             }
             attributes.put("chatRoomId", chatRoomId);
+            System.out.println("WebSocketHandShake Success! ChatRoomId:" + chatRoomId);
+            return true; // 인증 성공 및 chatRoomId 설정 완료
 
         }
         catch (Exception e) {
             System.err.println("WebInterceptor is borekn:" + e.getMessage());
+            return false;
         }
-
-        System.out.println("WebSocketHandShake Success! ChatRoomId:" + chatRoomId);
-        return true; // 인증 성공 및 chatRoomId 설정 완료
 
     }
 
