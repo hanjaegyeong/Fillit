@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -47,14 +46,14 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             System.out.println(" 2. I found my Personal Id :" + personalId);
 
 
-            // 3. UserDetails 로드 및 JWT 검증
-            UserDetails userDetails = userDetailsService.loadUserByUsername(personalId);
-            if (!jwtTokenUtil.validateToken(token, userDetails)) {
-                response.setStatusCode(HttpStatus.FORBIDDEN);
-                System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername());
-                return false;
-            }
-            System.out.println(" 3. I check my Personal Id is vaild :" + personalId);
+//            // 3. UserDetails 로드 및 JWT 검증
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(personalId);
+//            if (!jwtTokenUtil.validateToken(token, userDetails)) {
+//                response.setStatusCode(HttpStatus.FORBIDDEN);
+//                System.err.println("Error: PersonalId mismatch! personalId: " + userDetails.getUsername());
+//                return false;
+//            }
+//            System.out.println(" 3. I check my Personal Id is vaild :" + personalId);
 
 
 
