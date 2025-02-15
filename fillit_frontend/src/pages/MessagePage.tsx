@@ -1,13 +1,13 @@
 import Header from '@/components/common/Header/Header';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import ProfileImage from '@/mocks/images/profile-image.png';
 import AiFilButton from '@/components/common/Button/AiFilButton';
 import { getMessages, getRoomsInfo } from '@/api/message';
 import { Message as ApiMessage, ChatRoomInfo } from '@/types/message';
 import { connectRoom, sendMessage } from '@/api/webSocket';
 import { MessageType } from '@/enum/MessageType';
 import { WebSocketResponse } from '@/types/websocket';
+import ProfileImage from '@/components/common/ProfileImage';
 
 const MessagePage = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -111,10 +111,10 @@ const MessagePage = () => {
       <div>
         <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-250px)] hide-scrollbar">
           <div className="flex flex-col items-center justify-start pt-8 pb-4">
-            <img
-              src={roomInfo?.otherProfileImageUrl || ProfileImage}
-              alt={roomInfo?.otherUserName || 'Profile'}
-              className="w-24 h-24 rounded-full"
+            <ProfileImage
+              src={roomInfo?.otherProfileImageUrl}
+              alt={roomInfo?.otherUserName}
+              size={96}
             />
             <button
               onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
@@ -137,14 +137,14 @@ const MessagePage = () => {
                 }`}
               >
                 {!isMyMessage && (
-                  <img
-                    src={roomInfo?.otherProfileImageUrl || ProfileImage}
-                    alt={msg.userName}
-                    onClick={() =>
-                      navigate(`/profile/${roomInfo?.otherPersonalId}`)
-                    }
-                    className="w-8 h-8 rounded-full mr-2 self-end cursor-pointer"
-                  />
+                  <div className="mr-2 self-end">
+                    <ProfileImage
+                      src={roomInfo?.otherProfileImageUrl}
+                      alt={roomInfo?.otherUserName}
+                      size={32}
+                      personalId={roomInfo?.otherPersonalId}
+                    />
+                  </div>
                 )}
                 <div className="max-w-[70%] p-3 rounded-lg bg-white/60 text-black font-light">
                   <p className="text-sm">{msg.messageContent}</p>
