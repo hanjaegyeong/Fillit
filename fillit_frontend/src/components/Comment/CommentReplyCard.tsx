@@ -15,8 +15,8 @@ const CommentReplyCard = ({
 }: CommentReplyCardProps) => {
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[20rem] flex items-center -mt-10 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)] ${
-        position === 'left' ? 'ml-8' : 'ml-24'
+      className={`bg-contain bg-no-repeat bg-center w-[20.5rem] flex items-center -mt-10 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)] ${
+        position === 'left' ? 'ml-4' : 'ml-24'
       }`}
       style={{
         backgroundImage: `url(${ReplyImage})`,
@@ -32,12 +32,11 @@ const CommentReplyCard = ({
             personalId={commentReply.personalId}
             imageSize={30}
           />
-          <TimeStamp date={commentReply.createdAt} />
         </div>
-        <div className="font-extralight text-s w-[13.4rem] break-words">
+        <div className="font-extralight text-s w-[13.4rem] break-words px-2">
           {commentReply.content}
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-between pt-1.5">
           <LikeBadge
             type="reply"
             id={commentReply.replyId}
@@ -45,6 +44,7 @@ const CommentReplyCard = ({
             initialIsLiked={commentReply.isLiked}
             size="small"
           />
+          <TimeStamp date={commentReply.createdAt} />
         </div>
       </div>
     </div>

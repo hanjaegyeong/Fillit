@@ -25,7 +25,7 @@ const CommentDetailContainer = () => {
 
   return (
     <div className="flex flex-col items-center w-full overflow-x-hidden pt-10">
-      <div className="pb-1">
+      <div className="pb-1.5">
         {comment && (
           <CommentCard
             comment={comment}
