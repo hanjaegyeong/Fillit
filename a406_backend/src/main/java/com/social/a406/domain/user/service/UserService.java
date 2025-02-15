@@ -186,10 +186,10 @@ public class UserService {
 
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (result != null) {
-
             boolean isFollow = false;
             if(!myPersonalId.equals(personalId)){
-                isFollow = followRepository.existsByFolloweeIdAndFollowerId(personalId,myPersonalId);
+                isFollow = followRepository.existsByFollowee_PersonalIdAndFollower_PersonalId(personalId, myPersonalId);
+                System.out.println(isFollow);
             }
             return mapToResponseDto(result,isFollow);
         }
