@@ -3,6 +3,7 @@ import VoiceBubbleItem from '@/components/Voice/VoiceBubbleItem';
 import VoiceListenModal from '@/components/Voice/Modals/VoiceListenModal';
 import { Voice } from '@/types/voice';
 import { getFolloweeVoiceListen } from '@/api/voice';
+import { AnimatePresence } from 'framer-motion';
 
 interface VoiceBubbleListProps {
   voices: Voice[];
@@ -33,13 +34,15 @@ const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
     <div className="z-10 pt-6 min-w-[22rem] px-4 flex flex-col items-center">
       <h4 className="text-lg mb-2">Voice Bubbles</h4>
       <div className="overflow-y-auto w-full max-h-[calc(100vh-380px)] hide-scrollbar space-y-4">
-        {voices.map((voice) => (
-          <VoiceBubbleItem
-            key={voice.voiceId}
-            voice={voice}
-            onPlayClick={handlePlayClick}
-          />
-        ))}
+        <AnimatePresence mode="popLayout">
+          {voices.map((voice) => (
+            <VoiceBubbleItem
+              key={voice.voiceId}
+              voice={voice}
+              onPlayClick={handlePlayClick}
+            />
+          ))}
+        </AnimatePresence>
       </div>
 
       <VoiceListenModal
