@@ -38,7 +38,7 @@ const SearchArticleListContainer = ({
         {word ? (
           <></>
         ) : (
-          <div className="w-full max-w-[600px] flex items-end justify-start pl-4 pt-2 -mb-2">
+          <div className="w-full max-w-[600px] flex items-center justify-start pl-4 pt-2 pb-1.5">
             <img src={RecommendIcon} alt="recommend-icon" className="size-8 " />
             <p className="text-left text-white pl-1 font-light text-xl tracking-tight text-shadow-sm">
               Recommended content
