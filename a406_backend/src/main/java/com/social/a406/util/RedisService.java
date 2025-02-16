@@ -1,6 +1,7 @@
 package com.social.a406.util;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.time.Duration;
 @Service
 @RequiredArgsConstructor
 public class RedisService {
+    @Qualifier("redisTemplate")
     private final StringRedisTemplate redisTemplate;
 
     // 리프레시 토큰 저장
