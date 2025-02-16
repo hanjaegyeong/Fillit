@@ -8,6 +8,7 @@ import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
 import { useState, useEffect } from 'react';
 import { getFolloweeVoiceList, getVoiceReplyList, getVoice } from '@/api/voice';
 import { Voice, VoiceReply } from '@/types/voice';
+import BubbleAnimation from '@/components/Voice/BubbleAnimation';
 
 const VoicePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,7 @@ const VoicePage = () => {
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
+  const [showBubbleAnimation, setShowBubbleAnimation] = useState(false);
 
   const fetchVoices = async () => {
     try {
@@ -36,10 +38,27 @@ const VoicePage = () => {
     }
   };
 
+  const checkMyVoice = async () => {
+    try {
+      const myVoice = await getVoice();
+      if (myVoice && myVoice.voiceId) {
+        setHasRecordedVoice(true);
+        setMyVoiceId(myVoice.voiceId);
+      } else {
+        setHasRecordedVoice(false);
+        setMyVoiceId(null);
+      }
+    } catch (error) {
+      setHasRecordedVoice(false);
+      setMyVoiceId(null);
+    }
+  };
+
   useEffect(() => {
     // 최초 렌더링시에만 음성 목록을 가져옴
     fetchVoices();
     fetchVoiceReplies();
+    checkMyVoice();
   }, []); // 빈 의존성 배열
 
   const handleMicClick = async () => {
@@ -71,7 +90,13 @@ const VoicePage = () => {
     setHasRecordedVoice(true);
     setMyVoiceId(voiceId);
     setIsModalOpen(false);
+    setShowBubbleAnimation(true); // 즉시 애니메이션 시작
     fetchVoices();
+
+    // 3초 후 애니메이션 숨기기
+    setTimeout(() => {
+      setShowBubbleAnimation(false);
+    }, 3000);
   };
 
   const handleDeleteComplete = () => {
@@ -92,6 +117,7 @@ const VoicePage = () => {
       prev.filter((reply) => reply.voiceReplyId !== replyId)
     );
   };
+
   return (
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
@@ -117,22 +143,24 @@ const VoicePage = () => {
             </div>
           </div>
         </button>
-        {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
-        {hasRecordedVoice && myVoiceId !== null ? (
-          <VoiceManageModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onDeleteComplete={handleDeleteComplete}
-            voiceId={myVoiceId}
-          />
-        ) : (
-          <VoiceRecordModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onRecordComplete={handleRecordComplete}
-          />
-        )}
       </div>
+
+      {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
+      {hasRecordedVoice && myVoiceId !== null ? (
+        <VoiceManageModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onDeleteComplete={handleDeleteComplete}
+          voiceId={myVoiceId}
+        />
+      ) : (
+        <VoiceRecordModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onRecordComplete={handleRecordComplete}
+        />
+      )}
+      <BubbleAnimation isVisible={showBubbleAnimation} />
     </div>
   );
 };
