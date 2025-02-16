@@ -39,14 +39,12 @@ const VoiceRecordModal = ({
 
   const handleMicClick = () => {
     if (!isRecording && !isRecordingComplete) {
-      console.log('[VoiceRecordModal] 녹음 시작됨.');
       handleRecord();
     }
   };
 
   const handleReRecord = () => {
     reset();
-    console.log('[VoiceRecordModal] 녹음 리셋됨.');
   };
 
   const handleSubmit = async () => {
