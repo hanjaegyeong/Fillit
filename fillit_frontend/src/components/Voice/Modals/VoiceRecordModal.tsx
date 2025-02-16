@@ -68,7 +68,7 @@ const VoiceRecordModal = ({
         setTimeout(() => {
           setShowToast(false);
           onClose();
-        }, 3000);
+        }, 2000);
       } catch (error) {
         console.error('[VoiceRecordModal] 음성 업로드 실패:', error);
         onRecordComplete(0);
