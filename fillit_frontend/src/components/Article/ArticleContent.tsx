@@ -31,7 +31,7 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
           isDetail ? 'leading-snug' : 'leading-tight w-[15.2rem]'
         }`}
       >
-        {isDetail ? article.content : truncateText(article.content, 60)}
+        {isDetail ? article.content : truncateText(article.content, 55)}
       </div>
       <div className="flex justify-center">
         {'imageUrl' in article && article.imageUrl && (
