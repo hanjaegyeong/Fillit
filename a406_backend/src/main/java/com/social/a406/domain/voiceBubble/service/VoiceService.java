@@ -6,14 +6,17 @@ import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
+import com.social.a406.domain.voiceBubble.entity.VoiceListen;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
+import com.social.a406.domain.voiceBubble.repository.VoiceListenRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
 import com.social.a406.domain.voiceBubble.repository.VoiceRepository;
 import com.social.a406.util.exception.BadRequestException;
 import com.social.a406.util.exception.ForbiddenException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class VoiceService {
 
     private final VoiceRepository voiceRepository;
@@ -36,16 +40,7 @@ public class VoiceService {
     private final FollowRepository followRepository;
     private final VoiceReplyRepository voiceReplyRepository;
     private final VoiceReplyService voiceReplyService;
-
-    @Autowired
-    public VoiceService(VoiceRepository voiceRepository, UserRepository userRepository, S3Client s3Client, FollowRepository followRepository, VoiceReplyRepository voiceReplyRepository, VoiceReplyService voiceReplyService) {
-        this.voiceRepository = voiceRepository;
-        this.userRepository = userRepository;
-        this.s3Client = s3Client;
-        this.followRepository = followRepository;
-        this.voiceReplyRepository = voiceReplyRepository;
-        this.voiceReplyService = voiceReplyService;
-    }
+    private final VoiceListenRepository voiceListenRepository;
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -94,7 +89,7 @@ public class VoiceService {
         List<User> users = follows.stream().map(Follow::getFollowee)  // follower의 followee를 가져옴
                 .toList();
         List<String> userIds = users.stream().map(User::getId).collect(Collectors.toList());
-        List<Voice> voices = voiceRepository.findAllByUser_IdInOrderByCreatedAtDesc(userIds);
+        List<Voice> voices = voiceRepository.findAllByUser_IdInAndNotListened(userIds, user.getId());
         List<VoiceResponse> responses = voices.stream()
                 .map(voice -> new VoiceResponse(
                         voice.getId(),
@@ -139,4 +134,19 @@ public class VoiceService {
         return voiceRepository.findByUserPersonalId(personalId).orElse(null);
     }
 
+    @Transactional
+    public void listenFollowerVoice(String personalId, Long voiceId) {
+        User user = userRepository.findByPersonalId(personalId).orElseThrow(
+                () -> new ForbiddenException("Not found user"));
+        Voice voice = voiceRepository.findById(voiceId).orElseThrow(
+                ()->new ForbiddenException("Not found voice"));
+        try {
+            voiceListenRepository.save(VoiceListen.builder()
+                    .user(user)
+                    .voice(voice)
+                    .build());
+        } catch (DataIntegrityViolationException e) {
+            throw new BadRequestException("User already listened this voice");
+        }
+    }
 }
