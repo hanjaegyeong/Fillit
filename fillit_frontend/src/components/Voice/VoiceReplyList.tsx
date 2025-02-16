@@ -44,8 +44,20 @@ const VoiceReplyList = ({
       <div className="flex flex-col z-10 pt-5">
         <h4 className="text-lg pl-4 mb-2">Voice Replies</h4>
         {voiceReplies.length === 0 ? (
-          <div className="flex justify-center items-center w-full py-4">
-            <p className="text-gray-500 text-lg">No reply yet.</p>
+          <div
+            className="w-[370px] bg-contain bg-no-repeat py-2.5 px-2"
+            style={{ backgroundImage: `url(${replyBar})` }}
+          >
+            <div className="flex justify-center items-center -mt-2 w-full h-[80px] backdrop-blur-sm rounded-full">
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-gray-800 text-lg font-light">
+                  No reply yet ⏳
+                </p>
+                <p className="text-gray-700 text-sm font-extralight">
+                  Still waiting for a reply...
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <div
