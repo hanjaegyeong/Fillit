@@ -32,6 +32,12 @@ export const getFolloweeVoiceList = async (): Promise<Voice[]> => {
   return Array.isArray(response.data) ? response.data : [];
 };
 
+/* 팔로위 보이스 듣기 */
+export const getFolloweeVoiceListen = async (voiceId: number) => {
+  const response = await axiosInstance.get(`/api/voice/${voiceId}/listen`);
+  return response.data;
+};
+
 /* 보이스 답장 업로드 */
 export const postVoiceReply = async (file: File, voiceId: number) => {
   const formData = new FormData();

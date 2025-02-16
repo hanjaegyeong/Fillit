@@ -2,6 +2,7 @@ import { useState } from 'react';
 import VoiceBubbleItem from '@/components/Voice/VoiceBubbleItem';
 import VoiceListenModal from '@/components/Voice/Modals/VoiceListenModal';
 import { Voice } from '@/types/voice';
+import { getFolloweeVoiceListen } from '@/api/voice';
 
 interface VoiceBubbleListProps {
   voices: Voice[];
@@ -16,6 +17,7 @@ const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
     console.log('[VoiceBubbleList] 선택된 보이스:', voice);
     setSelectedVoice(voice);
     setIsModalOpen(true);
+    getFolloweeVoiceListen(voice.voiceId);
   };
 
   const handleModalClose = () => {
