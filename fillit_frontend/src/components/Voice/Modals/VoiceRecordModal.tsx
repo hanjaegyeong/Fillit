@@ -56,6 +56,7 @@ const VoiceRecordModal = ({
         try {
           const myVoice = await getVoice();
           if (myVoice && myVoice.voiceId) {
+            onClose();
             onRecordComplete(myVoice.voiceId);
           } else {
             onRecordComplete(0);
@@ -67,8 +68,7 @@ const VoiceRecordModal = ({
 
         setTimeout(() => {
           setShowToast(false);
-          onClose();
-        }, 2000);
+        }, 3000);
       } catch (error) {
         console.error('[VoiceRecordModal] 음성 업로드 실패:', error);
         onRecordComplete(0);

@@ -8,6 +8,7 @@ import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
 import { useState, useEffect } from 'react';
 import { getFolloweeVoiceList, getVoiceReplyList, getVoice } from '@/api/voice';
 import { Voice, VoiceReply } from '@/types/voice';
+import BubbleAnimation from '@/components/Voice/BubbleAnimation';
 
 const VoicePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,7 @@ const VoicePage = () => {
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
+  const [showBubbleAnimation, setShowBubbleAnimation] = useState(false);
 
   const fetchVoices = async () => {
     try {
@@ -88,7 +90,13 @@ const VoicePage = () => {
     setHasRecordedVoice(true);
     setMyVoiceId(voiceId);
     setIsModalOpen(false);
+    setShowBubbleAnimation(true); // 즉시 애니메이션 시작
     fetchVoices();
+
+    // 3초 후 애니메이션 숨기기
+    setTimeout(() => {
+      setShowBubbleAnimation(false);
+    }, 3000);
   };
 
   const handleDeleteComplete = () => {
@@ -152,6 +160,7 @@ const VoicePage = () => {
           onRecordComplete={handleRecordComplete}
         />
       )}
+      <BubbleAnimation isVisible={showBubbleAnimation} />
     </div>
   );
 };
