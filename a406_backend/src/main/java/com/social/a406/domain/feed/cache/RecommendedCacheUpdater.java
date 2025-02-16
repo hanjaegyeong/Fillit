@@ -61,7 +61,7 @@ public class RecommendedCacheUpdater {
                     PageRequest.of(0, 50, Sort.by("createdAt").descending())
             ).stream().map(this::convertToDto).toList();
 
-            System.out.println("check BoardList: " +recommendedBoards);
+//            System.out.println("check BoardList: " +recommendedBoards);
 
 
             // Redis에 저장할 key
