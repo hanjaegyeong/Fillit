@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Header from '@/components/common/Header/Header';
 import BasicButton from '@/components/common/Button/BasicButton';
 import ProfileImageUploader from '@/components/Profile/ProfileImageUploader';
@@ -18,6 +18,30 @@ const ProfileEditPage = () => {
     isLoading,
   } = useProfile();
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+
+  const validateName = (name: string): boolean => {
+    if (!name.trim()) {
+      setErrors((prev) => ({ ...prev, name: '필수 입력 항목입니다' }));
+      return false;
+    }
+
+    if (name.length > 8) {
+      setErrors((prev) => ({ ...prev, name: '최대 8자까지 입력 가능합니다' }));
+      return false;
+    }
+
+    const nameRegex = /^[A-Za-z]+$/;
+    if (!nameRegex.test(name)) {
+      setErrors((prev) => ({ ...prev, name: '영어만 입력 가능합니다' }));
+      return false;
+    }
+
+    setErrors((prev) => ({ ...prev, name: '' }));
+    return true;
+  };
+
   // 이미지 변경시 URL 생성
   const handleFileChange = useCallback(
     (file: File) => {
@@ -33,6 +57,8 @@ const ProfileEditPage = () => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
       setProfile((prev) => ({ ...prev, name: value }));
+      const isValid = validateName(value);
+      setIsSubmitDisabled(!isValid);
     },
     [setProfile]
   );
@@ -46,13 +72,17 @@ const ProfileEditPage = () => {
   );
 
   const handleEditClick = useCallback(async () => {
+    if (!validateName(profile.name)) {
+      return;
+    }
+
     try {
       await updateProfile();
       navigate(`/profile/${currentUser.personalId}`);
     } catch (error) {
       console.error('프로필 수정 실패:', error);
     }
-  }, [updateProfile, navigate, currentUser.personalId]);
+  }, [updateProfile, navigate, currentUser.personalId, profile.name]);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -71,9 +101,15 @@ const ProfileEditPage = () => {
           introduction={profile.introduction}
           onNameChange={handleNameChange}
           onIntroductionChange={handleIntroductionChange}
+          errors={errors}
         />
         <div className="mt-10">
-          <BasicButton text="Edit" onClick={handleEditClick} width="6rem" />
+          <BasicButton
+            text="Edit"
+            onClick={handleEditClick}
+            width="6rem"
+            disabled={isSubmitDisabled}
+          />
         </div>
       </div>
     </div>
