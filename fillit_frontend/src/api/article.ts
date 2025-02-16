@@ -1,14 +1,6 @@
 import axiosInstance from '@/api/axiosInstance';
 import { Article, ArticlePostForm } from '@/types/article';
 
-/* 피드 게시글 조회 */
-export const getFeed = async (limit: number, cursor: string | null) => {
-  const response = await axiosInstance.get('/api/feed', {
-    params: { limit, cursor },
-  });
-  return response.data;
-};
-
 /* 게시글 작성 */
 export const postArticle = async (
   articlePostForm: ArticlePostForm
@@ -72,8 +64,24 @@ export const deleteArticle = async (boardId: number) => {
   return response.data;
 };
 
+/* 유저 게시글 리스트 조회 */
+export const getUserArticleList = async (
+  personalId: string
+): Promise<Article[]> => {
+  const response = await axiosInstance.get(`/api/board/${personalId}/user`);
+  return response.data;
+};
+
+/* 피드 게시글 조회 */
+export const getFeed = async (limit: number, cursor: string | null) => {
+  const response = await axiosInstance.get('/api/feed', {
+    params: { limit, cursor },
+  });
+  return response.data;
+};
+
 /* 추천 게시글 리스트 조회 */
-export const getRecommendList = async (
+export const getRecommendArticleList = async (
   size: number | null,
   cursorLikeCount: number | null,
   cursorId: number | null,
@@ -85,10 +93,14 @@ export const getRecommendList = async (
   return response.data;
 };
 
-/* 유저 게시글 리스트 조회 */
-export const getUserArticleList = async (
-  personalId: string
-): Promise<Article[]> => {
-  const response = await axiosInstance.get(`/api/board/${personalId}/user`);
+/* 검색 게시글 리스트 조회 */
+export const getSearchArticleList = async (
+  word: string,
+  size: number | null,
+  cursorId: number | null
+) => {
+  const response = await axiosInstance.get(`/api/board/search`, {
+    params: { word, size, cursorId },
+  });
   return response.data;
 };
