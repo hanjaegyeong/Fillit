@@ -46,7 +46,7 @@ public class BoardController {
 
     // 검색 창 추천 게시글 조회
     @GetMapping("/recommend")
-    public ResponseEntity<List<BoardRecommendResponse>> recommendBoard(
+    public ResponseEntity<BoardRecommendCursorResponse> recommendBoard(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorLikeCount,
@@ -85,8 +85,16 @@ public class BoardController {
     // 유저 게시글 조회
     @GetMapping("/user")
     public ResponseEntity<List<BoardResponse>> getUserBoard(@AuthenticationPrincipal UserDetails userDetails){
-        List<BoardResponse> boardResponses = boardService.getBoardByUser(userDetails.getUsername());
+        List<BoardResponse> boardResponses = boardService.getBoardByUser(userDetails.getUsername(), userDetails.getUsername());
         return ResponseEntity.ok(boardResponses);
+    }
+
+    // 다른 사람 게시글 조회
+    @GetMapping("/{personalId}/user")
+    public ResponseEntity<List<BoardResponse>> getOtherUserProfileBoard(@AuthenticationPrincipal UserDetails userDetails,
+                                                                               @PathVariable String personalId){
+        List<BoardResponse> responses = boardService.getBoardByUser(userDetails.getUsername(), personalId);
+        return ResponseEntity.ok(responses);
     }
 
     // 내 프로필 게시글 조회

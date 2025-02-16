@@ -186,10 +186,10 @@ public class UserService {
 
         // 사용자 정보가 존재할 경우 UserCharacterResponse로 변환
         if (result != null) {
-
             boolean isFollow = false;
             if(!myPersonalId.equals(personalId)){
-                isFollow = followRepository.existsByFolloweeIdAndFollowerId(personalId,myPersonalId);
+                isFollow = followRepository.existsByFollowee_PersonalIdAndFollower_PersonalId(personalId, myPersonalId);
+                System.out.println(isFollow);
             }
             return mapToResponseDto(result,isFollow);
         }
@@ -289,12 +289,12 @@ public class UserService {
 
             // S3 업로드
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .contentType(contentType)
-                .contentDisposition("inline")
-                .build();
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(contentType)
+                    .contentDisposition("inline")
+                    .build();
 
             s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(
                     file.getInputStream(), file.getSize()));
