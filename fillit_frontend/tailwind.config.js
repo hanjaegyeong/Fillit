@@ -1,4 +1,5 @@
 import scrollbarHide from 'tailwind-scrollbar-hide';
+import textShadow from 'tailwindcss-textshadow';
 
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -31,7 +32,12 @@ export default {
         'float-medium': 'float 5s ease-in-out infinite',
         'float-fast': 'float 4s ease-in-out infinite',
       },
+      textShadow: {
+        sm: '1px 2px 1px rgba(0, 0, 0, 0.7)',
+        md: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+        lg: '3px 3px 6px rgba(0, 0, 0, 0.7)',
+      },
     },
   },
-  plugins: [scrollbarHide],
+  plugins: [scrollbarHide, textShadow],
 };

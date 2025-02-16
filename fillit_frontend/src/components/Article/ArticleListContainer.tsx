@@ -22,8 +22,11 @@ const ArticleListContainer = () => {
           <div key={pageIndex}>
             {page.posts.map((article: FeedArticle, index: number) => {
               return (
-                <div className={`${index % 2 ? 'pl-20' : 'pr-20'}`}>
-                  <ArticleWrapper key={article.boardId} article={article} />
+                <div
+                  key={article.boardId}
+                  className={`${index % 2 ? 'pl-20' : 'pr-20'}`}
+                >
+                  <ArticleWrapper article={article} />
                 </div>
               );
             })}
