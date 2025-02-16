@@ -29,6 +29,7 @@ public class VoiceController {
         return ResponseEntity.ok(voiceService.saveVoice(file, userDetails.getUsername()));
     }
 
+    // 내 음성 다시 듣기
     @GetMapping("/listen")
     public ResponseEntity<VoiceListenResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
         Voice voice = voiceService.findVoice(userDetails.getUsername());
@@ -38,6 +39,14 @@ public class VoiceController {
                 voice.getAudioUrl());
 
         return ResponseEntity.ok(response);
+    }
+
+    // 팔로워 음성 듣기
+    @GetMapping("/{voiceId}/listen")
+    public ResponseEntity<String> listenFllowerVoice(@AuthenticationPrincipal UserDetails userDetails,
+                                                     @PathVariable Long voiceId){
+        voiceService.listenFollowerVoice(userDetails.getUsername(), voiceId);
+        return ResponseEntity.ok("Listen Follower's voice");
     }
 
     // 팔로위들 음성 스토리 가져오기
