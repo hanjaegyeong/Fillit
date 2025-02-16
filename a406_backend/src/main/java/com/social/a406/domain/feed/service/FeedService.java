@@ -39,12 +39,15 @@ public class FeedService {
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
 
+
     /**
      * 피드 조회 – 친구 게시물(푸시된 데이터)과 추천 게시물(풀 방식)을 4:1 비율로 결합하여 반환
      */
-    public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursor) {
+    public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursorFollow, LocalDateTime cursorRecommend) {
         // 0. 커서 null 일 경우 초기화
-        if(cursor==null) cursor = LocalDateTime.now();
+        if(cursorFollow==null) cursorFollow = LocalDateTime.now();
+        if(cursorRecommend==null) cursorRecommend = LocalDateTime.now();
+
 
         // 1. 사용자 조회
         User user = userRepository.findByPersonalId(personalId)
@@ -60,7 +63,7 @@ public class FeedService {
         // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 80% 비율)
         int followLimit = (int) Math.ceil(limit * 0.8);
         PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("createdAt").descending());
-        List<Feed> feedEntries = feedRepository.findByUserIdAndCreatedAtAfter(userId, cursor, followPageable);
+        List<Feed> feedEntries = feedRepository.findByUserIdAndCreatedAtAfter(userId, cursorFollow, followPageable);
         List<Board> friendBoards = feedEntries.stream()
                 .map(Feed::getBoard)
                 .collect(Collectors.toList());
@@ -70,10 +73,10 @@ public class FeedService {
         System.out.println("recommendedLimit: " +recommendedLimit);
         List<Board> recommendedBoards = new ArrayList<>();
         for (Long interest : interests) {
-            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 3, Sort.by("createdAt").descending());
+            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 2, Sort.by("createdAt").descending());
             List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
                     0, // 일단 좋아요 0개로 수정
-                    LocalDateTime.now().minusDays(7),
+                    cursorRecommend,
                     recommendedPageable);
             recommendedBoards.addAll(fetchedRecommended);
         }
@@ -104,17 +107,24 @@ public class FeedService {
 
 
         LocalDateTime nextCursor;
+        LocalDateTime nextCursorRecommend;
         if (!friendBoards.isEmpty()) {
             nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
-        } else if (!feedPosts.isEmpty()) {
-            // 추천 게시물만 있는 경우 대체 로직 구현 (필요에 따라)
-            nextCursor = feedPosts.get(feedPosts.size() - 1).getCreatedAt();
         } else {
             nextCursor = null;
         }
 
-        return new FeedResponseDto(feedPosts, nextCursor);
+
+        if (!recommendedBoards.isEmpty()) {
+            nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
+        } else {
+            nextCursorRecommend = null;
+        }
+
+        return new FeedResponseDto(feedPosts, nextCursor, nextCursorRecommend);
     }
+
+
 
     private PostDto convertToDto(Board board, Boolean isRecommended, String userId) {
         String boardImageUrl = boardService.findFirstByBoardIdOrderByIdAsc(board.getId())
