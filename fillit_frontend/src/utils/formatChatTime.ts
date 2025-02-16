@@ -3,14 +3,10 @@ export const formatChatTime = (date: string): string => {
   createdDate.setHours(createdDate.getHours() + 9);
   const now = new Date();
 
-  let hours = createdDate.getHours();
-  const isAM = hours < 12;
-  if (hours > 12) hours -= 12;
-
-  const timeString = `${isAM ? 'AM' : 'PM'} ${hours.toString()}:${createdDate
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}`;
+  const timeString = createdDate.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 
   const isSameDay = createdDate.toDateString() === now.toDateString();
 
