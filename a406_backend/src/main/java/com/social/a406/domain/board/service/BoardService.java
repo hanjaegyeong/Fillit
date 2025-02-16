@@ -494,6 +494,7 @@ public class BoardService {
         return BoardRecommendResponse.builder()
                 .boardId(board.getId())
                 .personalId(board.getUser().getPersonalId())
+                .profileImageUrl(board.getUser().getProfileImageUrl())
                 .content(board.getContent())
                 .likeCount(board.getLikeCount())
                 .commentCount(commentService.getCommentCountByBoard(board.getId()))
