@@ -24,19 +24,17 @@ const ArticleDropdown = ({
 
   // 게시글 삭제
   const handleDeleteArticle = () => {
-    deleteArticle(boardId);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    console.log('게시글 삭제 확인');
+  const handleDeleteConfirm = async () => {
+    await deleteArticle(boardId);
     setIsDeleteModalOpen(false);
     onClose();
-    navigate('/');
+    navigate(-1);
   };
 
   const handleDeleteCancle = () => {
-    console.log('게시글 삭제 취소');
     setIsDeleteModalOpen(false);
     onClose();
   };
