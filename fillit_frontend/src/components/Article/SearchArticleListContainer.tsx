@@ -1,13 +1,13 @@
 import { RecommendIcon } from '@/assets/assets';
-import useGetRecommendList from '@/hooks/query/useGetRecommendList';
+import useGetRecommendArticleList from '@/hooks/query/useGetRecommendArticleList';
 import useIntersect from '@/hooks/useIntersect';
 import { FeedArticle } from '@/types/article';
-import ArticleWrapper from './ArticleWrapper';
-import LoadingSpinner from '../common/Loading/LoadingSpinner';
+import ArticleWrapper from '@/components/Article/ArticleWrapper';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const SearchArticleListContainer = () => {
   const { data, hasNextPage, isFetching, fetchNextPage } =
-    useGetRecommendList(10);
+    useGetRecommendArticleList(10);
 
   const pageEnd = useIntersect(async (entry, observer) => {
     observer.unobserve(entry.target);
@@ -20,8 +20,8 @@ const SearchArticleListContainer = () => {
   return (
     <>
       <div className="flex flex-col items-center pb-20 w-full overflow-x-hidden">
-        <div className="w-full max-w-[600px] flex items-end justify-start pl-4 py-2">
-          <img src={RecommendIcon} alt="recommend-icon" className="size-8" />
+        <div className="w-full max-w-[600px] flex items-end justify-start pl-4 pt-2 -mb-3">
+          <img src={RecommendIcon} alt="recommend-icon" className="size-8 " />
           <p className="text-left text-white pl-1 font-light text-xl tracking-tight text-shadow-sm">
             Recommended content
           </p>
