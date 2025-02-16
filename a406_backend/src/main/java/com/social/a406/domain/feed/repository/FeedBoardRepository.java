@@ -21,6 +21,6 @@ public interface FeedBoardRepository extends JpaRepository<Board, Long> {
             "ORDER BY b.createdAt DESC")
     List<Board> findRecommendedBoards(@Param("interestId") Long interestId,
                                       @Param("minLikes") Integer minLikes,
-                                      @Param("threeDaysAgo") LocalDateTime cursorRecommend,
+                                      @Param("cursorRecommend") LocalDateTime cursorRecommend,
                                       Pageable pageable);
 }
