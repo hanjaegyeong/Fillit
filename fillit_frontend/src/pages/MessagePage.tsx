@@ -150,7 +150,7 @@ const MessagePage = () => {
                   <p className="font-extralight min-w-28 max-w-44 break-words leading-tight">
                     {msg.messageContent}
                   </p>
-                  <span className="block text-xs text-gray-500 text-right mt-1">
+                  <span className="block text-xs text-gray-500 text-right mt-1 tracking-tight">
                     {formatChatTime(msg.createdAt)}
                   </span>
                 </div>
