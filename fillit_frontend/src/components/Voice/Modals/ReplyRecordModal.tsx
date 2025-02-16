@@ -48,12 +48,12 @@ const ReplyRecordModal = ({
   const handleSubmit = async () => {
     if (recordedFile) {
       try {
-        setShowToast(true);
         await postVoiceReply(recordedFile, voiceData.voiceId);
+        setShowToast(true);
+        onClose();
 
         setTimeout(() => {
           setShowToast(false);
-          onClose();
         }, 2000);
       } catch (error) {
         console.error('[ReplyRecordModal] 답장 업로드 실패:', error);

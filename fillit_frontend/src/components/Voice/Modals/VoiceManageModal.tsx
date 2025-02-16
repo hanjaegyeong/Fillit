@@ -46,11 +46,11 @@ const VoiceManageModal = ({
       setShowToast(true);
       await deleteVoice(voiceId);
 
-      // 2초 후에 토스트를 닫고 삭제 완료 처리
+      // 1.5초 후에 토스트를 닫고 삭제 완료 처리
       setTimeout(() => {
         setShowToast(false);
         onDeleteComplete();
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error('[VoiceManageModal] 보이스 삭제 실패:', error);
       setShowToast(false);
