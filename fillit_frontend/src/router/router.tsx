@@ -55,16 +55,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'message',
-            children: [
-              {
-                path: '',
-                element: <MessageListPage />,
-              },
-              {
-                path: ':chatId',
-                element: <MessagePage />,
-              },
-            ],
+            element: <MessageListPage />,
           },
           {
             path: 'profile/:personalId',
@@ -83,7 +74,6 @@ const router = createBrowserRouter([
               },
             ],
           },
-
           {
             path: 'search',
             element: <SearchPage />,
@@ -113,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: 'customize',
         element: <ProfileCustomPage />,
+      },
+      {
+        path: 'message/:chatId',
+        element: <MessagePage />,
       },
     ],
   },

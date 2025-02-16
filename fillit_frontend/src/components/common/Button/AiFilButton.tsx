@@ -92,12 +92,12 @@ const AiFilButton = () => {
       <button
         className={
           pathname.includes('newarticle') || pathname.includes('edit')
-            ? 'max-w-[600px] px-4 fixed bottom-24'
-            : 'max-w-[600px] fixed bottom-44 px-2'
+            ? 'max-w-[600px] px-2 fixed bottom-[5.5rem]'
+            : 'max-w-[600px] fixed bottom-[6.5rem] -ml-2'
         }
         onClick={() => setIsOpen(true)}
       >
-        <img src={AiFilImg} alt="ai-fil-img" className="size-20" />
+        <img src={AiFilImg} alt="ai-fil-img" className="size-[4.5rem] " />
       </button>
       <SlideUpModal open={isOpen} onClose={() => setIsOpen(false)}>
         <div className="flex-grow overflow-y-auto pt-4 space-y-4 h-[calc(100vh-245px)] z-50 hide-scrollbar">
@@ -109,7 +109,11 @@ const AiFilButton = () => {
               }`}
             >
               {msg.sender !== 'me' && isFirstMessage(index) && (
-                <img src={AiFil} alt="ai-fil" className="z-50" />
+                <img
+                  src={AiFil}
+                  alt="ai-fil"
+                  className="z-50 -mb-1 size-16 mr-1"
+                />
               )}
               <div
                 className={`max-w-[70%] p-3 rounded-lg ${
@@ -118,7 +122,7 @@ const AiFilButton = () => {
                     : 'bg-[#dcdada]/60 text-black font-light'
                 }`}
               >
-                <p className="text-sm">{msg.content}</p>
+                <p className="font-extralight">{msg.content}</p>
                 <span className="block text-xs text-gray-500 text-right mt-1">
                   {msg.timestamp}
                 </span>
@@ -127,7 +131,7 @@ const AiFilButton = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div className="pt-3 border-t border-gray-300">
+        <div className="pt-3">
           <SubmitInput
             placeholder="Need help writing your thoughts?"
             onSubmit={sendMessage}
