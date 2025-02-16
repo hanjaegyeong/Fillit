@@ -16,13 +16,16 @@ import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.util.exception.ForbiddenException;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,8 @@ public class FeedService {
     private final BoardService boardService;
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
+    @Resource(name = "jsonRedisTemplate")
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     /**
@@ -68,24 +73,20 @@ public class FeedService {
                 .map(Feed::getBoard)
                 .collect(Collectors.toList());
 
-        // 4. 추천 게시물 조회 – 풀 방식 (조건: 관심사 동일, 최근 3일, 좋아요 수 ≥ 10)
+        // 4. 추천 게시물 조회 – Redis 캐시에서 각 관심사별로 조회
         int recommendedLimit = limit - friendBoards.size();
-        System.out.println("recommendedLimit: " +recommendedLimit);
-        List<Board> recommendedBoards = new ArrayList<>();
+        List<PostDto> recommendedBoards = new ArrayList<>();
+
+        // Redis sorted set을 활용하여, 각 관심사별 캐시에서 추천 게시물 가져오기
         for (Long interest : interests) {
-            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit, Sort.by("createdAt").descending());
-            List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
-                    0, // 일단 좋아요 0개로 수정
-                    cursorRecommend,
-                    recommendedPageable);
-            recommendedBoards.addAll(fetchedRecommended);
+            List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend);
+            recommendedBoards.addAll(boardsForInterest);
         }
-        System.out.println("recommendedBoards Size: " +recommendedBoards.size());
 
         // 중복 제거 및 랜덤 섞기
         Set<Long> recSet = new HashSet<>();
         recommendedBoards = recommendedBoards.stream()
-                .filter(b -> recSet.add(b.getId()))
+                .filter(b -> recSet.add(b.getBoardId()))
                 .collect(Collectors.toList());
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
@@ -101,11 +102,11 @@ public class FeedService {
                 if (feedPosts.size() == limit) break;
             }
             if (recIndex < recommendedBoards.size() && feedPosts.size() < limit) {
-                feedPosts.add(convertToDto(recommendedBoards.get(recIndex++), true, userId));
+                feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
             }
         }
 
-
+        // 커서 설정해주기
         LocalDateTime nextCursor;
         LocalDateTime nextCursorRecommend;
         if (!friendBoards.isEmpty()) {
@@ -113,7 +114,6 @@ public class FeedService {
         } else {
             nextCursor = null;
         }
-
 
         if (!recommendedBoards.isEmpty()) {
             nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
@@ -124,6 +124,31 @@ public class FeedService {
         return new FeedResponseDto(feedPosts, nextCursor, nextCursorRecommend);
     }
 
+    private PostDto setIsLike(PostDto postDto, String userId) {
+        postDto.setIsLiked(boardLikeRepository.existsByUser_IdAndBoard_Id(userId, postDto.getBoardId()));
+        return postDto;
+    }
+
+    /**
+     * Redis 캐시에서 특정 관심사에 해당하는 추천 게시물을 조회하는 메서드
+     * @param interestId 관심사 ID
+     * @param limit 최대 조회 개수
+     * @param cursor 기준 시간 (게시물 생성 시간의 epoch seconds로 비교)
+     * @return 추천 게시물 목록
+     */
+    private List<PostDto> getCachedRecommendedBoards(Long interestId, int limit, LocalDateTime cursor) {
+        String key = "feed:recommended:" + interestId;
+        double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
+        // Sorted Set에서 score가 maxScore 이하인 게시물을 최신순(reverseRangeByScore)
+        Set<Object> cachedSet = redisTemplate.opsForZSet()
+                .reverseRangeByScore(key, 0, maxScore, 0, limit);
+        List<PostDto> boards = new ArrayList<>();
+        if (!cachedSet.isEmpty()) {
+            cachedSet.forEach(obj -> boards.add((PostDto) obj));
+            System.out.println("Get cashed Boards size: " + cachedSet.size());
+        }
+        return boards;
+    }
 
 
     private PostDto convertToDto(Board board, Boolean isRecommended, String userId) {
@@ -181,5 +206,7 @@ public class FeedService {
             feedRepository.deleteByUserAndBoardIn(user.getId(), boardList);
         }
     }
+
+
 
 }
