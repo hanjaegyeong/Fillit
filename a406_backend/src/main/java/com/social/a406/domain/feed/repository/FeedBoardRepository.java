@@ -17,10 +17,10 @@ public interface FeedBoardRepository extends JpaRepository<Board, Long> {
             "JOIN com.social.a406.domain.interest.entity.UserInterest ui ON ui.user = u " +
             "WHERE ui.interest.Id = :interestId " +
             "AND b.likeCount >= :minLikes " +
-            "AND b.createdAt >= :threeDaysAgo " +
+            "AND b.createdAt < :cursorRecommend " +
             "ORDER BY b.createdAt DESC")
     List<Board> findRecommendedBoards(@Param("interestId") Long interestId,
                                       @Param("minLikes") Integer minLikes,
-                                      @Param("threeDaysAgo") LocalDateTime threeDaysAgo,
+                                      @Param("threeDaysAgo") LocalDateTime cursorRecommend,
                                       Pageable pageable);
 }

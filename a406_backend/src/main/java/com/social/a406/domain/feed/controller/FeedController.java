@@ -25,9 +25,10 @@ public class FeedController {
     public ResponseEntity<FeedResponseDto> getFeed(
             @AuthenticationPrincipal UserDetails userDetail,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorFollow,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorRecommend) {
         String personalId = userDetail.getUsername();
-        FeedResponseDto feed = feedService.getFeed(personalId, limit, cursor);
+        FeedResponseDto feed = feedService.getFeed(personalId, limit, cursorFollow, cursorRecommend);
         return ResponseEntity.ok(feed);
     }
 
