@@ -46,7 +46,6 @@ import bubble1 from '@/assets/images/bubble1.png';
 import bubble2 from '@/assets/images/bubble2.png';
 import bubble3 from '@/assets/images/bubble3.png';
 import bubble4 from '@/assets/images/bubble4.png';
-import replyBar from '@/assets/icons/reply-bar.svg';
 import soundWave from '@/assets/icons/sound-wave.svg';
 import speaker from '@/assets/images/speaker.png';
 import pressedSpeaker from '@/assets/images/speaker-pressed.png';
@@ -133,7 +132,6 @@ export {
   bubble2,
   bubble3,
   bubble4,
-  replyBar,
   soundWave,
   speaker,
   pressedSpeaker,
