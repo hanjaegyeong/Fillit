@@ -15,7 +15,7 @@ public final class SecurityConstants {
             "/api/ai/generate/**",
             "/api/users/email/**",
             "/api/users/password",
-            "/api/interests/**",
+            "/api/interests",
             "/api/auth/reissue",
             "/actuator/prometheus",
             "/ws/**"
