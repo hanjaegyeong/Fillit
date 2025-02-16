@@ -57,6 +57,7 @@ import caution from '@/assets/icons/caution.svg';
 import NewArticleIcon from '@/assets/images/write-outline.png';
 import NewArticleImg from '@/assets/images/new-article.png';
 import ImageSlideIcon from '@/assets/images/image-arrow.png';
+import RecommendIcon from '@/assets/icons/recommend-outline.svg';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
@@ -174,4 +175,5 @@ export {
   AddTagIcon,
   NewArticleImg,
   ImageSlideIcon,
+  RecommendIcon,
 };

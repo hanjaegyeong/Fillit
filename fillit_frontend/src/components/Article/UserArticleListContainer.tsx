@@ -25,8 +25,11 @@ const UserArticleListContainer = ({
       {articleList && articleList?.length > 0 ? (
         articleList.map((article: Article, index) => {
           return (
-            <div className={`${index % 2 ? 'pl-20' : 'pr-20'}`}>
-              <ArticleWrapper key={article.boardId} article={article} />
+            <div
+              key={article.boardId}
+              className={`${index % 2 ? 'pl-20' : 'pr-20'}`}
+            >
+              <ArticleWrapper article={article} />
             </div>
           );
         })

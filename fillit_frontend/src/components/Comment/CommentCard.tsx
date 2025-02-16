@@ -35,7 +35,7 @@ const CommentCard = ({
           ? 'w-[20.8rem] min-h-[14.5rem] ml-10 '
           : 'w-[19rem] min-h-[12.5rem]'
       } flex items-center -mt-10 ${
-        position === 'left' ? '-translate-x-8' : 'translate-x-5'
+        position === 'left' ? '-translate-x-7' : 'translate-x-5'
       }`}
       style={{
         backgroundImage: `url(${CommentImage})`,

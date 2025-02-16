@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { getAccessToken } from '@/api/auth';
+import { logError, logRequest, logResponse } from '@/utils/logApi';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -17,20 +18,14 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  console.log(
-    `[API request] ${config.method?.toUpperCase()} ${config.url}`,
-    config.data ? config.data : ''
-  );
+  logRequest(config.url || '', config.method || '', config.data || '');
 
   return config;
 });
 
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(
-      `[API response] ${response.status} ${response.config.url}`,
-      response.data
-    );
+    logResponse(response.config.url || '', response.status, response.data);
 
     return response;
   },
@@ -38,7 +33,7 @@ axiosInstance.interceptors.response.use(
     const status = error?.response?.status;
     const errorMessage = error?.response?.data;
 
-    console.log(`[API error] ${status} ${errorMessage || ''}`);
+    logError(status, errorMessage || '');
 
     if (status === 401 && errorMessage === 'Access token expired') {
       try {
