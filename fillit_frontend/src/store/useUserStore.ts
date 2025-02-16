@@ -16,8 +16,8 @@ const initialUser: User = {
   profileImageUrl: '',
   introduction: '',
   birthDate: '',
-  followersCount: 0,
-  followingCount: 0,
+  followerCount: 0,
+  followeeCount: 0,
   follow: false,
 };
 

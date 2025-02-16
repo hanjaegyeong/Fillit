@@ -1,13 +1,15 @@
 import Header from '@/components/common/Header/Header';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import ProfileImage from '@/mocks/images/profile-image.png';
 import AiFilButton from '@/components/common/Button/AiFilButton';
 import { getMessages, getRoomsInfo } from '@/api/message';
 import { Message as ApiMessage, ChatRoomInfo } from '@/types/message';
 import { connectRoom, sendMessage } from '@/api/webSocket';
 import { MessageType } from '@/enum/MessageType';
 import { WebSocketResponse } from '@/types/websocket';
+import ProfileImage from '@/components/common/ProfileImage';
+import SubmitInput from '@/components/common/Input/SubmitInput';
+import { formatChatTime } from '@/utils/formatChatTime';
 
 const MessagePage = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -28,7 +30,6 @@ const MessagePage = () => {
     (location.state as ChatRoomInfo) || null
   );
   const [messages, setMessages] = useState<ApiMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -92,29 +93,28 @@ const MessagePage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = (content: string) => {
+    if (!content.trim()) return;
     const newMsgPayload = {
       chatRoomId,
-      messageContent: inputMessage,
+      messageContent: content,
       type: MessageType.TEXT,
     };
 
     // 현재 사용자의 personalId를 포함하여 sendMessage 호출
     sendMessage(chatRoomId, currentUserPersonalId, newMsgPayload);
-    setInputMessage('');
   };
 
   return (
-    <div className="container-header flex flex-col min-h-screen">
+    <div className="container-header">
       <Header left="back" text={roomInfo?.otherUserName} isTitle={true} />
       <div>
-        <div className="flex-grow overflow-y-auto p-4 space-y-4 h-[calc(100vh-250px)] hide-scrollbar">
-          <div className="flex flex-col items-center justify-start pt-8 pb-4">
-            <img
-              src={roomInfo?.otherProfileImageUrl || ProfileImage}
-              alt={roomInfo?.otherUserName || 'Profile'}
-              className="w-24 h-24 rounded-full"
+        <div className="flex-grow overflow-y-auto space-y-4 hide-scrollbar">
+          <div className="flex flex-col items-center justify-start pt-10 pb-4 w-80">
+            <ProfileImage
+              src={roomInfo?.otherProfileImageUrl}
+              alt={roomInfo?.otherUserName}
+              size={96}
             />
             <button
               onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
@@ -137,19 +137,21 @@ const MessagePage = () => {
                 }`}
               >
                 {!isMyMessage && (
-                  <img
-                    src={roomInfo?.otherProfileImageUrl || ProfileImage}
-                    alt={msg.userName}
-                    onClick={() =>
-                      navigate(`/profile/${roomInfo?.otherPersonalId}`)
-                    }
-                    className="w-8 h-8 rounded-full mr-2 self-end cursor-pointer"
-                  />
+                  <div className="mr-2 self-end">
+                    <ProfileImage
+                      src={roomInfo?.otherProfileImageUrl}
+                      alt={roomInfo?.otherUserName}
+                      size={32}
+                      personalId={roomInfo?.otherPersonalId}
+                    />
+                  </div>
                 )}
                 <div className="max-w-[70%] p-3 rounded-lg bg-white/60 text-black font-light">
-                  <p className="text-sm">{msg.messageContent}</p>
+                  <p className="font-extralight min-w-28 max-w-44 break-words leading-tight">
+                    {msg.messageContent}
+                  </p>
                   <span className="block text-xs text-gray-500 text-right mt-1">
-                    {msg.createdAt}
+                    {formatChatTime(msg.createdAt)}
                   </span>
                 </div>
               </div>
@@ -157,23 +159,13 @@ const MessagePage = () => {
           })}
           <div ref={messagesEndRef} />
         </div>
+      </div>
+      <div className="px-5 pt-5 pb-8 w-full rounded-t-[1.9rem] bg-white fixed max-w-[600px] bottom-0 flex items-center border-t">
         <AiFilButton />
-        <div className="p-6 flex items-center border-t border-gray-300">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-grow p-3 border rounded-lg focus:outline-none"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-          />
-          <button
-            onClick={handleSendMessage}
-            className="ml-3 bg-blue-500 text-white p-3 rounded-lg"
-          >
-            Send
-          </button>
-        </div>
+        <SubmitInput
+          placeholder="Type a message..."
+          onSubmit={handleSendMessage}
+        />
       </div>
     </div>
   );

@@ -8,8 +8,8 @@ export interface User {
   profileImageUrl: string | null;
   introduction: string;
   birthDate: string;
-  followersCount: number;
-  followingCount: number;
+  followerCount: number;
+  followeeCount: number;
   follow: boolean | null;
 }
 

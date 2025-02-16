@@ -1,10 +1,10 @@
-import { FeedArticle } from '@/types/article';
+import { Article, FeedArticle } from '@/types/article';
 import { getBackgroundImage } from '@/utils/getBackgroundImage';
 import { useNavigate } from 'react-router-dom';
 import ArticleContent from '@/components/Article/ArticleContent';
 
 interface ArticleWrapperProps {
-  article: FeedArticle;
+  article: FeedArticle | Article;
 }
 
 const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
@@ -14,7 +14,9 @@ const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
     navigate(`/article/${article.boardId}`);
   };
 
-  const hasImage = !!article.imageUrl;
+  const hasImage =
+    ('imageUrl' in article && !!article.imageUrl) ||
+    ('imageUrls' in article && !!article.imageUrls[0]);
 
   return (
     <div
@@ -26,7 +28,7 @@ const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
     >
       <div
         className={`flex flex-col h-full space-y-2 ${
-          hasImage ? ' pt-20 pb-10 ' : 'py-12'
+          hasImage ? ' pt-20 pb-10 ' : 'py-[2.7rem]'
         }`}
       >
         <ArticleContent article={article} />
