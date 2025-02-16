@@ -129,13 +129,7 @@ public class FeedService {
         return postDto;
     }
 
-    /**
-     * Redis 캐시에서 특정 관심사에 해당하는 추천 게시물을 조회하는 메서드
-     * @param interestId 관심사 ID
-     * @param limit 최대 조회 개수
-     * @param cursor 기준 시간 (게시물 생성 시간의 epoch seconds로 비교)
-     * @return 추천 게시물 목록
-     */
+    // Redis 캐시에서 특정 관심사에 해당하는 추천 게시물을 조회
     private List<PostDto> getCachedRecommendedBoards(Long interestId, int limit, LocalDateTime cursor) {
         String key = "feed:recommended:" + interestId;
         double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
@@ -145,7 +139,7 @@ public class FeedService {
         List<PostDto> boards = new ArrayList<>();
         if (!cachedSet.isEmpty()) {
             cachedSet.forEach(obj -> boards.add((PostDto) obj));
-            System.out.println("Get cashed Boards size: " + cachedSet.size());
+//            System.out.println("Get cashed Boards size: " + cachedSet.size());
         }
         return boards;
     }
