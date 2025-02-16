@@ -2,7 +2,7 @@ import { QUERY_KEYS } from '@/constants/queryKeys';
 import { getRecommendArticleList } from '@/api/article';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-const useGetRecommendArticleList = (size: number) => {
+const useGetRecommendArticleList = (word: string, size: number) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.RECOMMEND],
     queryFn: ({ pageParam }) =>
@@ -27,6 +27,7 @@ const useGetRecommendArticleList = (size: number) => {
     },
     refetchOnWindowFocus: false,
     retry: 1,
+    enabled: !word,
   });
 };
 
