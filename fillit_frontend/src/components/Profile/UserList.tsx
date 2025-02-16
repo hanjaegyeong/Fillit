@@ -65,7 +65,18 @@ const UserList = ({ type, personalId }: UserListProps) => {
         type === 'followers'
           ? await getFollowerSearch(personalId, term)
           : await getFolloweeSearch(personalId, term);
-      setFilteredUsers(response);
+
+      // 검색 결과에 기존 users의 follow 상태를 유지
+      const updatedResponse = response.map((searchUser: User) => {
+        const existingUser = users?.find(
+          (user) => user.personalId === searchUser.personalId
+        );
+        return {
+          ...searchUser,
+          follow: existingUser?.follow ?? searchUser.follow,
+        };
+      });
+      setFilteredUsers(updatedResponse);
     } catch (error) {
       console.error('팔로워/팔로잉 검색 실패:', error);
       setFilteredUsers([]); // 에러 발생 시 빈 배열
