@@ -29,7 +29,7 @@ const VoiceReplyItem = ({ data, onReplyClick }: VoiceReplyItemProps) => {
         onClick={() => onReplyClick(data)}
         className="cursor-pointer flex flex-col items-center"
       >
-        <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden mb-2">
+        <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
           <img
             src={data.profileImageUrl || NoProfile}
             alt="profile"
