@@ -1,12 +1,12 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { getRecommendList } from '@/api/article';
+import { getRecommendArticleList } from '@/api/article';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-const useGetRecommendList = (size: number) => {
+const useGetRecommendArticleList = (size: number) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.RECOMMEND],
     queryFn: ({ pageParam }) =>
-      getRecommendList(
+      getRecommendArticleList(
         size,
         pageParam.cursorLikeCount,
         pageParam.cursorId,
@@ -25,8 +25,9 @@ const useGetRecommendList = (size: number) => {
         interestId: lastPage.interestId,
       };
     },
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 };
 
-export default useGetRecommendList;
+export default useGetRecommendArticleList;
