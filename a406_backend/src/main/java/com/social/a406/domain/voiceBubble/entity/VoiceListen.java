@@ -1,17 +1,23 @@
-package com.social.a406.domain.like.entity;
+package com.social.a406.domain.voiceBubble.entity;
 
-import com.social.a406.domain.board.entity.Board;
+
 import com.social.a406.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class BoardLike {
+@EntityListeners(AuditingEntityListener.class)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "unique_user_voice", columnNames = {"user_id", "voice_id"})
+})
+public class VoiceListen {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +29,13 @@ public class BoardLike {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", nullable = false)
+    @JoinColumn(name = "voice_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Board board;
+    private Voice voice;
 
-    public BoardLike(User user, Board board) {
+    @Builder
+    public VoiceListen(User user, Voice voice){
         this.user = user;
-        this.board = board;
+        this.voice = voice;
     }
 }
