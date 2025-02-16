@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import VoiceReplyItem from '@/components/Voice/VoiceReplyItem';
 import VoiceReplyModal from '@/components/Voice/Modals/VoiceReplyModal';
-import { replyBar } from '@/assets/assets';
 import { VoiceReply } from '@/types/voice';
 import { deleteVoiceReply } from '@/api/voice';
 
@@ -44,11 +43,20 @@ const VoiceReplyList = ({
       <div className="flex flex-col z-10 pt-5">
         <h4 className="text-lg pl-4 mb-2">Voice Replies</h4>
         {voiceReplies.length === 0 ? (
-          <div
-            className="w-[370px] bg-contain bg-no-repeat py-2.5 px-2"
-            style={{ backgroundImage: `url(${replyBar})` }}
-          >
-            <div className="flex justify-center items-center -mt-2 w-full h-[80px] backdrop-blur-sm rounded-full">
+          <div className="min-w-[22rem] px-4">
+            <div
+              className="relative w-full h-[85px] flex-shrink-0 rounded-full flex justify-center items-center px-4"
+              style={{
+                boxShadow: 'inset 3px 3px 5px 0px rgba(255, 255, 255, 0.7)',
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-full opacity-10 backdrop-blur-lg"
+                style={{
+                  background:
+                    'radial-gradient(185.01% 93.71% at 23.1% 30.59%, #6B36FE 31.22%, rgba(255, 255, 255, 0) 100%), #B5B4F2',
+                }}
+              ></div>
               <div className="flex flex-col items-center gap-1">
                 <p className="text-gray-800 text-lg font-light">
                   No reply yet ⏳
@@ -60,12 +68,22 @@ const VoiceReplyList = ({
             </div>
           </div>
         ) : (
-          <div
-            className="w-[370px] bg-contain bg-no-repeat py-2.5 px-2"
-            style={{ backgroundImage: `url(${replyBar})` }}
-          >
-            <div className="max-w-full overflow-x-auto hide-scrollbar -translate-x-1 rounded-full px-2">
-              <div className="flex items-center space-x-4">
+          <div className="px-4">
+            <div
+              className="relative w-full min-w-[20rem] max-w-[25rem] flex-shrink-0 rounded-full flex items-center px-4 py-3"
+              style={{
+                boxShadow: 'inset 3px 3px 5px 0px rgba(255, 255, 255, 0.7)',
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-full opacity-10 backdrop-blur-lg"
+                style={{
+                  background:
+                    'radial-gradient(185.01% 93.71% at 23.1% 30.59%, #6B36FE 31.22%, rgba(255, 255, 255, 0) 100%), #B5B4F2',
+                }}
+              ></div>
+
+              <div className="relative flex items-center space-x-4 z-10">
                 {voiceReplies.map((reply) => (
                   <VoiceReplyItem
                     key={reply.voiceReplyId}
