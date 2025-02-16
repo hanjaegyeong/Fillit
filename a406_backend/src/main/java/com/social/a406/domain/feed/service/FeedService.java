@@ -73,7 +73,7 @@ public class FeedService {
         System.out.println("recommendedLimit: " +recommendedLimit);
         List<Board> recommendedBoards = new ArrayList<>();
         for (Long interest : interests) {
-            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit * 2, Sort.by("createdAt").descending());
+            PageRequest recommendedPageable = PageRequest.of(0, recommendedLimit, Sort.by("createdAt").descending());
             List<Board> fetchedRecommended = feedBoardRepository.findRecommendedBoards(interest,
                     0, // 일단 좋아요 0개로 수정
                     cursorRecommend,
