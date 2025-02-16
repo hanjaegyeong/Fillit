@@ -20,7 +20,6 @@ const ReplyRecordModal = ({
   voiceData,
 }: ReplyRecordModalProps) => {
   const [showToast, setShowToast] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     isPlaying: isRecording,
@@ -32,36 +31,33 @@ const ReplyRecordModal = ({
     recordedFile,
   } = useVoiceControl({
     isModalOpen: isOpen,
-    onComplete: () => {
-      console.log('[ReplyRecordModal] 답장 녹음 완료됨.');
-    },
+    onComplete: () => {},
     recordingMode: true,
   });
 
   const handleMicClick = () => {
     if (!isRecording && !isRecordingComplete) {
-      console.log('[ReplyRecordModal] 답장 녹음 시작됨.');
       handleRecord();
     }
   };
 
   const handleReRecord = () => {
     reset();
-    console.log('[ReplyRecordModal] 답장 녹음 리셋됨.');
   };
 
   const handleSubmit = async () => {
     if (recordedFile) {
       try {
-        setIsLoading(true);
-        setShowToast(true);
         await postVoiceReply(recordedFile, voiceData.voiceId);
-        console.log('[ReplyRecordModal] 답장 업로드 성공.');
+        setShowToast(true);
+        onClose();
+
+        setTimeout(() => {
+          setShowToast(false);
+        }, 2000);
       } catch (error) {
         console.error('[ReplyRecordModal] 답장 업로드 실패:', error);
-      } finally {
         setShowToast(false);
-        setIsLoading(false);
         onClose();
       }
     }
@@ -132,8 +128,8 @@ const ReplyRecordModal = ({
         </div>
       </VoiceBaseModal>
       <Toast
-        message="Just sent the voice bubble, fam! 🫧💬"
-        isVisible={showToast && isLoading}
+        message="Voice reply sent successfully! 🎤✨"
+        isVisible={showToast}
       />
     </>
   );

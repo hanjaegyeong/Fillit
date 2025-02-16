@@ -39,14 +39,12 @@ const VoiceRecordModal = ({
 
   const handleMicClick = () => {
     if (!isRecording && !isRecordingComplete) {
-      console.log('[VoiceRecordModal] 녹음 시작됨.');
       handleRecord();
     }
   };
 
   const handleReRecord = () => {
     reset();
-    console.log('[VoiceRecordModal] 녹음 리셋됨.');
   };
 
   const handleSubmit = async () => {
@@ -58,6 +56,7 @@ const VoiceRecordModal = ({
         try {
           const myVoice = await getVoice();
           if (myVoice && myVoice.voiceId) {
+            onClose();
             onRecordComplete(myVoice.voiceId);
           } else {
             onRecordComplete(0);
@@ -69,7 +68,6 @@ const VoiceRecordModal = ({
 
         setTimeout(() => {
           setShowToast(false);
-          onClose();
         }, 3000);
       } catch (error) {
         console.error('[VoiceRecordModal] 음성 업로드 실패:', error);
