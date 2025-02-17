@@ -52,6 +52,7 @@ public class FeedService {
     /**
      * 피드 조회 – 친구 게시물(푸시된 데이터)과 추천 게시물(풀 방식)을 4:1 비율로 결합하여 반환
      */
+    @Transactional(readOnly = true)
     public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursorFollow, LocalDateTime cursorRecommend) {
         // 0. 커서 null 일 경우 초기화
         if(cursorFollow==null) cursorFollow = LocalDateTime.now();
