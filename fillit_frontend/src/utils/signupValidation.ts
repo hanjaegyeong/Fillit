@@ -149,7 +149,6 @@ export const validateField = async (
 export const validateNextButtonState = async (
   step: number,
   signupState: SignupState,
-  errors: { [key: string]: string },
   validationStatus: { personalId: boolean; email: boolean }
 ): Promise<boolean> => {
   const currentField = getCurrentField(step);
