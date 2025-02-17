@@ -79,6 +79,10 @@ public class Board {
         this.content = content;
     }
 
+    public void updateKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     // 좋아요 증가
     public void increaseLikeCount() {
         this.likeCount++;
