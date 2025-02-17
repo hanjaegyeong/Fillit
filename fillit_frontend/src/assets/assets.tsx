@@ -73,7 +73,7 @@ import FashionIcon from '@/assets/icons/tags-icon/fashion.svg';
 import FoodIcon from '@/assets/icons/tags-icon/food.svg';
 import GameIcon from '@/assets/icons/tags-icon/game.svg';
 import LiteratureIcon from '@/assets/icons/tags-icon/literature.svg';
-import MovieIcon from '@/assets/icons/tags-icon/movie.svg';
+import MoviesIcon from '@/assets/icons/tags-icon/movies.svg';
 import MusicIcon from '@/assets/icons/tags-icon/music.svg';
 import PetsIcon from '@/assets/icons/tags-icon/pets.svg';
 import PhotographyIcon from '@/assets/icons/tags-icon/photography.svg';
@@ -146,7 +146,7 @@ export {
   FoodIcon,
   GameIcon,
   LiteratureIcon,
-  MovieIcon,
+  MoviesIcon,
   MusicIcon,
   PetsIcon,
   PhotographyIcon,

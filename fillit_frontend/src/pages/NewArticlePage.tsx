@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Header from '@/components/common/Header/Header';
@@ -12,6 +12,8 @@ import { postArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
 import ImageSlider from '@/components/common/ImageSlider';
 import { ARTICLE_MAX_LENGTH } from '@/constants/system';
+import { INTEREST_TAGS } from '@/constants/interestTags';
+import InterestTagChip from '@/components/common/InterestTagChip';
 
 const NewArticlePage = () => {
   const [content, setContent] = useState('');
@@ -29,6 +31,11 @@ const NewArticlePage = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +60,11 @@ const NewArticlePage = () => {
   const handleConfirmTags = (tags: string[]) => {
     setSelectedTags(tags);
     setIsTagModalOpen(false);
+  };
+
+  // 게시글 작성에서 태그 제거
+  const handleRemoveTag = (tag: string) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tag));
   };
 
   // 키워드
@@ -109,7 +121,7 @@ const NewArticlePage = () => {
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
         <div className="relative z-10 pt-28 pl-24 pr-5">
           <textarea
-            className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-500"
+            className="w-full min-h-[15vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-500"
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -119,13 +131,30 @@ const NewArticlePage = () => {
         {/* 가로 스크롤 오버플로우 바 */}
         {uploadedImages.length > 0 && (
           <div className="m-5 overflow-x-auto">
-            <div className="pl-14 pr-5">
+            <div className="flex justify-center">
               {uploadedImages.length > 0 && (
-                <ImageSlider images={uploadedImages} />
+                <ImageSlider
+                  images={uploadedImages}
+                  onRemove={handleRemoveImage}
+                />
               )}
             </div>
           </div>
         )}
+        {/* 관심사 태그 표시 영역 */}
+        <div className="mt-2 ml-24 flex flex-wrap">
+          {selectedTags.map((tag) => {
+            const tagData = INTEREST_TAGS.find((item) => item.label === tag);
+            return (
+              <InterestTagChip
+                key={tag}
+                tag={tag}
+                icon={tagData ? tagData.icon : ''}
+                onRemove={() => handleRemoveTag(tag)}
+              />
+            );
+          })}
+        </div>
         <div>
           <AiFilButton />
         </div>
