@@ -44,6 +44,7 @@ const SignUpPage = () => {
     handleInterestSubmit,
     handleSignup,
     setErrors,
+    validationStatus,
   } = useSignupForm(setStep);
 
   useEffect(() => {
@@ -51,12 +52,13 @@ const SignUpPage = () => {
       const isDisabled = await validateNextButtonState(
         step,
         signupState,
-        errors
+        errors,
+        validationStatus
       );
       setIsNextButtonDisabled(isDisabled);
     };
     updateButtonState();
-  }, [step, signupState, errors]);
+  }, [step, signupState, errors, validationStatus]);
 
   const handleNext = async () => {
     if (!(await validateCurrentStep(step, signupState, setErrors))) return;
@@ -100,6 +102,7 @@ const SignUpPage = () => {
         errors={errors}
         validateField={(field, value) => validateField(field, value, setErrors)}
         setStep={setStep}
+        validationStatus={validationStatus}
       />
       {steps[step].inputType !== 'choice' && (
         <SignupButtons
