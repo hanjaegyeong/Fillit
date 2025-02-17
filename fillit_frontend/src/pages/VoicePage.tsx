@@ -11,13 +11,54 @@ import { Voice, VoiceReply } from '@/types/voice';
 import BubbleAnimation from '@/components/Voice/BubbleAnimation';
 
 const VoicePage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // 내 음성 데이터 여부는 RecordModal의 onRecordComplete를 통해 업데이트됨
   const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
   const [showBubbleAnimation, setShowBubbleAnimation] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const preloadImages = async () => {
+      const images = [mic, speaker];
+      try {
+        await Promise.all(
+          images.map((src) => {
+            return new Promise((resolve, reject) => {
+              const img = new Image();
+              img.src = src;
+              img.onload = resolve;
+              img.onerror = reject;
+            });
+          })
+        );
+        setIsImageLoaded(true);
+      } catch (error) {
+        console.error('[VoicePage] 이미지 프리로딩 실패:', error);
+        setIsImageLoaded(true); // 실패해도 UI는 보여주기
+      }
+    };
+    preloadImages();
+  }, []);
+
+  useEffect(() => {
+    const initializeData = async () => {
+      if (!isImageLoaded) return; // 이미지가 로드되기 전까지 데이터 로딩 지연
+
+      setIsLoading(true);
+      try {
+        await Promise.all([fetchVoices(), fetchVoiceReplies(), checkMyVoice()]);
+      } catch (error) {
+        console.error('[VoicePage] 초기 데이터 로딩 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isImageLoaded]);
 
   const fetchVoices = async () => {
     try {
@@ -53,13 +94,6 @@ const VoicePage = () => {
       setMyVoiceId(null);
     }
   };
-
-  useEffect(() => {
-    // 최초 렌더링시에만 음성 목록을 가져옴
-    fetchVoices();
-    fetchVoiceReplies();
-    checkMyVoice();
-  }, []); // 빈 의존성 배열
 
   const handleMicClick = async () => {
     try {
@@ -127,40 +161,51 @@ const VoicePage = () => {
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
 
       <div
-        className={`w-full max-w-[600px] z-20 flex justify-end px-4 fixed bottom-28 transition-opacity duration-300 ${
+        className={`w-full max-w-[600px] z-[1] flex justify-end px-4 fixed bottom-28 transition-all duration-300 ${
           isModalOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
-        <button onClick={handleMicClick} className="relative w-20 h-20">
-          <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
-            <div
-              className={`w-12 h-12 ${
-                hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
-              }`}
-            >
-              <img
-                src={hasRecordedVoice ? speaker : mic}
-                alt="voice-status-icon"
-              />
-            </div>
+        {isLoading || !isImageLoaded ? (
+          <div className="w-20 h-20 bg-white rounded-full border border-[#B5B4F2] shadow-md flex items-center justify-center">
+            <div className="w-12 h-12 bg-gray-200 animate-pulse rounded-full" />
           </div>
-        </button>
+        ) : (
+          <button onClick={handleMicClick} className="relative w-20 h-20">
+            <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
+              <div
+                className={`w-12 h-12 ${
+                  hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
+                }`}
+              >
+                <img
+                  src={hasRecordedVoice ? speaker : mic}
+                  alt="voice-status-icon"
+                  className="transition-all duration-300"
+                />
+              </div>
+            </div>
+          </button>
+        )}
       </div>
 
-      {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
-      {hasRecordedVoice && myVoiceId !== null ? (
-        <VoiceManageModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          onDeleteComplete={handleDeleteComplete}
-          voiceId={myVoiceId}
-        />
-      ) : (
-        <VoiceRecordModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          onRecordComplete={handleRecordComplete}
-        />
+      {/* 모달은 이미지와 데이터가 모두 로드된 후에만 렌더링 */}
+      {!isLoading && isImageLoaded && (
+        <>
+          {hasRecordedVoice && myVoiceId !== null ? (
+            <VoiceManageModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              onDeleteComplete={handleDeleteComplete}
+              voiceId={myVoiceId}
+            />
+          ) : (
+            <VoiceRecordModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              onRecordComplete={handleRecordComplete}
+            />
+          )}
+        </>
       )}
       <BubbleAnimation isVisible={showBubbleAnimation} />
     </div>
