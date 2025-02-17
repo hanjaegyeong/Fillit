@@ -31,3 +31,19 @@ export const getFolloweeList = async (personalId: string) => {
   });
   return response.data;
 };
+
+/* 팔로워 검색 */
+export const getFollowerSearch = async (personalId: string, word: string) => {
+  const response = await axiosInstance.get('api/follows/search/follower', {
+    params: { personalId, word },
+  });
+  return response.data;
+};
+
+/* 팔로위 검색 */
+export const getFolloweeSearch = async (personalId: string, word: string) => {
+  const response = await axiosInstance.get('api/follows/search/followee', {
+    params: { personalId, word },
+  });
+  return response.data;
+};
