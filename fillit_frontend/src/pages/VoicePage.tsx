@@ -128,7 +128,7 @@ const VoicePage = () => {
       />
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
 
-      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
+      <div className="w-full max-w-[600px] z-20 flex justify-end px-4 fixed bottom-28">
         <button onClick={handleMicClick} className="relative w-20 h-20">
           <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
             <div
