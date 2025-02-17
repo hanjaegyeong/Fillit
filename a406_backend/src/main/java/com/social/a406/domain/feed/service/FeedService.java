@@ -10,6 +10,8 @@ import com.social.a406.domain.feed.dto.PostDto;
 import com.social.a406.domain.feed.entity.Feed;
 import com.social.a406.domain.feed.repository.FeedBoardRepository;
 import com.social.a406.domain.feed.repository.FeedRepository;
+import com.social.a406.domain.follow.entity.Follow;
+import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
@@ -41,6 +43,8 @@ public class FeedService {
     private final BoardService boardService;
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final FollowRepository followRepository;
+
     @Resource(name = "jsonRedisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -206,6 +210,28 @@ public class FeedService {
         // feed에서 해당 게시글들을 삭제 (더 빠른 삭제 가능)
         if (!boardList.isEmpty()) {
             feedRepository.deleteByUserAndBoardIn(user.getId(), boardList);
+        }
+    }
+
+    @Transactional
+    public void insertBoardToFollowerFeed(String personalId, Long boardId) {
+        User boardAuthor = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ForbiddenException("Board not found with personalId: " + boardId));
+
+        // boardAuthor를 팔로우하는 모든 팔로워 조회
+        List<Follow> followers = followRepository.findByFollowee(boardAuthor);
+        for (Follow follow : followers) {
+            User follower = follow.getFollower();
+            Feed feed = Feed.builder()
+                    .user(follower)
+                    .board(board)
+                    .isRecommended(false)
+                    .createdAt(board.getCreatedAt())
+                    .build();
+
+            feedRepository.save(feed);
         }
     }
 
