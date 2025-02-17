@@ -15,7 +15,7 @@ const VoiceReplyModal = ({
   isOpen,
   onClose,
 }: VoiceReplyModalProps) => {
-  const { isPlaying, currentDuration, handlePlay, isFinished } =
+  const { isPlaying, currentDuration, totalDuration, handlePlay, isFinished } =
     useVoiceControl({
       isModalOpen: isOpen,
       audioUrl: replyData?.audioUrl,
@@ -35,7 +35,7 @@ const VoiceReplyModal = ({
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-          {currentDuration}"
+          {currentDuration}"/{totalDuration}"
         </div>
 
         {/* 프로필 이미지 */}
