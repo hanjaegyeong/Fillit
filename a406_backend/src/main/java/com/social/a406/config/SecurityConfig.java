@@ -58,7 +58,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://fillit.kro.kr", "http://3.34.191.50:3000"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://fillit.kro.kr", "http://3.34.191.50:3000", "http://127.0.0.1:5500"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
 
