@@ -41,5 +41,5 @@ export interface FeedArticle {
   imageUrl: string;
   createdAt: string;
   isLiked: boolean;
-  isRecommended: boolean;
+  isRecommended?: boolean;
 }

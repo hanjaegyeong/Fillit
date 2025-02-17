@@ -89,19 +89,19 @@ const NewArticlePage = () => {
         right="regist"
         onRegistClick={handleOpenKeywordModal}
       />
-      <div className="relative w-full overflow-hidden min-h-screen pb-40">
-        {/* 배경 종이 이미지 */}
-        <div className="absolute inset-0 flex justify-center">
-          <img
-            src={NewArticleImg}
-            className="max-w-[750px] w-full object-cover"
-            alt="paper background"
-          />
-        </div>
+      {/* 배경 종이 이미지 */}
+      <div className="fixed top-[7.8%] max-w-[600px]">
+        <img
+          src={NewArticleImg}
+          alt="paper background"
+          className="h-[88vh] object-cover object-left"
+        />
+      </div>
+      <div className="w-full overflow-auto botton-[10rem]">
         {/* 텍스트 입력 및 이미지 미리보기 영역 */}
-        <div className="relative z-10 pt-24 pl-20 pr-5">
+        <div className="relative z-10 pt-28 pl-24 pr-5">
           <textarea
-            className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-400"
+            className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none  placeholder:text-gray-500"
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
