@@ -124,6 +124,7 @@ public class BoardService {
         validateBoardOwnership(board, user);
 
         board.updateContent(boardRequest.getContent());
+        board.updateKeyword(boardRequest.getKeyword());
 
         // 기존 이미지 유지 여부 확인 후 처리
         List<String> existingImageUrls = getBoardImages(boardId);  // 기존 이미지 가져오기
