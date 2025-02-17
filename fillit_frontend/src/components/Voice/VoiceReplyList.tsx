@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import VoiceReplyItem from '@/components/Voice/VoiceReplyItem';
 import VoiceReplyModal from '@/components/Voice/Modals/VoiceReplyModal';
 import { VoiceReply } from '@/types/voice';
@@ -17,6 +17,11 @@ const VoiceReplyList = ({
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [localVoiceReplies, setLocalVoiceReplies] = useState(voiceReplies);
+
+  useEffect(() => {
+    setLocalVoiceReplies(voiceReplies);
+  }, [voiceReplies]);
 
   const handleReplyClick = (voiceReply: VoiceReply) => {
     console.log('[VoiceReplyList] 선택된 답장:', voiceReply);
@@ -28,6 +33,12 @@ const VoiceReplyList = ({
     if (selectedReplyId) {
       try {
         await deleteVoiceReply(selectedReplyId.voiceReplyId);
+        // 로컬 상태 즉시 업데이트
+        setLocalVoiceReplies((prev) =>
+          prev.filter(
+            (reply) => reply.voiceReplyId !== selectedReplyId.voiceReplyId
+          )
+        );
         onReplyRemove(selectedReplyId.voiceReplyId);
       } catch (error) {
         console.error('[VoiceReplyList] 답장 삭제 실패:', error);
@@ -35,14 +46,13 @@ const VoiceReplyList = ({
     }
     setIsModalOpen(false);
     setSelectedReplyId(null);
-    console.log('[VoiceReplyList] 모달 닫힘.');
   };
 
   return (
     <>
       <div className="flex flex-col z-10 pt-5">
         <h4 className="text-lg pl-4 mb-2">Voice Replies</h4>
-        {voiceReplies.length === 0 ? (
+        {localVoiceReplies.length === 0 ? (
           <div className="min-w-[22rem] px-4">
             <div
               className="relative w-full h-[85px] flex-shrink-0 rounded-full flex justify-center items-center px-4"
@@ -84,7 +94,7 @@ const VoiceReplyList = ({
               ></div>
 
               <div className="relative flex items-center space-x-4 z-10">
-                {voiceReplies.map((reply) => (
+                {localVoiceReplies.map((reply) => (
                   <VoiceReplyItem
                     key={reply.voiceReplyId}
                     data={reply}
