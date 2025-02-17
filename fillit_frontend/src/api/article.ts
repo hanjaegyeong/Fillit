@@ -73,16 +73,20 @@ export const getUserArticleList = async (
 };
 
 /* 피드 게시글 조회 */
-export const getFeed = async (limit: number, cursor: string | null) => {
+export const getFeed = async (
+  limit: number,
+  cursorFollow: string | null,
+  cursorRecommend: string | null
+) => {
   const response = await axiosInstance.get('/api/feed', {
-    params: { limit, cursor },
+    params: { limit, cursorFollow, cursorRecommend },
   });
   return response.data;
 };
 
 /* 추천 게시글 리스트 조회 */
 export const getRecommendArticleList = async (
-  size: number | null,
+  size: number,
   cursorLikeCount: number | null,
   cursorId: number | null,
   interestId: number | null
@@ -96,7 +100,7 @@ export const getRecommendArticleList = async (
 /* 검색 게시글 리스트 조회 */
 export const getSearchArticleList = async (
   word: string,
-  size: number | null,
+  size: number,
   cursorId: number | null
 ) => {
   const response = await axiosInstance.get(`/api/board/search`, {
