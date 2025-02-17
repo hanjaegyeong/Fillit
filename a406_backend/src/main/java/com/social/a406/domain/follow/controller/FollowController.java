@@ -29,20 +29,20 @@ public class FollowController {
         (@AuthenticationPrincipal UserDetails userDetails, @RequestBody FollowRequest followRequest) {
 
         // 팔로우할 사용자 정보 받아오기
-        User follower = followService.findByPersonalId(userDetails.getUsername())
+        User me = followService.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("follower not found"));
         User followee = followService.findByPersonalId(followRequest.getFolloweePersonalId())
                 .orElseThrow(() -> new IllegalArgumentException("followee not found"));
 
         // 자신을 팔로우하는 경우
-        if(follower.getId() == followee.getId()) return ResponseEntity.badRequest().body("You cannot follow yourself");
+        if(me.getId() == followee.getId()) return ResponseEntity.badRequest().body("You cannot follow yourself");
 
         // 이미 있는 팔로우 인지 검증
-        Optional<Follow> existingFollow = followService.findByFollowerAndFollowee(follower, followee);
+        Optional<Follow> existingFollow = followService.findByFollowerAndFollowee(me, followee);
         if(existingFollow.isPresent()) return ResponseEntity.badRequest().body("Follow is already exist");
 
         // 팔로우 기능 실행
-        boolean isFollowed = followService.followUser(follower, followee);
+        boolean isFollowed = followService.followUser(me, followee);
 
         if (isFollowed) {
             return ResponseEntity.status(201).body("Followed successfully");
@@ -56,13 +56,13 @@ public class FollowController {
     public ResponseEntity<String> unfollowUser
         (@AuthenticationPrincipal UserDetails userDetails, @RequestBody FollowRequest followRequest) {
         // 언팔로우할 사용자 정보 받아오기
-        User follower = followService.findByPersonalId(userDetails.getUsername())
+        User me = followService.findByPersonalId(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         User followee = followService.findByPersonalId(followRequest.getFolloweePersonalId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 언팔로우 기능 실행
-        boolean isUnfollowed = followService.unfollowUser(follower, followee);
+        boolean isUnfollowed = followService.unfollowUser(me, followee);
 
         if (isUnfollowed) {
             return ResponseEntity.ok("Unfollowed successfully");

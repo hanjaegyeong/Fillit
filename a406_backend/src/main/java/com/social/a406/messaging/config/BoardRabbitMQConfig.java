@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 public class BoardRabbitMQConfig {
 
     @Bean
-    public Queue boardPushToFeed(){
+    public Queue boardPushToFeedQueue(){
         return new Queue("board.push.feed", true);
     }
 
     @Bean
-    public Binding boardPushToFeedBinding(Queue boardPushToFeed, TopicExchange topicExchange){
+    public Binding boardPushToFeedBinding(Queue boardPushToFeedQueue, TopicExchange topicExchange){
         return BindingBuilder
-                .bind(boardPushToFeed)
+                .bind(boardPushToFeedQueue)
                 .to(topicExchange)
-                .with("board.push.*");
+                .with("board.*.feed");
     }
 }

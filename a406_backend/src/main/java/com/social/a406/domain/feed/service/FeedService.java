@@ -182,7 +182,12 @@ public class FeedService {
     }
 
     @Transactional
-    public void addBoardsToUserFeed(User user, User otherUser) {
+    public void addBoardsToUserFeed(String myPersonalId, String otherPersonalId) {
+        User user = userRepository.findByPersonalId(myPersonalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + myPersonalId));
+        User otherUser = userRepository.findByPersonalId(otherPersonalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + otherPersonalId));
+
         // 팔로우한 사용자의 모든 게시글 조회
         List<Board> boards = boardRepository.findByUser(otherUser);
 
@@ -204,7 +209,12 @@ public class FeedService {
      * 언팔로우 시 user의 피드에서 otherUser의 모든 게시글 삭제
      */
     @Transactional
-    public void removeBoardsFromUserFeed(User user, User otherUser) {
+    public void removeBoardsFromUserFeed(String myPersonalId, String otherPersonalId) {
+        User user = userRepository.findByPersonalId(myPersonalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + myPersonalId));
+        User otherUser = userRepository.findByPersonalId(otherPersonalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + otherPersonalId));
+
         // otherUser의 모든 게시글 조회
         List<Board> boardList = boardRepository.findByUser(otherUser);
 
