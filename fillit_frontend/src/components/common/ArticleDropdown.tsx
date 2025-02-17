@@ -1,18 +1,24 @@
 import { useState } from 'react';
 import { DeleteLogoutModal } from './Modal/DeleteLogoutModal';
 import { useNavigate } from 'react-router-dom';
+import { deleteArticle } from '@/api/article';
 
 interface ArticleDropdownProps {
+  boardId: number;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
+const ArticleDropdown = ({
+  boardId,
+  isOpen,
+  onClose,
+}: ArticleDropdownProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleArticleEdit = () => {
-    console.log('게시글 수정');
+    navigate('/newarticle');
     onClose();
   };
 
@@ -21,20 +27,20 @@ const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    console.log('게시글 삭제 확인');
+  const handleDeleteConfirm = async () => {
+    await deleteArticle(boardId);
     setIsDeleteModalOpen(false);
     onClose();
+    navigate(-1);
   };
 
   const handleDeleteCancle = () => {
-    console.log('게시글 삭제 취소');
     setIsDeleteModalOpen(false);
     onClose();
   };
 
   const menuItemClass =
-    'w-full text-left px-[1rem] py-[0.5rem] hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white';
+    'w-full text-left px-3 py-[0.5rem] hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white';
   const dangerItemClass = `${menuItemClass} text-red-500`;
 
   if (!isOpen) return null;
@@ -42,33 +48,21 @@ const ArticleDropdown = ({ isOpen, onClose }: ArticleDropdownProps) => {
   return (
     <>
       <div className="fixed inset-0 z-20" onClick={onClose} />
-      <div className="absolute right-[1rem] top-[3.5rem]  w-[7rem] z-30 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700">
-        <ul className="py-[0.5rem] text-sm text-gray-700 dark:text-gray-200">
-          <>
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed top-[3rem] z-30">
+        <div className="w-[6.3rem] bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 border border-black">
+          <ul className="py-[0.4rem] text-sm text-gray-700 dark:text-gray-200">
             <li>
-              <button
-                onClick={() => {
-                  navigate('/newarticle');
-                  handleArticleEdit;
-                }}
-                className={menuItemClass}
-              >
-                Edit Post
+              <button onClick={handleArticleEdit} className={menuItemClass}>
+                Edit
               </button>
             </li>
             <li>
-              <button
-                onClick={() => {
-                  navigate('/');
-                  handleDeleteArticle;
-                }}
-                className={dangerItemClass}
-              >
+              <button onClick={handleDeleteArticle} className={dangerItemClass}>
                 Delete
               </button>
             </li>
-          </>
-        </ul>
+          </ul>
+        </div>
       </div>
 
       <DeleteLogoutModal

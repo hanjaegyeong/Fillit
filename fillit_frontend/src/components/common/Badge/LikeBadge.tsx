@@ -1,24 +1,37 @@
 import { LikeActiveIcon, LikeInactiveIcon } from '@/assets/assets';
+import useLike from '@/hooks/useLike';
 
 interface LikeBadgeProps {
-  isLiked?: boolean;
-  likeCount: number;
+  type: 'article' | 'comment' | 'reply';
+  id: number;
+  initialIsLiked: boolean;
+  initialLikeCount: number;
   size?: 'small' | 'large';
 }
 
 const LikeBadge = ({
-  isLiked = false,
-  likeCount,
+  type,
+  id,
+  initialIsLiked,
+  initialLikeCount,
   size = 'large',
 }: LikeBadgeProps) => {
+  const { liked, count, handleToggleLike } = useLike({
+    type,
+    id,
+    initialIsLiked,
+    initialLikeCount,
+  });
+
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 w-8">
       <img
-        src={isLiked ? LikeActiveIcon : LikeInactiveIcon}
+        src={liked ? LikeActiveIcon : LikeInactiveIcon}
         alt="like icon"
-        className={size === 'large' ? 'h-5 w-5' : 'h-3.5 w-3.5'}
+        className={size === 'large' ? 'h-5.5 w-5.5' : 'h-5 w-5'}
+        onClick={handleToggleLike}
       />
-      <div className="text-s">{likeCount}</div>
+      <div className="text-sm">{count}</div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { sound, playIcon2, soundWave } from '@/assets/assets';
+import { sound, playIcon2, soundWave, NoProfile } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { VoiceReply } from '@/types/voice';
@@ -15,15 +15,23 @@ const VoiceReplyModal = ({
   isOpen,
   onClose,
 }: VoiceReplyModalProps) => {
-  const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
-    isModalOpen: isOpen,
-    audioUrl: replyData?.audioUrl,
-  });
+  const { isPlaying, currentDuration, handlePlay, isFinished } =
+    useVoiceControl({
+      isModalOpen: isOpen,
+      audioUrl: replyData?.audioUrl,
+    });
+
+  const handleClose = () => {
+    // 음성을 끝까지 들었을 때만 삭제
+    if (isFinished) {
+      onClose();
+    }
+  };
 
   if (!replyData) return null;
 
   return (
-    <VoiceBaseModal isOpen={isOpen} onClose={onClose}>
+    <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
@@ -42,7 +50,7 @@ const VoiceReplyModal = ({
             className="absolute -bottom-2 w-full h-7"
           />
           <motion.img
-            src={`https://i.pravatar.cc/150?u=${replyData.personalId}`} // ✅ user_id → userId
+            src={replyData.profileImageUrl ?? NoProfile}
             alt="profile"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

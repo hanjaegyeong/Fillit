@@ -1,13 +1,14 @@
 import Header from '@/components/common/Header/Header';
 import VoiceBackground from '@/components/Voice/VoiceBackground';
 import VoiceBubbleList from '@/components/Voice/VoiceBubbleList';
-import { micBack, mic } from '@/assets/assets';
+import { mic, speaker } from '@/assets/assets';
 import VoiceReplyList from '@/components/Voice/VoiceReplyList';
 import VoiceManageModal from '@/components/Voice/Modals/VoiceManageModal';
 import VoiceRecordModal from '@/components/Voice/Modals/VoiceRecordModal';
 import { useState, useEffect } from 'react';
 import { getFolloweeVoiceList, getVoiceReplyList, getVoice } from '@/api/voice';
 import { Voice, VoiceReply } from '@/types/voice';
+import BubbleAnimation from '@/components/Voice/BubbleAnimation';
 
 const VoicePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,12 +17,12 @@ const VoicePage = () => {
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
   const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
+  const [showBubbleAnimation, setShowBubbleAnimation] = useState(false);
 
   const fetchVoices = async () => {
     try {
       const voices = await getFolloweeVoiceList();
       setVoiceList(voices);
-      console.log('[VoicePage] 팔로위 보이스 패치 성공:', voices);
     } catch (error) {
       console.error('[VoicePage] 팔로위 보이스 패치 실패:', error);
     }
@@ -31,17 +32,34 @@ const VoicePage = () => {
     try {
       const replies = await getVoiceReplyList();
       setVoiceReplyList(replies);
-      console.log('[VoicePage] 내 음성 답장 패치 성공:', replies);
     } catch (error) {
       setVoiceReplyList([]);
       console.error('[VoicePage] 내 음성 답장 패치 실패:', error);
     }
   };
 
+  const checkMyVoice = async () => {
+    try {
+      const myVoice = await getVoice();
+      if (myVoice && myVoice.voiceId) {
+        setHasRecordedVoice(true);
+        setMyVoiceId(myVoice.voiceId);
+      } else {
+        setHasRecordedVoice(false);
+        setMyVoiceId(null);
+      }
+    } catch (error) {
+      setHasRecordedVoice(false);
+      setMyVoiceId(null);
+    }
+  };
+
   useEffect(() => {
+    // 최초 렌더링시에만 음성 목록을 가져옴
     fetchVoices();
     fetchVoiceReplies();
-  }, [hasRecordedVoice]);
+    checkMyVoice();
+  }, []); // 빈 의존성 배열
 
   const handleMicClick = async () => {
     try {
@@ -49,14 +67,10 @@ const VoicePage = () => {
       if (myVoice && myVoice.voiceId) {
         setHasRecordedVoice(true);
         setMyVoiceId(myVoice.voiceId);
-        console.log(
-          '[VoicePage] 기존 음성 데이터 존재, ManageModal 호출:',
-          myVoice.voiceId
-        );
+        console.log(myVoice.voiceId);
       } else {
         setHasRecordedVoice(false);
         setMyVoiceId(null);
-        console.log('[VoicePage] 음성 데이터 없음, RecordModal 호출.');
       }
     } catch (error) {
       console.error('[VoicePage] getVoice API 호출 실패:', error);
@@ -64,35 +78,43 @@ const VoicePage = () => {
       setMyVoiceId(null);
     }
     setIsModalOpen(true);
-    console.log('[VoicePage] 마이크 버튼 클릭, 모달 열림.');
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    console.log('[VoicePage] 모달 닫힘.');
+    console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
   // onRecordComplete: RecordModal에서 내 보이스 데이터의 voiceId를 받아 상태 업데이트
   const handleRecordComplete = (voiceId: number) => {
-    console.log('[VoicePage] handleRecordComplete 실행됨.', voiceId);
     setHasRecordedVoice(true);
     setMyVoiceId(voiceId);
     setIsModalOpen(false);
+    setShowBubbleAnimation(true); // 즉시 애니메이션 시작
     fetchVoices();
-    console.log('[VoicePage] 녹음 완료, 보이스 목록 갱신.');
+
+    // 3초 후 애니메이션 숨기기
+    setTimeout(() => {
+      setShowBubbleAnimation(false);
+    }, 3000);
   };
 
   const handleDeleteComplete = () => {
-    console.log(
-      '[VoicePage] handleDeleteComplete 실행됨. 내 음성 데이터 삭제.'
-    );
     setHasRecordedVoice(false);
     setMyVoiceId(null);
     setIsModalOpen(false);
-    fetchVoices();
+    // 삭제된 보이스를 현재 리스트에서 제거
+    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== myVoiceId));
     setVoiceReplyList([]);
-    console.log(
-      '[VoicePage] 보이스 삭제 완료, 보이스 및 내 음성 답장 목록 갱신.'
+  };
+
+  const handleVoiceRemove = (voiceId: number) => {
+    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== voiceId));
+  };
+
+  const handleReplyRemove = (replyId: number) => {
+    setVoiceReplyList((prev) =>
+      prev.filter((reply) => reply.voiceReplyId !== replyId)
     );
   };
 
@@ -100,41 +122,45 @@ const VoicePage = () => {
     <div className="container-header-nav overflow-hidden">
       <Header left="home" right="notification" />
       <VoiceBackground />
-      <VoiceReplyList voiceReplies={voiceReplyList} />
-      <VoiceBubbleList voices={voiceList} />
-      <div className="fixed bottom-28 right-4 z-50">
-        <button onClick={handleMicClick} className="relative w-[72px] h-[72px]">
-          <div className="absolute inset-0 w-[88px] h-[88px] -translate-x-2 -translate-y-2">
-            <img
-              src={micBack}
-              alt="mic-back"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img
-              src={mic}
-              alt="mic"
-              className="w-[72px] h-[72px] object-contain"
-            />
+      <VoiceReplyList
+        voiceReplies={voiceReplyList}
+        onReplyRemove={handleReplyRemove}
+      />
+      <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
+
+      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
+        <button onClick={handleMicClick} className="relative w-20 h-20">
+          <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
+            <div
+              className={`w-12 h-12 ${
+                hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
+              }`}
+            >
+              <img
+                src={hasRecordedVoice ? speaker : mic}
+                alt="voice-status-icon"
+              />
+            </div>
           </div>
         </button>
-        {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
-        {hasRecordedVoice && myVoiceId !== null ? (
-          <VoiceManageModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onDeleteComplete={handleDeleteComplete}
-            voiceId={myVoiceId}
-          />
-        ) : (
-          <VoiceRecordModal
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            onRecordComplete={handleRecordComplete}
-          />
-        )}
       </div>
+
+      {/* 모달 선택: 내 보이스 데이터가 있으면 ManageModal, 없으면 RecordModal */}
+      {hasRecordedVoice && myVoiceId !== null ? (
+        <VoiceManageModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onDeleteComplete={handleDeleteComplete}
+          voiceId={myVoiceId}
+        />
+      ) : (
+        <VoiceRecordModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onRecordComplete={handleRecordComplete}
+        />
+      )}
+      <BubbleAnimation isVisible={showBubbleAnimation} />
     </div>
   );
 };

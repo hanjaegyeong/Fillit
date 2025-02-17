@@ -7,6 +7,7 @@ import BasicButton from '@/components/common/Button/BasicButton';
 // import SocialLogin from '@/components/common/SocialLogin';
 import { postLogin } from '@/api/login';
 import { useUserStore } from '@/store/useUserStore';
+import { getUserInfo } from '@/api/user';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,8 +18,11 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await postLogin(email, password);
-      setUser({ personalId: response.personalId });
+      await postLogin(email, password);
+
+      const response = await getUserInfo();
+      setUser(response);
+
       navigate('/');
     } catch (error) {
       alert('등록된 이메일이 아니거나 비밀번호가 다릅니다.');

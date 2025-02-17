@@ -10,8 +10,6 @@ const ArticleListContainer = () => {
   const pageEnd = useIntersect(async (entry, observer) => {
     observer.unobserve(entry.target);
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
     if (hasNextPage && !isFetching) {
       fetchNextPage();
     }
@@ -23,14 +21,13 @@ const ArticleListContainer = () => {
         data.pages.map((page, pageIndex) => (
           <div key={pageIndex}>
             {page.posts.map((article: FeedArticle, index: number) => {
-              const position = index % 2 ? 'left' : 'right';
-
               return (
-                <ArticleWrapper
+                <div
                   key={article.boardId}
-                  article={article}
-                  position={position}
-                />
+                  className={`${index % 2 ? 'pl-20' : 'pr-20'}`}
+                >
+                  <ArticleWrapper article={article} />
+                </div>
               );
             })}
           </div>

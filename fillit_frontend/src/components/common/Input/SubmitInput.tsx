@@ -18,9 +18,10 @@ const SubmitInput = ({
   const input = useInput('');
 
   const handleSubmit = () => {
-    if (input.value.trim()) {
-      onSubmit(input.value);
-      if (type === 'send') input.setValue('');
+    // 빈 문자열도 제출 -> 전체 목록 반환
+    onSubmit(input.value);
+    if (type === 'send' && input.value.trim()) {
+      input.setValue('');
     }
   };
 

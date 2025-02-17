@@ -1,4 +1,4 @@
-export const ARTICLE_MAX_LENGTH = 100;
+export const ARTICLE_MAX_LENGTH = 200;
 
 export const COMMENT_MAX_LENGTH = 60;
 
