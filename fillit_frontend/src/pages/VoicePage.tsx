@@ -67,7 +67,6 @@ const VoicePage = () => {
       if (myVoice && myVoice.voiceId) {
         setHasRecordedVoice(true);
         setMyVoiceId(myVoice.voiceId);
-        console.log(myVoice.voiceId);
       } else {
         setHasRecordedVoice(false);
         setMyVoiceId(null);
@@ -82,7 +81,6 @@ const VoicePage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
   // onRecordComplete: RecordModal에서 내 보이스 데이터의 voiceId를 받아 상태 업데이트
@@ -128,7 +126,11 @@ const VoicePage = () => {
       />
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
 
-      <div className="w-full max-w-[600px] z-20 flex justify-end px-4 fixed bottom-28">
+      <div
+        className={`w-full max-w-[600px] z-20 flex justify-end px-4 fixed bottom-28 transition-opacity duration-300 ${
+          isModalOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
         <button onClick={handleMicClick} className="relative w-20 h-20">
           <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
             <div
