@@ -71,18 +71,27 @@ const ReplyRecordModal = ({
             {currentDuration}"
           </div>
 
-          <div className="relative">
+          <div className="flex flex-col items-center justify-center gap-4">
             {!isRecording && !isRecordingComplete ? (
-              <motion.img
-                src={micBig}
-                alt="microphone"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="w-[120px] h-[160px] cursor-pointer"
-                onClick={handleMicClick}
-              />
+              <>
+                <motion.img
+                  src={micBig}
+                  alt="microphone"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="w-[120px] h-[160px] sm:w-[120px] sm:h-[160px] md:w-[140px] md:h-[180px] cursor-pointer"
+                  onClick={handleMicClick}
+                />
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[#4F4A85] text-lg font-medium text-center"
+                >
+                  Time's ticking, <br /> you got 60 seconds!
+                </motion.p>
+              </>
             ) : (
               <motion.img
                 src={isRecording ? soundWave : micBig}
