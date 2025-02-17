@@ -83,11 +83,19 @@ public class FeedService {
             recommendedBoards.addAll(boardsForInterest);
         }
 
-        // 중복 제거 및 랜덤 섞기
-        Set<Long> recSet = new HashSet<>();
-        recommendedBoards = recommendedBoards.stream()
-                .filter(b -> recSet.add(b.getBoardId()))
+        // 중복 제거를 위한 Set
+        Set<Long> addedBoardIds = new HashSet<>();
+
+        // 중복 제거 후 저장
+        friendBoards = friendBoards.stream()
+                .filter(board -> addedBoardIds.add(board.getId())) // 중복 ID 필터링
                 .collect(Collectors.toList());
+
+        recommendedBoards = recommendedBoards.stream()
+                .filter(board -> addedBoardIds.add(board.getBoardId())) // 중복 ID 필터링
+                .collect(Collectors.toList());
+
+        // 랜덤섞기
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
             recommendedBoards = recommendedBoards.subList(0, recommendedLimit);
