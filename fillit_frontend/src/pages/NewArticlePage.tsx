@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Header from '@/components/common/Header/Header';
 import { NewArticleImg } from '@/assets/assets';
@@ -21,6 +22,8 @@ const NewArticlePage = () => {
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isKeywordModalOpen, setIsKeywordModalOpen] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const handleAddPhoto = () => {
     if (fileInputRef.current) {
@@ -79,7 +82,12 @@ const NewArticlePage = () => {
       boardImages: uploadedFiles,
     };
 
-    await postArticle(articlePostForm);
+    try {
+      await postArticle(articlePostForm);
+      navigate('/');
+    } catch (error) {
+      console.log('게시글 등록 오류 : ', error);
+    }
   };
 
   return (
