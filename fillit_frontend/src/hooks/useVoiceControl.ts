@@ -111,18 +111,28 @@ export function useVoiceControl({
           isFinished: false,
           currentDuration: 0,
         }));
+
         // 1초 간격으로 녹음 시간 업데이트
         timers.current.interval = window.setInterval(() => {
-          setVoiceState((prev) => ({
-            ...prev,
-            currentDuration: prev.currentDuration + 1,
-          }));
+          setVoiceState((prev) => {
+            const newDuration = prev.currentDuration + 1;
+            if (newDuration >= 60) {
+              handleStop();
+              setVoiceState((prev) => ({
+                ...prev,
+                isRecording: false,
+                isFinished: true,
+                currentDuration: 60,
+              }));
+              onComplete?.();
+              return prev;
+            }
+            return {
+              ...prev,
+              currentDuration: newDuration,
+            };
+          });
         }, 1000);
-        // 최대 60초 후 자동 정지
-        timers.current.timer = window.setTimeout(() => {
-          console.log('[useVoiceControl] 최대 녹음 시간(1분) 도달, 자동 정지.');
-          handleStop();
-        }, 60000);
       };
 
       // 녹음 종료
@@ -185,20 +195,8 @@ export function useVoiceControl({
         .catch((error) => {
           console.error('[useVoiceControl] 오디오 재생 에러:', error);
         });
-    } else {
-      setVoiceState((prev) => ({ ...prev, isPlaying: true }));
-      setTimeout(() => {
-        setVoiceState((prev) => ({
-          ...prev,
-          isPlaying: false,
-          isFinished: true,
-          currentDuration: 29,
-        }));
-        onComplete?.();
-        console.log('[useVoiceControl] 시뮬레이션 오디오 재생 완료됨.');
-      }, duration);
     }
-  }, [duration, voiceState.isFinished, onComplete, audioUrl]);
+  }, [voiceState.isFinished, audioUrl]);
 
   // 공통 상태 리셋 핸들러
   const reset = useCallback(() => {
