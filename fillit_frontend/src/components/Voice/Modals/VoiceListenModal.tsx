@@ -18,7 +18,7 @@ const VoiceListenModal = ({
   isOpen,
   onClose,
 }: VoiceListenModalProps) => {
-  const { isPlaying, isFinished, currentDuration, handlePlay } =
+  const { isPlaying, isFinished, currentDuration, totalDuration, handlePlay } =
     useVoiceControl({
       isModalOpen: isOpen,
       audioUrl: voiceData?.audioUrl,
@@ -38,10 +38,8 @@ const VoiceListenModal = ({
 
   const handleClick = () => {
     if (isFinished) {
-      console.log('[VoiceListenModal] 답장 모달 열기');
       setShowReplyModal(true);
     } else {
-      console.log('[VoiceListenModal] 오디오 재생 시작됨.');
       handlePlay();
     }
   };
@@ -51,7 +49,7 @@ const VoiceListenModal = ({
       <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
         <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
           <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-            {currentDuration}"
+            {currentDuration}"/{totalDuration}"
           </div>
           <div className="relative">
             <motion.img

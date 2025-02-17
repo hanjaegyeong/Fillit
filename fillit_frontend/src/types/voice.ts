@@ -25,6 +25,7 @@ export interface PlaybackControl extends UseVoiceControlPropsBase {
   isPlaying: boolean;
   isFinished: boolean;
   currentDuration: number;
+  totalDuration: number;
   handlePlay: () => void;
   handleRecord: () => void;
   reset: () => void;
