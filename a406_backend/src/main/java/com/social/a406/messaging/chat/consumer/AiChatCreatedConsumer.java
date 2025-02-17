@@ -14,7 +14,7 @@ public class AiChatCreatedConsumer {
     @RabbitListener(queues = "chat.ai.created",  concurrency = "3")
     public void createAiChatMessage(AiChatMessage event){
         System.out.println("Ai Chat Event is published");
-        aiChatService.processAiMessage(event.getAiUser(), event.getOtherUserName(), event.getChatMessageRequest());
+        aiChatService.processAiMessage(event.getAiPersonalId(), event.getMainPrompt(), event.getOtherUserName(), event.getChatMessageRequest());
     }
 
 }
