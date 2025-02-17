@@ -18,7 +18,7 @@ const VoiceListenModal = ({
   isOpen,
   onClose,
 }: VoiceListenModalProps) => {
-  const { isPlaying, isFinished, currentDuration, totalDuration, handlePlay } =
+  const { isPlaying, isFinished, currentDuration, handlePlay } =
     useVoiceControl({
       isModalOpen: isOpen,
       audioUrl: voiceData?.audioUrl,
@@ -49,7 +49,7 @@ const VoiceListenModal = ({
       <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
         <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
           <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-            {currentDuration}"/{totalDuration}"
+            {currentDuration}"
           </div>
           <div className="relative">
             <motion.img

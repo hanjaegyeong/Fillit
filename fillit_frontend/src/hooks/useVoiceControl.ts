@@ -30,7 +30,6 @@ export function useVoiceControl({
     isPlaying: false,
     isFinished: false,
     currentDuration: 0,
-    totalDuration: 0,
     recordedFile: null as File | null,
     isRecording: false,
   });
@@ -298,19 +297,6 @@ export function useVoiceControl({
     }
   }, [audioUrl, onComplete, recordingMode]);
 
-  // audioUrl이 변경될 때 총 길이 업데이트
-  useEffect(() => {
-    if (!recordingMode && audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio.addEventListener('loadedmetadata', () => {
-        setVoiceState((prev) => ({
-          ...prev,
-          totalDuration: Math.floor(audio.duration),
-        }));
-      });
-    }
-  }, [audioUrl, recordingMode]);
-
   useEffect(() => {
     return () => {
       clearTimers();
@@ -330,7 +316,6 @@ export function useVoiceControl({
         isPlaying: voiceState.isRecording,
         isFinished: voiceState.isFinished,
         currentDuration: voiceState.currentDuration,
-        totalDuration: voiceState.totalDuration,
         handleRecord,
         handleStop,
         reset,
@@ -340,7 +325,6 @@ export function useVoiceControl({
         isPlaying: voiceState.isPlaying,
         isFinished: voiceState.isFinished,
         currentDuration: voiceState.currentDuration,
-        totalDuration: voiceState.totalDuration,
         handlePlay,
         handleRecord,
         reset,
