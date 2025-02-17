@@ -15,17 +15,23 @@ const VoiceReplyModal = ({
   isOpen,
   onClose,
 }: VoiceReplyModalProps) => {
-  const { isPlaying, currentDuration, totalDuration, handlePlay, isFinished } =
+  const { isPlaying, currentDuration, handlePlay, isFinished } =
     useVoiceControl({
       isModalOpen: isOpen,
       audioUrl: replyData?.audioUrl,
     });
 
+  // VoiceReplyModal의 handleClose 수정
   const handleClose = () => {
-    // 음성을 끝까지 들었을 때만 삭제
-    if (isFinished) {
-      onClose();
+    if (!isPlaying) {
+      if (isFinished) {
+        onClose();
+      }
     }
+  };
+
+  const handlePlayClick = () => {
+    handlePlay();
   };
 
   if (!replyData) return null;
@@ -35,7 +41,7 @@ const VoiceReplyModal = ({
       <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
         {/* 재생 시간 */}
         <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-          {currentDuration}"/{totalDuration}"
+          {currentDuration}"
         </div>
 
         {/* 프로필 이미지 */}
@@ -56,7 +62,8 @@ const VoiceReplyModal = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-[190px] h-[190px] rounded-full object-cover"
+            className="w-[190px] h-[190px] rounded-full object-cover cursor-pointer"
+            onClick={handlePlayClick}
           />
         </div>
 
