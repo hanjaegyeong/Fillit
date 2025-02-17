@@ -19,18 +19,18 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
     navigate('/edit');
   };
 
-  const handleCustomize = () => {
-    console.log('프로필 꾸미기');
-    onClose();
-    navigate('/customize');
-  };
+  // const handleCustomize = () => {
+  //   console.log('프로필 꾸미기');
+  //   onClose();
+  //   navigate('/customize');
+  // };
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
   };
 
   const handleLogoutConfirm = async () => {
-    console.log('로그아웃 확인');
+    // console.log('로그아웃 확인');
 
     await getLogout();
     reset();
@@ -42,7 +42,6 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   };
 
   const handleLogoutCancle = () => {
-    console.log('로그아웃 취소');
     setIsLogoutModalOpen(false);
     onClose();
   };
@@ -67,11 +66,11 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
                 Edit
               </button>
             </li>
-            <li>
+            {/* <li>
               <button onClick={handleCustomize} className={menuItemClass}>
                 Customize
               </button>
-            </li>
+            </li> */}
             <li>
               <button onClick={handleLogout} className={dangerItemClass}>
                 Logout
