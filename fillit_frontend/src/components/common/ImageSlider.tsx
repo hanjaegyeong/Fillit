@@ -1,13 +1,20 @@
 import { ImageSlideIcon } from '@/assets/assets';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ImageSliderProps {
   images: string[];
+  onRemove?: (index: number) => void;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ images, onRemove }) => {
   const [isError, setIsError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex >= images.length) {
+      setCurrentIndex(images.length > 0 ? images.length - 1 : 0);
+    }
+  }, [images, currentIndex]);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -24,9 +31,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative max-w-[20rem]">
+    <div className="relative max-w-[13rem]">
       {isError ? (
-        <div className="object-cover w-full min-w-[14rem] aspect-[1/1] rounded-md flex items-center justify-center bg-gray-200">
+        <div className="object-cover w-full min-w-[13rem] aspect-[1/1] rounded-md flex items-center justify-center bg-gray-200">
           <span className="text-gray-500">Unable to load image</span>
         </div>
       ) : (
@@ -38,6 +45,15 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             setIsError(true);
           }}
         />
+      )}
+      {onRemove && (
+        <button
+          onClick={() => onRemove(currentIndex)}
+          className="absolute top-1 right-1 transform  bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center focus:outline-none"
+          aria-label="Remove image"
+        >
+          X
+        </button>
       )}
       {images.length > 1 && (
         <>
