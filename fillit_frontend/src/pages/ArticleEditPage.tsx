@@ -95,20 +95,18 @@ const ArticleEditPage = () => {
       boardImages: uploadedFiles,
     };
 
-    console.log(
-      'Submitting board data:',
-      JSON.stringify(articlePostForm.board)
-    );
-
     try {
       const updatedArticle = await putArticle(Number(boardId), articlePostForm);
+      console.log('Updated Article from API:', updatedArticle);
       // 업데이트된 데이터로 상태를 갱신
       setContent(updatedArticle.content);
       setKeyword(updatedArticle.keyword);
       setUploadedImages(updatedArticle.imageUrls || []);
       setSelectedTags(updatedArticle.interests || []);
-      // 수정 완료 후 원하는 페이지로 이동 (예: 상세 페이지)
-      navigate(`/article/${boardId}`);
+      navigate(`/article/${boardId}`, {
+        state: { fromEdit: true },
+        replace: true,
+      });
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
     }
