@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
 import { NewArticleImg } from '@/assets/assets';
 import ArticleNavBar from '@/components/common/NavBar/ArticleNavBar';
@@ -11,9 +11,10 @@ import { getArticle, putArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
 import { ARTICLE_MAX_LENGTH } from '@/constants/system';
 
-const EditArticlePage = () => {
+const ArticleEditPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
   const [content, setContent] = useState('');
+  const [keyword, setKeyword] = useState('');
   // 기존 이미지 URL과 새로 업로드한 파일을 따로 관리합니다.
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -22,6 +23,8 @@ const EditArticlePage = () => {
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isKeywordModalOpen, setIsKeywordModalOpen] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   // 페이지 로드 시 기존 게시글 정보를 불러옴
   useEffect(() => {
@@ -33,6 +36,7 @@ const EditArticlePage = () => {
         // 서버 응답에 기존 이미지 URL들이 있다면 미리보기용으로 설정
         setUploadedImages(article.imageUrls || []);
         setSelectedTags(article.interests || []);
+        setKeyword(article.keyword || '');
       })
       .catch((err) =>
         console.error('게시글 정보를 불러오는데 실패했습니다:', err)
@@ -68,13 +72,14 @@ const EditArticlePage = () => {
   // 키워드 관련 함수
   const handleOpenKeywordModal = () => setIsKeywordModalOpen(true);
   const handleCloseKeywordModal = () => setIsKeywordModalOpen(false);
-  const handleConfirmKeyword = (keyword: string) => {
+  const handleConfirmKeyword = (newKeyword: string) => {
+    setKeyword(newKeyword);
     setIsKeywordModalOpen(false);
-    handleSubmit(keyword);
+    handleSubmit(newKeyword);
   };
 
   // 게시글 수정 제출 함수
-  const handleSubmit = async (keyword: string) => {
+  const handleSubmit = async (newKeyword: string) => {
     if (!boardId) return;
     const articlePostForm: ArticlePostForm = {
       board: {
@@ -82,7 +87,7 @@ const EditArticlePage = () => {
         x: 0, // 필요에 따라 좌표값 설정
         y: 0,
         z: 0,
-        keyword,
+        keyword: newKeyword,
         pageNumber: 1,
         interests: selectedTags,
       },
@@ -90,9 +95,20 @@ const EditArticlePage = () => {
       boardImages: uploadedFiles,
     };
 
+    console.log(
+      'Submitting board data:',
+      JSON.stringify(articlePostForm.board)
+    );
+
     try {
-      await putArticle(Number(boardId), articlePostForm);
-      // 수정 완료 후 적절한 페이지로 이동하거나 성공 메시지 표시
+      const updatedArticle = await putArticle(Number(boardId), articlePostForm);
+      // 업데이트된 데이터로 상태를 갱신
+      setContent(updatedArticle.content);
+      setKeyword(updatedArticle.keyword);
+      setUploadedImages(updatedArticle.imageUrls || []);
+      setSelectedTags(updatedArticle.interests || []);
+      // 수정 완료 후 원하는 페이지로 이동 (예: 상세 페이지)
+      navigate(`/article/${boardId}`);
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
     }
@@ -105,20 +121,20 @@ const EditArticlePage = () => {
         right="regist"
         onRegistClick={handleOpenKeywordModal}
       />
-      <div className="relative w-full overflow-hidden min-h-screen pb-40">
-        {/* 배경 이미지 */}
-        <div className="absolute inset-0 flex justify-center">
-          <img
-            src={NewArticleImg}
-            className="max-w-[750px] w-full object-cover"
-            alt="paper background"
-          />
-        </div>
-        {/* 게시글 내용 입력 영역 */}
-        <div className="relative z-10 pt-24 pl-20 pr-5">
+      {/* 배경 이미지 */}
+      <div className="fixed top-[7.8%] max-w-[600px]">
+        <img
+          src={NewArticleImg}
+          className="h-[88vh] object-cover object-left"
+          alt="paper background"
+        />
+      </div>
+      {/* 게시글 내용 입력 영역 */}
+      <div className="w-full overflow-auto botton-[10rem]">
+        <div className="relative z-10 pt-28 pl-24 pr-5">
           <textarea
             className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
-            placeholder="내용을 입력하세요."
+            placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             maxLength={ARTICLE_MAX_LENGTH}
@@ -161,10 +177,11 @@ const EditArticlePage = () => {
           isOpen={isKeywordModalOpen}
           onClose={handleCloseKeywordModal}
           onConfirm={handleConfirmKeyword}
+          initialKeyword={keyword}
         />
       )}
     </div>
   );
 };
 
-export default EditArticlePage;
+export default ArticleEditPage;
