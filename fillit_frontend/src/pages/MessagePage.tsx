@@ -109,7 +109,7 @@ const MessagePage = () => {
     <div className="container-header">
       <Header left="back" text={roomInfo?.otherUserName} isTitle={true} />
       <div>
-        <div className="flex-grow overflow-y-auto space-y-4 hide-scrollbar">
+        <div className="flex-grow overflow-y-auto space-y-3 hide-scrollbar">
           <div className="flex flex-col items-center justify-start pt-10 pb-4 w-80">
             <ProfileImage
               src={roomInfo?.otherProfileImageUrl}
@@ -146,11 +146,11 @@ const MessagePage = () => {
                     />
                   </div>
                 )}
-                <div className="max-w-[70%] p-3 rounded-lg bg-white/60 text-black font-light">
+                <div className="max-w-[70%] px-[0.94rem] py-[0.75rem] rounded-lg bg-white/60 text-black font-light">
                   <p className="font-extralight min-w-28 max-w-44 break-words leading-tight">
                     {msg.messageContent}
                   </p>
-                  <span className="block text-xs text-gray-500 text-right mt-1">
+                  <span className="block text-xs text-gray-500 text-right mt-1 tracking-tight">
                     {formatChatTime(msg.createdAt)}
                   </span>
                 </div>

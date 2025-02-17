@@ -29,7 +29,7 @@ const initialChatData = {
       id: 1,
       sender: 'ai',
       content: "What's the problem?",
-      timestamp: new Date().toLocaleTimeString([], {
+      timestamp: new Date().toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
       }),
@@ -62,7 +62,7 @@ const AiFilButton = () => {
       id: messages.length + 1,
       sender: 'me',
       content: text,
-      timestamp: new Date().toLocaleTimeString([], {
+      timestamp: new Date().toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
       }),
@@ -75,7 +75,7 @@ const AiFilButton = () => {
         id: messages.length + 2,
         sender: 'ai',
         content: chatbotResponse.message,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date().toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit',
         }),
