@@ -24,12 +24,22 @@ export const useSignupForm = (
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [validationStatus, setValidationStatus] = useState({
+    personalId: false,
+    email: false,
+  });
 
   // 입력값 변경 핸들러
   const handleInputChange = (
     field: keyof SignupState['regist'],
     value: string | Date | string[]
   ) => {
+    if (field === 'personalId' || field === 'email') {
+      setValidationStatus((prev) => ({
+        ...prev,
+        [field]: false,
+      }));
+    }
     setSignupState((prev) => ({
       ...prev,
       regist: {
@@ -79,7 +89,15 @@ export const useSignupForm = (
         ...prev,
         personalId: '',
       }));
+      setValidationStatus((prev) => ({
+        ...prev,
+        personalId: true,
+      }));
     } catch (error: unknown) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        personalId: false,
+      }));
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 409) {
           // 409 에러인 경우, 이미 등록된 아이디라는 에러 메시지만 업데이트하고 콘솔에는 출력하지 않음
@@ -104,7 +122,15 @@ export const useSignupForm = (
         ...prev,
         email: '',
       }));
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: true,
+      }));
     } catch (error: unknown) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: false,
+      }));
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 409) {
           // 409 에러인 경우 이미 등록된 이메일이라는 메세지만 업데이트
@@ -172,5 +198,6 @@ export const useSignupForm = (
     handleSignup,
     setErrors,
     setIsLoading,
+    validationStatus,
   };
 };

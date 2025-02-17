@@ -27,6 +27,7 @@ interface SignupInputProps {
     value: string
   ) => Promise<boolean>;
   setStep: (value: React.SetStateAction<number>) => void;
+  validationStatus: { personalId: boolean; email: boolean };
 }
 
 const SignupInput = ({
@@ -41,6 +42,7 @@ const SignupInput = ({
   errors,
   validateField,
   setStep,
+  validationStatus,
 }: SignupInputProps) => {
   const currentField = getCurrentField();
 
@@ -77,10 +79,17 @@ const SignupInput = ({
             }
             className={errors[currentField as string] ? 'border-red-500' : ''}
           />
-          {errors[currentField as string] && (
+          {errors[currentField as string] ? (
             <p className="text-red-500 text-xs mt-1">
               {errors[currentField as string]}
             </p>
+          ) : (
+            currentField === 'personalId' &&
+            validationStatus[currentField] && (
+              <p className="text-green-500 text-xs mt-1">
+                사용 가능한 아이디 입니다.
+              </p>
+            )
           )}
         </div>
       )}
@@ -94,8 +103,14 @@ const SignupInput = ({
             onBlur={handleEmailBlur}
             className={errors.email ? 'border-red-500' : ''}
           />
-          {errors.email && (
+          {errors.email ? (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          ) : (
+            validationStatus.email && (
+              <p className="text-green-500 text-xs mt-1">
+                사용 가능한 이메일입니다.
+              </p>
+            )
           )}
         </div>
       )}
