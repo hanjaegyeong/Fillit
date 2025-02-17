@@ -3,7 +3,12 @@ import UserItem from '@/components/Profile/UserItem';
 import SubmitInput from '@/components/common/Input/SubmitInput';
 import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
-import { getFollowerList, getFolloweeList } from '@/api/follow';
+import {
+  getFollowerList,
+  getFolloweeList,
+  getFollowerSearch,
+  getFolloweeSearch,
+} from '@/api/follow';
 import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 import { useUserStore } from '@/store/useUserStore';
 import { useQuery } from '@tanstack/react-query';
@@ -14,7 +19,7 @@ interface UserListProps {
 }
 
 const UserList = ({ type, personalId }: UserListProps) => {
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  // const [searchTerm, setSearchTerm] = useState<string>('');
   const { user: currentUser } = useUserStore();
 
   const { data: users, isLoading } = useQuery({
@@ -37,22 +42,45 @@ const UserList = ({ type, personalId }: UserListProps) => {
     enabled: !!personalId,
   });
 
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
   useEffect(() => {
     if (users) {
       setFilteredUsers(users);
     }
   }, [users]);
 
-  const handleSearch = (term: string) => {
-    const searchTerm = term.toLowerCase().trim();
-    const filtered = users?.filter((userData) => {
-      const name = userData.name ? userData.name.toLowerCase() : '';
-      const personalId = userData.personalId
-        ? userData.personalId.toLowerCase()
-        : '';
-      return name.includes(searchTerm) || personalId.includes(searchTerm);
-    });
-    setFilteredUsers(filtered || []);
+  // 실시간 검색 처리
+  const handleSearch = async (term: string) => {
+    // setSearchTerm(term);
+    if (!personalId) return;
+    try {
+      // 검색어가 비어있으면 전체 목록 표시
+      if (!term || term.trim() === '') {
+        setFilteredUsers(users || []);
+        return;
+      }
+
+      const response =
+        type === 'followers'
+          ? await getFollowerSearch(personalId, term)
+          : await getFolloweeSearch(personalId, term);
+
+      // 검색 결과에 기존 users의 follow 상태를 유지
+      const updatedResponse = response.map((searchUser: User) => {
+        const existingUser = users?.find(
+          (user) => user.personalId === searchUser.personalId
+        );
+        return {
+          ...searchUser,
+          follow: existingUser?.follow ?? searchUser.follow,
+        };
+      });
+      setFilteredUsers(updatedResponse);
+    } catch (error) {
+      console.error('팔로워/팔로잉 검색 실패:', error);
+      setFilteredUsers([]); // 에러 발생 시 빈 배열
+    }
   };
 
   if (isLoading) {
