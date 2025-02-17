@@ -21,11 +21,17 @@ const VoiceReplyModal = ({
       audioUrl: replyData?.audioUrl,
     });
 
+  // VoiceReplyModal의 handleClose 수정
   const handleClose = () => {
-    // 음성을 끝까지 들었을 때만 삭제
-    if (isFinished) {
-      onClose();
+    if (!isPlaying) {
+      if (isFinished) {
+        onClose();
+      }
     }
+  };
+
+  const handlePlayClick = () => {
+    handlePlay();
   };
 
   if (!replyData) return null;
@@ -56,7 +62,8 @@ const VoiceReplyModal = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-[190px] h-[190px] rounded-full object-cover"
+            className="w-[190px] h-[190px] rounded-full object-cover cursor-pointer"
+            onClick={handlePlayClick}
           />
         </div>
 
