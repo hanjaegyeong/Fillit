@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import HomePage from '@/pages/HomePage';
 import NewArticlePage from '@/pages/NewArticlePage';
 import ArticleDetailPage from '@/pages/ArticleDetailPage';
+import ArticleEditPage from '@/pages/ArticleEditPage';
 import CommentDetailPage from '@/pages/CommentDetailPage';
 
 import LoginPage from '@/pages/LoginPage';
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
               {
                 path: '',
                 element: <ArticleDetailPage />,
+              },
+              {
+                path: 'edit',
+                element: <ArticleEditPage />,
               },
               {
                 path: 'comment/:commentId',
