@@ -29,8 +29,8 @@ export const validationRules: Record<
     minLength: 4,
     maxLength: 14,
     pattern: {
-      value: /^[a-z0-9_]+$/,
-      message: '소문자, 숫자, 언더스코어만 사용 가능합니다',
+      value: /^[A-Za-z0-9_.]+$/,
+      message: '영문 대/소문자, 숫자, _와.만 사용 가능합니다',
     },
   },
   password: {
