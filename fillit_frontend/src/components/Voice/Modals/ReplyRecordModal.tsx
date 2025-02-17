@@ -71,7 +71,7 @@ const ReplyRecordModal = ({
             {currentDuration}"
           </div>
 
-          <div className="relative">
+          <div className="flex flex-col items-center justify-center gap-4">
             {!isRecording && !isRecordingComplete ? (
               <>
                 <motion.img
