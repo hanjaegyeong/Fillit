@@ -7,4 +7,5 @@ export const QUERY_KEYS = {
   COMMENT_REPLY_LIST: 'comment-reply-list',
   RECOMMEND: 'recommend',
   PROFILE: 'profile',
+  SEARCH_ARTICLE: 'search_article',
 };

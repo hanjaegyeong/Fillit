@@ -7,6 +7,7 @@ import { NewMessage } from '@/assets/assets';
 import { truncateText } from '@/utils/truncateText';
 import { getRooms, getSearchRooms } from '@/api/message';
 import { ChatRoom } from '@/types/message';
+import { formatChatTime } from '@/utils/formatChatTime';
 
 const MessageListPage = () => {
   const [chatResults, setChatResults] = useState<ChatRoom[]>([]);
@@ -59,17 +60,31 @@ const MessageListPage = () => {
           chatResults.map((chat) => (
             <div
               key={chat.chatRoomId}
-              className="px-3 py-4 bg-white rounded-[20px] shadow flex items-center cursor-pointer"
+              className="px-3 py-4 bg-white rounded-[20px] shadow flex justify-between cursor-pointer"
               onClick={() => handleChatClick(chat.chatRoomId)}
             >
-              <div className="mr-3">
-                <ProfileImage src={chat.profileImageUrl} size={42} />
+              <div className="flex items-center">
+                <div className="mr-3 flex items-center">
+                  <ProfileImage src={chat.profileImageUrl} size={42} />
+                </div>
+                <div>
+                  <p className="text-base font-medium">{chat.otherUser}</p>
+                  <p className="text-sm font-extralight text-gray-600">
+                    {truncateText(chat.lastMessageContent, 30)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-base font-medium">{chat.otherUser}</p>
-                <p className="text-sm font-extralight text-gray-600">
-                  {truncateText(chat.lastMessageContent, 30)}
+              <div className="flex flex-col justify-between -my-1 pr-1">
+                <p className="font-light text-xs tracking-tight">
+                  {formatChatTime(chat.lastMessageTime)}
                 </p>
+                {chat.unreadMessageCount > 0 && (
+                  <div className="flex justify-end">
+                    <p className="w-[1.2rem] h-[1.2rem] flex text-sm items-center justify-center text-white bg-[#0078FF] rounded-full">
+                      {chat.unreadMessageCount}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ))
