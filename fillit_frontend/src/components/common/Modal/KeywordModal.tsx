@@ -1,32 +1,36 @@
 import { Keyword } from '@/assets/assets';
 import Modal from './Modal';
 import BasicButton from '../Button/BasicButton';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 interface KeywordModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (keyword: string) => void;
+  initialKeyword?: string;
 }
 
 export const KeywordModal = ({
   isOpen,
   onClose,
   onConfirm,
+  initialKeyword = '',
 }: KeywordModalProps) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(initialKeyword);
   const isValidKeyWord = inputValue.length >= 1 && inputValue.length <= 8;
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    setInputValue(initialKeyword);
+  }, [initialKeyword]);
 
   const handleClose = () => {
     setInputValue('');
     onClose();
   };
 
-  const handleKeywordConfirm = (keyword: string) => {
-    console.log('Selected keyword:', keyword);
-    onConfirm(keyword);
+  const handleKeywordConfirm = () => {
+    console.log('Selected keyword:', inputValue);
+    onConfirm(inputValue);
     onClose();
     setInputValue('');
   };
@@ -58,10 +62,7 @@ export const KeywordModal = ({
           <BasicButton text="Cancel" onClick={handleClose} />
           <BasicButton
             text="Confirm"
-            onClick={() => {
-              handleKeywordConfirm(inputValue);
-              navigate('/');
-            }}
+            onClick={handleKeywordConfirm}
             disabled={!isValidKeyWord}
           />
         </div>
