@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import Header from '@/components/common/Header/Header';
 import { NewArticleImg } from '@/assets/assets';
 import ArticleNavBar from '@/components/common/NavBar/ArticleNavBar';
@@ -7,9 +8,12 @@ import AiFilButton from '@/components/common/Button/AiFilButton';
 import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
 import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 import ImageSlider from '@/components/common/ImageSlider';
+
 import { getArticle, putArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
 import { ARTICLE_MAX_LENGTH } from '@/constants/system';
+import { INTEREST_TAGS } from '@/constants/interestTags';
+import InterestTagChip from '@/components/common/InterestTagChip';
 
 const ArticleEditPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
@@ -49,6 +53,11 @@ const ArticleEditPage = () => {
     }
   };
 
+  const handleRemoveImage = (index: number) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
@@ -67,6 +76,11 @@ const ArticleEditPage = () => {
   const handleConfirmTags = (tags: string[]) => {
     setSelectedTags(tags);
     setIsTagModalOpen(false);
+  };
+
+  // 게시글 작성에서 태그 제거
+  const handleRemoveTag = (tag: string) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tag));
   };
 
   // 키워드 관련 함수
@@ -131,7 +145,7 @@ const ArticleEditPage = () => {
       <div className="w-full overflow-auto botton-[10rem]">
         <div className="relative z-10 pt-28 pl-24 pr-5">
           <textarea
-            className="w-full min-h-[23vh] font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
+            className="w-full min-h-[15vh] font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -141,11 +155,28 @@ const ArticleEditPage = () => {
         {/* 이미지 미리보기 영역 */}
         {uploadedImages.length > 0 && (
           <div className="m-5 overflow-x-auto">
-            <div className="pl-14 pr-5">
-              <ImageSlider images={uploadedImages} />
+            <div className="flex justify-center">
+              <ImageSlider
+                images={uploadedImages}
+                onRemove={handleRemoveImage}
+              />
             </div>
           </div>
         )}
+        {/* 관심사 태그 표시 영역 */}
+        <div className="mt-2 ml-24 flex flex-wrap">
+          {selectedTags.map((tag) => {
+            const tagData = INTEREST_TAGS.find((item) => item.label === tag);
+            return (
+              <InterestTagChip
+                key={tag}
+                tag={tag}
+                icon={tagData ? tagData.icon : ''}
+                onRemove={() => handleRemoveTag(tag)}
+              />
+            );
+          })}
+        </div>
         <div>
           <AiFilButton />
         </div>
