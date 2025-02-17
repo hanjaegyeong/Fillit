@@ -52,7 +52,6 @@ const SignUpPage = () => {
       const isDisabled = await validateNextButtonState(
         step,
         signupState,
-        errors,
         validationStatus
       );
       setIsNextButtonDisabled(isDisabled);
