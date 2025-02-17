@@ -25,7 +25,7 @@ public class BoardCreatedEventListener {
         Board board = event.getBoard();
         User boardAuthor = board.getUser();
         
-        // 내 feed 에 먼저 저장
+        // 내 feed 에 먼저 저장하도록 설정
         Feed myFeed = Feed.builder()
                 .user(board.getUser())
                 .board(board)
