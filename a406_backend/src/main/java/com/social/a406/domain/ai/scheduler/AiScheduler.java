@@ -45,13 +45,13 @@ public class AiScheduler {
     private String ec2ServerUrl;
 
     // AI 게시글 생성 컨트롤러 자동 호출
-    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
+    @Scheduled(fixedDelay = 30 * MINUTE) // 30분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
+        int delay = random.nextInt(MINUTE) + 30 * MINUTE; // 1~30분 딜레이
 
         try {
-            System.out.println("Waiting for " + delay + " seconds before board triggering...");
+            System.out.println("Waiting for " +  (delay / 1000) + " seconds before board triggering...");
             Thread.sleep(delay * 10L);
 
             // 30% 확률로 이미지 게시글 생성
@@ -70,13 +70,13 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
+    @Scheduled(fixedDelay = 30 * MINUTE) // 30분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
+        int delay = random.nextInt(MINUTE) + 30 * MINUTE; // 1~30분 딜레이
 
         try {
-            System.out.println("Waiting for " + delay + " seconds before comment triggering...");
+            System.out.println("Waiting for " + (delay / 1000) + " seconds before comment triggering...");
             Thread.sleep(delay * 10L);
 
             // EC2 컨트롤러 호출
@@ -91,8 +91,8 @@ public class AiScheduler {
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(5 * MINUTE, 30 * MINUTE); // 5분 ~ 30분 사이 딜레이
-        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        System.out.println("Comment Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
             try {
@@ -122,8 +122,8 @@ public class AiScheduler {
     @Transactional
     public void scheduleCommentReplyCreationAtComment(Long commentId){
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(10, 61);
-        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        System.out.println("Comment reply Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
             try {
@@ -148,8 +148,8 @@ public class AiScheduler {
     @Transactional
     public void scheduleCommentReplyCreationAtCommentReply(Long replyId){
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(10, 61);
-        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        System.out.println("Comment reply - reply Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
             try {
@@ -170,13 +170,13 @@ public class AiScheduler {
     }
 
     // like 랜덤생성
-    @Scheduled(fixedDelay = MINUTE * 60) // 60분마다 실행
+    @Scheduled(fixedDelay = 30 * MINUTE) // 30분마다 실행
     public void callGenerateAiLikeController() {
         // 랜덤한 지연 시간 생성
         int delay = random.nextInt(MINUTE) + 20 * MINUTE; // 1~20분 딜레이
 
         try{
-            System.out.println("Waiting for " + delay + " seconds before board triggering...");
+            System.out.println("Waiting for " + (delay / 1000) + " seconds before like triggering...");
             Thread.sleep(delay * 10L);
 
             String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_LIKE_ENDPOINT, String.class);
@@ -184,16 +184,15 @@ public class AiScheduler {
         } catch (Exception e) {
             System.err.println("like Failed to call EC2` controller: " + e.getMessage());
         }
-
     }
-
 
     // 사용자(personalId)가 게시글 업로드 후 AI댓글 자동 생성
     public void scheduleLikeCreation(Long boardId, String personalId) {
         likeScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * MINUTE, 2 * MINUTE); // 5분 ~ 30분 사이 딜레이
-        System.out.println("Task scheduled to execute after " + delayInSeconds + " seconds");
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+
+        System.out.println("First Comment Task scheduled to execute after " + delayInSeconds + " seconds");
 
         likeScheduler.schedule(() -> {
             try {
@@ -218,8 +217,4 @@ public class AiScheduler {
             }
         }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
     }
-
-
-
-
 }
