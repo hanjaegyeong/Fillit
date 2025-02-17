@@ -11,8 +11,9 @@ export const user: User[] = [
     introduction:
       "Wanna be by your side Let the world know you're mine I love you a million times loving you multiplied",
     birthDate: '1990-05-15',
-    followersCount: 100,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
 
   {
@@ -24,8 +25,9 @@ export const user: User[] = [
     introduction:
       'Who are we? Just a speck of dust within the galaxy? Woe is me.',
     birthDate: '1995-08-22',
-    followersCount: 140,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -36,8 +38,9 @@ export const user: User[] = [
     introduction:
       'Welcome to our community, where creativity meets innovation. Join us and explore endless possibilities!',
     birthDate: '1990-05-15',
-    followersCount: 1221,
-    followingCount: 134,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -49,8 +52,9 @@ export const user: User[] = [
     introduction:
       'Every great journey begins with a single step. Keep moving forward!',
     birthDate: '1998-11-03',
-    followersCount: 100,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
 
   {
@@ -62,8 +66,9 @@ export const user: User[] = [
     introduction:
       'Life is a canvas, and you are the artist. Paint your dreams into reality.',
     birthDate: '1992-07-18',
-    followersCount: 100,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -75,8 +80,9 @@ export const user: User[] = [
     introduction:
       'The sun will rise and we will try again. Tomorrow is a new opportunity.',
     birthDate: '1994-03-11',
-    followersCount: 100,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
   {
     type: 'user',
@@ -87,7 +93,8 @@ export const user: User[] = [
 
     introduction: 'The adventure of life awaits. Dont just dream it, live it.',
     birthDate: '1989-12-29',
-    followersCount: 100,
-    followingCount: 100,
+    followerCount: 100,
+    followeeCount: 100,
+    follow: false,
   },
 ];

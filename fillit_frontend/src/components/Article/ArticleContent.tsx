@@ -5,6 +5,7 @@ import { truncateText } from '@/utils/truncateText';
 import ArticleThumbnail from '@/components/Article/ArticleThumbnail';
 import LikeBadge from '@/components/common/Badge/LikeBadge';
 import CommentBadge from '@/components/common/Badge/CommentBadge';
+import ImageSlider from '../common/ImageSlider';
 
 interface ArticleContentProps {
   article: FeedArticle | Article;
@@ -25,20 +26,31 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
         />
         <TimeStamp date={article.createdAt} />
       </div>
-      <div className="font-extralight text-base">
-        {isDetail ? article.content : truncateText(article.content, 80)}
+      <div
+        className={`font-extralight text-base break-words ${
+          isDetail ? 'leading-snug' : 'leading-tight w-[15.2rem]'
+        }`}
+      >
+        {isDetail ? article.content : truncateText(article.content, 55)}
       </div>
-      {article.imageUrls && (
-        <ArticleThumbnail
-          imageUrl={
-            Array.isArray(article.imageUrls)
-              ? article.imageUrls[0]
-              : article.imageUrls
-          }
+      <div className="flex justify-center">
+        {'imageUrl' in article && article.imageUrl && (
+          <ArticleThumbnail imageUrl={article.imageUrl} />
+        )}
+        {!isDetail && 'imageUrls' in article && article.imageUrls[0] && (
+          <ArticleThumbnail imageUrl={article.imageUrls[0]} />
+        )}
+        {isDetail && 'imageUrls' in article && article.imageUrls && (
+          <ImageSlider images={article.imageUrls} />
+        )}
+      </div>
+      <div className="flex gap-5 pt-0.5">
+        <LikeBadge
+          type="article"
+          id={article.boardId}
+          initialLikeCount={article.likeCount}
+          initialIsLiked={article.isLiked}
         />
-      )}
-      <div className="flex gap-5">
-        <LikeBadge likeCount={article.likeCount} isLiked={article.isliked} />
         <CommentBadge commentCount={article.commentCount} />
       </div>
     </>

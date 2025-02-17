@@ -2,21 +2,21 @@ import { bubble1, bubble2, bubble3 } from '@/assets/assets';
 
 const VoiceBackground = () => {
   return (
-    <div>
+    <div className="relative w-[600px]">
       <img
         src={bubble1}
         alt="bubble1"
-        className="absolute w-[317px] h-[325px] top-0 right-0 object-cover"
+        className="absolute size-[380px] -top-[100px] right-[20px] object-cover animate-float-slow transition-transform duration-300"
       />
       <img
         src={bubble2}
         alt="bubble2"
-        className="absolute w-[323px] h-[497px] top-[127px] left-0 object-cover"
+        className="absolute size-[480px] top-[80px] -left-[40px] animate-float-medium transition-transform duration-500"
       />
       <img
         src={bubble3}
         alt="bubble3"
-        className="absolute w-[391px] h-[587px] right-0 bottom-0"
+        className="absolute size-[600px] -right-[80px] top-[250px] animate-float-fast transition-opacity duration-100"
       />
     </div>
   );

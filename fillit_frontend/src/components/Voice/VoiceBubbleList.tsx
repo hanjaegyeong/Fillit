@@ -2,12 +2,15 @@ import { useState } from 'react';
 import VoiceBubbleItem from '@/components/Voice/VoiceBubbleItem';
 import VoiceListenModal from '@/components/Voice/Modals/VoiceListenModal';
 import { Voice } from '@/types/voice';
+import { getFolloweeVoiceListen } from '@/api/voice';
+import { AnimatePresence } from 'framer-motion';
 
 interface VoiceBubbleListProps {
   voices: Voice[];
+  onVoiceRemove: (voiceId: number) => void;
 }
 
-const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
+const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -15,19 +18,23 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
     console.log('[VoiceBubbleList] 선택된 보이스:', voice);
     setSelectedVoice(voice);
     setIsModalOpen(true);
+    getFolloweeVoiceListen(voice.voiceId);
   };
 
   const handleModalClose = () => {
+    if (selectedVoice) {
+      onVoiceRemove(selectedVoice.voiceId);
+    }
     setIsModalOpen(false);
     setSelectedVoice(null);
     console.log('[VoiceBubbleList] 모달 닫힘.');
   };
 
   return (
-    <>
-      <div className="z-10 pt-6">
-        <h4 className="text-lg mb-2">Voice Bubbles</h4>
-        <div className="w-[340px] overflow-y-auto max-h-[calc(100vh-380px)] hide-scrollbar space-y-4">
+    <div className="z-10 pt-6 min-w-[22rem] px-4 flex flex-col items-center">
+      <h4 className="text-lg mb-2">Voice Bubbles</h4>
+      <div className="overflow-y-auto w-full max-h-[calc(100vh-380px)] hide-scrollbar space-y-4">
+        <AnimatePresence mode="popLayout">
           {voices.map((voice) => (
             <VoiceBubbleItem
               key={voice.voiceId}
@@ -35,7 +42,7 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
               onPlayClick={handlePlayClick}
             />
           ))}
-        </div>
+        </AnimatePresence>
       </div>
 
       <VoiceListenModal
@@ -43,7 +50,7 @@ const VoiceBubbleList = ({ voices }: VoiceBubbleListProps) => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
       />
-    </>
+    </div>
   );
 };
 

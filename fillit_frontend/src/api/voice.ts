@@ -29,7 +29,13 @@ export const deleteVoice = async (voiceId: number) => {
 /* 팔로위 보이스 리스트 조회 */
 export const getFolloweeVoiceList = async (): Promise<Voice[]> => {
   const response = await axiosInstance.get('/api/voice/list');
-  return response.data.voices || [];
+  return Array.isArray(response.data) ? response.data : [];
+};
+
+/* 팔로위 보이스 듣기 */
+export const getFolloweeVoiceListen = async (voiceId: number) => {
+  const response = await axiosInstance.get(`/api/voice/${voiceId}/listen`);
+  return response.data;
 };
 
 /* 보이스 답장 업로드 */
@@ -65,7 +71,7 @@ export const getVoiceReply = async (
 /* 보이스 답장 조회 */
 export const getVoiceReplyList = async (): Promise<VoiceReply[]> => {
   const response = await axiosInstance.get('/api/voice/reply');
-  return response.data.voiceReplies || [];
+  return Array.isArray(response.data) ? response.data : [];
 };
 
 /* 보이스 답장 삭제 */

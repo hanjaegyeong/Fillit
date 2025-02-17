@@ -1,14 +1,14 @@
 // nav bar
 import HomeInactiveIcon from '@/assets/icons/home-outline.svg';
-import HomeActiveIcon from '@/assets/icons/home-fill.svg';
+import HomeActiveIcon from '@/assets/images/home-fill.png';
 import VoiceInactiveIcon from '@/assets/icons/voice-outline.svg';
-import VoiceActiveIcon from '@/assets/icons/voice-fill.svg';
+import VoiceActiveIcon from '@/assets/images/voice-fill.png';
 import SearchInactiveIcon from '@/assets/icons/search-outline.svg';
-import SearchActiveIcon from '@/assets/icons/search-fill.svg';
+import SearchActiveIcon from '@/assets/images/search-fill.png';
 import MessageInactiveIcon from '@/assets/icons/message-outline.svg';
-import MessageActiveIcon from '@/assets/icons/message-fill.svg';
+import MessageActiveIcon from '@/assets/images/message-fill.png';
 import MyPageInactiveIcon from '@/assets/icons/mypage-outline.svg';
-import MyPageActiveIcon from '@/assets/icons/mypage-fill.svg';
+import MyPageActiveIcon from '@/assets/images/mypage-fill.png';
 import AddPhotiIcon from '@/assets/icons/add-photo.svg';
 import AskToFilbotIcon from '@/assets/icons/ask-to-filbot.svg';
 import AddTagIcon from '@/assets/icons/add-tag.svg';
@@ -42,12 +42,10 @@ import pressedMic from '@/assets/images/mic-pressed.png';
 import playIcon from '@/assets/icons/play.svg';
 import playIcon2 from '@/assets/icons/play2.svg';
 import profileBubble from '@/assets/icons/profile-bubble.svg';
-import voiceWrapper from '@/assets/icons/voice-wrapper.svg';
 import bubble1 from '@/assets/images/bubble1.png';
 import bubble2 from '@/assets/images/bubble2.png';
 import bubble3 from '@/assets/images/bubble3.png';
 import bubble4 from '@/assets/images/bubble4.png';
-import replyBar from '@/assets/icons/reply-bar.svg';
 import soundWave from '@/assets/icons/sound-wave.svg';
 import speaker from '@/assets/images/speaker.png';
 import pressedSpeaker from '@/assets/images/speaker-pressed.png';
@@ -55,8 +53,10 @@ import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
 // article
-import NewArticleIcon from '@/assets/icons/new-article.svg';
+import NewArticleIcon from '@/assets/images/write-outline.png';
 import NewArticleImg from '@/assets/images/new-article.png';
+import ImageSlideIcon from '@/assets/images/image-arrow.png';
+import RecommendIcon from '@/assets/icons/recommend-outline.svg';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
@@ -82,9 +82,10 @@ import TechIcon from '@/assets/icons/tags-icon/tech.svg';
 import TravelIcon from '@/assets/icons/tags-icon/travel.svg';
 
 // profile
+import NoProfile from '@/assets/images/no-profile-image.png';
 import Keyword from '@/assets/images/keyword.png';
-import RippedProfile from '@/assets/icons/profile-ripped.svg';
-import ProfilePagePaper from '@/assets/icons/profile-page-paper.svg';
+import RippedProfile from '@/assets/images/profile-ripped.png';
+import ProfilePagePaper from '@/assets/images/profile-page-paper.png';
 import DmIcon from '@/assets/icons/dm.svg';
 import NameIcon from '@/assets/icons/name.svg';
 import IntroIcon from '@/assets/icons/introduction.svg';
@@ -96,6 +97,7 @@ import ArticleBg1 from '@/assets/icons/article-pic-bg1.svg';
 import ArticleBg2 from '@/assets/icons/article-pic-bg2.svg';
 import ArticleBg3 from '@/assets/icons/article-pic-bg3.svg';
 export {
+  NoProfile,
   HomeInactiveIcon,
   HomeActiveIcon,
   VoiceInactiveIcon,
@@ -126,12 +128,10 @@ export {
   playIcon,
   playIcon2,
   profileBubble,
-  voiceWrapper,
   bubble1,
   bubble2,
   bubble3,
   bubble4,
-  replyBar,
   soundWave,
   speaker,
   pressedSpeaker,
@@ -172,4 +172,6 @@ export {
   AskToFilbotIcon,
   AddTagIcon,
   NewArticleImg,
+  ImageSlideIcon,
+  RecommendIcon,
 };

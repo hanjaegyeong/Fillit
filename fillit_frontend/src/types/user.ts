@@ -8,9 +8,9 @@ export interface User {
   profileImageUrl: string | null;
   introduction: string;
   birthDate: string;
-  followersCount: number;
-  followingCount: number;
-  follow?: boolean | null;
+  followerCount: number;
+  followeeCount: number;
+  follow: boolean | null;
 }
 
 export interface UserUpdateForm {
