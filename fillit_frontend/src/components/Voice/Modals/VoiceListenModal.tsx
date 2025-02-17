@@ -38,10 +38,8 @@ const VoiceListenModal = ({
 
   const handleClick = () => {
     if (isFinished) {
-      console.log('[VoiceListenModal] 답장 모달 열기');
       setShowReplyModal(true);
     } else {
-      console.log('[VoiceListenModal] 오디오 재생 시작됨.');
       handlePlay();
     }
   };
