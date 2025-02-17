@@ -3,13 +3,13 @@ package com.social.a406.messaging.chat.dto;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class ChatDbSaveMessage {
-    private final String personalId;
-    private final ChatMessageRequest chatMessageRequest;
+    private String personalId;
+    private ChatMessageRequest chatMessageRequest;
 
 }

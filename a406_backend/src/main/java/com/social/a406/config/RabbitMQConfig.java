@@ -31,18 +31,18 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding chatRoomUpdateBinding(Queue chatNotificationQueue, TopicExchange topicExchange) {
+    public Binding chatRoomUpdateBinding(Queue chatRoomUpdateQueue, TopicExchange topicExchange) {
         // 채팅 메시지 알림: "chat.message.created" 등 패턴 매칭
         return BindingBuilder
-                .bind(chatNotificationQueue)
+                .bind(chatRoomUpdateQueue)
                 .to(topicExchange)
                 .with("chat.room.*");
     }
 
     @Bean
-    public Binding chatDbSaveBinding(Queue chatDbUpdateQueue, TopicExchange topicExchange) {
+    public Binding chatDbSaveBinding(Queue chatDbSaveQueue, TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(chatDbUpdateQueue)
+                .bind(chatDbSaveQueue)
                 .to(topicExchange)
                 .with("chat.db.*");
     }
