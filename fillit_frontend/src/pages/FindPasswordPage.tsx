@@ -13,9 +13,11 @@ import FilTakeOn from '@/assets/images/fil-takeon.png';
 
 import BasicInput from '@/components/common/Input/BasicInput';
 import BasicButton from '@/components/common/Button/BasicButton';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 const FindPasswordPage = () => {
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [personalId, setPersonalId] = useState('');
   const [code, setCode] = useState('');
@@ -26,9 +28,10 @@ const FindPasswordPage = () => {
 
   const handleSearchStep = async () => {
     try {
+      setIsLoading(true);
       await postEmailCode(email, personalId);
-      setStep(1);
       setError('');
+      setStep(1);
     } catch (error: Error | unknown) {
       if (error instanceof Error && error.message.includes('이메일 전송')) {
         setError('이메일 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -39,16 +42,21 @@ const FindPasswordPage = () => {
             : '알 수 없는 오류가 발생했습니다.'
         );
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleVerifyStep = async () => {
     try {
+      setIsLoading(true);
       await postVerifyEmailCode(email, code);
-      setStep(2);
       setError('');
+      setStep(2);
     } catch (error) {
       setError('인증 코드가 올바르지 않습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,11 +66,14 @@ const FindPasswordPage = () => {
       return;
     }
     try {
+      setIsLoading(true);
       await patchPassword(email, newPassword);
-      setStep(3);
       setError('');
+      setStep(3);
     } catch (error) {
       setError('비밀번호 변경에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -149,6 +160,19 @@ const FindPasswordPage = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              {newPassword && (
+                <p
+                  className={`text-xs mt-1 ${
+                    /^[A-Za-z0-9]+$/.test(newPassword) &&
+                    newPassword.length >= 4 &&
+                    newPassword.length <= 16
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  }`}
+                >
+                  영어 4~16자, 대,소문자/숫자 사용 가능
+                </p>
+              )}
             </div>
             <div className="pt-2">
               <BasicInput
@@ -157,6 +181,19 @@ const FindPasswordPage = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              {confirmPassword && (
+                <p
+                  className={`text-xs mt-1 ${
+                    newPassword === confirmPassword
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  }`}
+                >
+                  {newPassword === confirmPassword
+                    ? '비밀번호가 일치합니다.'
+                    : '비밀번호가 일치하지 않습니다.'}
+                </p>
+              )}
             </div>
           </>
         )}
@@ -176,6 +213,7 @@ const FindPasswordPage = () => {
           </div>
         )}
       </div>
+      {isLoading && <LoadingOverlay />}
     </div>
   );
 };
