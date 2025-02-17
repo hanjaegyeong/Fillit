@@ -149,15 +149,18 @@ export const validateField = async (
 export const validateNextButtonState = async (
   step: number,
   signupState: SignupState,
-  errors: { [key: string]: string }
+  errors: { [key: string]: string },
+  validationStatus: { personalId: boolean; email: boolean }
 ): Promise<boolean> => {
   const currentField = getCurrentField(step);
 
-  // 이메일이나 personalId 필드에서 중복 에러 메시지가 있다면 비활성화
-  if (
-    (currentField === 'email' && errors.email) ||
-    (currentField === 'personalId' && errors.personalId)
-  ) {
+  // personalId 필드에서는 검증이 완료되어야 함
+  if (currentField === 'personalId' && !validationStatus.personalId) {
+    return true;
+  }
+
+  // email 필드에서는 검증이 완료되어야 함
+  if (currentField === 'email' && !validationStatus.email) {
     return true;
   }
 
