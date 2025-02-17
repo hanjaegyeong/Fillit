@@ -1,5 +1,5 @@
 import ProfileImage from '@/components/common/ProfileImage';
-import { NoProfile, RippedProfile } from '@/assets/assets';
+import { NoProfile } from '@/assets/assets';
 import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
