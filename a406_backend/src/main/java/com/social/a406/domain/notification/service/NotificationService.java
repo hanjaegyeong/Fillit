@@ -6,6 +6,8 @@ import com.social.a406.domain.commentReply.entity.Reply;
 import com.social.a406.domain.like.entity.BoardLike;
 import com.social.a406.domain.like.entity.CommentLike;
 import com.social.a406.domain.like.entity.ReplyLike;
+import com.social.a406.domain.notification.dto.NotificationListResponse;
+import com.social.a406.domain.notification.dto.NotificationResponse;
 import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.repository.NotificationRepository;
@@ -35,7 +37,7 @@ public class NotificationService {
     private static final ConcurrentMap<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final CommentRepository commentRepository;
 
-    private long TIME_OUT = 60 * 1000L; // 1분
+    private long TIME_OUT = 60 * 60 * 1000L; // 1분
 
     public SseEmitter subscribe(String personalId){
 
@@ -62,6 +64,7 @@ public class NotificationService {
         }
     }
 
+    @Transactional
     public Notification createNotification(User receiver, User sender, NotificationType type, Long referenceId){
         if(receiver.equals(sender) || receiver.getMainPrompt() != null){
             System.out.println("Don't need to send notification");
@@ -82,22 +85,26 @@ public class NotificationService {
         return notification;
     }
 
-    public List<Notification> getNotifications(UserDetails userDetails, Long cursorId, Pageable pageable) {
+    public NotificationListResponse getNotifications(UserDetails userDetails, Long cursorId, Pageable pageable) {
         User user = userRepository.findByPersonalId(userDetails.getUsername()).orElseThrow(
                 () -> new ForbiddenException("User Not found")
         );
 
         List<Notification> notifications = notificationRepository.findAllByReceiverAndIsReadFalse(user, cursorId, pageable);
-        return notifications;
+        List<NotificationResponse> responses = notifications.stream()
+                .map(NotificationResponse::new)  // Notification 엔티티를 NotificationResponse로 변환
+                .toList();
+        Long lastCursorId = notifications.isEmpty() ? null : notifications.get(notifications.size()-1).getId();
+        return NotificationListResponse.builder()
+                .cursorId(lastCursorId)
+                .responses(responses)
+                .build();
     }
 
+    @Transactional
     public void readNotification(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId).orElse(null);
-
-        if(notification == null){
-            throw new ForbiddenException("Notification not found");
-        }
-
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(
+                ()-> new ForbiddenException("Not found Notification"));
         notification.readNotification();
         notificationRepository.save(notification);
 
