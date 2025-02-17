@@ -47,6 +47,8 @@ const ProfileImage = ({
             onError={(e) => {
               e.currentTarget.src = defaultImage;
             }}
+            loading="lazy"
+            decoding="async"
           />
         </button>
         {type === 'profile' && (
