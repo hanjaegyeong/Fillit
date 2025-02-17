@@ -221,6 +221,15 @@ public class FeedService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ForbiddenException("Board not found with personalId: " + boardId));
 
+        // 내 feed 에 먼저 저장하도록 설정
+        Feed myFeed = Feed.builder()
+                .user(board.getUser())
+                .board(board)
+                .isRecommended(false)
+                .createdAt(board.getCreatedAt())
+                .build();
+        feedRepository.save(myFeed);
+
         // boardAuthor를 팔로우하는 모든 팔로워 조회
         List<Follow> followers = followRepository.findByFollowee(boardAuthor);
         for (Follow follow : followers) {
