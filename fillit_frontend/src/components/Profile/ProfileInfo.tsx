@@ -43,16 +43,20 @@ const ProfileInfo = ({
   }, [profileData]);
 
   return (
-    <div className="max-w-[20rem] ml-10 -mt-7">
+    <div className="max-w-[20rem] ml-8 -mt-7">
       {paperImage && (
-        <div className="w-[12rem] h-[3.125rem] mb-2 -ml-9 translate-y-28">
+        <div className="w-[12rem] h-[3.125rem] mb-2 -ml-10 translate-y-28">
           <img src={paperImage} alt="paper name" className="w-full" />
         </div>
       )}
-      <ProfileImage src={profileData.profileImageUrl} size={101} />
-      <div className="w-[12rem] h-[13.438rem] -mt-[10rem] -ml-[3.23rem]">
-        <img src={RippedProfile} alt="ripped profile" />
+      <div className="-ml-2">
+        <ProfileImage
+          src={profileData.profileImageUrl}
+          type="profile"
+          size={101}
+        />
       </div>
+
       <div className="ml-[9.2rem] -mt-[10.625rem]">
         <div className="flex items-center h-8">
           <h4 className="text-xl leading-tight">{profileData.name}</h4>
