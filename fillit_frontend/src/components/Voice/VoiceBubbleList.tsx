@@ -23,6 +23,7 @@ const VoiceBubbleList = ({ voices, onVoiceRemove }: VoiceBubbleListProps) => {
 
   const handleModalClose = () => {
     if (selectedVoice) {
+      // 끝까지 들었거나 답장했을 때만 리스트에서 제거
       onVoiceRemove(selectedVoice.voiceId);
     }
     setIsModalOpen(false);
