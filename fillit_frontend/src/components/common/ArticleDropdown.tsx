@@ -18,7 +18,7 @@ const ArticleDropdown = ({
   const navigate = useNavigate();
 
   const handleArticleEdit = () => {
-    navigate('/newarticle');
+    navigate(`/article/${boardId}/edit`);
     onClose();
   };
 
