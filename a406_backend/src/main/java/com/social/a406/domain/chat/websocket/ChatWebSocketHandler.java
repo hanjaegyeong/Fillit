@@ -5,13 +5,15 @@ import com.social.a406.domain.chat.dto.ChatMessageDto;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
 import com.social.a406.domain.chat.entity.ChatParticipants;
 import com.social.a406.domain.chat.event.AIChatMessageEvent;
-import com.social.a406.domain.chat.event.MessageCreatedEvent;
 import com.social.a406.domain.chat.event.UnreadMessageEvent;
 import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.service.ChatWebSocketService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.messaging.chat.dto.ChatDbSaveMessage;
+import com.social.a406.messaging.chat.producer.ChatDbSaveProducer;
+import com.social.a406.messaging.chat.producer.ChatRoomUpdateProducer;
 import com.social.a406.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,6 +40,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper; // ✅ Spring이 자동으로 등록한 ObjectMapper 사용
     private final MessageQueueService messageQueueService;
     private final JsonUtil jsonUtil;
+    private final ChatDbSaveProducer chatDbSaveProducer;
+    private final ChatRoomUpdateProducer chatRoomUpdateProducer;
 
     // after
     @Override
@@ -131,8 +135,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }// end of for
         }
 
+            chatDbSaveProducer.sendDbSaveMessage(new ChatDbSaveMessage(personalId, chatMessageRequest));
+//            chatRoomUpdateProducer.sendUpdateMessage(new ChatRoomUpdateMessage(personalId, personalIdList, chatMessageRequest));
             // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
-            eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
+//            eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
             eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList, personalId));
 
 
