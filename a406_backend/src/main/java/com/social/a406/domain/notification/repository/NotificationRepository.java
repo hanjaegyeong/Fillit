@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
-    @Query("SELECT n FROM Notification n WHERE n.receiver = :user AND n.isRead = false AND n.id > :cursorId ORDER BY n.id DESC")
+    @Query("SELECT n FROM Notification n WHERE n.receiver = :user AND n.isRead = false AND n.id < :cursorId ORDER BY n.id DESC")
     List<Notification> findAllByReceiverAndIsReadFalse(User user, Long cursorId, Pageable pageable);
 
     Optional<Notification> findById(Long id);
