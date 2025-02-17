@@ -1,25 +1,16 @@
-package com.social.a406.config;
+package com.social.a406.messaging.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMQConfig {
+public class ChatRabbitMQConfig {
 
-    @Bean
-    public TopicExchange topicExchange() {
-        return new TopicExchange("exchange.topic");
-    }
-
-    // 1. 채팅 관련 Queue 및 Binding
+    // 1. 채팅 관련 Queue
     @Bean
     public Queue chatRoomUpdateQueue() {
         return new Queue("chat.room.update", true);
@@ -30,6 +21,13 @@ public class RabbitMQConfig {
         return new Queue("chat.db.save", true);
     }
 
+    @Bean
+    public Queue aiChatCreatedQueue() {
+        return new Queue("chat.ai.created", true);
+    }
+
+
+    // 2. Binding
     @Bean
     public Binding chatRoomUpdateBinding(Queue chatRoomUpdateQueue, TopicExchange topicExchange) {
         // 채팅 메시지 알림: "chat.message.created" 등 패턴 매칭
@@ -47,21 +45,14 @@ public class RabbitMQConfig {
                 .with("chat.db.*");
     }
 
-
-
-    /**
-     * Config 기본설정들
-     */
     @Bean
-    MessageConverter messageConverter() {
-//        return new SimpleMessageConverter(); //  Publish된 데이터를 추가적인 인코딩이나 변조 없이 Publish
-        return new Jackson2JsonMessageConverter();
+    public Binding aiChatCreatedBinding(Queue aiChatCreatedQueue, TopicExchange topicExchange){
+        return BindingBuilder
+                .bind(aiChatCreatedQueue)
+                .to(topicExchange)
+                .with("chat.ai.*");
     }
 
-    @Bean
-    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter());
-        return rabbitTemplate;
-    }
+
+
 }

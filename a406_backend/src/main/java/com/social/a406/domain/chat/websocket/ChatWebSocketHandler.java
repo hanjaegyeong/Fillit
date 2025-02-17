@@ -4,14 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.a406.domain.chat.dto.ChatMessageDto;
 import com.social.a406.domain.chat.dto.ChatMessageRequest;
 import com.social.a406.domain.chat.entity.ChatParticipants;
-import com.social.a406.domain.chat.event.AIChatMessageEvent;
-import com.social.a406.domain.chat.event.UnreadMessageEvent;
 import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.service.ChatWebSocketService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.messaging.chat.dto.AiChatMessage;
 import com.social.a406.messaging.chat.dto.ChatDbSaveMessage;
+import com.social.a406.messaging.chat.dto.ChatRoomUpdateMessage;
+import com.social.a406.messaging.chat.producer.AiChatCreatedProducer;
 import com.social.a406.messaging.chat.producer.ChatDbSaveProducer;
 import com.social.a406.messaging.chat.producer.ChatRoomUpdateProducer;
 import com.social.a406.util.JsonUtil;
@@ -42,6 +43,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private final JsonUtil jsonUtil;
     private final ChatDbSaveProducer chatDbSaveProducer;
     private final ChatRoomUpdateProducer chatRoomUpdateProducer;
+    private final AiChatCreatedProducer aiChatCreatedProducer;
 
     // after
     @Override
@@ -136,10 +138,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
 
             chatDbSaveProducer.sendDbSaveMessage(new ChatDbSaveMessage(personalId, chatMessageRequest));
-//            chatRoomUpdateProducer.sendUpdateMessage(new ChatRoomUpdateMessage(personalId, personalIdList, chatMessageRequest));
+            chatRoomUpdateProducer.sendUpdateMessage(new ChatRoomUpdateMessage(personalId, personalIdList, chatMessageRequest));
             // 비동기 이벤트 발행 (메시지 저장을 별도로 처리)
 //            eventPublisher.publishEvent(new MessageCreatedEvent(personalId, chatMessageRequest));
-            eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList, personalId));
+//            eventPublisher.publishEvent(new UnreadMessageEvent(chatMessageRequest, personalIdList, personalId));
 
 
     }
@@ -162,7 +164,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         // ai 면 메세지생성
         if(aiUser.getMainPrompt() != null) {
             System.out.println("Receiver is AI. Start to create Message.");
-            eventPublisher.publishEvent(new AIChatMessageEvent(aiUser, user.getName(),chatMessageRequest));
+            aiChatCreatedProducer.sendAiChatCreatedMessage(new AiChatMessage(aiUser, user.getName(),chatMessageRequest));
+//            eventPublisher.publishEvent(new AIChatMessageEvent(aiUser, user.getName(),chatMessageRequest));
         }
 
     }
