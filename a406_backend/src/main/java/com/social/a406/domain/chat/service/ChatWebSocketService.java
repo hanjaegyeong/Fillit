@@ -70,7 +70,7 @@ public class ChatWebSocketService {
     
     // 메세지 증가시키기
     @Transactional
-    public void increaseUnreadMessageAndUpdateRoom(ChatMessageRequest request, List<String> personalIdList, String personalId) {
+    public void increaseUnreadMessageAndUpdateRoom(String personalId, List<String> personalIdList, ChatMessageRequest request) {
         // 채팅방 마지막 메시지 정보 업데이트
         Long chatRoomId = request.getChatRoomId();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)

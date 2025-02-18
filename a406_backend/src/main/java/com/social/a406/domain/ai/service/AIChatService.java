@@ -5,7 +5,6 @@ import com.social.a406.domain.chat.messageQueue.MessageQueueService;
 import com.social.a406.domain.chat.repository.ChatMessageRepository;
 import com.social.a406.domain.chat.repository.ChatParticipantsRepository;
 import com.social.a406.domain.chat.websocket.ChatWebSocketHandler;
-import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -25,7 +24,6 @@ public class AIChatService {
     private final ChatParticipantsRepository chatParticipantsRepository;
     private final MessageQueueService messageQueueService;
 
-
     private final Random random = new Random();
     private final int MINUTE = 60;
 
@@ -36,21 +34,21 @@ public class AIChatService {
                     + "Keep your response within 200 characters when possible, but ensure at least 10 characters.";
 
     // AI 메시지 생성 비동기 실행
-    public void processAiMessage(User aiUser, String otherUserName, ChatMessageRequest chatMessageRequest) {
+    public void processAiMessage(String aiPersonalId, String aiMainPrompt, String otherUserName, ChatMessageRequest chatMessageRequest) {
 
         int delay = random.nextInt(MINUTE) + MINUTE / 6; // 10초 ~ 1분 delay
         System.out.println("Waiting for " + delay + " seconds before chat triggering...");
 
         chatTaskScheduler.schedule(() -> {
             String content = chatMessageRequest.getMessageContent(); // 상대방 메세지
-            String aiReply = generateChatReply(aiUser.getMainPrompt(), otherUserName, content); // AI 메세지 생성
+            String aiReply = generateChatReply(aiMainPrompt, otherUserName, content); // AI 메세지 생성
 
 
             // 메시지 큐를 통해 WebSocket으로 메시지 전송
             ChatMessageRequest newRequest = new ChatMessageRequest(chatMessageRequest.getChatRoomId(), aiReply, ChatMessageRequest.MessageType.TEXT);
             messageQueueService.addMessageToQueue(() -> {
                 try {
-                    webSocketHandler.sendMessageToChatRoom(aiUser.getPersonalId(), newRequest);
+                    webSocketHandler.sendMessageToChatRoom(aiPersonalId, newRequest);
                 } catch (Exception e) {
                     System.err.println("Failed to send AI Message: " + e.getMessage());
                 }

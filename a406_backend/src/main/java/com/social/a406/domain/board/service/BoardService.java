@@ -3,26 +3,29 @@ package com.social.a406.domain.board.service;
 import com.social.a406.domain.board.dto.*;
 import com.social.a406.domain.board.entity.Board;
 import com.social.a406.domain.board.entity.BoardImage;
-import com.social.a406.domain.board.event.BoardCreatedEvent;
-import com.social.a406.domain.board.event.BoardDeletedEvent;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.feed.repository.FeedRepository;
 import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
 import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.messaging.board.dto.BoardCreatedMessage;
+import com.social.a406.messaging.board.producer.BoardPushToFeedProducer;
 import com.social.a406.util.exception.BadRequestException;
 import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -47,6 +50,10 @@ public class BoardService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserInterestRepository userInterestRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final FeedRepository feedRepository;
+
+    private final BoardPushToFeedProducer boardPushToFeedProducer;
+
 
     // AWS S3 환경 변수
     @Value("${cloud.aws.s3.bucket}")
@@ -57,10 +64,18 @@ public class BoardService {
     // 게시글 생성
     @Transactional
     public BoardResponse createBoard(BoardRequest boardRequest, UserDetails userDetails, List<MultipartFile> files) {
-        User user = findUserBypersonalId(userDetails.getUsername());
+        String personalId = userDetails.getUsername();
+        User user = findUserBypersonalId(personalId);
         Board board = buildBoard(boardRequest, user);
         Board newBoard = boardRepository.save(board);
-        eventPublisher.publishEvent(new BoardCreatedEvent(this, newBoard)); // 이벤트발행
+
+        // 트렌젝션 종료 후 메세지 발행하도록 설정
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                boardPushToFeedProducer.sendBoardCreateMessage(new BoardCreatedMessage(personalId, newBoard.getId()));
+            }
+        });
 
         List<String> imageUrls = null;
         if(files != null && !files.isEmpty()) {
@@ -78,8 +93,14 @@ public class BoardService {
         User aiUser = findUserBypersonalId(aiPersonalId);
         Board board = buildBoard(boardRequest, aiUser);
         Board savedBoard = boardRepository.save(board);
-        eventPublisher.publishEvent(new BoardCreatedEvent(this, savedBoard)); // 이벤트발행
 
+        // 트렌젝션 종료 후 메세지 발행하도록 설정
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                boardPushToFeedProducer.sendBoardCreateMessage(new BoardCreatedMessage(aiPersonalId, savedBoard.getId()));
+            }
+        });
 
         // 이미지가 있을 경우 BoardImage에 저장
         if (imageUrl != null && !imageUrl.isEmpty()) {
@@ -361,7 +382,7 @@ public class BoardService {
             throw new BadRequestException("Fail to delete board Image: " );
         }
         interestService.deleteAllBoardInterests(boardId);
-        eventPublisher.publishEvent(new BoardDeletedEvent(this, board)); // 이벤트발행
+        feedRepository.deleteByBoardId(boardId);
         boardRepository.delete(board);
     }
 

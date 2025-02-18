@@ -1,19 +1,19 @@
 package com.social.a406.domain.follow.service;
 
 
-import com.social.a406.domain.follow.dto.FollowSearchResponse;
 import com.social.a406.domain.follow.dto.FollowResponse;
+import com.social.a406.domain.follow.dto.FollowSearchResponse;
 import com.social.a406.domain.follow.entity.Follow;
-import com.social.a406.domain.follow.event.FollowEvent;
-import com.social.a406.domain.follow.event.UnfollowEvent;
 import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.messaging.follow.dto.FollowMessage;
+import com.social.a406.messaging.follow.prodcuer.FollowPushToFeedProducer;
+import com.social.a406.messaging.follow.prodcuer.UnfollowDeleteFeedProducer;
 import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,34 +29,38 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-    private final ApplicationEventPublisher eventPublisher;
+
+    private final FollowPushToFeedProducer followPushToFeedProducer;
+    private final UnfollowDeleteFeedProducer unfollowDeleteFeedProducer;
 
     public Optional<Follow> findByFollowerAndFollowee(User follower, User followee) {
         return followRepository.findByFollowerAndFollowee(follower, followee);
     }
 
-    public boolean followUser(User follower, User followee) {
+    public boolean followUser(User me, User followee) {
         Follow follow = new Follow();
-        follow.setFollower(follower);
+        follow.setFollower(me);
         follow.setFollowee(followee);
         follow.setCreatedAt(LocalDateTime.now());
         Follow saveFollow = followRepository.save(follow); // save는 기본이라 repository에 따로 안써도 되나?
 
+        followPushToFeedProducer.sendFollowCreateMessage(new FollowMessage(me.getPersonalId(), followee.getPersonalId()));  // 피드 추가 비동기
         generateFollowNotification(saveFollow); // 팔로우 알림 생성
-        eventPublisher.publishEvent(new FollowEvent(follower, followee));
+//        eventPublisher.publishEvent(new FollowEvent(follower, followee));
 
         return saveFollow != null;
     }
 
-    public boolean unfollowUser(User follower, User followee) {
-        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowee(follower, followee);
+    public boolean unfollowUser(User me, User followee) {
+        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowee(me, followee);
 
-        if (followOptional.isPresent()) {
-            followRepository.delete(followOptional.get());
-            eventPublisher.publishEvent(new UnfollowEvent(follower, followee));
-            return true; // 삭제 성공
-        }
-        return false; // 삭제 실패 (존재하지 않는 관계)
+        if (!followOptional.isPresent()) return false; // 삭제 실패 (존재하지 않는 관계)
+
+        unfollowDeleteFeedProducer.sendUnfollowCreatedMessage(new FollowMessage(me.getPersonalId(), followee.getPersonalId())); // 피드 제거 비동기
+        followRepository.delete(followOptional.get());
+        return true; // 삭제 성공
+
+
     }
 
     public List<FollowResponse> getFollowerList(String myPersonalId, User targetUser) {

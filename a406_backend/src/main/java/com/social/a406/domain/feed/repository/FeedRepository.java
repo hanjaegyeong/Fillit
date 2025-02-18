@@ -31,6 +31,8 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     List<Feed> findByBoard(Board board);
 
+    void deleteByBoardId(Long board);
+
 
     @Modifying
     @Query("DELETE FROM Feed f WHERE f.user.id = :userId AND f.board IN :boardList")
