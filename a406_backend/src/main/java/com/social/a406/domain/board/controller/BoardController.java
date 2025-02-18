@@ -6,12 +6,14 @@ import com.social.a406.domain.ai.scheduler.AiScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -50,7 +52,7 @@ public class BoardController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long cursorLikeCount,
-            @RequestParam(required = false) Long cursorId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorId,
             @RequestParam(required = false) Long interestId
     ){
         Pageable pageable = PageRequest.of(0,size);
@@ -63,7 +65,7 @@ public class BoardController {
     @GetMapping("/search")
     public ResponseEntity<BoardSearchResponse> searchBoard(
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Long cursorId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorId,
             @RequestParam(required = false) String word,
             @AuthenticationPrincipal UserDetails userDetails
     ){
