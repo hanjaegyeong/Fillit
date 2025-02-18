@@ -17,7 +17,6 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
     referenceId,
     senderPersonalId,
     senderProfileImageUrl,
-    receiverPersonalId,
     isRead,
   } = notification;
 
@@ -39,12 +38,12 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
         <ProfileImage src={senderProfileImageUrl} alt="sender-profile-image" />
       </div>
       <div
-        className={`flex items-center space-x-1 ${
+        className={`flex items-center space-x-1.5 ${
           isRead ? 'text-gray-600' : ''
         }`}
       >
-        <p className="font-medium text-lg">{receiverPersonalId}</p>
-        <p className="font-extralight tracking-tight">
+        <p className="font-medium text-[17px]">{senderPersonalId}</p>
+        <p className="font-extralight tracking-tight text-sm">
           {NOTIFICATION_CONFIG[type].message}
         </p>
       </div>
