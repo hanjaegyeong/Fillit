@@ -220,7 +220,7 @@ public class AiScheduler {
         }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
     }
 
-    @Scheduled(fixedDelay = 30 * MINUTE) // 10분마다 실행
+    @Scheduled(fixedDelay = 5 * MINUTE) // 10분마다 실행
     public void callGenerateAiFollowController(){
         int delay = random.nextInt(MINUTE) + 1 * MINUTE;
 
@@ -238,6 +238,5 @@ public class AiScheduler {
         } catch (Exception e) {
             System.err.println("Follow Failed to call EC2` controller: " + e.getMessage());
         }
-
     }
 }
