@@ -19,11 +19,11 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
     navigate('/edit');
   };
 
-  const handleCustomize = () => {
-    console.log('프로필 꾸미기');
-    onClose();
-    navigate('/customize');
-  };
+  // const handleCustomize = () => {
+  //   console.log('프로필 꾸미기');
+  //   onClose();
+  //   navigate('/customize');
+  // };
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
@@ -67,11 +67,11 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
                 Edit
               </button>
             </li>
-            <li>
+            {/* <li>
               <button onClick={handleCustomize} className={menuItemClass}>
                 Customize
               </button>
-            </li>
+            </li> */}
             <li>
               <button onClick={handleLogout} className={dangerItemClass}>
                 Logout
