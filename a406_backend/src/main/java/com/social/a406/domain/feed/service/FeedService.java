@@ -105,14 +105,14 @@ public class FeedService {
         if (!friendBoards.isEmpty()) {
             nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
         } else {
-            nextCursor = null;
+            nextCursor = cursorFollow;
         }
         
         LocalDateTime nextCursorRecommend;
         if (!recommendedBoards.isEmpty()) {
             nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
         } else {
-            nextCursorRecommend = null;
+            nextCursorRecommend = cursorRecommend;
         }
         
         // 랜덤섞기
