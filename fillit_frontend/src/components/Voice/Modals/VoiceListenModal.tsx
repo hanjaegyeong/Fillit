@@ -26,6 +26,7 @@ const VoiceListenModal = ({
     });
 
   const [showReplyModal, setShowReplyModal] = useState(false);
+  const [showListenContent, setShowListenContent] = useState(true);
 
   const handleClose = () => {
     // 음성을 끝까지 듣거나 답장을 했을 때 삭제
@@ -38,7 +39,10 @@ const VoiceListenModal = ({
 
   const handleClick = () => {
     if (isFinished) {
-      setShowReplyModal(true);
+      setShowListenContent(false);
+      // setTimeout(() => {
+      setShowReplyModal(true); // 딜레이 후에 ReplyRecordModal 열기
+      // }, 600); // 600ms 정도의 딜레이
     } else {
       handlePlay();
     }
@@ -46,63 +50,64 @@ const VoiceListenModal = ({
 
   return (
     <>
-      <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
-        <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
-          <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
-            {currentDuration}"
-          </div>
-          <div className="relative">
-            <motion.img
-              src={soundWave}
-              alt="sound wave"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isPlaying ? 1 : 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="absolute -bottom-2 w-full h-7"
-            />
-            <motion.img
-              src={voiceData.profileImageUrl ?? NoProfile}
-              alt="profile"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-[190px] h-[190px] rounded-full object-cover"
-            />
-          </div>
-          {isFinished ? (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <VoiceButton
+      {showListenContent && (
+        <VoiceBaseModal isOpen={isOpen} onClose={handleClose}>
+          <div className="flex flex-col items-center justify-center h-full gap-8 mt-12">
+            <div className="text-black text-4xl sm:text-5xl md:text-6xl font-medium">
+              {currentDuration}"
+            </div>
+            <div className="relative">
+              <motion.img
+                src={soundWave}
+                alt="sound wave"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isPlaying ? 1 : 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="absolute -bottom-2 w-full h-7"
+              />
+              <motion.img
+                src={voiceData.profileImageUrl ?? NoProfile}
+                alt="profile"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="w-[190px] h-[190px] rounded-full object-cover"
+              />
+            </div>
+            {isFinished ? (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <VoiceButton
+                  onClick={handleClick}
+                  text="Reply"
+                  isPlayComplete={isFinished}
+                />
+              </motion.div>
+            ) : (
+              <motion.button
                 onClick={handleClick}
-                text="Reply"
-                isPlayComplete={isFinished}
-              />
-            </motion.div>
-          ) : (
-            <motion.button
-              onClick={handleClick}
-              className="w-[46px] h-[47px]"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <img
-                src={isPlaying ? sound : playIcon2}
-                alt={isPlaying ? 'sound' : 'play'}
-                className="w-full h-full"
-              />
-            </motion.button>
-          )}
-        </div>
-      </VoiceBaseModal>
-
+                className="w-[46px] h-[47px]"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <img
+                  src={isPlaying ? sound : playIcon2}
+                  alt={isPlaying ? 'sound' : 'play'}
+                  className="w-full h-full"
+                />
+              </motion.button>
+            )}
+          </div>
+        </VoiceBaseModal>
+      )}
       <ReplyRecordModal
         isOpen={showReplyModal}
         onClose={() => {
