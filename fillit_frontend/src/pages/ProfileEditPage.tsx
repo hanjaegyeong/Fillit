@@ -5,7 +5,6 @@ import ProfileImageUploader from '@/components/Profile/ProfileImageUploader';
 import ProfileEditForm from '@/components/Profile/ProfileEditForm';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
-import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const ProfileEditPage = () => {
