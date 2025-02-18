@@ -54,8 +54,8 @@ public class FeedService {
     @Transactional(readOnly = true)
     public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursorFollow, LocalDateTime cursorRecommend) {
         // 0. 커서 null 일 경우 초기화
-        if(cursorFollow==null) cursorFollow = LocalDateTime.now();
-        if(cursorRecommend==null) cursorRecommend = LocalDateTime.now();
+        if (cursorFollow == null) cursorFollow = LocalDateTime.now();
+        if (cursorRecommend == null) cursorRecommend = LocalDateTime.now();
 
 
         // 1. 사용자 조회
@@ -80,12 +80,15 @@ public class FeedService {
         // 4. 추천 게시물 조회 – Redis 캐시에서 각 관심사별로 조회
         int recommendedLimit = limit - friendBoards.size();
         List<PostDto> recommendedBoards = new ArrayList<>();
+        System.out.println("friendBoards: " + friendBoards.size());
+        System.out.println("recommendedLimit: " + recommendedLimit);
 
         // 각 관심사별 캐시에서 추천 게시물 가져오기
         for (Long interest : interests) {
             List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend, personalId);
             recommendedBoards.addAll(boardsForInterest);
         }
+        System.out.println("recommendedBoards: " + recommendedBoards.size());
 
         // 5. 중복 제거 해주기
         Set<Long> addedBoardIds = new HashSet<>();
@@ -107,14 +110,14 @@ public class FeedService {
         } else {
             nextCursor = cursorFollow;
         }
-        
+
         LocalDateTime nextCursorRecommend;
         if (!recommendedBoards.isEmpty()) {
             nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
         } else {
             nextCursorRecommend = cursorRecommend;
         }
-        
+
         // 랜덤섞기
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
@@ -127,7 +130,10 @@ public class FeedService {
         while (feedPosts.size() < limit && (friendIndex < friendBoards.size() || recIndex < recommendedBoards.size())) {
             for (int i = 0; i < 4 && friendIndex < friendBoards.size(); i++) {
                 feedPosts.add(convertToDto(friendBoards.get(friendIndex++), false, userId));
-                if (feedPosts.size() == limit) break;
+                if (feedPosts.size() == limit) {
+                    System.out.println("feedPost.size: "+feedPosts.size());
+                    break;
+                }
             }
             if (recIndex < recommendedBoards.size() && feedPosts.size() < limit) {
                 feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
@@ -149,9 +155,9 @@ public class FeedService {
                 .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
 
         Set<String> followeeIds = followRepository.findByFollower(user)
-                                                    .stream()
-                                                    .map(follow -> follow.getFollowee().getId())
-                                                    .collect(Collectors.toSet()); // HashSet으로 변환 (검색 속도 향상)
+                .stream()
+                .map(follow -> follow.getFollowee().getPersonalId())
+                .collect(Collectors.toSet()); // HashSet으로 변환 (검색 속도 향상)
 
         double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
         double adjustedMaxScore = maxScore - 1;
@@ -269,7 +275,6 @@ public class FeedService {
             feedRepository.save(feed);
         }
     }
-
 
 
 }
