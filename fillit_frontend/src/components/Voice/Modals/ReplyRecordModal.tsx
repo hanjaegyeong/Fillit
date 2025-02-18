@@ -6,7 +6,7 @@ import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { postVoiceReply } from '@/api/voice';
 import { Voice } from '@/types/voice';
 import { useState } from 'react';
-import Toast from '@/components/common/Toast/Toast';
+import VoiceToast from '@/components/common/Toast/VoiceToast';
 
 interface ReplyRecordModalProps {
   isOpen: boolean;
@@ -136,7 +136,7 @@ const ReplyRecordModal = ({
           )}
         </div>
       </VoiceBaseModal>
-      <Toast
+      <VoiceToast
         message="Voice reply sent successfully! 🎤✨"
         isVisible={showToast}
       />
