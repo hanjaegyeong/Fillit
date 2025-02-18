@@ -17,10 +17,8 @@ interface SignupInputProps {
     value: string | Date | string[]
   ) => void;
 
-  handlePersonalIdBlur: () => void;
-  handlePasswordConfirmBlur: () => void;
-  handleEmailBlur: () => void;
   errors: { [key: string]: string };
+  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
 
   validateField: (
     field: keyof SignupState['regist'],
@@ -36,10 +34,8 @@ const SignupInput = ({
   setSignupState,
   getCurrentField,
   handleInputChange,
-  handlePersonalIdBlur,
-  handlePasswordConfirmBlur,
-  handleEmailBlur,
   errors,
+  setErrors,
   validateField,
   setStep,
   validationStatus,
@@ -66,17 +62,44 @@ const SignupInput = ({
               const field = currentField as keyof SignupState['regist'];
               const value = e.target.value;
               handleInputChange(field, value);
-              if (field !== 'passwordConfirm') {
+
+              // 비밀번호 필드 검증
+              if (field === 'password') {
+                await validateField(field, value);
+                // 비밀번호 확인이 이미 입력되어 있는 경우에만 검증
+                if (signupState.regist.passwordConfirm) {
+                  if (value !== signupState.regist.passwordConfirm) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '비밀번호가 일치하지 않습니다',
+                    }));
+                  } else {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '',
+                    }));
+                  }
+                }
+              }
+              // 비밀번호 확인 필드 검증
+              else if (field === 'passwordConfirm') {
+                if (value !== signupState.regist.password) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    passwordConfirm: '비밀번호가 일치하지 않습니다',
+                  }));
+                } else {
+                  setErrors((prev) => ({
+                    ...prev,
+                    passwordConfirm: '',
+                  }));
+                }
+              }
+              // 다른 필드들의 검증
+              else {
                 await validateField(field, value);
               }
             }}
-            onBlur={
-              currentField === 'personalId'
-                ? handlePersonalIdBlur
-                : currentField === 'passwordConfirm'
-                ? handlePasswordConfirmBlur
-                : undefined
-            }
             className={errors[currentField as string] ? 'border-red-500' : ''}
           />
           {errors[currentField as string] ? (
@@ -99,13 +122,16 @@ const SignupInput = ({
           <BasicInput
             placeholder={steps[step].placeholder}
             value={signupState.regist.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            onBlur={handleEmailBlur}
+            onChange={async (e) => {
+              handleInputChange('email', e.target.value);
+              await validateField('email', e.target.value);
+            }}
             className={errors.email ? 'border-red-500' : ''}
           />
           {errors.email ? (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           ) : (
+            !errors.email &&
             validationStatus.email && (
               <p className="text-green-500 text-xs mt-1">
                 사용 가능한 이메일입니다.
@@ -141,10 +167,17 @@ const SignupInput = ({
       )}
 
       {steps[step].inputType === 'tags' && (
-        <InterestTags
-          selectedTags={signupState.regist.interest}
-          onChange={(tags) => handleInputChange('interest', tags)}
-        />
+        <>
+          <InterestTags
+            selectedTags={signupState.regist.interest}
+            onChange={(tags) => handleInputChange('interest', tags)}
+          />
+          <p className="flex justify-center text-xs text-red-500 mt-2">
+            {signupState.regist.interest.length < 2
+              ? '관심사를 2개 이상 선택해주세요'
+              : ''}
+          </p>
+        </>
       )}
 
       {steps[step].inputType === 'choice' && (
