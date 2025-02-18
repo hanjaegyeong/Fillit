@@ -5,11 +5,11 @@ import { useUserStore } from '@/store/useUserStore';
 
 export const useProfile = () => {
   const { user: currentUser, setUser } = useUserStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState({
-    name: '',
-    introduction: '',
-    profileImageUrl: '' as string | null,
+    name: currentUser.name || '',
+    introduction: currentUser.introduction || '',
+    profileImageUrl: currentUser.profileImageUrl || null,
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
@@ -54,7 +54,7 @@ export const useProfile = () => {
       console.error('프로필 수정 실패:', error);
       throw error;
     }
-  }, [profile, profileImageFile]);
+  }, [profile, profileImageFile, setUser]);
 
   return {
     profile,
