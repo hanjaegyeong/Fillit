@@ -45,7 +45,7 @@ public class AiScheduler {
     private String ec2ServerUrl;
 
     // AI 게시글 생성 컨트롤러 자동 호출
-    @Scheduled(fixedDelay = 20 * MINUTE) // 20분마다 실행
+    @Scheduled(fixedDelay = 10 * MINUTE) // 20분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
         int delay = random.nextInt(MINUTE) + 10 * MINUTE; // 1~10분 딜레이
