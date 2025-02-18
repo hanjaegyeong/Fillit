@@ -17,9 +17,6 @@ interface SignupInputProps {
     value: string | Date | string[]
   ) => void;
 
-  handlePersonalIdBlur: () => void;
-  handlePasswordConfirmBlur: () => void;
-  handleEmailBlur: () => void;
   errors: { [key: string]: string };
 
   validateField: (
@@ -36,9 +33,6 @@ const SignupInput = ({
   setSignupState,
   getCurrentField,
   handleInputChange,
-  handlePersonalIdBlur,
-  handlePasswordConfirmBlur,
-  handleEmailBlur,
   errors,
   validateField,
   setStep,
@@ -70,13 +64,6 @@ const SignupInput = ({
                 await validateField(field, value);
               }
             }}
-            onBlur={
-              currentField === 'personalId'
-                ? handlePersonalIdBlur
-                : currentField === 'passwordConfirm'
-                ? handlePasswordConfirmBlur
-                : undefined
-            }
             className={errors[currentField as string] ? 'border-red-500' : ''}
           />
           {errors[currentField as string] ? (
@@ -100,7 +87,6 @@ const SignupInput = ({
             placeholder={steps[step].placeholder}
             value={signupState.regist.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            onBlur={handleEmailBlur}
             className={errors.email ? 'border-red-500' : ''}
           />
           {errors.email ? (
