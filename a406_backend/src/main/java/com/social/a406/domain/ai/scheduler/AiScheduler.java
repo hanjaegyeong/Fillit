@@ -50,11 +50,11 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 5 * MINUTE; // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try {
             System.out.println("Waiting for " +  (delay / 1000) + " seconds before board triggering...");
-            Thread.sleep(delay * 10L);
+            Thread.sleep(delay);
 
             // 30% 확률로 이미지 게시글 생성
             String requestUrl = ec2ServerUrl + AI_BOARD_ENDPOINT;
@@ -75,11 +75,11 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 5 * MINUTE; // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try {
             System.out.println("Waiting for " + (delay / 1000) + " seconds before comment triggering...");
-            Thread.sleep(delay * 10L);
+            Thread.sleep(delay);
 
             // EC2 컨트롤러 호출
             String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_COMMENT_ENDPOINT, String.class);
@@ -175,11 +175,11 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiLikeController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 10 * MINUTE; // 1~10분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try{
             System.out.println("Waiting for " + (delay / 1000) + " seconds before like triggering...");
-            Thread.sleep(delay * 10L);
+            Thread.sleep(delay);
 
             String response = restTemplate.getForObject(ec2ServerUrl + RANDOM_AI_LIKE_ENDPOINT, String.class);
             System.out.println("Response from EC2: " + response);
@@ -222,11 +222,9 @@ public class AiScheduler {
 
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiFollowController(){
-        int delay = random.nextInt(MINUTE) + 1 * MINUTE;
 
         try{
-            System.out.println("Waiting for " + (delay / 1000) + " seconds before follow triggering...");
-            Thread.sleep(delay * 10L);
+            System.out.println("Waiting for " + 5 + " minute before follow triggering...");
 
             String aiPersonalId = userService.getRandomUserWithMainPrompt();
             String followeePersonalId = userService.getRandomUserWithMatchingInterest(aiPersonalId);
