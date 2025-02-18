@@ -18,6 +18,7 @@ public final class SecurityConstants {
             "/api/interests",
             "/api/auth/reissue",
             "/actuator/prometheus",
-            "/ws/**"
+            "/ws/**",
+            "/api/notification/subscribe"
     };
 }
