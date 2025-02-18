@@ -38,9 +38,6 @@ const SignUpPage = () => {
     errors,
     isLoading,
     handleInputChange,
-    handleEmailBlur,
-    handlePersonalIdBlur,
-    handlePasswordConfirmBlur,
     handleInterestSubmit,
     handleSignup,
     setErrors,
@@ -95,10 +92,8 @@ const SignUpPage = () => {
         setSignupState={setSignupState}
         getCurrentField={() => getCurrentField(step)}
         handleInputChange={handleInputChange}
-        handlePersonalIdBlur={handlePersonalIdBlur}
-        handlePasswordConfirmBlur={handlePasswordConfirmBlur}
-        handleEmailBlur={handleEmailBlur}
         errors={errors}
+        setErrors={setErrors}
         validateField={(field, value) => validateField(field, value, setErrors)}
         setStep={setStep}
         validationStatus={validationStatus}

@@ -1,8 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SignupState, SignupForm } from '@/types/signup';
 import { postEmailCheck, postPersonalIdCheck, postSignUp } from '@/api/signup';
 import { postInterest } from '@/api/interest';
 import axios from 'axios';
+import { validationRules } from '@/constants/validationRules';
+
+// 타이머 ID 관리용
+let timeoutId: NodeJS.Timeout | null = null;
+
+// 디바운싱 훅
+const useDebouncedValue = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 
 export const useSignupForm = (
   setStep: (value: React.SetStateAction<number>) => void
@@ -29,6 +56,13 @@ export const useSignupForm = (
     email: false,
   });
 
+  // 디바운싱된 아이디와 이메일 값
+  const debouncedPersonalId = useDebouncedValue(
+    signupState.regist.personalId,
+    300
+  );
+  const debouncedEmail = useDebouncedValue(signupState.regist.email, 300);
+
   // 입력값 변경 핸들러
   const handleInputChange = (
     field: keyof SignupState['regist'],
@@ -40,6 +74,7 @@ export const useSignupForm = (
         [field]: false,
       }));
     }
+
     setSignupState((prev) => ({
       ...prev,
       regist: {
@@ -48,6 +83,89 @@ export const useSignupForm = (
       },
     }));
   };
+
+  // 아이디 중복 검사 함수
+  const handlePersonalIdCheck = useCallback(async (personalId: string) => {
+    try {
+      await postPersonalIdCheck(personalId);
+      setErrors((prev) => ({
+        ...prev,
+        personalId: '',
+      }));
+      setValidationStatus((prev) => ({
+        ...prev,
+        personalId: true,
+      }));
+    } catch (error) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        personalId: false,
+      }));
+      handleError(error, 'personalId');
+    }
+  }, []);
+
+  // 이메일 중복 검사 함수
+  const handleEmailCheck = useCallback(async (email: string) => {
+    // 이메일 형식 검증
+    const emailRule = validationRules.email.pattern;
+    if (!emailRule || !emailRule.value.test(email)) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: false,
+      }));
+      return;
+    }
+
+    try {
+      await postEmailCheck(email);
+      setErrors((prev) => ({
+        ...prev,
+        email: '',
+      }));
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: true,
+      }));
+    } catch (error) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: false,
+      }));
+      handleError(error, 'email');
+    }
+  }, []);
+
+  // 공통 에러 처리
+  const handleError = (error: unknown, field: string) => {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 409) {
+        setErrors((prev) => ({
+          ...prev,
+          [field]: `이미 등록된 ${
+            field === 'personalId' ? '아이디' : '이메일'
+          }입니다.`,
+        }));
+      } else {
+        console.error(`${field} 중복 체크 실패:`, error);
+      }
+    } else {
+      console.error(`${field} 중복 체크 실패:`, error);
+    }
+  };
+
+  // useEffect를 사용해 디바운싱된 값에 따라 중복 검사를 호출
+  useEffect(() => {
+    if (debouncedPersonalId) {
+      handlePersonalIdCheck(debouncedPersonalId);
+    }
+  }, [debouncedPersonalId, handlePersonalIdCheck]);
+
+  useEffect(() => {
+    if (debouncedEmail) {
+      handleEmailCheck(debouncedEmail);
+    }
+  }, [debouncedEmail, handleEmailCheck]);
 
   // 회원가입 API 호출
   const handleSignup = async () => {
@@ -81,87 +199,6 @@ export const useSignupForm = (
       setIsLoading(false);
     }
   };
-  // 아이디 중복  체크 핸들러
-  const handlePersonalIdBlur = async () => {
-    try {
-      await postPersonalIdCheck(signupState.regist.personalId);
-      setErrors((prev) => ({
-        ...prev,
-        personalId: '',
-      }));
-      setValidationStatus((prev) => ({
-        ...prev,
-        personalId: true,
-      }));
-    } catch (error: unknown) {
-      setValidationStatus((prev) => ({
-        ...prev,
-        personalId: false,
-      }));
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 409) {
-          // 409 에러인 경우, 이미 등록된 아이디라는 에러 메시지만 업데이트하고 콘솔에는 출력하지 않음
-          setErrors((prev) => ({
-            ...prev,
-            personalId: '이미 등록된 아이디입니다.',
-          }));
-        } else {
-          console.error('아이디 중복 체크 실패:', error);
-        }
-      } else {
-        console.error('아이디 중복 체크 실패:', error);
-      }
-    }
-  };
-
-  // 이메일 중복 체크 핸들러
-  const handleEmailBlur = async () => {
-    try {
-      await postEmailCheck(signupState.regist.email);
-      setErrors((prev) => ({
-        ...prev,
-        email: '',
-      }));
-      setValidationStatus((prev) => ({
-        ...prev,
-        email: true,
-      }));
-    } catch (error: unknown) {
-      setValidationStatus((prev) => ({
-        ...prev,
-        email: false,
-      }));
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 409) {
-          // 409 에러인 경우 이미 등록된 이메일이라는 메세지만 업데이트
-          setErrors((prev) => ({
-            ...prev,
-            email: '이미 등록된 이메일입니다.',
-          }));
-        } else {
-          // 그 외 에러는 콘솔에 출력
-          console.error('이메일 중복 체크 실패:', error);
-        }
-      } else {
-        console.error('이메일 중복 체크 실패:', error);
-      }
-    }
-  };
-
-  const handlePasswordConfirmBlur = async () => {
-    const passwordConfirmValue = signupState.regist.passwordConfirm;
-    if (passwordConfirmValue !== signupState.regist.password) {
-      setErrors((prev) => ({
-        ...prev,
-        passwordConfirm: '비밀번호가 일치하지 않습니다',
-      }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        passwordConfirm: '',
-      }));
-    }
-  };
 
   // 관심사 등록 API 호출
   const handleInterestSubmit = async () => {
@@ -191,11 +228,8 @@ export const useSignupForm = (
     errors,
     isLoading,
     handleInputChange,
-    handleEmailBlur,
-    handlePersonalIdBlur,
-    handlePasswordConfirmBlur,
-    handleInterestSubmit,
     handleSignup,
+    handleInterestSubmit,
     setErrors,
     setIsLoading,
     validationStatus,
