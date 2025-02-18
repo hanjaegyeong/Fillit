@@ -93,6 +93,7 @@ const SignUpPage = () => {
         getCurrentField={() => getCurrentField(step)}
         handleInputChange={handleInputChange}
         errors={errors}
+        setErrors={setErrors}
         validateField={(field, value) => validateField(field, value, setErrors)}
         setStep={setStep}
         validationStatus={validationStatus}

@@ -49,10 +49,10 @@ export const validationRules: Record<
   },
   email: {
     required: true,
-    // pattern: {
-    //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-    //   message: '올바른 이메일 형식이 아닙니다',
-    // },
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: '올바른 이메일 형식이 아닙니다',
+    },
   },
   birthDate: { required: false }, // 임시
   introduction: { required: false }, // 임시

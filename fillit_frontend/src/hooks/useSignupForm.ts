@@ -3,6 +3,7 @@ import { SignupState, SignupForm } from '@/types/signup';
 import { postEmailCheck, postPersonalIdCheck, postSignUp } from '@/api/signup';
 import { postInterest } from '@/api/interest';
 import axios from 'axios';
+import { validationRules } from '@/constants/validationRules';
 
 // 타이머 ID 관리용
 let timeoutId: NodeJS.Timeout | null = null;
@@ -106,6 +107,16 @@ export const useSignupForm = (
 
   // 이메일 중복 검사 함수
   const handleEmailCheck = useCallback(async (email: string) => {
+    // 이메일 형식 검증
+    const emailRule = validationRules.email.pattern;
+    if (!emailRule || !emailRule.value.test(email)) {
+      setValidationStatus((prev) => ({
+        ...prev,
+        email: false,
+      }));
+      return;
+    }
+
     try {
       await postEmailCheck(email);
       setErrors((prev) => ({
