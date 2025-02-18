@@ -1,5 +1,6 @@
 import { ImageSlideIcon } from '@/assets/assets';
 import { useState, useEffect } from 'react';
+import { DeleteRedIcon } from '@/assets/assets';
 
 interface ImageSliderProps {
   images: string[];
@@ -47,12 +48,11 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, onRemove }) => {
         />
       )}
       {onRemove && (
-        <button
-          onClick={() => onRemove(currentIndex)}
-          className="absolute top-1 right-1 transform  bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center focus:outline-none"
-          aria-label="Remove image"
-        >
-          X
+        <button onClick={() => onRemove(currentIndex)}>
+          <img
+            src={DeleteRedIcon}
+            className="absolute top-0 right-0 rounded-full"
+          />
         </button>
       )}
       {images.length > 1 && (

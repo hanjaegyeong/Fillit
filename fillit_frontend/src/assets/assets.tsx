@@ -57,6 +57,7 @@ import NewArticleIcon from '@/assets/images/write-outline.png';
 import NewArticleImg from '@/assets/images/new-article.png';
 import ImageSlideIcon from '@/assets/images/image-arrow.png';
 import RecommendIcon from '@/assets/icons/recommend-outline.svg';
+import DeleteRedIcon from '@/assets/icons/delete-red.svg';
 
 //search
 import searchIcon from '@/assets/icons/search-icon.svg';
@@ -174,4 +175,5 @@ export {
   NewArticleImg,
   ImageSlideIcon,
   RecommendIcon,
+  DeleteRedIcon,
 };
