@@ -8,6 +8,7 @@ interface VoiceReplyItemProps {
 }
 
 const VoiceReplyItem = ({ data, onReplyClick }: VoiceReplyItemProps) => {
+  const defaultImage = NoProfile;
   return (
     <AnimatePresence>
       <motion.div
@@ -31,9 +32,12 @@ const VoiceReplyItem = ({ data, onReplyClick }: VoiceReplyItemProps) => {
       >
         <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
           <img
-            src={data.profileImageUrl || NoProfile}
+            src={data.profileImageUrl || defaultImage}
             alt="profile"
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = defaultImage;
+            }}
           />
         </div>
       </motion.div>

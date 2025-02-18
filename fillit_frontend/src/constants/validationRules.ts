@@ -49,12 +49,17 @@ export const validationRules: Record<
   },
   email: {
     required: true,
-    // pattern: {
-    //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-    //   message: '올바른 이메일 형식이 아닙니다',
-    // },
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: '올바른 이메일 형식이 아닙니다',
+    },
   },
   birthDate: { required: false }, // 임시
   introduction: { required: false }, // 임시
-  interest: { required: true },
+  interest: {
+    required: true,
+    validate: (value: string) =>
+      (Array.isArray(value) && value.length >= 2) ||
+      '관심사를 2개 이상 선택해주세요',
+  },
 };

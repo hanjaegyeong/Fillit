@@ -1,35 +1,19 @@
-import { getUserProfile } from '@/api/user';
 import Header from '@/components/common/Header/Header';
 import UserList from '@/components/Profile/UserList';
-import { useEffect, useState } from 'react';
+import { useGetProfile } from '@/hooks/query/useGetProfile';
 import { useParams } from 'react-router-dom';
 
 const FollowingPage = () => {
   const { personalId } = useParams();
-  const [userName, setUserName] = useState('');
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        if (!personalId) return;
-
-        // 1. 유저 기본 정보 조회
-        const userData = await getUserProfile(personalId);
-        setUserName(userData.name);
-      } catch (error) {
-        console.error('사용자 정보 조회 실패:', error);
-      }
-    };
-    fetchUser();
-  }, [personalId]);
-
-  if (!personalId) return null;
+  const { data: userData, isLoading } = useGetProfile(personalId ?? '');
 
   return (
     <div className="container-header-nav overflow-hidden">
       <Header
         left="back"
-        text={`${userName}'s Following`}
+        text={
+          isLoading ? 'Loading...' : `${userData?.name}'s who they vibe with`
+        }
         right="notification"
       />
       <UserList type="following" personalId={personalId} />
