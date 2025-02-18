@@ -87,7 +87,7 @@ const VoiceManageModal = ({
               </div>
 
               {/* 스피커 이미지 */}
-              <div className="relative">
+              <div className="flex flex-col items-center">
                 <motion.img
                   src={isPlaying ? pressedSpeaker : speaker}
                   alt="speaker"
