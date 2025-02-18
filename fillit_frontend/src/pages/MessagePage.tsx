@@ -5,7 +5,7 @@ import AiFilButton from '@/components/common/Button/AiFilButton';
 import { getMessages, getRoomsInfo } from '@/api/message';
 import { Message as ApiMessage, ChatRoomInfo } from '@/types/message';
 import { connectRoom, sendMessage } from '@/api/webSocket';
-import { MessageType } from '@/enum/MessageType';
+import { MessageType } from '@/constants/messageType';
 import { WebSocketResponse } from '@/types/websocket';
 import ProfileImage from '@/components/common/ProfileImage';
 import SubmitInput from '@/components/common/Input/SubmitInput';

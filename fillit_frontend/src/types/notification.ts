@@ -1,16 +1,12 @@
-export interface HistoryTime {
-  time: number;
-  date: number;
-  month: number;
-  year: number;
-}
+import { NotificationType } from '@/constants/notificationType';
 
-export interface History {
-  id: number;
-  userId: number;
-  userName: string;
-  userProfile: string;
-  type: 'like' | 'comment' | 'commentLike' | 'follow';
-  contentId: number;
-  timestamp: HistoryTime[];
+export interface Notification {
+  notificationId: number;
+  receiverPersonalId: string;
+  senderPersonalId: string;
+  senderProfileImageUrl: string;
+  type: NotificationType;
+  referenceId: number;
+  createdAt: string;
+  isRead: boolean;
 }

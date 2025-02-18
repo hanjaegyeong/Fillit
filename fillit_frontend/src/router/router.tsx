@@ -43,20 +43,11 @@ const router = createBrowserRouter([
           },
           {
             path: 'article/:boardId',
-            children: [
-              {
-                path: '',
-                element: <ArticleDetailPage />,
-              },
-              {
-                path: 'edit',
-                element: <ArticleEditPage />,
-              },
-              {
-                path: 'comment/:commentId',
-                element: <CommentDetailPage />,
-              },
-            ],
+            element: <ArticleDetailPage />,
+          },
+          {
+            path: 'comment/:commentId',
+            element: <CommentDetailPage />,
           },
           {
             path: 'message',
@@ -100,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: 'newarticle',
         element: <NewArticlePage />,
+      },
+      {
+        path: 'article/:boardId/edit',
+        element: <ArticleEditPage />,
       },
       {
         path: 'edit',

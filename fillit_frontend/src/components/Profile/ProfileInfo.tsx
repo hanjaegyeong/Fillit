@@ -53,7 +53,7 @@ const ProfileInfo = ({
         <ProfileImage
           src={profileData.profileImageUrl}
           type="profile"
-          size={101}
+          size={102}
         />
       </div>
 
