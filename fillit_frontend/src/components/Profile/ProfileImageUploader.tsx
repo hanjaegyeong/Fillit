@@ -2,9 +2,10 @@
   /*프로필 이미지 업로드*/
 }
 
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import ProfileImage from '@/components/common/ProfileImage';
 import { CameraIcon } from '@/assets/assets';
+import ImageCropModal from '@/components/common/Modal/ImageCropModal';
 
 interface ProfileImageUploaderProps {
   imageUrl: string | null;
@@ -16,17 +17,30 @@ const ProfileImageUploader: React.FC<ProfileImageUploaderProps> = ({
   onFileChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleCameraClick = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
 
-  const handleImageUpload = useCallback(
+  const handleImageSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
-        onFileChange(file);
+        setSelectedImage(URL.createObjectURL(file));
+        setCropModalOpen(true);
       }
+    },
+    []
+  );
+
+  const handleCropComplete = useCallback(
+    (croppedBlob: Blob) => {
+      const file = new File([croppedBlob], 'profile.jpg', {
+        type: 'image/jpeg',
+      });
+      onFileChange(file);
     },
     [onFileChange]
   );
@@ -45,8 +59,16 @@ const ProfileImageUploader: React.FC<ProfileImageUploaderProps> = ({
         ref={fileInputRef}
         className="hidden"
         accept="image/*"
-        onChange={handleImageUpload}
+        onChange={handleImageSelect}
       />
+      {cropModalOpen && selectedImage && (
+        <ImageCropModal
+          isOpen={cropModalOpen}
+          imageUrl={selectedImage}
+          onClose={() => setCropModalOpen(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };
