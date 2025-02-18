@@ -18,6 +18,7 @@ interface SignupInputProps {
   ) => void;
 
   errors: { [key: string]: string };
+  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
 
   validateField: (
     field: keyof SignupState['regist'],
@@ -34,6 +35,7 @@ const SignupInput = ({
   getCurrentField,
   handleInputChange,
   errors,
+  setErrors,
   validateField,
   setStep,
   validationStatus,
@@ -60,7 +62,41 @@ const SignupInput = ({
               const field = currentField as keyof SignupState['regist'];
               const value = e.target.value;
               handleInputChange(field, value);
-              if (field !== 'passwordConfirm') {
+
+              // 비밀번호 필드 검증
+              if (field === 'password') {
+                await validateField(field, value);
+                // 비밀번호 확인이 이미 입력되어 있는 경우에만 검증
+                if (signupState.regist.passwordConfirm) {
+                  if (value !== signupState.regist.passwordConfirm) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '비밀번호가 일치하지 않습니다',
+                    }));
+                  } else {
+                    setErrors((prev) => ({
+                      ...prev,
+                      passwordConfirm: '',
+                    }));
+                  }
+                }
+              }
+              // 비밀번호 확인 필드 검증
+              else if (field === 'passwordConfirm') {
+                if (value !== signupState.regist.password) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    passwordConfirm: '비밀번호가 일치하지 않습니다',
+                  }));
+                } else {
+                  setErrors((prev) => ({
+                    ...prev,
+                    passwordConfirm: '',
+                  }));
+                }
+              }
+              // 다른 필드들의 검증
+              else {
                 await validateField(field, value);
               }
             }}
@@ -86,7 +122,10 @@ const SignupInput = ({
           <BasicInput
             placeholder={steps[step].placeholder}
             value={signupState.regist.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
+            onChange={async (e) => {
+              handleInputChange('email', e.target.value);
+              await validateField('email', e.target.value);
+            }}
             className={errors.email ? 'border-red-500' : ''}
           />
           {errors.email ? (
