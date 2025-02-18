@@ -167,10 +167,17 @@ const SignupInput = ({
       )}
 
       {steps[step].inputType === 'tags' && (
-        <InterestTags
-          selectedTags={signupState.regist.interest}
-          onChange={(tags) => handleInputChange('interest', tags)}
-        />
+        <>
+          <InterestTags
+            selectedTags={signupState.regist.interest}
+            onChange={(tags) => handleInputChange('interest', tags)}
+          />
+          <p className="flex justify-center text-xs text-red-500 mt-2">
+            {signupState.regist.interest.length < 2
+              ? '관심사를 2개 이상 선택해주세요'
+              : ''}
+          </p>
+        </>
       )}
 
       {steps[step].inputType === 'choice' && (

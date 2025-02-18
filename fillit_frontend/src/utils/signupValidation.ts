@@ -100,6 +100,22 @@ export const validateCurrentStep = async (
     if (rule.maxLength && currentValue.length > rule.maxLength) return false;
   }
 
+  // interest 필드 검증 로직 추가
+  if (currentField === 'interest') {
+    if (!Array.isArray(currentValue) || currentValue.length < 2) {
+      setErrors((prev) => ({
+        ...prev,
+        interest: '관심사를 2개 이상 선택해주세요',
+      }));
+      return false;
+    }
+    setErrors((prev) => ({
+      ...prev,
+      interest: '',
+    }));
+    return true;
+  }
+
   return true;
 };
 
