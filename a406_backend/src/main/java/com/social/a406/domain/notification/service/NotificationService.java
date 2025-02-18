@@ -14,6 +14,7 @@ import com.social.a406.domain.notification.repository.NotificationRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
+import com.social.a406.util.exception.BadRequestException;
 import com.social.a406.util.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -90,7 +91,7 @@ public class NotificationService {
                 () -> new ForbiddenException("User Not found")
         );
 
-        List<Notification> notifications = notificationRepository.findAllByReceiverAndIsReadFalse(user, cursorId, pageable);
+        List<Notification> notifications = notificationRepository.findAllByReceiver(user, cursorId, pageable);
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::new)  // Notification 엔티티를 NotificationResponse로 변환
                 .toList();
@@ -102,9 +103,12 @@ public class NotificationService {
     }
 
     @Transactional
-    public void readNotification(Long notificationId) {
+    public void readNotification(String personalId, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(
                 ()-> new ForbiddenException("Not found Notification"));
+        if(!personalId.equals(notification.getReceiver().getPersonalId())){
+            throw new BadRequestException("You can't read this notification");
+        }
         notification.readNotification();
         notificationRepository.save(notification);
 

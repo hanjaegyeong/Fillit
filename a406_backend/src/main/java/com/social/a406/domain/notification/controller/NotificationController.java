@@ -2,8 +2,6 @@ package com.social.a406.domain.notification.controller;
 
 
 import com.social.a406.domain.notification.dto.NotificationListResponse;
-import com.social.a406.domain.notification.dto.NotificationResponse;
-import com.social.a406.domain.notification.entity.Notification;
 import com.social.a406.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -13,8 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/notification")
@@ -42,8 +38,10 @@ public class NotificationController {
 
     // 읽음 처리
     @PostMapping("/{notificationId}/read")
-    public ResponseEntity<String> readNotification(@PathVariable Long notificationId){
-        notificationService.readNotification(notificationId);
+    public ResponseEntity<String> readNotification(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long notificationId){
+        notificationService.readNotification(userDetails.getUsername(), notificationId);
         return ResponseEntity.ok("success to read processing");
     }
 

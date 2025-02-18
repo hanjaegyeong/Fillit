@@ -5,6 +5,7 @@ import com.social.a406.domain.board.service.BoardService;
 import com.social.a406.domain.comment.entity.Comment;
 import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.commentReply.service.ReplyService;
+import com.social.a406.domain.user.repository.UserRepository;
 import com.social.a406.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ public class AiScheduler {
     private final String RANDOM_AI_LIKE_ENDPOINT = "/api/ai/generate/random/like";
 
     private final String AI_COMMENT_REPLY_ENDPOINT = "/api/ai/generate/reply";
+    private final String AI_FOLLOW_ENDPOINT = "/api/ai/generate/follow";
     private final int MINUTE = 60000;
 
     @Value("${EC2_SERVER_URL}")
@@ -216,5 +218,26 @@ public class AiScheduler {
                 likeScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
             }
         }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+    }
+
+    @Scheduled(fixedDelay = 30 * MINUTE) // 10분마다 실행
+    public void callGenerateAiFollowController(){
+        int delay = random.nextInt(MINUTE) + 1 * MINUTE;
+
+        try{
+            System.out.println("Waiting for " + (delay / 1000) + " seconds before follow triggering...");
+            Thread.sleep(delay * 10L);
+
+            String aiPersonalId = userService.getRandomUserWithMainPrompt();
+            String followeePersonalId = userService.getRandomUserWithMatchingInterest(aiPersonalId);
+            String response = restTemplate.getForObject(
+                    ec2ServerUrl + AI_FOLLOW_ENDPOINT + "?aiPersonalId=" + aiPersonalId +
+                            "&followeePersonalId="+followeePersonalId
+                    , String.class);
+            System.out.println("Response from EC2: " + response);
+        } catch (Exception e) {
+            System.err.println("Follow Failed to call EC2` controller: " + e.getMessage());
+        }
+
     }
 }
