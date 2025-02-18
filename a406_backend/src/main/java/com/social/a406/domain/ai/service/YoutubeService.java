@@ -30,7 +30,7 @@ public class YoutubeService {
     private String API_KEY;
 
     private static final int DESCRIPTION_MAX_LENGTH = 950;
-    private static final int MAX_RESULT = 10;
+    private static final int MAX_RESULT = 30;
 
     private static final String PROMPT_TEMPLATE = "Generate a SNS post about [%s] featuring the video [%s]. Don't forget to mention the official link [%s] and the description [%s]. Use randomly mixed expressions and casual slang to make it sound natural. Include hashtags #[%s] #[%s]. Mention the channel title [%s]. Avoid overusing the interjection. And do not use [OMG],[whoa]";
     private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
