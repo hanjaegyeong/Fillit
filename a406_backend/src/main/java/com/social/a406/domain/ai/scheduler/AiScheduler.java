@@ -45,7 +45,7 @@ public class AiScheduler {
     private String ec2ServerUrl;
 
     // AI 게시글 생성 컨트롤러 자동 호출
-    @Scheduled(fixedDelay = 10 * MINUTE) // 20분마다 실행
+    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
         int delay = random.nextInt(MINUTE) + 10 * MINUTE; // 1~10분 딜레이
@@ -70,10 +70,10 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
+    @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 10 * MINUTE; // 1~10분 딜레이
+        int delay = random.nextInt(MINUTE) + 5 * MINUTE; // 1~5분 딜레이
 
         try {
             System.out.println("Waiting for " + (delay / 1000) + " seconds before comment triggering...");
@@ -91,7 +91,7 @@ public class AiScheduler {
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
@@ -122,7 +122,7 @@ public class AiScheduler {
     @Transactional
     public void scheduleCommentReplyCreationAtComment(Long commentId){
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment reply Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
@@ -148,7 +148,7 @@ public class AiScheduler {
     @Transactional
     public void scheduleCommentReplyCreationAtCommentReply(Long replyId){
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment reply - reply Task scheduled to execute after " + delayInSeconds + " seconds");
 
         taskScheduler.schedule(() -> {
@@ -190,7 +190,7 @@ public class AiScheduler {
     public void scheduleLikeCreation(Long boardId, String personalId) {
         likeScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 50 * 60); // 1분 ~ 5분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
 
         System.out.println("First Comment Task scheduled to execute after " + delayInSeconds + " seconds");
 
