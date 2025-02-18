@@ -76,7 +76,7 @@ const ProfileImage = ({
   return (
     <>
       <div>
-        <button onClick={handleClickProfileImage}>
+        <div onClick={handleClickProfileImage}>
           <img
             src={imageSrc}
             alt={alt}
@@ -89,12 +89,12 @@ const ProfileImage = ({
             loading="eager"
             decoding="async"
           />
-        </button>
+        </div>
         {type === 'profile' && (
           <img
             src={RippedProfile}
             alt="ripped profile"
-            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[10.05rem] -ml-[3.21rem] pointer-events-none"
+            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[9.62rem] -ml-[3.21rem] pointer-events-none"
           />
         )}
       </div>
