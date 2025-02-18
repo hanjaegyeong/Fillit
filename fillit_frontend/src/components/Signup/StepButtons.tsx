@@ -28,6 +28,13 @@ const SignupButtons = ({
       )}
       {step === totalSteps - 1 ? (
         <BasicButton text="Login" onClick={handleLogin} disabled={isLoading} />
+      ) : step === 6 ? (
+        <BasicButton
+          text="Submit"
+          onClick={handleNext}
+          disabled={isLoading || isNextButtonDisabled}
+          textColor="text-[#d68de1]"
+        />
       ) : (
         <BasicButton
           text="Next"

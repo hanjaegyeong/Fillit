@@ -59,7 +59,7 @@ export const validationRules: Record<
   interest: {
     required: true,
     validate: (value: string) =>
-      (Array.isArray(value) && value.length >= 2) ||
-      '관심사를 2개 이상 선택해주세요',
+      (Array.isArray(value) && value.length >= 3) ||
+      '관심사를 3개 이상 선택해주세요',
   },
 };

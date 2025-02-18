@@ -56,14 +56,14 @@ export const steps = [
     rule: '',
     inputType: 'file',
   },
-  {
-    message1: "We're almost done signing up!",
-    message2: 'When’s your b-day? 🎂',
-    message3: '',
-    placeholder: '',
-    rule: '',
-    inputType: 'date',
-  },
+  // {
+  //   message1: "We're almost done signing up!",
+  //   message2: 'When’s your b-day? 🎂',
+  //   message3: '',
+  //   placeholder: '',
+  //   rule: '',
+  //   inputType: 'date',
+  // },
   {
     message1: 'So, like, what kinda vibe',
     message2: 'are you giving off? 🤔✨',
