@@ -54,8 +54,10 @@ public class FeedService {
     @Transactional(readOnly = true)
     public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursorFollow, LocalDateTime cursorRecommend) {
         // 0. 커서 null 일 경우 초기화
-        if (cursorFollow == null) cursorFollow = LocalDateTime.now();
-        if (cursorRecommend == null) cursorRecommend = LocalDateTime.now();
+//        if (cursorFollow == null) cursorFollow = LocalDateTime.now();
+//        if (cursorRecommend == null) cursorRecommend = LocalDateTime.now();
+        // 0. 둘 다 null 일 경우 피드 조회 x
+        if(cursorFollow ==null && cursorRecommend == null) return new FeedResponseDto();
 
 
         // 1. 사용자 조회
@@ -70,12 +72,16 @@ public class FeedService {
                 .collect(Collectors.toList());
 
         // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 80% 비율)
-        int followLimit = (int) Math.ceil(limit * 0.8);
-        PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("createdAt").descending());
-        List<Feed> feedEntries = feedRepository.findByUserIdAndCreatedAtAfter(userId, cursorFollow, followPageable);
-        List<Board> friendBoards = feedEntries.stream()
-                .map(Feed::getBoard)
-                .collect(Collectors.toList());
+        List<Board> friendBoards = new ArrayList<>();
+        if (cursorFollow != null) {
+            int followLimit = (int) Math.ceil(limit * 0.8);
+            PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("createdAt").descending());
+            List<Feed> feedEntries = feedRepository.findByUserIdAndCreatedAtAfter(userId, cursorFollow, followPageable);
+            friendBoards = feedEntries.stream()
+                    .map(Feed::getBoard)
+                    .collect(Collectors.toList());
+        }
+
 
         // 4. 추천 게시물 조회 – Redis 캐시에서 각 관심사별로 조회
         int recommendedLimit = limit - friendBoards.size();
@@ -84,11 +90,13 @@ public class FeedService {
         System.out.println("recommendedLimit: " + recommendedLimit);
 
         // 각 관심사별 캐시에서 추천 게시물 가져오기
-        for (Long interest : interests) {
-            List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend, personalId);
-            recommendedBoards.addAll(boardsForInterest);
+        if (cursorRecommend != null){
+            for (Long interest : interests) {
+                List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend, personalId);
+                recommendedBoards.addAll(boardsForInterest);
+            }
+            System.out.println("recommendedBoards: " + recommendedBoards.size());
         }
-        System.out.println("recommendedBoards: " + recommendedBoards.size());
 
         // 5. 중복 제거 해주기
         Set<Long> addedBoardIds = new HashSet<>();
@@ -103,28 +111,28 @@ public class FeedService {
                 .collect(Collectors.toList());
 
 
-        // 커서 설정해주기
+        // 6. 커서 설정해주기
         LocalDateTime nextCursor;
         if (!friendBoards.isEmpty()) {
             nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
         } else {
-            nextCursor = cursorFollow;
+            nextCursor = null;
         }
 
         LocalDateTime nextCursorRecommend;
         if (!recommendedBoards.isEmpty()) {
             nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
         } else {
-            nextCursorRecommend = cursorRecommend;
+            nextCursorRecommend = null;
         }
 
-        // 랜덤섞기
+        // 7. 랜덤섞기
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
             recommendedBoards = recommendedBoards.subList(0, recommendedLimit);
         }
 
-        // 5. 피드 결합 – 친구 게시물 4개에 추천 게시물 1개 (4:1 비율)
+        // 8.. 피드 결합 – 친구 게시물 4개에 추천 게시물 1개 (4:1 비율)
         List<PostDto> feedPosts = new ArrayList<>();
         int friendIndex = 0, recIndex = 0;
         while (feedPosts.size() < limit && (friendIndex < friendBoards.size() || recIndex < recommendedBoards.size())) {
