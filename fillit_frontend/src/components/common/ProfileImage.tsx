@@ -94,17 +94,10 @@ const ProfileImage = ({
           <img
             src={RippedProfile}
             alt="ripped profile"
-            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[10.05rem] -ml-[3.21rem] pointer-events-none"
+            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[9.62rem] -ml-[3.21rem] pointer-events-none"
           />
         )}
       </div>
-      {type === 'profile' && (
-        <img
-          src={RippedProfile}
-          alt="ripped profile"
-          className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[9.62rem] -ml-[3.21rem] pointer-events-none"
-        />
-      )}
       <ProfileImageModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
