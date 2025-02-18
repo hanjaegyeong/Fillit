@@ -21,6 +21,6 @@ export const NOTIFICATION_CONFIG: Record<
   BOARDLIKE: { url: (id) => `/article/${id}`, message: 'liked your post.' },
   COMMENT: {
     url: (id) => `/article/${id}`,
-    message: 'commented on your post.',
+    message: 'commented on you.',
   },
 };
