@@ -48,7 +48,6 @@ public class FeedService {
     @Resource(name = "jsonRedisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
 
-
     /**
      * 피드 조회 – 친구 게시물(푸시된 데이터)과 추천 게시물(풀 방식)을 4:1 비율로 결합하여 반환
      */
@@ -82,13 +81,13 @@ public class FeedService {
         int recommendedLimit = limit - friendBoards.size();
         List<PostDto> recommendedBoards = new ArrayList<>();
 
-        // Redis sorted set을 활용하여, 각 관심사별 캐시에서 추천 게시물 가져오기
+        // 각 관심사별 캐시에서 추천 게시물 가져오기
         for (Long interest : interests) {
-            List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend);
+            List<PostDto> boardsForInterest = getCachedRecommendedBoards(interest, recommendedLimit, cursorRecommend, personalId);
             recommendedBoards.addAll(boardsForInterest);
         }
 
-        // 중복 제거를 위한 Set
+        // 5. 중복 제거 해주기
         Set<Long> addedBoardIds = new HashSet<>();
 
         // 중복 제거 후 저장
@@ -100,6 +99,22 @@ public class FeedService {
                 .filter(board -> addedBoardIds.add(board.getBoardId())) // 중복 ID 필터링
                 .collect(Collectors.toList());
 
+
+        // 커서 설정해주기
+        LocalDateTime nextCursor;
+        if (!friendBoards.isEmpty()) {
+            nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
+        } else {
+            nextCursor = null;
+        }
+        
+        LocalDateTime nextCursorRecommend;
+        if (!recommendedBoards.isEmpty()) {
+            nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
+        } else {
+            nextCursorRecommend = null;
+        }
+        
         // 랜덤섞기
         Collections.shuffle(recommendedBoards);
         if (recommendedBoards.size() > recommendedLimit) {
@@ -119,21 +134,6 @@ public class FeedService {
             }
         }
 
-        // 커서 설정해주기
-        LocalDateTime nextCursor;
-        LocalDateTime nextCursorRecommend;
-        if (!friendBoards.isEmpty()) {
-            nextCursor = friendBoards.get(friendBoards.size() - 1).getCreatedAt();
-        } else {
-            nextCursor = null;
-        }
-
-        if (!recommendedBoards.isEmpty()) {
-            nextCursorRecommend = recommendedBoards.get(recommendedBoards.size() - 1).getCreatedAt();
-        } else {
-            nextCursorRecommend = null;
-        }
-
         return new FeedResponseDto(feedPosts, nextCursor, nextCursorRecommend);
     }
 
@@ -143,16 +143,30 @@ public class FeedService {
     }
 
     // Redis 캐시에서 특정 관심사에 해당하는 추천 게시물을 조회
-    private List<PostDto> getCachedRecommendedBoards(Long interestId, int limit, LocalDateTime cursor) {
+    private List<PostDto> getCachedRecommendedBoards(Long interestId, int limit, LocalDateTime cursor, String personalId) {
         String key = "feed:recommended:" + interestId;
+        User user = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
+
+        Set<String> followeeIds = followRepository.findByFollower(user)
+                                                    .stream()
+                                                    .map(follow -> follow.getFollowee().getId())
+                                                    .collect(Collectors.toSet()); // HashSet으로 변환 (검색 속도 향상)
+
         double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
         // Sorted Set에서 score가 maxScore 이하인 게시물을 최신순(reverseRangeByScore)
         Set<Object> cachedSet = redisTemplate.opsForZSet()
                 .reverseRangeByScore(key, 0, maxScore, 0, limit);
+
         List<PostDto> boards = new ArrayList<>();
         if (!cachedSet.isEmpty()) {
-            cachedSet.forEach(obj -> boards.add((PostDto) obj));
-//            System.out.println("Get cashed Boards size: " + cachedSet.size());
+            cachedSet.forEach(obj -> {
+                PostDto post = (PostDto) obj;
+                // 팔로우한 사용자의 게시글이 아니면 추가
+                if (!followeeIds.contains(post.getPersonalId())) {
+                    boards.add(post);
+                }
+            });
         }
         return boards;
     }

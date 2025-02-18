@@ -27,6 +27,8 @@ public class FeedController {
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorFollow,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorRecommend) {
+        System.out.println("cursor Follow: " +cursorRecommend);
+        System.out.println("cursorRecommend: "+cursorRecommend);
         String personalId = userDetail.getUsername();
         FeedResponseDto feed = feedService.getFeed(personalId, limit, cursorFollow, cursorRecommend);
         return ResponseEntity.ok(feed);
