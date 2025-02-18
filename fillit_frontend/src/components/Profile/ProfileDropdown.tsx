@@ -30,7 +30,7 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   };
 
   const handleLogoutConfirm = async () => {
-    console.log('로그아웃 확인');
+    // console.log('로그아웃 확인');
 
     await getLogout();
     reset();
@@ -42,7 +42,6 @@ export const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   };
 
   const handleLogoutCancle = () => {
-    console.log('로그아웃 취소');
     setIsLogoutModalOpen(false);
     onClose();
   };

@@ -1,4 +1,4 @@
-import { FollowBackground } from '@/assets/assets';
+import { FollowBackground, NoProfile } from '@/assets/assets';
 import UserItem from '@/components/Profile/UserItem';
 import SubmitInput from '@/components/common/Input/SubmitInput';
 import { useState, useEffect } from 'react';
@@ -22,16 +22,36 @@ const UserList = ({ type, personalId }: UserListProps) => {
   // const [searchTerm, setSearchTerm] = useState<string>('');
   const { user: currentUser } = useUserStore();
 
+  // 이미지 프리로딩을 위한 상태 추가
+  const [isImagesLoaded, setIsImagesLoaded] = useState(false);
+
   const { data: users, isLoading } = useQuery({
     queryKey: ['users', type, personalId],
     queryFn: async () => {
       if (!personalId) {
-        throw new Error('persoanlId가 없습니다');
+        throw new Error('personalId가 없습니다');
       }
       const response =
         type === 'followers'
           ? await getFollowerList(personalId)
           : await getFolloweeList(personalId);
+
+      // 이미지 프리로딩 처리
+      await Promise.all(
+        response.map((user: User) => {
+          if (user.profileImageUrl) {
+            return new Promise((resolve) => {
+              const img = new Image();
+              img.src = user.profileImageUrl ?? NoProfile;
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          }
+          return Promise.resolve();
+        })
+      );
+
+      setIsImagesLoaded(true);
 
       return [...response].sort((a, b) => {
         if (a.personalId === currentUser.personalId) return -1;
@@ -83,7 +103,8 @@ const UserList = ({ type, personalId }: UserListProps) => {
     }
   };
 
-  if (isLoading) {
+  // 로딩 상태 개선
+  if (isLoading || !isImagesLoaded) {
     return <LoadingOverlay />;
   }
 
