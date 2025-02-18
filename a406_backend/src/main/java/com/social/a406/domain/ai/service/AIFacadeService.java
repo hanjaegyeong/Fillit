@@ -9,6 +9,7 @@ import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
 import com.social.a406.domain.commentReply.service.ReplyService;
+import com.social.a406.domain.follow.service.FollowService;
 import com.social.a406.domain.interest.dto.InterestResponse;
 import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.like.entity.BoardLike;
@@ -41,6 +42,7 @@ public class AIFacadeService {
     private final UserRepository userRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final ReplyService replyService;
+    private final FollowService followService;
 
     /**
      * 랜덤 방식으로 AI 게시글 생성
@@ -187,5 +189,9 @@ public class AIFacadeService {
                 .content(generateContent)
                 .build();
         return replyService.saveReply(commentId, replyRequest, personalId);
+    }
+
+    public void generateAndSaveFollow(String followerPersonalId, String followeePersonalId) {
+        followService.followUser(followerPersonalId, followeePersonalId);
     }
 }
