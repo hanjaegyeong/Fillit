@@ -131,6 +131,7 @@ const SignupInput = ({
           {errors.email ? (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           ) : (
+            !errors.email &&
             validationStatus.email && (
               <p className="text-green-500 text-xs mt-1">
                 사용 가능한 이메일입니다.
