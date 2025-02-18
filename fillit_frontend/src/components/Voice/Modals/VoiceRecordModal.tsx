@@ -5,7 +5,7 @@ import VoiceButton from '@/components/common/Button/VoiceButton';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { postVoice, getVoice } from '@/api/voice';
 import { useState } from 'react';
-import Toast from '@/components/common/Toast/Toast';
+import VoiceToast from '@/components/common/Toast/VoiceToast';
 
 interface VoiceRecordModalProps {
   isOpen: boolean;
@@ -165,7 +165,7 @@ const VoiceRecordModal = ({
           </div>
         </div>
       </VoiceBaseModal>
-      <Toast
+      <VoiceToast
         message="Just sent the voice bubble, fam! 🫧💬"
         isVisible={showToast}
       />
