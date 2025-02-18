@@ -49,7 +49,7 @@ const ProfileCustomPage = () => {
 
       <div className="flex flex-col items-center">
         {/* 프로필 페이지 배경 */}
-        <div className="w-full object-cover flex justify-center scale-110 mt-[17rem]">
+        <div className="w-full object-cover flex justify-center scale-125 mr-[4rem] mt-[17rem]">
           <img src={ProfilePagePaper} alt="profile page paper" />
         </div>
 
