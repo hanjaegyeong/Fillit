@@ -7,12 +7,13 @@ import ProfileIntroduction from '@/components/Profile/ProfileIntroduction';
 import { useParams } from 'react-router-dom';
 import { useUserStore } from '@/store/useUserStore';
 import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
-import UserArticleListContainer from '@/components/Article/UserArticleListContainer';
+// import UserArticleListContainer from '@/components/Article/UserArticleListContainer';
 
 type RouteParams = {
   personalId: string;
 };
 import { useGetProfile } from '@/hooks/query/useGetProfile';
+import { ProfilePagePaper } from '@/assets/assets';
 
 const ProfilePage = () => {
   const { personalId } = useParams() as RouteParams; // URL 파라미터
@@ -65,14 +66,14 @@ const ProfilePage = () => {
           isMyProfile={isMyProfile}
         />
         <ProfileIntroduction introduction={profileData.introduction} />
-        <UserArticleListContainer personalId={personalId} />
-        {/* <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
-        <img
-          src={ProfilePagePaper}
-          alt="profile page paper"
-          className="h-full"
-        />
-      </div> */}
+        {/* <UserArticleListContainer personalId={personalId} /> */}
+        <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
+          <img
+            src={ProfilePagePaper}
+            alt="profile page paper"
+            className="h-full"
+          />
+        </div>
       </div>
     </div>
   );
