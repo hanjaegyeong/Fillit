@@ -2,7 +2,7 @@ import { NotificationType } from '@/constants/notificationType';
 
 export const NOTIFICATION_CONFIG: Record<
   NotificationType,
-  { url: (id: number) => string; message: string }
+  { url: (id: number | string) => string; message: string }
 > = {
   FOLLOW: { url: (id) => `/profile/${id}`, message: 'started following you.' },
   RECOMMENT: {
