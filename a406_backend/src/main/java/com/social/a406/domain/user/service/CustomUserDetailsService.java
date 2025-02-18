@@ -67,4 +67,19 @@ public class CustomUserDetailsService implements UserDetailsService {
                 authorities
         );
     }
+
+    public UserDetails loadUserByPersonalId(String personalId) throws UsernameNotFoundException {
+        User user = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with personalId: " + personalId));
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new CustomUserDetails(
+                user.getId(),
+                user.getPersonalId(),
+                user.getPassword(),
+                authorities
+        );
+    }
 }

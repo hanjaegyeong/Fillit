@@ -137,7 +137,15 @@ public class UserService {
     }
 
     public Map<String, String> login(UserLoginRequest userLoginRequest) {
-        UserDetails userDetails = customUserDetailsService.loadUserByEmail(userLoginRequest.getEmail());
+        String loginIdentifier = userLoginRequest.getEmailOrPersonalId();
+        UserDetails userDetails;
+
+        // "@"가 포함되어 있으면 이메일, 그렇지 않으면 퍼스널 ID로 처리
+        if (loginIdentifier.contains("@")) {
+            userDetails = customUserDetailsService.loadUserByEmail(loginIdentifier);
+        } else {
+            userDetails = customUserDetailsService.loadUserByPersonalId(loginIdentifier);
+        }
 
         // 사용자 검증
         validateUser(userDetails, userLoginRequest.getPassword());
