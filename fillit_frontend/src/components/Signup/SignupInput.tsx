@@ -3,7 +3,7 @@ import { steps } from '@/constants/signupSteps';
 import BasicInput from '@/components/common/Input/BasicInput';
 import ImageUpload from '@/components/common/ImageUpload';
 import Textarea from '@/components/common/TextArea';
-import BirthInput from '@/components/common/Input/BirthInput';
+// import BirthInput from '@/components/common/Input/BirthInput';
 import InterestTags from '@/components/common/InterestTags';
 import BasicButton from '@/components/common/Button/BasicButton';
 
@@ -141,12 +141,12 @@ const SignupInput = ({
         </div>
       )}
 
-      {steps[step].inputType === 'date' && (
+      {/* {steps[step].inputType === 'date' && (
         <BirthInput
           value={signupState.regist.birthDate}
           onChange={(date) => handleInputChange('birthDate', date)}
         />
-      )}
+      )} */}
 
       {steps[step].inputType === 'file' && (
         <ImageUpload
@@ -173,8 +173,8 @@ const SignupInput = ({
             onChange={(tags) => handleInputChange('interest', tags)}
           />
           <p className="flex justify-center text-xs text-red-500 mt-2">
-            {signupState.regist.interest.length < 2
-              ? '관심사를 2개 이상 선택해주세요'
+            {signupState.regist.interest.length < 3
+              ? '관심사를 3개 이상 선택해주세요'
               : ''}
           </p>
         </>
