@@ -132,7 +132,8 @@ pipeline {
                             GEMINI_API_KEY="$GEMINI_API_KEY" \\
                             EC2_SERVER_URL="$EC2_SERVER_URL" \\
                             FLICKR_API_KEY="$FLICKR_API_KEY" \\
-                            REDIS_HOST="$REDIS_HOST"
+                            REDIS_HOST="$REDIS_HOST" \\
+                            RABBITMQ_HOST="$RABBITMQ_HOST"
                     """
                 }
             }
