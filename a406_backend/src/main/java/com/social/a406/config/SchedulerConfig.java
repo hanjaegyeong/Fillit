@@ -12,7 +12,7 @@ public class SchedulerConfig {
     @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(10); // 10개의 스레드를 허용
+        scheduler.setPoolSize(50); // 50개의 스레드를 허용
         scheduler.setThreadNamePrefix("TaskScheduler-");
         scheduler.initialize();
         return scheduler;
