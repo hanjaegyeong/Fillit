@@ -26,7 +26,8 @@ import VoicePage from '@/pages/VoicePage';
 import NotificationPage from '@/pages/NotificationPage';
 
 import Layout from '@/components/common/Layout/Layout';
-import RequireAuth from './RequireAuth';
+import RequireAuth from '@/router/RequireAuth';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const router = createBrowserRouter([
   {
@@ -125,6 +126,10 @@ const router = createBrowserRouter([
   {
     path: 'socialsignup',
     element: <SocialSignUpPage />,
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
 

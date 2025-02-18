@@ -12,7 +12,7 @@ const useGetFeed = (limit: number) => {
       cursorRecommend: null,
     },
     getNextPageParam: (lastPage) => {
-      if (!lastPage?.nextCursor) return null;
+      if (!lastPage?.nextCursor && !lastPage?.nextCursorRecommend) return null;
       return {
         cursorFollow: lastPage.nextCursor,
         cursorRecommend: lastPage.nextCursorRecommend,

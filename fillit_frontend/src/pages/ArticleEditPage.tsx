@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import Header from '@/components/common/Header/Header';
@@ -23,6 +23,7 @@ const ArticleEditPage = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -126,6 +127,14 @@ const ArticleEditPage = () => {
     }
   };
 
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
   return (
     <div className="container-header">
       <Header
@@ -141,14 +150,19 @@ const ArticleEditPage = () => {
           alt="paper background"
         />
       </div>
-      {/* 게시글 내용 입력 영역 */}
-      <div className="w-full overflow-auto botton-[10rem]">
-        <div className="relative z-10 pt-28 pl-24 pr-5">
+      <div className="pt-28" />
+      <div className="w-full overflow-auto pb-40 scrollbar-hide">
+        <div className="relative z-10 pl-24 pr-5">
           <textarea
-            className="w-full min-h-[15vh] font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
+            ref={textareaRef}
+            className="w-full font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
             placeholder="What's happening?"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={handleContentChange}
             maxLength={ARTICLE_MAX_LENGTH}
           />
         </div>
