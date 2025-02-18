@@ -5,7 +5,7 @@ import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import VoiceButton from '@/components/common/Button/VoiceButton';
 import { deleteVoice } from '@/api/voice';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
-import Toast from '@/components/common/Toast/Toast';
+import VoiceToast from '@/components/common/Toast/VoiceToast';
 
 // 보이스 삭제 시 api 함수 deletvoice를 호출
 
@@ -171,7 +171,7 @@ const VoiceManageModal = ({
           )}
         </div>
       </VoiceBaseModal>
-      <Toast
+      <VoiceToast
         message="Just delete the voice bubble, fam! 🫧💬"
         isVisible={showToast}
       />

@@ -14,10 +14,15 @@ import { ArticlePostForm } from '@/types/article';
 import { ARTICLE_MAX_LENGTH } from '@/constants/system';
 import { INTEREST_TAGS } from '@/constants/interestTags';
 import InterestTagChip from '@/components/common/InterestTagChip';
+import useInput from '@/hooks/useInput';
 
 const ArticleEditPage = () => {
+  const {
+    value: content,
+    setValue: setContent,
+    onChange: handleContentChange,
+  } = useInput('');
   const { boardId } = useParams<{ boardId: string }>();
-  const [content, setContent] = useState('');
   const [keyword, setKeyword] = useState('');
   // 기존 이미지 URL과 새로 업로드한 파일을 따로 관리합니다.
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -124,14 +129,6 @@ const ArticleEditPage = () => {
       });
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
-    }
-  };
-
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
