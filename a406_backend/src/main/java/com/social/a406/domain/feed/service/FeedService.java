@@ -154,9 +154,10 @@ public class FeedService {
                                                     .collect(Collectors.toSet()); // HashSet으로 변환 (검색 속도 향상)
 
         double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
+        double adjustedMaxScore = maxScore - 1;
         // Sorted Set에서 score가 maxScore 이하인 게시물을 최신순(reverseRangeByScore)
         Set<Object> cachedSet = redisTemplate.opsForZSet()
-                .reverseRangeByScore(key, 0, maxScore, 0, limit);
+                .reverseRangeByScore(key, 0, adjustedMaxScore, 0, limit); // key, min, max, offset, count 순이라고함
 
         List<PostDto> boards = new ArrayList<>();
         if (!cachedSet.isEmpty()) {
