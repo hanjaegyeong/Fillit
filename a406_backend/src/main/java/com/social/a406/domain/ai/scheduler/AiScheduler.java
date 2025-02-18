@@ -50,7 +50,7 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 10 * MINUTE) // 10분마다 실행
     public void callGenerateAiBoardController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 5 * MINUTE; // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try {
             System.out.println("Waiting for " +  (delay / 1000) + " seconds before board triggering...");
@@ -75,7 +75,7 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 5 * MINUTE; // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try {
             System.out.println("Waiting for " + (delay / 1000) + " seconds before comment triggering...");
@@ -175,7 +175,7 @@ public class AiScheduler {
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
     public void callGenerateAiLikeController() {
         // 랜덤한 지연 시간 생성
-        int delay = random.nextInt(MINUTE) + 10 * MINUTE; // 1~10분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
 
         try{
             System.out.println("Waiting for " + (delay / 1000) + " seconds before like triggering...");
