@@ -14,9 +14,14 @@ import ImageSlider from '@/components/common/ImageSlider';
 import { ARTICLE_MAX_LENGTH } from '@/constants/system';
 import { INTEREST_TAGS } from '@/constants/interestTags';
 import InterestTagChip from '@/components/common/InterestTagChip';
+import useInput from '@/hooks/useInput';
 
 const NewArticlePage = () => {
-  const [content, setContent] = useState('');
+  const {
+    value: content,
+    onChange: handleContentChange,
+    onBeforeInput,
+  } = useInput('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -103,14 +108,6 @@ const NewArticlePage = () => {
     }
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  };
-
   return (
     <div className="container-header">
       <Header
@@ -140,6 +137,7 @@ const NewArticlePage = () => {
             placeholder="What's happening?"
             value={content}
             onChange={handleContentChange}
+            onBeforeInput={onBeforeInput}
             maxLength={ARTICLE_MAX_LENGTH}
           />
         </div>

@@ -66,11 +66,11 @@ const ProfilePage = () => {
           isMyProfile={isMyProfile}
         />
         <ProfileIntroduction introduction={profileData.introduction} />
-        <div className="relative w-full flex justify-center">
+        <div className="relative h-screen w-full flex justify-center">
           <img
             src={ProfilePagePaper}
             alt="profile page paper"
-            className="w-full max-w-[600px] scale-150 mt-24 mb-7"
+            className="w-full max-w-[600px] scale-150 mt-20 ml-6 "
           />
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full">
             <ProfileArticleGrid personalId={personalId} />

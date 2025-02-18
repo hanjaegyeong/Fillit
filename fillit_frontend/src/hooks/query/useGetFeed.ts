@@ -8,8 +8,8 @@ const useGetFeed = (limit: number) => {
     queryFn: ({ pageParam }) =>
       getFeed(limit, pageParam.cursorFollow, pageParam.cursorRecommend),
     initialPageParam: {
-      cursorFollow: null,
-      cursorRecommend: null,
+      cursorFollow: new Date().toISOString(),
+      cursorRecommend: new Date().toISOString(),
     },
     getNextPageParam: (lastPage) => {
       if (!lastPage?.nextCursor && !lastPage?.nextCursorRecommend) return null;
