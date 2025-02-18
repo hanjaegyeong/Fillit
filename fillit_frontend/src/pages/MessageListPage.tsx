@@ -70,7 +70,7 @@ const MessageListPage = () => {
                 <div>
                   <p className="text-base font-medium">{chat.otherUser}</p>
                   <p className="text-sm font-extralight text-gray-600">
-                    {truncateText(chat.lastMessageContent, 30)}
+                    {truncateText(chat.lastMessageContent, 25)}
                   </p>
                 </div>
               </div>
@@ -81,7 +81,9 @@ const MessageListPage = () => {
                 {chat.unreadMessageCount > 0 && (
                   <div className="flex justify-end">
                     <p className="w-[1.2rem] h-[1.2rem] flex text-sm items-center justify-center text-white bg-[#0078FF] rounded-full">
-                      {chat.unreadMessageCount}
+                      {chat.unreadMessageCount > 99
+                        ? 99
+                        : chat.unreadMessageCount}
                     </p>
                   </div>
                 )}

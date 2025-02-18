@@ -1,6 +1,4 @@
 import ProfileImage from '@/components/common/ProfileImage';
-import { NoProfile } from '@/assets/assets';
-import { DmButton } from '@/components/common/Button/DmButton';
 import FollowButton from '@/components/common/Button/FollowButton';
 import { User } from '@/types/user';
 import ProfileFollow from './ProfileFollow';
@@ -59,7 +57,7 @@ const ProfileInfo = ({
 
       <div className="ml-[9.2rem] -mt-[10.625rem]">
         <div className="flex items-center h-8">
-          <h4 className="text-xl leading-tight">{profileData.name}</h4>
+          <h4 className="text-xl mr-1 leading-tight">{profileData.name}</h4>
           <div className="flex gap-1 ml-1">
             {!isMyProfile && (
               <>
@@ -67,26 +65,19 @@ const ProfileInfo = ({
                   isFollowing={isFollowing}
                   followeePersonalId={profileData.personalId}
                   onFollowChange={handleFollowChange}
-                  width="3.4rem"
-                  height="1.25rem"
-                  fontSize="9px"
+                  width="4.3rem"
+                  height="1.3rem"
+                  fontSize="0.67rem"
                   userData={{
                     name: profileData.name,
                     profileImageUrl: profileData.profileImageUrl,
                   }}
                 />
-                <DmButton
-                  otherPersonalId={profileData.personalId}
-                  otherUserName={profileData.name}
-                  otherProfileImageUrl={
-                    profileData.profileImageUrl ?? NoProfile
-                  }
-                />
               </>
             )}
           </div>
         </div>
-        <p className="text-gray-600 font-light text-xs italic -mt-1.5">
+        <p className="text-gray-600 font-light text-xs italic -mt-[0.35rem]">
           @{profileData.personalId}
         </p>
         <ProfileFollow
