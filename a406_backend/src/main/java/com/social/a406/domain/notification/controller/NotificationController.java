@@ -33,7 +33,7 @@ public class NotificationController {
     @GetMapping
     public ResponseEntity<NotificationListResponse> getNotifications(@AuthenticationPrincipal UserDetails userDetails,
                                                                      @RequestParam(defaultValue = "10") int size,
-                                                                     @RequestParam(required = false, defaultValue = "0") Long cursorId) {
+                                                                     @RequestParam(required = false) Long cursorId) {
         Pageable pageable = PageRequest.of(0, size);
         NotificationListResponse response = notificationService.getNotifications(userDetails, cursorId, pageable);
 
