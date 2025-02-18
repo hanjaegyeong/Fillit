@@ -7,7 +7,7 @@ import ProfileIntroduction from '@/components/Profile/ProfileIntroduction';
 import { useParams } from 'react-router-dom';
 import { useUserStore } from '@/store/useUserStore';
 import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
-// import UserArticleListContainer from '@/components/Article/UserArticleListContainer';
+import ProfileArticleGrid from '@/components/Profile/ProfileArticleGrid';
 
 type RouteParams = {
   personalId: string;
@@ -66,13 +66,15 @@ const ProfilePage = () => {
           isMyProfile={isMyProfile}
         />
         <ProfileIntroduction introduction={profileData.introduction} />
-        {/* <UserArticleListContainer personalId={personalId} /> */}
-        <div className="flex justify-center scale-150 mt-24 mb-7 h-full">
+        <div className="relative w-full flex justify-center">
           <img
             src={ProfilePagePaper}
             alt="profile page paper"
-            className="h-full"
+            className="w-full max-w-[600px] scale-150 mt-24 mb-7"
           />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full">
+            <ProfileArticleGrid personalId={personalId} />
+          </div>
         </div>
       </div>
     </div>
