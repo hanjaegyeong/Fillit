@@ -287,6 +287,33 @@ public class UserService {
         return userPersonalIds.get(ThreadLocalRandom.current().nextInt(userPersonalIds.size()));
     }
 
+    // 동일한 관심사 가진 랜덤 일반 유저 조회
+    public String getRandomUserWithMatchingInterestWithUnfollow(String personalId) {
+        // 관심사 전체 조회
+        List<Long> interestIds = getInterestIdsByPersonalId(personalId);
+
+        // 관심사와 일치하는 사용자 목록 조회
+        List<String> userPersonalIds = getUserPersonalIdsByInterestIdsWithUnfollow(interestIds, personalId);
+
+        // 랜덤 사용자 선택
+        return selectRandomUser(userPersonalIds);
+    }
+
+    // 관심사 ID 목록으로 팔로우 하지 않은 사용자 ID 목록 조회
+    private List<String> getUserPersonalIdsByInterestIdsWithUnfollow(List<Long> interestIds, String personalId) {
+        if (interestIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> userPersonalIds = userInterestRepository.findUserPersonalIdsByInterestIdsExcludingFollowed(interestIds, personalId);
+
+        if (userPersonalIds.isEmpty()) {
+            System.err.println("No suitable users found for follow");
+        }
+
+        return userPersonalIds;
+    }
+
     //이미지 저장
     public String saveProfileImageAtS3(MultipartFile file) {
         try{

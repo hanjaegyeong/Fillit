@@ -227,7 +227,7 @@ public class AiScheduler {
             System.out.println("Waiting for " + 5 + " minute before follow triggering...");
 
             String aiPersonalId = userService.getRandomUserWithMainPrompt();
-            String followeePersonalId = userService.getRandomUserWithMatchingInterest(aiPersonalId);
+            String followeePersonalId = userService.getRandomUserWithMatchingInterestWithUnfollow(aiPersonalId);
             String response = restTemplate.getForObject(
                     ec2ServerUrl + AI_FOLLOW_ENDPOINT + "?aiPersonalId=" + aiPersonalId +
                             "&followeePersonalId="+followeePersonalId
