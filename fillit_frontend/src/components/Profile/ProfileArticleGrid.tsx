@@ -4,7 +4,7 @@ import useGetUserArticleList from '@/hooks/query/useGetUserArticleList';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 import { getPaperText } from '@/utils/getPaperText';
 import { useNavigate } from 'react-router-dom';
-import { getBackgroundImage } from '@/utils/getBackgroundImage';
+import CustomPaper from '@/assets/images/custom-paper.png';
 
 interface ProfileArticleGridProps {
   personalId: string;
@@ -45,7 +45,7 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
           newThumbnails[article.boardId] = article.imageUrls[0];
         } else {
           // 배경 이미지 설정
-          newThumbnails[article.boardId] = getBackgroundImage(false);
+          newThumbnails[article.boardId] = CustomPaper;
           // 키워드 이미지 크기
           const keywordImage = await getPaperText(article.keyword, 500);
           if (keywordImage) {
@@ -74,53 +74,56 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
   }
 
   return (
-    <div className="w-full max-w-[600px] scale-[90%] mt-[1rem]">
-      {/* 그리드 컨테이너*/}
-      <div className="grid grid-cols-2 gap-y-7 gap-x-16">
-        {getCurrentPageArticles().map((article) => (
-          <div
-            key={article.boardId}
-            onClick={() => handleArticleClick(article.boardId)}
-            className={`aspect-square cursor-pointer overflow-hidden relative ${
-              article.imageUrls?.[0]
-                ? 'rounded-lg shadow-md hover:shadow-lg transition-shadow'
-                : ''
-            }`}
-          >
-            {thumbnails[article.boardId] && (
-              <>
-                <img
-                  src={thumbnails[article.boardId]}
-                  alt={article.keyword}
-                  className="w-full h-full object-cover"
-                />
-                {!article.imageUrls?.[0] && keywordImages[article.boardId] && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <img
-                      src={keywordImages[article.boardId]}
-                      alt={article.keyword}
-                      className="w-[100%] h-auto"
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+    <>
+      <div className="w-full max-w-[600px] scale-[80%] mt-[2rem] pl-5 pr-2 -rotate-6">
+        {/* 그리드 컨테이너*/}
+        <div className="grid grid-cols-2 gap-x-5">
+          {getCurrentPageArticles().map((article) => (
+            <div
+              key={article.boardId}
+              onClick={() => handleArticleClick(article.boardId)}
+              className={`aspect-square cursor-pointer overflow-hidden relative ${
+                article.imageUrls?.[0]
+                  ? 'rounded-lg shadow-md hover:shadow-lg transition-shadow rotate-12'
+                  : ' w-60 h-52 pr-10 pt-2 -translate-x-5 -translate-y-5'
+              }`}
+            >
+              {thumbnails[article.boardId] && (
+                <>
+                  <img
+                    src={thumbnails[article.boardId]}
+                    alt={article.keyword}
+                    className="w-full h-full"
+                  />
+                  {!article.imageUrls?.[0] &&
+                    keywordImages[article.boardId] && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <img
+                          src={keywordImages[article.boardId]}
+                          alt={article.keyword}
+                          className="w-[100%] h-auto object-cover"
+                        />
+                      </div>
+                    )}
+                </>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 페이지네이션  */}
       {totalPages > 1 && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 mt-5">
-          <div className="flex justify-center items-center gap-4">
+        <div className="absolute left-1/2 transform -translate-x-1/2 -mt-8">
+          <div className="flex justify-items-stretch items-center gap-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 rounded-md text-[#5E72E4] bg-gray-100 disabled:opacity-50"
+              className="px-3 py-2 rounded-md text-[#5E72E4] bg-gray-100 disabled:opacity-50"
             >
               ◀
             </button>
-            <span className="text-lg">
+            <span className="text-lg tracking-tighter">
               {currentPage} / {totalPages}
             </span>
             <button
@@ -128,14 +131,14 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
               disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-md text-[#5E72E4] bg-gray-100 disabled:opacity-50"
+              className="px-3 py-2 rounded-md text-[#5E72E4] bg-gray-100 disabled:opacity-50"
             >
               ▶
             </button>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
