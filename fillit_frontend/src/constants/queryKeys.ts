@@ -8,4 +8,5 @@ export const QUERY_KEYS = {
   RECOMMEND: 'recommend',
   PROFILE: 'profile',
   SEARCH_ARTICLE: 'search_article',
+  NOTIFICATION: 'notification',
 };
