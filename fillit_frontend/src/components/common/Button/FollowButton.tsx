@@ -1,8 +1,7 @@
 import { postFollow, postUnfollow } from '@/api/follow';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import UnfollowModal from '../Modal/UnfollowModal';
+import UnfollowModal from '@/components/common/Modal/UnfollowModal';
 
 interface FollowButtonProps {
   isFollowing: boolean;
@@ -47,7 +46,7 @@ const FollowButton = ({
         setIsFollowingState(true);
         onFollowChange?.(true);
       } catch (error) {
-        handleError(error);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -64,19 +63,10 @@ const FollowButton = ({
       setIsFollowingState(false);
       onFollowChange?.(false);
     } catch (error) {
-      handleError(error);
+      console.log(error);
     } finally {
       setIsLoading(false);
       setShowUnfollowModal(false);
-    }
-  };
-
-  const handleError = (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 403) {
-        localStorage.removeItem('accessToken');
-        navigate('/login');
-      }
     }
   };
 

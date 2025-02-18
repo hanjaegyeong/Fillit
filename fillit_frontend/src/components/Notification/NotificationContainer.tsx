@@ -18,7 +18,7 @@ const NotificationContainer = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center pb-14 w-full overflow-x-hidden">
+      <div className="flex flex-col pb-14 w-full overflow-x-hidden">
         {data?.pages?.[0]?.responses?.length === 0 ? (
           <div className="h-screen flex items-center justify-center">
             <p className="text-2xl text-gray-600 pt-4">
