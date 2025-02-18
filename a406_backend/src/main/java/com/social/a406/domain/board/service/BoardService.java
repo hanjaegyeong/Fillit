@@ -33,6 +33,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -437,7 +438,7 @@ public class BoardService {
                 .build();
     }
 
-    public BoardSearchResponse searchBoard(Pageable pageable, Long cursorId, String word, String personalId) {
+    public BoardSearchResponse searchBoard(Pageable pageable, LocalDateTime cursorId, String word, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
                 () -> new ForbiddenException("Not found User"));
         List<Object[]> boards = boardRepository.searchBoardWithLikeStatus(word, cursorId, user.getId(), pageable);
@@ -449,7 +450,7 @@ public class BoardService {
                         (boolean) board[1]
                 ))
                 .toList();
-        Long lastCursor = responses.isEmpty() ? null : responses.get(responses.size()-1).getBoardId();
+        LocalDateTime lastCursor = responses.isEmpty() ? null : responses.get(responses.size()-1).getCreatedAt();
         return BoardSearchResponse.builder()
                 .cursorId(lastCursor)
                 .responses(responses)
@@ -486,7 +487,7 @@ public class BoardService {
     }
 
 
-    public BoardRecommendCursorResponse recommendBoard(Pageable pageable, Long cursorLikeCount, Long cursorId, Long interestId, String personalId) {
+    public BoardRecommendCursorResponse recommendBoard(Pageable pageable, Long cursorLikeCount, LocalDateTime cursorId, Long interestId, String personalId) {
         User user = userRepository.findByPersonalId(personalId).orElseThrow(
                 () -> new ForbiddenException("Not found User"));
         if(interestId == null || interestId == 0){
@@ -497,11 +498,11 @@ public class BoardService {
         List<BoardRecommendResponse> responses = results.stream().map(
                 r -> mapRecommendBoard((Board) r[0], (String) r[1], (boolean) r[2])
         ).toList();
-        Long lastCursorId = null;
+        LocalDateTime lastCursorId = null;
         Long lastCursorLikeCount = null;
         if(!responses.isEmpty()){
             int size = responses.size()-1;
-            lastCursorId = responses.get(size).getBoardId();
+            lastCursorId = responses.get(size).getCreatedAt();
             lastCursorLikeCount = responses.get(size).getLikeCount();
         }
         return BoardRecommendCursorResponse.builder()

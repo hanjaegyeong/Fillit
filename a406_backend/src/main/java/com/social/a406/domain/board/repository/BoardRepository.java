@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
@@ -63,15 +64,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
       AND (
           (:cursorLikeCount IS NULL AND :cursorId IS NULL) 
           OR (b.likeCount < :cursorLikeCount) 
-          OR (b.likeCount = :cursorLikeCount AND b.id < :cursorId)
+          OR (b.likeCount = :cursorLikeCount AND b.createdAt < :cursorId)
       )
-    ORDER BY b.likeCount DESC, b.id DESC
+    ORDER BY b.likeCount DESC, b.createdAt DESC
 """)
     List<Object[]> findBoardsWithFirstImageAndLikeStatusByInterestId(
             @Param("interestId") Long interestId,
             @Param("userId") String userId,
             @Param("cursorLikeCount") Long cursorLikeCount,
-            @Param("cursorId") Long cursorId,
+            @Param("cursorId") LocalDateTime cursorId,
             Pageable pageable
     );
 
@@ -83,12 +84,12 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     LEFT JOIN BoardLike bl
            ON bl.board.id = b.id AND bl.user.id = :userId
     WHERE (b.content LIKE %:word% OR b.keyword LIKE %:word%)
-    AND (:cursorId IS NULL OR b.id < :cursorId)
-    ORDER BY b.id DESC
+    AND (:cursorId IS NULL OR b.createdAt < :cursorId)
+    ORDER BY b.createdAt DESC
 """)
     List<Object[]> searchBoardWithLikeStatus(
             @Param("word") String word,
-            @Param("cursorId") Long cursorId,
+            @Param("cursorId") LocalDateTime cursorId,
             @Param("userId") String userId,
             Pageable pageable
     );
