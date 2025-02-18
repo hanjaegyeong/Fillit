@@ -56,5 +56,10 @@ export const validationRules: Record<
   },
   birthDate: { required: false }, // 임시
   introduction: { required: false }, // 임시
-  interest: { required: true },
+  interest: {
+    required: true,
+    validate: (value: string) =>
+      (Array.isArray(value) && value.length >= 2) ||
+      '관심사를 2개 이상 선택해주세요',
+  },
 };
