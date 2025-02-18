@@ -47,7 +47,7 @@ public class ChatService {
     public ChatMessageListResponse getMessagesByChatRoomId(Long chatRoomId, Long cursor) {
         if (cursor == null) cursor = Long.MAX_VALUE; // 커서가 null일 경우(채팅방 처음 접속)
 
-        int limit = 3; // 한번에 가져올 메세지 수
+        int limit = 20; // 한번에 가져올 메세지 수
 
         Pageable pageable = PageRequest.of(0, limit, Sort.by("id").descending());
 
