@@ -48,7 +48,8 @@ const ProfilePage = () => {
     <div className="container-header-nav">
       <Header
         left="home"
-        right={isMyProfile ? 'menu' : undefined}
+        right={isMyProfile ? 'menu' : 'message'}
+        profileData={profileData}
         onMenuClick={isMyProfile ? handleMenuClick : undefined}
       />
       {isMyProfile && (
