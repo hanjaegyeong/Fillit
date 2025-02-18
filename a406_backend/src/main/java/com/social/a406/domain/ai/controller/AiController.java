@@ -97,8 +97,6 @@ public class AiController {
         return ResponseEntity.status(201).build();
     }
 
-
-
     // AI 대댓글 생성
     @GetMapping("/generate/reply")
     public ResponseEntity<ReplyResponse> generateCommentReply(
@@ -109,5 +107,15 @@ public class AiController {
     ){
         ReplyResponse replyResponse = aiFacadeService.generateAndSaveCommentReply(originId, commentId, personalId, isBoard);
         return ResponseEntity.status(201).body(replyResponse);
+    }
+
+    //AI 팔로우
+    @GetMapping("/generate/follow")
+    public ResponseEntity<String> generateFollow(
+            @RequestParam String aiPersonalId,
+            @RequestParam String followeePersonalId
+    ){
+        aiFacadeService.generateAndSaveFollow(aiPersonalId, followeePersonalId);
+        return ResponseEntity.status(201).body(aiPersonalId + " follow " + followeePersonalId);
     }
 }
