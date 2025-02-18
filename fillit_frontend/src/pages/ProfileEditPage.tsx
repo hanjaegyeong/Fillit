@@ -15,11 +15,12 @@ const ProfileEditPage = () => {
     setProfileImageFile,
     updateProfile,
     currentUser,
-    isLoading,
+    isLoading: profileLoading,
   } = useProfile();
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateName = (name: string): boolean => {
     if (!name.trim()) {
@@ -75,18 +76,16 @@ const ProfileEditPage = () => {
     if (!validateName(profile.name)) {
       return;
     }
-
     try {
+      setIsSubmitting(true);
       await updateProfile();
       navigate(`/profile/${currentUser.personalId}`);
     } catch (error) {
       console.error('프로필 수정 실패:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   }, [updateProfile, navigate, currentUser.personalId, profile.name]);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <div className="container-header">
@@ -112,6 +111,7 @@ const ProfileEditPage = () => {
           />
         </div>
       </div>
+      {profileLoading || (isSubmitting && <LoadingSpinner />)}
     </div>
   );
 };

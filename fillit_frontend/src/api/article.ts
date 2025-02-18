@@ -108,3 +108,20 @@ export const getSearchArticleList = async (
   });
   return response.data;
 };
+
+/* 게시글 프로필 위치 수정 */
+export const patchArticlePosition = async (
+  positionUpdateList: {
+    boardId: number;
+    x: number;
+    y: number;
+    z: number;
+    pageNumber: number;
+  }[]
+) => {
+  const response = await axiosInstance.patch(
+    '/api/board/profile/update',
+    positionUpdateList
+  );
+  return response.data;
+};

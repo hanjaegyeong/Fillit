@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PhotoBorder from '@/assets/images/photo-border.png';
 import Camera from '@/assets/images/camera.png';
+import ImageCropModal from '@/components/common/Modal/ImageCropModal';
 
 interface ImageUploadProps {
   onImageUpload: (file: File) => void;
@@ -8,13 +9,24 @@ interface ImageUploadProps {
 
 const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
   const [image, setImage] = useState<string | null>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImage(URL.createObjectURL(file));
-      onImageUpload(file);
+      setSelectedImage(URL.createObjectURL(file));
+      setCropModalOpen(true);
     }
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    const file = new File([croppedBlob], 'profile.jpg', {
+      type: 'image/jpeg',
+    });
+    setImage(URL.createObjectURL(file));
+    onImageUpload(file);
+    setCropModalOpen(false);
   };
 
   return (
@@ -43,8 +55,16 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
         id="profile-upload"
         accept="image/*"
         className="hidden"
-        onChange={handleImageUpload}
+        onChange={handleImageSelect}
       />
+      {cropModalOpen && selectedImage && (
+        <ImageCropModal
+          isOpen={cropModalOpen}
+          imageUrl={selectedImage}
+          onClose={() => setCropModalOpen(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };

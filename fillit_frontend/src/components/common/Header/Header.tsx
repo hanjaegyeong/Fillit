@@ -5,14 +5,18 @@ import NotificationButton from '@/components/common/Button/NotificationButton';
 import MenuTabButton from '@/components/common/Button/MenuTabButton';
 import RegistButton from '@/components/common/Button/RegistButton';
 import SubmitInput from '@/components/common/Input/SubmitInput';
+import { NoProfile } from '@/assets/assets';
+import { User } from '@/types/user';
+import { DmButton } from '@/components/common/Button/DmButton';
 
 interface HeaderProps {
   left?: 'back' | 'home';
   profileImage?: string;
   text?: string;
   isTitle?: boolean;
-  right?: 'notification' | 'menu' | 'regist';
+  right?: 'notification' | 'menu' | 'regist' | 'message';
   center?: 'search';
+  profileData?: User;
   onSubmit?: (term: string) => void;
   onMenuClick?: () => void;
   onRegistClick?: () => void;
@@ -25,6 +29,7 @@ const Header = ({
   isTitle = false,
   right,
   center,
+  profileData,
   onSubmit = () => {},
   onMenuClick,
   onRegistClick,
@@ -48,6 +53,13 @@ const Header = ({
         {right === 'notification' && <NotificationButton />}
         {right === 'menu' && <MenuTabButton onClick={onMenuClick} />}
         {right === 'regist' && <RegistButton onClick={onRegistClick} />}
+        {right === 'message' && profileData && (
+          <DmButton
+            otherPersonalId={profileData.personalId}
+            otherUserName={profileData.name}
+            otherProfileImageUrl={profileData.profileImageUrl || NoProfile}
+          />
+        )}
       </div>
     </header>
   );

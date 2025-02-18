@@ -23,11 +23,11 @@ export const getCurrentField = (
       return 'email';
     case 5:
       return null; // 프로필 이미지 선택 단계
+    // case 6:
+    //   return 'birthDate';
     case 6:
-      return 'birthDate';
-    case 7:
       return 'introduction';
-    case 8:
+    case 7:
       return 'interest';
     default:
       return null;
@@ -102,10 +102,10 @@ export const validateCurrentStep = async (
 
   // interest 필드 검증 로직 추가
   if (currentField === 'interest') {
-    if (!Array.isArray(currentValue) || currentValue.length < 2) {
+    if (!Array.isArray(currentValue) || currentValue.length < 3) {
       setErrors((prev) => ({
         ...prev,
-        interest: '관심사를 2개 이상 선택해주세요',
+        interest: '관심사를 3개 이상 선택해주세요',
       }));
       return false;
     }
