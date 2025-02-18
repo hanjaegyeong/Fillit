@@ -15,7 +15,6 @@ const NotFoundPage = () => {
   };
   return (
     <div className="bg-home h-screen flex flex-col items-center justify-center">
-      {' '}
       <img src={FilTakeOn} alt="fil-takeon-img" className="w-44" />
       <SignupMessages messages={messages} typedMessages={typedMessages} />
       <div className="pt-3">

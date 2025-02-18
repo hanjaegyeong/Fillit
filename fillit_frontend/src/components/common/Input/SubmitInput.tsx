@@ -15,13 +15,12 @@ const SubmitInput = ({
   maxLength = 100,
   onSubmit,
 }: SubmitInputProps) => {
-  const input = useInput('');
-
+  const { value, onChange, onBeforeInput, setValue } = useInput('');
   const handleSubmit = () => {
     // 빈 문자열도 제출 -> 전체 목록 반환
-    onSubmit(input.value);
-    if (type === 'send' && input.value.trim()) {
-      input.setValue('');
+    onSubmit(value);
+    if (type === 'send' && value.trim()) {
+      setValue('');
     }
   };
 
@@ -41,10 +40,9 @@ const SubmitInput = ({
         } rounded-full ${
           type === 'search' ? 'placeholder:text-base' : 'placeholder:text-sm'
         } placeholder:text-gray-400 placeholder:font-light focus:outline-none`}
-        value={input.value}
-        onChange={(e) => {
-          input.setValue(e.target.value);
-        }}
+        value={value}
+        onChange={onChange}
+        onBeforeInput={onBeforeInput}
         onKeyDown={handleKeyDown}
         maxLength={maxLength}
       />

@@ -8,6 +8,7 @@ import { truncateText } from '@/utils/truncateText';
 import { getRooms, getSearchRooms } from '@/api/message';
 import { ChatRoom } from '@/types/message';
 import { formatChatTime } from '@/utils/formatChatTime';
+import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 
 const MessageListPage = () => {
   const [chatResults, setChatResults] = useState<ChatRoom[]>([]);
@@ -53,9 +54,13 @@ const MessageListPage = () => {
 
       <div className="max-w-[21.25rem] w-full px-3 overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
         {loading ? (
-          <p>Loading...</p>
+          <div className="h-20 pt-8">
+            <LoadingSpinner />
+          </div>
         ) : chatResults.length === 0 ? (
-          <p>No chat rooms found.</p>
+          <div className="h-[35rem] flex items-center justify-center">
+            <p className="text-2xl text-gray-600">No chat rooms found.</p>
+          </div>
         ) : (
           chatResults.map((chat) => (
             <div
