@@ -53,7 +53,7 @@ const ProfileImage = ({
           <img
             src={RippedProfile}
             alt="ripped profile"
-            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[10rem] -ml-[3.23rem] pointer-events-none"
+            className="top-0 left-0 w-[12rem] h-[13.438rem] -mt-[10.05rem] -ml-[3.21rem] pointer-events-none"
           />
         )}
       </div>
