@@ -25,4 +25,16 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, Long
             "AND ui.user.mainPrompt IS NOT NULL " +
             "AND ui.user.isDeleted = false")
     List<String> findUserPersonalIdsByInterestIdsAndNonNullPrompt(@Param("interestIds") List<Long> interestIds);
+
+    @Query("SELECT DISTINCT ui.user.personalId " +
+            "FROM UserInterest ui " +
+            "WHERE ui.interest.id IN :interestIds " +
+            "AND ui.user.mainPrompt IS NULL " +
+            "AND ui.user.isDeleted = false " +
+            "AND ui.user.id NOT IN ( " +
+            "    SELECT f.followee.id FROM Follow f WHERE f.follower.id = :personalId " +
+            ")")
+    List<String> findUserPersonalIdsByInterestIdsExcludingFollowed(
+            @Param("interestIds") List<Long> interestIds,
+            @Param("personalId") String personalId);
 }
