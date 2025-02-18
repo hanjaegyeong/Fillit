@@ -16,7 +16,7 @@ export const NOTIFICATION_CONFIG: Record<
   CHAT: { url: (id) => `/message/${id}`, message: 'sent you a message.' },
   VOICEREPLY: {
     url: () => '/voice',
-    message: 'replied to your voice message.',
+    message: 'replied to your voice.',
   },
   BOARDLIKE: { url: (id) => `/article/${id}`, message: 'liked your post.' },
   COMMENT: {
