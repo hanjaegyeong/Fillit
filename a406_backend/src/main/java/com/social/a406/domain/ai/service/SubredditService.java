@@ -16,7 +16,7 @@ public class SubredditService {
     private final UserSubredditMappingRepository userSubredditMappingRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private static final String REDDIT_URL = "https://www.reddit.com/r/%s/hot.json?limit=10";
+    private static final String REDDIT_URL = "https://www.reddit.com/r/%s/hot.json?limit=30";
     private static final String SUBREDDIT_PROMPT_TEMPLATE = "Explore the subreddit '%s'. Here's a trending topic:\n\n%s\n\nWrite a social media post inspired by this.";
     private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
             "Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
