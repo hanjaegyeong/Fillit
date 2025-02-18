@@ -106,61 +106,57 @@ const MessagePage = () => {
   };
 
   return (
-    <div className="container-header">
+    <div className="container-header-nav">
       <Header left="back" text={roomInfo?.otherUserName} isTitle={true} />
-      <div>
-        <div className="flex-grow overflow-y-auto space-y-3 hide-scrollbar">
-          <div className="flex flex-col items-center justify-start pt-10 pb-4 w-80">
-            <ProfileImage
-              src={roomInfo?.otherProfileImageUrl}
-              alt={roomInfo?.otherUserName}
-              size={96}
-            />
-            <button
-              onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
-              className="bg-black/20 text-white px-4 py-2 mt-4 rounded-lg "
-            >
-              View Profile
-            </button>
-          </div>
-          {messages.map((msg, index) => {
-            const key =
-              msg.id !== null && msg.id !== undefined
-                ? msg.id
-                : `temp-${index}`;
-            const isMyMessage = msg.personalId === currentUserPersonalId;
-            return (
-              <div
-                key={key}
-                className={`flex ${
-                  isMyMessage ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {!isMyMessage && (
-                  <div className="mr-2 self-end">
-                    <ProfileImage
-                      src={roomInfo?.otherProfileImageUrl}
-                      alt={roomInfo?.otherUserName}
-                      size={32}
-                      personalId={roomInfo?.otherPersonalId}
-                    />
-                  </div>
-                )}
-                <div className="max-w-[70%] px-[0.94rem] py-[0.75rem] rounded-lg bg-white/60 text-black font-light">
-                  <p className="font-extralight min-w-28 max-w-44 break-words leading-tight">
-                    {msg.messageContent}
-                  </p>
-                  <span className="block text-xs text-gray-500 text-right mt-1 tracking-tight">
-                    {formatChatTime(msg.createdAt)}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+      <div className="flex-grow overflow-y-auto space-y-3 hide-scrollbar">
+        <div className="flex flex-col items-center justify-start pt-10 pb-4 w-80">
+          <ProfileImage
+            src={roomInfo?.otherProfileImageUrl}
+            alt={roomInfo?.otherUserName}
+            size={96}
+          />
+          <button
+            onClick={() => navigate(`/profile/${roomInfo?.otherPersonalId}`)}
+            className="bg-black/20 text-white px-4 py-2 mt-4 rounded-lg "
+          >
+            View Profile
+          </button>
         </div>
+        {messages.map((msg, index) => {
+          const key =
+            msg.id !== null && msg.id !== undefined ? msg.id : `temp-${index}`;
+          const isMyMessage = msg.personalId === currentUserPersonalId;
+          return (
+            <div
+              key={key}
+              className={`flex ${
+                isMyMessage ? 'justify-end mr-3' : 'justify-start'
+              }`}
+            >
+              {!isMyMessage && (
+                <div className="mr-2 self-end">
+                  <ProfileImage
+                    src={roomInfo?.otherProfileImageUrl}
+                    alt={roomInfo?.otherUserName}
+                    size={32}
+                    personalId={roomInfo?.otherPersonalId}
+                  />
+                </div>
+              )}
+              <div className="max-w-[70%] px-[0.94rem] py-[0.75rem] rounded-lg bg-white/60 text-black font-light">
+                <p className="font-extralight min-w-28 max-w-44 break-words leading-tight">
+                  {msg.messageContent}
+                </p>
+                <span className="block text-xs text-gray-500 text-right mt-1 tracking-tight">
+                  {formatChatTime(msg.createdAt)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
-      <div className="px-5 pt-5 pb-8 w-full rounded-t-[1.9rem] bg-white fixed max-w-[600px] bottom-0 flex items-center border-t">
+      <div className="px-5 h-[6rem] pb-2 w-full rounded-t-[1.9rem] bg-white fixed max-w-[600px] bottom-0 flex items-center border-t">
         <AiFilButton />
         <SubmitInput
           placeholder="Type a message..."
