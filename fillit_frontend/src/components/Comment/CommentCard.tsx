@@ -25,7 +25,7 @@ const CommentCard = ({
 
   const handleGoCommentDetail = () => {
     if (isDetail) return;
-    navigate(`comment/${comment.commentId}`);
+    navigate(`/comment/${comment.commentId}`);
   };
 
   return (
