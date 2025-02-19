@@ -37,4 +37,6 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, Long
     List<String> findUserPersonalIdsByInterestIdsExcludingFollowed(
             @Param("interestIds") List<Long> interestIds,
             @Param("personalId") String personalId);
+
+    void deleteByUserId(String id);
 }

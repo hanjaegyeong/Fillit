@@ -1,7 +1,11 @@
 package com.social.a406.domain.user.service;
 
 import com.social.a406.domain.follow.repository.FollowRepository;
+import com.social.a406.domain.interest.entity.Interest;
+import com.social.a406.domain.interest.entity.UserInterest;
+import com.social.a406.domain.interest.repository.InterestRepository;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
+import com.social.a406.domain.interest.service.InterestService;
 import com.social.a406.domain.user.dto.*;
 import com.social.a406.domain.user.entity.EmailVerifyCode;
 import com.social.a406.domain.user.entity.User;
@@ -41,7 +45,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserInterestRepository userInterestRepository;
-
+    private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailsService customUserDetailsService;
@@ -453,6 +457,21 @@ public class UserService {
                 ()-> new ForbiddenException("Not found user"));
 
         user.updateUserProfile(userUpdateRequest.getName(), userUpdateRequest.getIntroduction());
+        userInterestRepository.deleteByUser_Id(user.getId());
+        if(!userUpdateRequest.getInterests().isEmpty()){
+            // 관심사 리스트를 DB에서 가져오거나, 존재하지 않으면 새로 추가
+            List<Interest> interests = userUpdateRequest.getInterests().stream()
+                    .map(content -> interestRepository.findByContent(content)
+                            .orElseGet(() -> interestRepository.save(new Interest(content))))
+                    .toList();
+
+            // UserInterest 저장
+            List<UserInterest> userInterests = interests.stream()
+                    .map(interest -> new UserInterest(user, interest))
+                    .toList();
+
+            userInterestRepository.saveAll(userInterests);
+        }
         if(file != null){
             if(user.getProfileImageUrl() != null) {
                 deleteProfileImageFromS3(user.getProfileImageUrl());
