@@ -4,6 +4,8 @@ import com.social.a406.domain.follow.entity.Follow;
 import com.social.a406.domain.follow.repository.FollowRepository;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.domain.voiceBubble.dto.VoiceListenResponse;
+import com.social.a406.domain.voiceBubble.dto.VoiceReplyResponse;
 import com.social.a406.domain.voiceBubble.dto.VoiceResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceListen;
@@ -130,8 +132,16 @@ public class VoiceService {
         System.out.println("Deleted file from S3: " + fileKey);
     }
 
-    public Voice findVoice(String personalId) {
-        return voiceRepository.findByUserPersonalId(personalId).orElse(null);
+    public VoiceListenResponse findVoice(String personalId) {
+        Voice voice = voiceRepository.findByUserPersonalId(personalId).orElse(null);
+        VoiceListenResponse response = null;
+        if(voice != null) {
+            response = new VoiceListenResponse(
+                    voice.getId(),
+                    voice.getAudioUrl());
+        }
+
+        return response;
     }
 
     @Transactional

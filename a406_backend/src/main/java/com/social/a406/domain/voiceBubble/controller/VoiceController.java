@@ -32,11 +32,7 @@ public class VoiceController {
     // 내 음성 다시 듣기
     @GetMapping("/listen")
     public ResponseEntity<VoiceListenResponse> listenVoice(@AuthenticationPrincipal UserDetails userDetails){
-        Voice voice = voiceService.findVoice(userDetails.getUsername());
-
-        VoiceListenResponse response = new VoiceListenResponse(
-                voice.getId(),
-                voice.getAudioUrl());
+        VoiceListenResponse response = voiceService.findVoice(userDetails.getUsername());
 
         return ResponseEntity.ok(response);
     }
