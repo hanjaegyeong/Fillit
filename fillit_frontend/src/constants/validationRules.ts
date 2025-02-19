@@ -55,7 +55,14 @@ export const validationRules: Record<
     },
   },
   birthDate: { required: false }, // 임시
-  introduction: { required: false }, // 임시
+  introduction: {
+    required: false,
+    maxLength: 200,
+    pattern: {
+      value: /^[A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]*$/u,
+      message: '영어만 입력 가능합니다',
+    },
+  },
   interest: {
     required: true,
     validate: (value: string) =>
