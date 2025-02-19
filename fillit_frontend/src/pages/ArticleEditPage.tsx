@@ -132,6 +132,13 @@ const ArticleEditPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [content]);
+
   return (
     <div className="container-header">
       <Header
