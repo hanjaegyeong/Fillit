@@ -83,7 +83,7 @@ const MessageListPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col justify-between -my-1 pr-1">
+              <div className="flex flex-col justify-between whitespace-nowrap -my-1 pr-1">
                 <p className="font-light text-xs tracking-tight">
                   {formatChatTime(chat.lastMessageTime)}
                 </p>

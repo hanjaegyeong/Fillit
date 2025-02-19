@@ -1,17 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 // import { Article } from '@/types/article';
 import useGetUserArticleList from '@/hooks/query/useGetUserArticleList';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
 import { getPaperText } from '@/utils/getPaperText';
 import { useNavigate } from 'react-router-dom';
 import CustomPaper from '@/assets/images/custom-paper.png';
+import { CategoryModal } from '@/components/common/Modal/CategoryModal';
+import { INTEREST_TAGS } from '@/constants/interestTags';
 
 interface ProfileArticleGridProps {
   personalId: string;
 }
 
 const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
-  // 사용자의 게시물 목록을 가져오는 커스텀 훅
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const { data: articleList, isLoading } = useGetUserArticleList(personalId);
   const [currentPage, setCurrentPage] = useState(1);
   const [thumbnails, setThumbnails] = useState<{ [key: number]: string }>({});
@@ -26,17 +29,29 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
     ? Math.ceil(articleList.length / articlesPerPage)
     : 0;
 
-  // 현재 페이지에 표시할 게시글 목록을 반환
-  const getCurrentPageArticles = useCallback(() => {
+  // 필터링된 게시글 목록
+  const filteredArticles = useMemo(() => {
     if (!articleList) return [];
-    const startIndex = (currentPage - 1) * articlesPerPage;
-    return articleList.slice(startIndex, startIndex + articlesPerPage);
-  }, [currentPage, articleList, articlesPerPage]);
+    if (selectedInterests.length === 0) return articleList;
+    return articleList.filter((article) =>
+      article.interests.some((interest) => selectedInterests.includes(interest))
+    );
+  }, [articleList, selectedInterests]);
+
+  // 현재 페이지에 표시할 게시글 목록을 반환
+  const getCurrentPageArticles = useCallback(
+    (articles: typeof articleList) => {
+      if (!articles) return [];
+      const startIndex = (currentPage - 1) * articlesPerPage;
+      return articles.slice(startIndex, startIndex + articlesPerPage);
+    },
+    [currentPage, articlesPerPage]
+  );
 
   // 썸네일 및 키워드 이미지 생성
   useEffect(() => {
     const generateThumbnails = async () => {
-      const currentArticles = getCurrentPageArticles();
+      const currentArticles = getCurrentPageArticles(filteredArticles);
       const newThumbnails: { [key: number]: string } = {};
       const newKeywordImages: { [key: number]: string } = {};
 
@@ -59,10 +74,16 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
     };
 
     generateThumbnails();
-  }, [currentPage, articleList, getCurrentPageArticles]);
+  }, [currentPage, filteredArticles, getCurrentPageArticles]);
+
   // 게시글 클릭하여 상세 페이지로 이동
   const handleArticleClick = (boardId: number) => {
     navigate(`/article/${boardId}`);
+  };
+
+  const handleInterestSelect = (interests: string[]) => {
+    setSelectedInterests(interests);
+    setIsCategoryModalOpen(false);
   };
 
   if (isLoading) {
@@ -75,10 +96,41 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
 
   return (
     <>
-      <div className="w-full max-w-[600px] scale-[80%] mt-[2rem] pl-5 pr-2 -rotate-6">
+      {/* 카테고리 선택 버튼 */}
+      <div className="w-full flex justify-end scale-[80%] ">
+        <button
+          onClick={() => setIsCategoryModalOpen(true)}
+          className="px-4 py-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow text-sm -mr-8 mt-16 flex items-center gap-2"
+        >
+          {selectedInterests.length > 0 ? (
+            <div className="flex items-center gap-2">
+              {selectedInterests.map((interest) => {
+                const tagData = INTEREST_TAGS.find(
+                  (tag) => tag.label === interest
+                );
+                return (
+                  <div key={interest} className="flex items-center gap-1">
+                    {tagData && (
+                      <img
+                        src={tagData.icon}
+                        alt={interest}
+                        className="w-4 h-4"
+                      />
+                    )}
+                    <span>{interest}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            '🩵All Categories'
+          )}
+        </button>
+      </div>
+      <div className="w-full max-w-[600px] scale-[80%] -mt-2 pl-5 pr-2 -rotate-6">
         {/* 그리드 컨테이너*/}
-        <div className="grid grid-cols-2 gap-x-5">
-          {getCurrentPageArticles().map((article) => (
+        <div className="grid grid-cols-2 gap-x-5 -mt-7">
+          {getCurrentPageArticles(filteredArticles).map((article) => (
             <div
               key={article.boardId}
               onClick={() => handleArticleClick(article.boardId)}
@@ -138,6 +190,14 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
           </div>
         </div>
       )}
+
+      {/* 카테고리 모달 */}
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onSelect={handleInterestSelect}
+        selectedCategory={selectedInterests}
+      />
     </>
   );
 };
