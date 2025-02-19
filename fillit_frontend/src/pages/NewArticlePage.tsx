@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Header from '@/components/common/Header/Header';
@@ -107,6 +107,13 @@ const NewArticlePage = () => {
       console.log('게시글 등록 오류 : ', error);
     }
   };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // 높이 초기화
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [content]);
 
   return (
     <div className="container-header">
