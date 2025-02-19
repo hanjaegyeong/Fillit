@@ -53,9 +53,6 @@ public class FeedService {
      */
     @Transactional(readOnly = true)
     public FeedResponseDto getFeed(String personalId, int limit, LocalDateTime cursorFollow, LocalDateTime cursorRecommend) {
-        // 0. 커서 null 일 경우 초기화
-//        if (cursorFollow == null) cursorFollow = LocalDateTime.now();
-//        if (cursorRecommend == null) cursorRecommend = LocalDateTime.now();
         // 0. 둘 다 null 일 경우 피드 조회 x
         if(cursorFollow ==null && cursorRecommend == null) return new FeedResponseDto();
 
@@ -71,10 +68,10 @@ public class FeedService {
                 .map(ui -> ui.getInterest().getId())
                 .collect(Collectors.toList());
 
-        // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 80% 비율)
+        // 3. 친구 게시물 조회 – Feed 테이블에서 푸시된 데이터 (예: 60% 비율)
         List<Board> friendBoards = new ArrayList<>();
         if (cursorFollow != null) {
-            int followLimit = (int) Math.ceil(limit * 0.8);
+            int followLimit = (int) Math.ceil(limit * 0.6);
             PageRequest followPageable = PageRequest.of(0, followLimit, Sort.by("createdAt").descending());
             List<Feed> feedEntries = feedRepository.findByUserIdAndCreatedAtAfter(userId, cursorFollow, followPageable);
             friendBoards = feedEntries.stream()
@@ -136,14 +133,18 @@ public class FeedService {
         List<PostDto> feedPosts = new ArrayList<>();
         int friendIndex = 0, recIndex = 0;
         while (feedPosts.size() < limit && (friendIndex < friendBoards.size() || recIndex < recommendedBoards.size())) {
-            for (int i = 0; i < 4 && friendIndex < friendBoards.size(); i++) {
+            for (int i = 0; i < 3 && friendIndex < friendBoards.size(); i++) {
                 feedPosts.add(convertToDto(friendBoards.get(friendIndex++), false, userId));
                 if (feedPosts.size() == limit) {
                     System.out.println("feedPost.size: "+feedPosts.size());
                     break;
                 }
             }
+
             if (recIndex < recommendedBoards.size() && feedPosts.size() < limit) {
+                feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
+            }
+            if (recIndex < recommendedBoards.size() && feedPosts.size() <= limit) {
                 feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
             }
         }
@@ -166,6 +167,7 @@ public class FeedService {
                 .stream()
                 .map(follow -> follow.getFollowee().getPersonalId())
                 .collect(Collectors.toSet()); // HashSet으로 변환 (검색 속도 향상)
+        followeeIds.add(personalId); // 내 아이디도 추가
 
         double maxScore = cursor.toEpochSecond(ZoneOffset.UTC);
         double adjustedMaxScore = maxScore - 1;
