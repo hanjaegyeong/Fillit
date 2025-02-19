@@ -8,6 +8,7 @@ import AiFilButton from '@/components/common/Button/AiFilButton';
 import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
 import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 import ImageSlider from '@/components/common/ImageSlider';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 import { getArticle, putArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
@@ -27,6 +28,8 @@ const ArticleEditPage = () => {
   // 기존 이미지 URL과 새로 업로드한 파일을 따로 관리합니다.
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -109,6 +112,8 @@ const ArticleEditPage = () => {
   // 게시글 수정 제출 함수
   const handleSubmit = async (newKeyword: string) => {
     if (!boardId) return;
+
+    setIsSubmitting(true);
     const articlePostForm: ArticlePostForm = {
       board: {
         content,
@@ -137,6 +142,8 @@ const ArticleEditPage = () => {
       });
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -228,6 +235,7 @@ const ArticleEditPage = () => {
           initialKeyword={keyword}
         />
       )}
+      {isSubmitting && <LoadingOverlay />}
     </div>
   );
 };
