@@ -34,12 +34,12 @@ const LoginPage = () => {
       <img src={loginImg} alt="login-img" />
 
       <BasicInput
-        placeholder="Enter your email"
+        placeholder="Enter your Email or ID"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <BasicInput
-        placeholder="Enter your password"
+        placeholder="Enter your Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}

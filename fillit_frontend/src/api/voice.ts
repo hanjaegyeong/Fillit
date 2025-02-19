@@ -1,5 +1,6 @@
 import axiosInstance from '@/api/axiosInstance';
 import { Voice, VoiceReply } from '@/types/voice';
+import axios from 'axios';
 
 /* 내 보이스 업로드 */
 export const postVoice = async (file: File) => {
@@ -16,8 +17,18 @@ export const postVoice = async (file: File) => {
 
 /* 내 보이스 듣기 */
 export const getVoice = async () => {
-  const response = await axiosInstance.get('/api/voice/listen');
-  return response.data;
+  try {
+    const response = await axiosInstance.get('/api/voice/listen');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 403) {
+        // 403인 경우 null을 반환해서 에러가 catch로 전달되지 않음
+        return null;
+      }
+    }
+    throw error;
+  }
 };
 
 /* 내 보이스 삭제 */
