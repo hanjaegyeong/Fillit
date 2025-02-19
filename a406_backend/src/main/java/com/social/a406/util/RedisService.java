@@ -10,7 +10,7 @@ import java.time.Duration;
 @Service
 @RequiredArgsConstructor
 public class RedisService {
-    @Qualifier("redisTemplate")
+
     private final StringRedisTemplate redisTemplate;
 
     // 리프레시 토큰 저장
