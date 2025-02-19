@@ -35,14 +35,7 @@ public class VoiceReplyController {
     //답장 조회
     @GetMapping
     public ResponseEntity<List<VoiceReplyResponse>> findVoiceReply(@AuthenticationPrincipal UserDetails userDetails){
-        Voice voice = voiceService.findVoice(userDetails.getUsername());
-        List<VoiceReplyResponse> responses = null;
-        if(voice != null) {
-            List<VoiceReply> voiceReplies = voiceReplyService.findVoiceReplies(voice.getId());
-            responses = voiceReplies.stream()
-                    .map(VoiceReplyResponse::new)
-                    .toList();
-        }
+        List<VoiceReplyResponse> responses = voiceReplyService.findVoiceReplies(userDetails.getUsername());
         return ResponseEntity.ok(responses);
     }
 
