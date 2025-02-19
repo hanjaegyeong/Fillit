@@ -15,6 +15,7 @@ import { ARTICLE_MAX_LENGTH } from '@/constants/system';
 import { INTEREST_TAGS } from '@/constants/interestTags';
 import InterestTagChip from '@/components/common/InterestTagChip';
 import useInput from '@/hooks/useInput';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 const NewArticlePage = () => {
   const {
@@ -24,6 +25,8 @@ const NewArticlePage = () => {
   } = useInput('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -87,6 +90,7 @@ const NewArticlePage = () => {
 
   // 게시글 등록
   const handleSubmit = async (keyword: string) => {
+    setIsSubmitting(true);
     const articlePostForm: ArticlePostForm = {
       board: {
         content,
@@ -105,6 +109,8 @@ const NewArticlePage = () => {
       navigate('/');
     } catch (error) {
       console.log('게시글 등록 오류 : ', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -208,6 +214,7 @@ const NewArticlePage = () => {
         ref={fileInputRef}
         onChange={handleFileChange}
       />
+      {isSubmitting && <LoadingOverlay />}
     </div>
   );
 };
