@@ -160,10 +160,36 @@ const SignupInput = ({
       )}
 
       {steps[step].inputType === 'textarea' && (
-        <Textarea
-          value={signupState.regist.introduction}
-          onChange={(value) => handleInputChange('introduction', value)}
-        />
+        <div>
+          <Textarea
+            value={signupState.regist.introduction}
+            onChange={(value) => {
+              // 마지막 입력 문자만 검사
+              const lastChar = value.charAt(value.length - 1);
+
+              if (
+                lastChar &&
+                /[^A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]/gu.test(lastChar)
+              ) {
+                setErrors((prev) => ({
+                  ...prev,
+                  introduction: '영어만 입력 가능합니다',
+                }));
+                return;
+              }
+
+              setErrors((prev) => ({
+                ...prev,
+                introduction: '',
+              }));
+              handleInputChange('introduction', value);
+            }}
+            placeholder={steps[step].placeholder}
+          />
+          {errors.introduction && (
+            <p className="text-red-500 text-xs mt-1">{errors.introduction}</p>
+          )}
+        </div>
       )}
 
       {steps[step].inputType === 'tags' && (
