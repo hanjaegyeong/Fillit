@@ -9,7 +9,7 @@ const useInput = (initialValue: string) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const newValue = e.target.value.replace(
-      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}]+/gu,
+      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]+/gu,
       ''
     );
 
@@ -26,7 +26,7 @@ const useInput = (initialValue: string) => {
     const nativeEvent = e.nativeEvent as InputEvent;
     if (
       nativeEvent.data &&
-      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}]+/u.test(nativeEvent.data)
+      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]+/u.test(nativeEvent.data)
     ) {
       e.preventDefault();
       showToast('Use only English!');
