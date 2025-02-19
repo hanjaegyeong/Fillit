@@ -51,7 +51,15 @@ const ArticleEditPage = () => {
       .catch((err) =>
         console.error('게시글 정보를 불러오는데 실패했습니다:', err)
       );
-  }, [boardId]);
+  }, [boardId, setContent, setUploadedImages, setSelectedTags, setKeyword]);
+
+  // textarea 높이 자동 조절을 위한 useEffect 추가
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [content]);
 
   const handleAddPhoto = () => {
     if (fileInputRef.current) {
@@ -152,7 +160,7 @@ const ArticleEditPage = () => {
         <div className="relative z-10 pl-24 pr-5">
           <textarea
             ref={textareaRef}
-            className="w-full font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
+            className="w-full font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400 resize-none overflow-hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
