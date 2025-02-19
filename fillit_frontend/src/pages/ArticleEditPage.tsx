@@ -8,6 +8,7 @@ import AiFilButton from '@/components/common/Button/AiFilButton';
 import { TagSelectModal } from '@/components/common/Modal/TagSelectModal';
 import { KeywordModal } from '@/components/common/Modal/KeywordModal';
 import ImageSlider from '@/components/common/ImageSlider';
+import LoadingOverlay from '@/components/common/Loading/LoadingOverlay';
 
 import { getArticle, putArticle } from '@/api/article';
 import { ArticlePostForm } from '@/types/article';
@@ -27,6 +28,8 @@ const ArticleEditPage = () => {
   // 기존 이미지 URL과 새로 업로드한 파일을 따로 관리합니다.
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -51,7 +54,15 @@ const ArticleEditPage = () => {
       .catch((err) =>
         console.error('게시글 정보를 불러오는데 실패했습니다:', err)
       );
-  }, [boardId]);
+  }, [boardId, setContent, setUploadedImages, setSelectedTags, setKeyword]);
+
+  // textarea 높이 자동 조절을 위한 useEffect 추가
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [content]);
 
   const handleAddPhoto = () => {
     if (fileInputRef.current) {
@@ -101,6 +112,8 @@ const ArticleEditPage = () => {
   // 게시글 수정 제출 함수
   const handleSubmit = async (newKeyword: string) => {
     if (!boardId) return;
+
+    setIsSubmitting(true);
     const articlePostForm: ArticlePostForm = {
       board: {
         content,
@@ -129,6 +142,8 @@ const ArticleEditPage = () => {
       });
     } catch (error) {
       console.error('게시글 수정 중 오류 발생:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -159,7 +174,7 @@ const ArticleEditPage = () => {
         <div className="relative z-10 pl-24 pr-5">
           <textarea
             ref={textareaRef}
-            className="w-full font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400"
+            className="w-full font-extralight text-2xl bg-transparent outline-none placeholder:text-gray-400 resize-none overflow-hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -227,6 +242,7 @@ const ArticleEditPage = () => {
           initialKeyword={keyword}
         />
       )}
+      {isSubmitting && <LoadingOverlay />}
     </div>
   );
 };
