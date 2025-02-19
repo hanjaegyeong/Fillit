@@ -45,13 +45,15 @@ const MessageListPage = () => {
       <Header left="home" right="notification" />
 
       <div className="p-6 flex justify-center">
-        {/* <SearchInput
-          type="search"
-          placeholder="search"
-          onSubmit={handleSearch}
-        /> */}
+        <div className="hidden">
+          <SearchInput
+            type="search"
+            placeholder="search"
+            onSubmit={handleSearch}
+          />
+        </div>
 
-        <div className="text-xl">Who’s Talking?</div>
+        <div className="font-light text-xl">Who’s Talking? 💬</div>
       </div>
 
       <div className="max-w-[21.25rem] w-full px-3 overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
