@@ -140,10 +140,12 @@ public class FeedService {
                     break;
                 }
             }
+
             if (recIndex < recommendedBoards.size() && feedPosts.size() < limit) {
                 feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
+            }
+            if (recIndex < recommendedBoards.size() && feedPosts.size() <= limit) {
                 feedPosts.add(setIsLike(recommendedBoards.get(recIndex++), userId));
-
             }
         }
 
