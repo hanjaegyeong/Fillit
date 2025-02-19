@@ -8,7 +8,10 @@ const useInput = (initialValue: string) => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const newValue = e.target.value.replace(/[\u3131-\uD79D]/g, '');
+    const newValue = e.target.value.replace(
+      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}]+/gu,
+      ''
+    );
 
     if (newValue !== e.target.value) {
       showToast('Use only English!');
@@ -21,7 +24,10 @@ const useInput = (initialValue: string) => {
     e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const nativeEvent = e.nativeEvent as InputEvent;
-    if (nativeEvent.data && /[\u3131-\uD79D]/.test(nativeEvent.data)) {
+    if (
+      nativeEvent.data &&
+      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}]+/u.test(nativeEvent.data)
+    ) {
       e.preventDefault();
       showToast('Use only English!');
     }
