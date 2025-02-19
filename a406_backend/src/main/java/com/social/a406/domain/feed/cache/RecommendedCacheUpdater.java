@@ -57,11 +57,9 @@ public class RecommendedCacheUpdater {
             List<PostDto> recommendedBoards = feedBoardRepository.findRecommendedBoards(
                     interestId,
                     1, // 일단 1개로
-                    LocalDateTime.now().minusDays(7),
-                    PageRequest.of(0, 50, Sort.by("createdAt").descending())
+                    LocalDateTime.now().minusDays(60),
+                    PageRequest.of(0, 400, Sort.by("createdAt").descending())
             ).stream().map(this::convertToDto).toList();
-
-//            System.out.println("check BoardList: " +recommendedBoards);
 
 
             // Redis에 저장할 key
@@ -78,7 +76,7 @@ public class RecommendedCacheUpdater {
             // 캐시 내 추천 게시물 수를 200개로 제한 (최신 200개 유지)
             // Sorted Set의 크기가 200을 초과하면, rank 0 ~ (총 개수 - 200) 범위의 데이터를 제거
             Long currentSize = zSetOps.size(key);
-            int maxSize = 200;  // 원하는 최대 개수
+            int maxSize = 400;  // 원하는 최대 개수
             if(currentSize != null && currentSize > maxSize) {
                 // 0부터 (currentSize - maxSize - 1)까지 제거
                 redisTemplate.opsForZSet().removeRange(key, 0, currentSize - maxSize - 1);
