@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -93,8 +94,11 @@ public class AiScheduler {
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(60, 180); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        // Instant를 Date로 변환하여 한 번 실행될 시점을 설정합니다.
+        Date startTime = Date.from(Instant.now().plusSeconds(delayInSeconds));
 
         taskScheduler.schedule(() -> {
             try {
@@ -115,9 +119,9 @@ public class AiScheduler {
             } catch (Exception e) {
                 System.err.println("Failed to create AI comment: " + e.getMessage());
             } finally {
-                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료.
             }
-        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+        }, startTime);
     }
 
     // AI 게시글에 댓글이 생긴 경우 답장 생성
@@ -188,7 +192,7 @@ public class AiScheduler {
         }
     }
 
-    // 사용자(personalId)가 게시글 업로드 후 AI댓글 자동 생성
+    // 사용자(personalId)가 게시글 업로드 후 AI 좋아요 자동 생성
     public void scheduleLikeCreation(Long boardId, String personalId) {
         likeScheduler.initialize();
 
