@@ -4,6 +4,7 @@ import com.social.a406.domain.notification.entity.NotificationType;
 import com.social.a406.domain.notification.service.NotificationService;
 import com.social.a406.domain.user.entity.User;
 import com.social.a406.domain.user.repository.UserRepository;
+import com.social.a406.domain.voiceBubble.dto.VoiceReplyResponse;
 import com.social.a406.domain.voiceBubble.entity.Voice;
 import com.social.a406.domain.voiceBubble.entity.VoiceReply;
 import com.social.a406.domain.voiceBubble.repository.VoiceReplyRepository;
@@ -43,9 +44,16 @@ public class VoiceReplyService {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public List<VoiceReply> findVoiceReplies(Long voiceId) {
-
-        return voiceReplyRepository.findByVoiceId(voiceId);
+    public List<VoiceReplyResponse> findVoiceReplies(String personalId) {
+        Voice voice = voiceRepository.findByUserPersonalId(personalId).orElse(null);
+        List<VoiceReplyResponse> responses = null;
+        if(voice != null){
+            List<VoiceReply> voiceReplies = voiceReplyRepository.findByVoiceId(voice.getId());
+            responses = voiceReplies.stream()
+                    .map(VoiceReplyResponse::new)
+                    .toList();
+        }
+        return responses;
     }
 
     public VoiceReply findVoiceReply(Long voiceReplyId) {
