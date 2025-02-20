@@ -44,14 +44,21 @@ const ArticleContent = ({ article, isDetail = false }: ArticleContentProps) => {
           <ImageSlider images={article.imageUrls} />
         )}
       </div>
-      <div className="flex gap-5 pt-0.5">
-        <LikeBadge
-          type="article"
-          id={article.boardId}
-          initialLikeCount={article.likeCount}
-          initialIsLiked={article.isLiked}
-        />
-        <CommentBadge commentCount={article.commentCount} />
+      <div className="flex justify-between pt-0.5">
+        <div className="flex gap-5">
+          <LikeBadge
+            type="article"
+            id={article.boardId}
+            initialLikeCount={article.likeCount}
+            initialIsLiked={article.isLiked}
+          />
+          <CommentBadge commentCount={article.commentCount} />
+        </div>
+        {'isRecommended' in article && article.isRecommended && (
+          <div className="text-xxs font-extralight translate-x-2.5 translate-y-0.5 bg-white px-2 border rounded-full border-[#83C9EC]">
+            Recommended Post
+          </div>
+        )}
       </div>
     </>
   );
