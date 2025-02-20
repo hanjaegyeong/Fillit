@@ -12,12 +12,12 @@ const HomePage = () => {
       <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
         <button
           onClick={() => navigate('/newarticle')}
-          className="h-20 w-20 bg-white rounded-full border-black border flex items-center justify-center shadow-md"
+          className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md"
         >
           <img
             src={NewArticleIcon}
             alt="new-article"
-            className="h-12 w-12 drop-shadow-xl"
+            className="h-14 w-14 drop-shadow-xl"
           />
         </button>
       </div>
