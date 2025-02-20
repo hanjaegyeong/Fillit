@@ -182,7 +182,7 @@ const VoicePage = () => {
             <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
               <div
                 className={`w-12 h-12 ${
-                  hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
+                  hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem] -translate-y-1'
                 }`}
               >
                 <img

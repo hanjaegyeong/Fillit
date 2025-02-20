@@ -110,7 +110,7 @@ const MessageListPage = () => {
           <img
             src={NewMessage}
             alt="message-icon"
-            className="w-16 h-16 object-contain pt-1"
+            className="w-12 h-12 object-contain"
           />
         </button>
       </div>
