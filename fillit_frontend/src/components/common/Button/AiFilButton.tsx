@@ -4,7 +4,7 @@ import SlideUpModal from '@/components/common/Modal/SlideUpModal';
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { postChatbot } from '@/api/chatbot';
-import SubmitInput from '@/components/common/Input/SubmitInput';
+import { SendIcon } from '@/assets/assets';
 
 export interface Message {
   id: number;
@@ -39,6 +39,7 @@ const initialChatData = {
 
 const AiFilButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState('');
 
   const chatData = initialChatData;
   const [messages, setMessages] = useState<Message[]>(
@@ -57,18 +58,18 @@ const AiFilButton = () => {
   }, [messages]);
 
   // 메세지 전송
-  const sendMessage = async (text: string) => {
+  const sendMessage = async () => {
     const newMessage: Message = {
       id: messages.length + 1,
       sender: 'me',
-      content: text,
+      content: input,
       timestamp: new Date().toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
       }),
     };
     setMessages((prev) => [...prev, newMessage]);
-
+    setInput('');
     try {
       const chatbotResponse = await postChatbot(newMessage.content);
       const aiMessage: Message = {
@@ -86,6 +87,13 @@ const AiFilButton = () => {
     }
   };
   const { pathname } = useLocation();
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
   return (
     <>
@@ -132,10 +140,25 @@ const AiFilButton = () => {
           <div ref={messagesEndRef} />
         </div>
         <div className="pt-3">
-          <SubmitInput
-            placeholder="Need help writing your thoughts?"
-            onSubmit={sendMessage}
-          />
+          <div className="relative flex-1 flex items-center">
+            <input
+              type="text"
+              placeholder="Need help writing your thoughts?"
+              className="py-2 pl-4 pr-11 min-w-16 w-full border-[0.06rem] border-black
+             rounded-full placeholder:text-sm placeholder:text-gray-400 placeholder:font-light focus:outline-none"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              maxLength={100}
+            />
+            <button onClick={sendMessage} className="absolute right-4">
+              <img
+                src={SendIcon}
+                alt="submit icon"
+                className="h-[1.1rem] x-[1.1rem]"
+              />
+            </button>
+          </div>
         </div>
       </SlideUpModal>
     </>
