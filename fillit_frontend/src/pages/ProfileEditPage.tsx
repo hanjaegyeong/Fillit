@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import Header from '@/components/common/Header/Header';
 import BasicButton from '@/components/common/Button/BasicButton';
 import ProfileImageUploader from '@/components/Profile/ProfileImageUploader';
@@ -6,6 +6,7 @@ import ProfileEditForm from '@/components/Profile/ProfileEditForm';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
+import { useGetInterests } from '@/query/useGetInterests';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
@@ -17,10 +18,21 @@ const ProfileEditPage = () => {
     currentUser,
     isLoading: profileLoading,
   } = useProfile();
+  const { data: interests, isLoading: isInterestsLoading } = useGetInterests();
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // interests 데이터가 로드되면 profile.interests 업데이트
+  useEffect(() => {
+    if (interests) {
+      setProfile((prev) => ({
+        ...prev,
+        interests: interests.map((interest) => interest.name),
+      }));
+    }
+  }, [interests, setProfile]);
 
   const validateName = (name: string): boolean => {
     if (!name.trim()) {
@@ -72,12 +84,21 @@ const ProfileEditPage = () => {
     [setProfile]
   );
 
+  const handleInterestsChange = useCallback(
+    (newInterests: string[]) => {
+      setProfile((prev) => ({ ...prev, interests: newInterests }));
+    },
+    [setProfile]
+  );
+
   const handleEditClick = useCallback(async () => {
     if (!validateName(profile.name)) {
       return;
     }
     try {
       setIsSubmitting(true);
+      // interests가 포함되어 있는지 확인
+      console.log('Updating profile with interests:', profile.interests);
       await updateProfile();
       navigate(`/profile/${currentUser.personalId}`);
     } catch (error) {
@@ -85,7 +106,13 @@ const ProfileEditPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [updateProfile, navigate, currentUser.personalId, profile.name]);
+  }, [
+    updateProfile,
+    navigate,
+    currentUser.personalId,
+    profile.name,
+    profile.interests,
+  ]);
 
   return (
     <div className="container-header">
@@ -98,8 +125,10 @@ const ProfileEditPage = () => {
         <ProfileEditForm
           name={profile.name}
           introduction={profile.introduction}
+          interests={profile.interests}
           onNameChange={handleNameChange}
           onIntroductionChange={handleIntroductionChange}
+          onInterestsChange={handleInterestsChange}
           errors={errors}
         />
         <div className="mt-10">
@@ -111,7 +140,9 @@ const ProfileEditPage = () => {
           />
         </div>
       </div>
-      {profileLoading || (isSubmitting && <LoadingSpinner />)}
+      {(profileLoading || isSubmitting || isInterestsLoading) && (
+        <LoadingSpinner />
+      )}
     </div>
   );
 };
