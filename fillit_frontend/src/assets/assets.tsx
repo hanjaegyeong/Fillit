@@ -53,7 +53,7 @@ import sound from '@/assets/icons/sound.svg';
 import caution from '@/assets/icons/caution.svg';
 
 // article
-import NewArticleIcon from '@/assets/icons/write-icon.svg';
+import NewArticleIcon from '@/assets/images/write-icon.png';
 import NewArticleImg from '@/assets/images/new-article.png';
 import ImageSlideIcon from '@/assets/images/image-arrow.png';
 import RecommendIcon from '@/assets/icons/recommend-outline.svg';
@@ -63,7 +63,7 @@ import DeleteRedIcon from '@/assets/icons/delete-red.svg';
 import searchIcon from '@/assets/icons/search-icon.svg';
 
 //message
-import NewMessage from '@/assets/icons/chat-icon.svg';
+import NewMessage from '@/assets/images/chat-icon.png';
 
 //interestTag
 import ArtIcon from '@/assets/icons/tags-icon/art.svg';
