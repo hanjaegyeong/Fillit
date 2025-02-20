@@ -6,7 +6,7 @@ import ProfileEditForm from '@/components/Profile/ProfileEditForm';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import LoadingSpinner from '@/components/common/Loading/LoadingSpinner';
-import { useGetInterests } from '@/query/useGetInterests';
+import { useGetInterests } from '@/hooks/query/useGetInterests';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
