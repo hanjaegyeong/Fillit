@@ -7,7 +7,7 @@ const useInput = (initialValue: string) => {
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+      const koreanRegex = /[^A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]+/gu;
       const newValue = e.target.value;
 
       if (koreanRegex.test(newValue)) {
@@ -21,6 +21,19 @@ const useInput = (initialValue: string) => {
     },
     [value, showToast]
   );
+
+  const handleBeforeInput = (
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const nativeEvent = e.nativeEvent as InputEvent;
+    if (
+      nativeEvent.data &&
+      /[^A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]+/u.test(nativeEvent.data)
+    ) {
+      e.preventDefault();
+      showToast('Use only English!');
+    }
+  };
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -37,6 +50,7 @@ const useInput = (initialValue: string) => {
     setValue,
     onChange: handleChange,
     onKeyDown: handleKeyDown,
+    onBeforeInput: handleBeforeInput,
   };
 };
 
