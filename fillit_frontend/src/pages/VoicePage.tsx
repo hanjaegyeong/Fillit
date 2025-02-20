@@ -168,7 +168,7 @@ const VoicePage = () => {
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
 
       <div
-        className={`w-full max-w-[600px] z-[1] flex justify-end px-4 fixed bottom-28 transition-all duration-300 ${
+        className={`w-full max-w-[600px] z-[10] flex justify-end px-4 fixed bottom-28 transition-all duration-300 ${
           isModalOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >

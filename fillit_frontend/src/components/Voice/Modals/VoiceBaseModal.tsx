@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bubble4 } from '@/assets/assets';
+import ReactDOM from 'react-dom';
 
 interface BaseModalProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface BaseModalProps {
 
 const VoiceBaseModal = ({ children, isOpen, onClose }: BaseModalProps) => {
   const [isVisibleState, setIsVisibleState] = useState(true);
+  const modalRoot = document.getElementById('modal-root');
 
   useEffect(() => {
     if (isOpen) {
@@ -24,7 +26,9 @@ const VoiceBaseModal = ({ children, isOpen, onClose }: BaseModalProps) => {
     }, 600);
   };
 
-  return (
+  if (!modalRoot) return null;
+
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isVisibleState && isOpen && (
         <motion.div
@@ -72,7 +76,8 @@ const VoiceBaseModal = ({ children, isOpen, onClose }: BaseModalProps) => {
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    modalRoot
   );
 };
 
