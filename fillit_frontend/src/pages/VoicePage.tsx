@@ -169,17 +169,20 @@ const VoicePage = () => {
       <VoiceBubbleList voices={voiceList} onVoiceRemove={handleVoiceRemove} />
 
       <div
-        className={`w-full max-w-[600px] z-[10] flex justify-end px-4 fixed bottom-28 transition-all duration-300 ${
+        className={`w-full max-w-[600px] z-[10] fixed bottom-28 left-1/2 -translate-x-1/2 pointer-events-none transition-all duration-300 ${
           isModalOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
-        {isLoading || !isImageLoaded ? (
-          <div className="w-20 h-20 bg-white rounded-full border border-[#B5B4F2] shadow-md flex items-center justify-center">
-            <div className="w-12 h-12 bg-gray-200 animate-pulse rounded-full" />
-          </div>
-        ) : (
-          <button onClick={handleMicClick} className="relative w-20 h-20">
-            <div className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md">
+        <div className="relative w-full bottom-20">
+          {isLoading || !isImageLoaded ? (
+            <div className="absolute right-4 w-20 h-20 bg-white rounded-full border border-[#B5B4F2] shadow-md flex items-center justify-center pointer-events-auto">
+              <div className="w-12 h-12 bg-gray-200 animate-pulse rounded-full" />
+            </div>
+          ) : (
+            <button
+              onClick={handleMicClick}
+              className="absolute right-4 w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md pointer-events-auto"
+            >
               <div
                 className={`w-12 h-12 ${
                   hasRecordedVoice ? 'pt-0.5' : 'pl-[0.05rem]'
@@ -191,9 +194,9 @@ const VoicePage = () => {
                   className="transition-all duration-300"
                 />
               </div>
-            </div>
-          </button>
-        )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 모달은 이미지와 데이터가 모두 로드된 후에만 렌더링 */}
