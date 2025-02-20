@@ -121,6 +121,7 @@ const VoicePage = () => {
     setHasRecordedVoice(true);
     setMyVoiceData({
       voiceId,
+      name: '',
       audioUrl: '',
       personalId: '',
       profileImageUrl: '',

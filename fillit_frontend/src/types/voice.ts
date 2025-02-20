@@ -6,6 +6,7 @@ interface VoiceType {
 
 export interface Voice extends VoiceType {
   voiceId: number;
+  name: string;
 }
 
 export interface VoiceReply extends VoiceType {
