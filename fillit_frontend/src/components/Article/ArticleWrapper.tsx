@@ -20,9 +20,12 @@ const ArticleWrapper = ({ article }: ArticleWrapperProps) => {
 
   return (
     <div
-      className={`bg-contain bg-no-repeat bg-center w-[23.75rem] flex items-center justify-center drop-shadow-md -mb-12`}
+      className={`bg-contain bg-no-repeat bg-center w-[23.75rem] flex items-center justify-center -mb-12 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.2)]`}
       style={{
-        backgroundImage: `url(${getBackgroundImage(hasImage)})`,
+        backgroundImage: `url(${getBackgroundImage(
+          article.boardId,
+          hasImage
+        )})`,
       }}
       onClick={handleGoArticleDetail}
     >
