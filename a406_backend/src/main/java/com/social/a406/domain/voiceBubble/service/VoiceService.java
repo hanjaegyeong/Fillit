@@ -83,6 +83,8 @@ public class VoiceService {
             return "File uploaded successfully";
         } catch (IOException e) {
             throw new BadRequestException("Failed to store the file");
+        }catch (DataIntegrityViolationException e) {
+            throw new BadRequestException("Voice already saved");
         }
     }
 
