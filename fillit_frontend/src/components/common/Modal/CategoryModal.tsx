@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BasicButton from '@/components/common/Button/BasicButton';
 import InterestTags from '../InterestTags';
 import Modal from '@/components/common/Modal/Modal';
@@ -18,6 +18,12 @@ export const CategoryModal = ({
 }: CategoryModalProps) => {
   const [selectedCategories, setSelectedCategories] =
     useState<string[]>(selectedCategory);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedCategories(selectedCategory);
+    }
+  }, [isOpen, selectedCategory]);
 
   const handleConfirm = () => {
     onSelect(selectedCategories);

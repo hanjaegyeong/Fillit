@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { getUserInfo, getUserProfile, patchUserProfile } from '@/api/user';
 import { UserUpdateForm } from '@/types/user';
 import { useUserStore } from '@/store/useUserStore';
+import { getInterest } from '@/api/interest';
+
+interface Interest {
+  content: string;
+  interestId: number;
+}
 
 export const useProfile = () => {
   const { user: currentUser, setUser } = useUserStore();
@@ -10,6 +16,7 @@ export const useProfile = () => {
     name: currentUser.name || '',
     introduction: currentUser.introduction || '',
     profileImageUrl: currentUser.profileImageUrl || null,
+    interests: currentUser.interests || [],
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
@@ -19,10 +26,12 @@ export const useProfile = () => {
         setIsLoading(true);
         if (currentUser.personalId) {
           const data = await getUserProfile(currentUser.personalId);
+          const interests = (await getInterest()) as Interest[];
           setProfile({
             name: data.name,
             introduction: data.introduction,
             profileImageUrl: data.profileImageUrl,
+            interests: interests.map((interest: Interest) => interest.content),
           });
         }
       } catch (error) {
@@ -40,6 +49,7 @@ export const useProfile = () => {
         update: {
           name: profile.name,
           introduction: profile.introduction,
+          interests: profile.interests,
         },
       };
       if (profileImageFile) {
