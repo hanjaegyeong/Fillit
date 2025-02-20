@@ -94,7 +94,7 @@ public class AiScheduler {
     public void scheduleCommentCreation(Long boardId, String personalId) {
         taskScheduler.initialize();
 
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(60, 180); // 1분 ~ 3분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1, 10); // 10초 이내 (테스트용)
         System.out.println("Comment Task scheduled to execute after " + delayInSeconds + " seconds");
 
         // Instant를 Date로 변환하여 한 번 실행될 시점을 설정합니다.
