@@ -102,17 +102,19 @@ const MessageListPage = () => {
         )}
       </div>
 
-      <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
-        <button
-          onClick={() => navigate('/newmessage')}
-          className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md"
-        >
-          <img
-            src={NewMessage}
-            alt="message-icon"
-            className="w-12 h-12 object-contain"
-          />
-        </button>
+      <div className="w-full max-w-[600px] fixed bottom-[6.1rem] left-1/2 -translate-x-1/2 pointer-events-none">
+        <div className="relative w-full bottom-20">
+          <button
+            onClick={() => navigate('/newmessage')}
+            className="absolute right-3 w-[4.5rem] h-[4.5rem] bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md pointer-events-auto"
+          >
+            <img
+              src={NewMessage}
+              alt="message-icon"
+              className="w-12 h-12 object-contain"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
