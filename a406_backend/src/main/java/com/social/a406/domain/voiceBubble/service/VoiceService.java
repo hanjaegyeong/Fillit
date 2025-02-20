@@ -56,6 +56,9 @@ public class VoiceService {
             // 유저 존재 여부 확인
             User user = userRepository.findByPersonalId(personalId)
                     .orElseThrow(() -> new ForbiddenException("User not found"));
+            if(voiceRepository.existsByUserId(user.getId())){
+                throw new BadRequestException("Voice already saved");
+            }
 
             String fileName = "voice/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
