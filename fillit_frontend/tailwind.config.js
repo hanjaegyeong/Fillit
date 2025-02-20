@@ -37,6 +37,9 @@ export default {
         md: '2px 2px 4px rgba(0, 0, 0, 0.6)',
         lg: '3px 3px 6px rgba(0, 0, 0, 0.7)',
       },
+      height: {
+        screen: '100dvh',
+      },
     },
   },
   plugins: [scrollbarHide, textShadow],
