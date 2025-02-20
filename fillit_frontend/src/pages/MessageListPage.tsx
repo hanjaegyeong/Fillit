@@ -105,12 +105,12 @@ const MessageListPage = () => {
       <div className="w-full max-w-[600px] flex justify-end px-4 fixed bottom-28">
         <button
           onClick={() => navigate('/newmessage')}
-          className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md border border-[#D68DE1]"
+          className="w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md"
         >
           <img
             src={NewMessage}
             alt="message-icon"
-            className="w-10 h-10 object-contain pt-1"
+            className="w-16 h-16 object-contain pt-1"
           />
         </button>
       </div>
