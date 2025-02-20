@@ -95,6 +95,7 @@ public class VoiceService {
         List<VoiceResponse> responses = voices.stream()
                 .map(voice -> new VoiceResponse(
                         voice.getId(),
+                        voice.getUser().getName(),
                         voice.getUser().getPersonalId(),
                         voice.getUser().getProfileImageUrl(),
                         voice.getAudioUrl()
