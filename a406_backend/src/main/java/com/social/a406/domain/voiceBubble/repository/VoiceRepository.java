@@ -24,4 +24,6 @@ public interface VoiceRepository extends JpaRepository<Voice, Long> {
             @Param("userIds") List<String> userIds,
             @Param("myUserId") String myUserId
     );
+
+    boolean existsByUserId(String id);
 }
