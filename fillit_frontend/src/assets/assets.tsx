@@ -36,7 +36,7 @@ import SendIcon from '@/assets/icons/send-outline.svg';
 
 // voice
 import micBack from '@/assets/icons/mic-back.svg';
-import mic from '@/assets/icons/mic.svg';
+import mic from '@/assets/images/mic.png';
 import micBig from '@/assets/images/mic-big.png';
 import pressedMic from '@/assets/images/mic-pressed.png';
 import playIcon from '@/assets/icons/play.svg';

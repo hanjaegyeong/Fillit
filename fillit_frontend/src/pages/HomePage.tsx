@@ -9,16 +9,16 @@ const HomePage = () => {
     <div className="container-header-nav">
       <Header left="home" right="notification" />
       <ArticleListContainer />
-      <div className="w-full max-w-[600px] fixed bottom-28 left-1/2 -translate-x-1/2 pointer-events-none">
+      <div className="w-full max-w-[600px] fixed bottom-[6.1rem] left-1/2 -translate-x-1/2 pointer-events-none">
         <div className="relative w-full bottom-20">
           <button
             onClick={() => navigate('/newarticle')}
-            className="absolute right-4 w-20 h-20 bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md pointer-events-auto"
+            className="absolute right-3 w-[4.5rem] h-[4.5rem] bg-white rounded-full border flex items-center justify-center border-[#B5B4F2] shadow-md pointer-events-auto"
           >
             <img
               src={NewArticleIcon}
               alt="new-article"
-              className="h-14 w-14 drop-shadow-xl"
+              className="h-12 w-12 drop-shadow-xl"
             />
           </button>
         </div>
