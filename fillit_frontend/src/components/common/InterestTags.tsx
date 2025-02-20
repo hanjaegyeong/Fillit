@@ -2,7 +2,7 @@ import TagButton from '@/components/common/Button/TagButton';
 import { INTEREST_TAGS } from '@/constants/interestTags';
 
 interface InterestTagsProps {
-  selectedTags: string[];
+  selectedTags?: string[];
   onChange?: (tags: string[]) => void;
   singleSelect?: boolean;
 }
