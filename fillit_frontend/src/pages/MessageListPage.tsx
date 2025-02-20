@@ -79,11 +79,11 @@ const MessageListPage = () => {
                 <div>
                   <p className="text-base font-medium">{chat.otherUser}</p>
                   <p className="text-sm font-extralight text-gray-600">
-                    {truncateText(chat.lastMessageContent, 25)}
+                    {truncateText(chat.lastMessageContent, 20)}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col justify-between -my-1 pr-1">
+              <div className="flex flex-col justify-between whitespace-nowrap -my-1 pr-1">
                 <p className="font-light text-xs tracking-tight">
                   {formatChatTime(chat.lastMessageTime)}
                 </p>

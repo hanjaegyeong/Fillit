@@ -16,7 +16,7 @@ const VoicePage = () => {
   const [hasRecordedVoice, setHasRecordedVoice] = useState(false);
   const [voiceList, setVoiceList] = useState<Voice[]>([]);
   const [voiceReplyList, setVoiceReplyList] = useState<VoiceReply[]>([]);
-  const [myVoiceId, setMyVoiceId] = useState<number | null>(null);
+  const [myVoiceData, setMyVoiceData] = useState<Voice | null>(null);
   const [showBubbleAnimation, setShowBubbleAnimation] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -46,7 +46,6 @@ const VoicePage = () => {
   useEffect(() => {
     const initializeData = async () => {
       if (!isImageLoaded) return; // 이미지가 로드되기 전까지 데이터 로딩 지연
-
       setIsLoading(true);
       try {
         await Promise.all([fetchVoices(), fetchVoiceReplies(), checkMyVoice()]);
@@ -84,14 +83,14 @@ const VoicePage = () => {
       const myVoice = await getVoice();
       if (myVoice && myVoice.voiceId) {
         setHasRecordedVoice(true);
-        setMyVoiceId(myVoice.voiceId);
+        setMyVoiceData(myVoice);
       } else {
         setHasRecordedVoice(false);
-        setMyVoiceId(null);
+        setMyVoiceData(null);
       }
     } catch (error) {
       setHasRecordedVoice(false);
-      setMyVoiceId(null);
+      setMyVoiceData(null);
     }
   };
 
@@ -100,15 +99,15 @@ const VoicePage = () => {
       const myVoice = await getVoice();
       if (myVoice && myVoice.voiceId) {
         setHasRecordedVoice(true);
-        setMyVoiceId(myVoice.voiceId);
+        setMyVoiceData(myVoice);
       } else {
         setHasRecordedVoice(false);
-        setMyVoiceId(null);
+        setMyVoiceData(null);
       }
     } catch (error) {
       console.error('[VoicePage] getVoice API 호출 실패:', error);
       setHasRecordedVoice(false);
-      setMyVoiceId(null);
+      setMyVoiceData(null);
     }
     setIsModalOpen(true);
   };
@@ -120,23 +119,31 @@ const VoicePage = () => {
   // onRecordComplete: RecordModal에서 내 보이스 데이터의 voiceId를 받아 상태 업데이트
   const handleRecordComplete = (voiceId: number) => {
     setHasRecordedVoice(true);
-    setMyVoiceId(voiceId);
+    setMyVoiceData({
+      voiceId,
+      audioUrl: '',
+      personalId: '',
+      profileImageUrl: '',
+    });
     setIsModalOpen(false);
     setShowBubbleAnimation(true); // 즉시 애니메이션 시작
     fetchVoices();
 
     // 3초 후 애니메이션 숨기기
     setTimeout(() => {
+      checkMyVoice();
       setShowBubbleAnimation(false);
     }, 3000);
   };
 
   const handleDeleteComplete = () => {
     setHasRecordedVoice(false);
-    setMyVoiceId(null);
+    setMyVoiceData(null);
     setIsModalOpen(false);
     // 삭제된 보이스를 현재 리스트에서 제거
-    setVoiceList((prev) => prev.filter((voice) => voice.voiceId !== myVoiceId));
+    setVoiceList((prev) =>
+      prev.filter((voice) => voice.voiceId !== myVoiceData?.voiceId)
+    );
     setVoiceReplyList([]);
   };
 
@@ -191,12 +198,12 @@ const VoicePage = () => {
       {/* 모달은 이미지와 데이터가 모두 로드된 후에만 렌더링 */}
       {!isLoading && isImageLoaded && (
         <>
-          {hasRecordedVoice && myVoiceId !== null ? (
+          {hasRecordedVoice && myVoiceData ? (
             <VoiceManageModal
               isOpen={isModalOpen}
               onClose={handleModalClose}
               onDeleteComplete={handleDeleteComplete}
-              voiceId={myVoiceId}
+              voiceData={myVoiceData}
             />
           ) : (
             <VoiceRecordModal

@@ -6,48 +6,44 @@ import Modal from '@/components/common/Modal/Modal';
 interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (tag: string) => void;
+  onSelect: (tags: string[]) => void;
+  selectedCategory: string[];
 }
 
 export const CategoryModal = ({
   isOpen,
   onClose,
   onSelect,
+  selectedCategory,
 }: CategoryModalProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-
-  //   const handleCategorySelect = (tag: string) => {
-  //     setSelectedCategory(tag);
-  //   };
+  const [selectedCategories, setSelectedCategories] =
+    useState<string[]>(selectedCategory);
 
   const handleConfirm = () => {
-    if (selectedCategory) {
-      onSelect(selectedCategory);
-      onClose();
-    }
-  };
-
-  const handleClose = () => {
-    setSelectedCategory('');
+    onSelect(selectedCategories);
     onClose();
   };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="big">
+    <Modal isOpen={isOpen} onClose={onClose} size="big">
       <div className="flex flex-col h-full">
         <h2 className="text-xl font-light text-center pt-12">
           Please select a category
         </h2>
         <div className="flex-1 flex items-center justify-center -mt-11">
           <div className="scale-90">
-            <InterestTags />
+            <InterestTags
+              selectedTags={selectedCategories}
+              onChange={setSelectedCategories}
+            />
           </div>
         </div>
         <div className="-mt-1 pb-10 flex justify-center gap-4">
-          <BasicButton text="Cancel" onClick={handleClose} />
+          <BasicButton text="Cancel" onClick={onClose} />
           <BasicButton
             text="Confirm"
+            textColor="text-[#D68DE1]"
             onClick={handleConfirm}
-            disabled={!selectedCategory}
           />
         </div>
       </div>
