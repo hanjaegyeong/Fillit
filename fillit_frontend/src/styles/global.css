@@ -7,11 +7,15 @@
 @layer base {
   html {
     font-family: 'Kanit', sans-serif;
+    height: 100dvh;
+    overflow: hidden;
+    min-height: 100%;
   }
   body {
-    height: 100%;
+    height: 100dvh;
     margin: 0;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 }
 
