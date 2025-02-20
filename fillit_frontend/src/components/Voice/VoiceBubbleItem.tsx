@@ -39,7 +39,7 @@ const VoiceBubbleItem = ({ voice, onPlayClick }: VoiceBubbleItemProps) => {
         </div>
         {/* 텍스트 */}
         <div className="flex-1">
-          <p className="font-semibold text-lg truncate">{voice.personalId}</p>
+          <p className="font-semibold text-lg truncate">{voice.name}</p>
           <p className="text-gray-500 text-sm truncate">@{voice.personalId}</p>
         </div>
         {/* 플레이버튼 */}
