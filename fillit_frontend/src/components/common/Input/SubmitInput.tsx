@@ -18,8 +18,12 @@ const SubmitInput = ({
   const { value, onChange, onBeforeInput, setValue } = useInput('');
   const handleSubmit = () => {
     // 빈 문자열도 제출 -> 전체 목록 반환
-    onSubmit(value);
-    if (type === 'send' && value.trim()) {
+    if (type === 'search') {
+      onSubmit(value);
+    } else if (type === 'send') {
+      if (value.trim()) {
+        onSubmit(value.trim());
+      }
       setValue('');
     }
   };
