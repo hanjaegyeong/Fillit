@@ -148,21 +148,15 @@ public class BoardService {
         board.updateContent(boardRequest.getContent());
         board.updateKeyword(boardRequest.getKeyword());
 
-        // 기존 이미지 유지 여부 확인 후 처리
-        List<String> existingImageUrls = getBoardImages(boardId);  // 기존 이미지 가져오기
-        List<String> newImageUrls = new ArrayList<>(existingImageUrls);          // 기존 이미지 복사
-        List<String> newInterests = interestService.getBoardInterests(boardId);
-
-        if (newFiles != null && !newFiles.isEmpty()) {
-            // 새 이미지 업로드 및 기존 이미지 삭제
-            deleteBoardImage(boardId); // 기존 이미지 삭제 (선택적)
+        deleteBoardImage(boardId); // 기존 이미지 삭제
+        List<String> newImageUrls = null;
+        if(newFiles != null && !newFiles.isEmpty()) {
             newImageUrls = saveBoardImage(boardId, newFiles); // 새 이미지 저장
         }
-        if(boardRequest.getInterests() != null && !boardRequest.getInterests().isEmpty()){
-            interestService.deleteAllBoardInterests(boardId);
-            interestService.addBoardInterests(boardId, boardRequest.getInterests());
-            newInterests = interestService.getBoardInterests(boardId);
-        }
+        interestService.deleteAllBoardInterests(boardId);
+        interestService.addBoardInterests(boardId, boardRequest.getInterests());
+        List<String> newInterests = interestService.getBoardInterests(boardId);
+
         boolean like = boardLikeRepository.existsByUser_IdAndBoard_Id(user.getId(), boardId);
         return mapToResponseDtoAndLike(board, newImageUrls, newInterests, like);
     }
