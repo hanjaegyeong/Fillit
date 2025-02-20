@@ -97,13 +97,13 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
   return (
     <>
       {/* 카테고리 선택 버튼 */}
-      <div className="w-full flex justify-end scale-[80%] ">
+      <div className="w-full flex justify-end scale-[80%]">
         <button
           onClick={() => setIsCategoryModalOpen(true)}
-          className="px-4 py-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow text-sm -mr-8 mt-16 flex items-center gap-2"
+          className="px-4 py-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow text-sm -mr-8 mt-16"
         >
           {selectedInterests.length > 0 ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 max-w-[300px]">
               {selectedInterests.map((interest) => {
                 const tagData = INTEREST_TAGS.find(
                   (tag) => tag.label === interest
@@ -117,7 +117,6 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
                         className="w-4 h-4"
                       />
                     )}
-                    <span>{interest}</span>
                   </div>
                 );
               })}
@@ -129,39 +128,47 @@ const ProfileArticleGrid = ({ personalId }: ProfileArticleGridProps) => {
       </div>
       <div className="w-full max-w-[600px] scale-[80%] -mt-2 pl-5 pr-2 -rotate-6">
         {/* 그리드 컨테이너*/}
-        <div className="grid grid-cols-2 gap-x-5 -mt-7">
-          {getCurrentPageArticles(filteredArticles).map((article) => (
-            <div
-              key={article.boardId}
-              onClick={() => handleArticleClick(article.boardId)}
-              className={`aspect-square cursor-pointer overflow-hidden relative ${
-                article.imageUrls?.[0]
-                  ? 'rounded-lg shadow-md hover:shadow-lg transition-shadow rotate-12'
-                  : ' w-60 h-52 pr-10 pt-2 -translate-x-5 -translate-y-5'
-              }`}
-            >
-              {thumbnails[article.boardId] && (
-                <>
-                  <img
-                    src={thumbnails[article.boardId]}
-                    alt={article.keyword}
-                    className="w-full h-full"
-                  />
-                  {!article.imageUrls?.[0] &&
-                    keywordImages[article.boardId] && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <img
-                          src={keywordImages[article.boardId]}
-                          alt={article.keyword}
-                          className="w-[100%] h-auto object-cover"
-                        />
-                      </div>
-                    )}
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+        {filteredArticles.length > 0 ? (
+          <div className="grid grid-cols-2 gap-x-5 -mt-7">
+            {getCurrentPageArticles(filteredArticles).map((article) => (
+              <div
+                key={article.boardId}
+                onClick={() => handleArticleClick(article.boardId)}
+                className={`aspect-square cursor-pointer overflow-hidden relative ${
+                  article.imageUrls?.[0]
+                    ? 'rounded-lg shadow-md hover:shadow-lg transition-shadow rotate-12'
+                    : ' w-60 h-52 pr-10 pt-2 -translate-x-5 -translate-y-5'
+                }`}
+              >
+                {thumbnails[article.boardId] && (
+                  <>
+                    <img
+                      src={thumbnails[article.boardId]}
+                      alt={article.keyword}
+                      className="w-full h-full"
+                    />
+                    {!article.imageUrls?.[0] &&
+                      keywordImages[article.boardId] && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <img
+                            src={keywordImages[article.boardId]}
+                            alt={article.keyword}
+                            className="w-[100%] h-auto object-cover"
+                          />
+                        </div>
+                      )}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-40 text-gray-500 text-4xl mb-20">
+            Oops!
+            <br /> There are no posts
+            <br /> in this category yet.
+          </div>
+        )}
       </div>
 
       {/* 페이지네이션  */}
