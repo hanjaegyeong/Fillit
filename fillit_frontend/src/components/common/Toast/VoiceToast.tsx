@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactDOM from 'react-dom';
 
 interface ToastProps {
   message: string;
@@ -6,7 +7,9 @@ interface ToastProps {
 }
 
 const VoiceToast = ({ message, isVisible }: ToastProps) => {
-  return (
+  if (!isVisible) return null;
+
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isVisible && (
         <motion.div
@@ -21,7 +24,8 @@ const VoiceToast = ({ message, isVisible }: ToastProps) => {
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.getElementById('modal-root') || document.body
   );
 };
 
