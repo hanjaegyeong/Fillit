@@ -56,7 +56,7 @@ const MessageListPage = () => {
         <div className="font-light text-xl">Who’s Talking? 💬</div>
       </div>
 
-      <div className="max-w-[21.25rem] w-full px-3 overflow-y-auto max-h-[calc(100vh-250px)] hide-scrollbar space-y-3.5">
+      <div className="max-w-[21.25rem] w-full px-3 overflow-y-auto max-h-[calc(100dvh-250px)] hide-scrollbar space-y-3.5">
         {loading ? (
           <div className="h-20 pt-8">
             <LoadingSpinner />
