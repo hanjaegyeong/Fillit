@@ -72,12 +72,21 @@ const ProfileEditPage = () => {
     [setProfile]
   );
 
+  const handleInterestsChange = useCallback(
+    (newInterests: string[]) => {
+      setProfile((prev) => ({ ...prev, interests: newInterests }));
+    },
+    [setProfile]
+  );
+
   const handleEditClick = useCallback(async () => {
     if (!validateName(profile.name)) {
       return;
     }
     try {
       setIsSubmitting(true);
+      // interests가 포함되어 있는지 확인
+      console.log('Updating profile with interests:', profile.interests);
       await updateProfile();
       navigate(`/profile/${currentUser.personalId}`);
     } catch (error) {
@@ -85,7 +94,13 @@ const ProfileEditPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [updateProfile, navigate, currentUser.personalId, profile.name]);
+  }, [
+    updateProfile,
+    navigate,
+    currentUser.personalId,
+    profile.name,
+    profile.interests,
+  ]);
 
   return (
     <div className="container-header">
@@ -98,8 +113,10 @@ const ProfileEditPage = () => {
         <ProfileEditForm
           name={profile.name}
           introduction={profile.introduction}
+          interests={profile.interests}
           onNameChange={handleNameChange}
           onIntroductionChange={handleIntroductionChange}
+          onInterestsChange={handleInterestsChange}
           errors={errors}
         />
         <div className="mt-10">
