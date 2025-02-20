@@ -4,17 +4,23 @@ import { INTEREST_TAGS } from '@/constants/interestTags';
 interface InterestTagsProps {
   selectedTags?: string[];
   onChange?: (tags: string[]) => void;
+  singleSelect?: boolean;
 }
 
 const InterestTags = ({
   selectedTags = [],
   onChange = () => {},
+  singleSelect = false,
 }: InterestTagsProps) => {
   const handleTagClick = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      onChange(selectedTags.filter((t) => t !== tag));
+    if (singleSelect) {
+      onChange([tag]);
     } else {
-      onChange([...selectedTags, tag]);
+      if (selectedTags.includes(tag)) {
+        onChange(selectedTags.filter((t) => t !== tag));
+      } else {
+        onChange([...selectedTags, tag]);
+      }
     }
   };
 

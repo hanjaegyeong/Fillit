@@ -6,21 +6,20 @@ import VoiceButton from '@/components/common/Button/VoiceButton';
 import { deleteVoice } from '@/api/voice';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import VoiceToast from '@/components/common/Toast/VoiceToast';
-
-// 보이스 삭제 시 api 함수 deletvoice를 호출
+import { Voice } from '@/types/voice';
 
 interface VoiceManageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeleteComplete: () => void;
-  voiceId: number;
+  voiceData: Voice;
 }
 
 const VoiceManageModal = ({
   isOpen,
   onClose,
   onDeleteComplete,
-  voiceId,
+  voiceData,
 }: VoiceManageModalProps) => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -44,7 +43,7 @@ const VoiceManageModal = ({
   const handleDeleteConfirm = async () => {
     try {
       setShowToast(true);
-      await deleteVoice(voiceId);
+      await deleteVoice(voiceData.voiceId);
 
       // 1.5초 후에 토스트를 닫고 삭제 완료 처리
       setTimeout(() => {
@@ -57,10 +56,9 @@ const VoiceManageModal = ({
     }
   };
 
-  const recordedVoiceData = localStorage.getItem('recordedVoiceData');
   const { isPlaying, currentDuration, handlePlay } = useVoiceControl({
     isModalOpen: isOpen,
-    audioUrl: recordedVoiceData || undefined,
+    audioUrl: voiceData.audioUrl,
     recordingMode: false, // 재생 모드로 동작
   });
 

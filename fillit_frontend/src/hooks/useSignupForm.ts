@@ -68,6 +68,33 @@ export const useSignupForm = (
     field: keyof SignupState['regist'],
     value: string | Date | string[]
   ) => {
+    if (field === 'introduction') {
+      // 영어, 숫자, 특수문자, 이모지, 공백만 허용
+      const englishOnly = /^[A-Za-z\d\p{P}\p{S}\p{Emoji}\s\n\r]*$/u;
+
+      // 200자 제한 검사
+      if ((value as string).length > 200) {
+        setErrors((prev) => ({
+          ...prev,
+          introduction: '최대 200자까지 입력 가능합니다',
+        }));
+        return;
+      }
+
+      if (!englishOnly.test(value as string)) {
+        setErrors((prev) => ({
+          ...prev,
+          introduction: '영어만 입력해주세요',
+        }));
+        return;
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          introduction: '',
+        }));
+      }
+    }
+
     if (field === 'personalId' || field === 'email') {
       setValidationStatus((prev) => ({
         ...prev,
