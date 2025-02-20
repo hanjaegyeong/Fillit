@@ -48,16 +48,15 @@ const ReplyRecordModal = ({
   const handleSubmit = async () => {
     if (recordedFile) {
       try {
-        await postVoiceReply(recordedFile, voiceData.voiceId);
         setShowToast(true);
+        await postVoiceReply(recordedFile, voiceData.voiceId);
         onClose();
 
         setTimeout(() => {
           setShowToast(false);
-        }, 2000);
+        }, 3000);
       } catch (error) {
         console.error('[ReplyRecordModal] 답장 업로드 실패:', error);
-        setShowToast(false);
         onClose();
       }
     }
@@ -136,10 +135,14 @@ const ReplyRecordModal = ({
           )}
         </div>
       </VoiceBaseModal>
-      <VoiceToast
-        message="Voice reply sent successfully! 🎤✨"
-        isVisible={showToast}
-      />
+      <div className="relative z-[9999]">
+        {' '}
+        {/* Toast를 감싸는 div 추가 */}
+        <VoiceToast
+          message="Just sent the voice bubble, fam! 🫧💬"
+          isVisible={showToast}
+        />
+      </div>
     </>
   );
 };
