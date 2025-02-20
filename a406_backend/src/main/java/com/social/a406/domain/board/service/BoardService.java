@@ -6,6 +6,7 @@ import com.social.a406.domain.board.entity.BoardImage;
 import com.social.a406.domain.board.repository.BoardImageRepository;
 import com.social.a406.domain.board.repository.BoardRepository;
 import com.social.a406.domain.comment.service.CommentService;
+import com.social.a406.domain.feed.entity.Feed;
 import com.social.a406.domain.feed.repository.FeedRepository;
 import com.social.a406.domain.interest.entity.UserInterest;
 import com.social.a406.domain.interest.repository.UserInterestRepository;
@@ -83,9 +84,29 @@ public class BoardService {
             //게시글 이미지 저장
             imageUrls = saveBoardImage(newBoard.getId(), files);
         }
+        insertBoardToMyFeed(personalId, newBoard.getId()); // 내피드로 추가
         interestService.addBoardInterests(newBoard.getId(), boardRequest.getInterests());
         List<String> interests = interestService.getBoardInterests(newBoard.getId());
         return mapToResponseDto(newBoard, imageUrls, interests);
+    }
+
+    @Transactional
+    public void insertBoardToMyFeed(String personalId, Long boardId) {
+
+        User boardAuthor = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new ForbiddenException("User not found with personalId: " + personalId));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ForbiddenException("Board not found with personalId: " + boardId));
+        System.out.println("personalId: "+boardAuthor);
+        System.out.println("boardId: "+board);
+        // 내 feed 에 먼저 저장하도록 설정
+        Feed myFeed = Feed.builder()
+                .user(boardAuthor)
+                .board(board)
+                .isRecommended(false)
+                .createdAt(board.getCreatedAt())
+                .build();
+        feedRepository.save(myFeed);
     }
 
     // AI 게시글 생성
