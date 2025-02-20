@@ -147,7 +147,7 @@ const FindPasswordPage = () => {
               />
             </div>
             <div className=" flex pt-2 justify-center items-center">
-              <BasicButton text="Next" onClick={() => setStep(2)} />
+              <BasicButton text="Next" onClick={handleNext} />
             </div>
           </>
         )}
