@@ -36,7 +36,7 @@ public class AIChatService {
     // AI 메시지 생성 비동기 실행
     public void processAiMessage(String aiPersonalId, String aiMainPrompt, String otherUserName, ChatMessageRequest chatMessageRequest) {
 
-        int delay = random.nextInt(MINUTE) + MINUTE / 6; // 10초 ~ 1분 delay
+        int delay = 10; // 10초 delay (테스트용)
         System.out.println("Waiting for " + delay + " seconds before chat triggering...");
 
         chatTaskScheduler.schedule(() -> {
