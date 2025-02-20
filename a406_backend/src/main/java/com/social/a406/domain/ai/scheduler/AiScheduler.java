@@ -73,10 +73,10 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
+    @Scheduled(fixedDelay = 3 * MINUTE) // 3분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1~3분 딜레이
 
         try {
             System.out.println("Waiting for " + (delay + 5 * 60) + " seconds before comment triggering...");
@@ -126,10 +126,13 @@ public class AiScheduler {
 
     // AI 게시글에 댓글이 생긴 경우 답장 생성
     @Transactional
-    public void scheduleCommentReplyCreationAtComment(Long commentId){
+    public void scheduleCommentReplyCreationAtComment(Long commentId) {
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(60, 180); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment reply Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        // 실행할 시점을 Date 객체로 변환
+        Date startTime = Date.from(Instant.now().plusSeconds(delayInSeconds));
 
         taskScheduler.schedule(() -> {
             try {
@@ -138,24 +141,31 @@ public class AiScheduler {
                 String aiPersonalId = board.getPersonalId();
 
                 String response = restTemplate.getForObject(
-                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT + "?originId=" + board.getBoardId() + "&commentId=" + commentId + "&personalId=" + aiPersonalId +"&isBoard=true",
+                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT
+                                + "?originId=" + board.getBoardId()
+                                + "&commentId=" + commentId
+                                + "&personalId=" + aiPersonalId
+                                + "&isBoard=true",
                         String.class
                 );
                 System.out.println("AI Comment reply Created by " + aiPersonalId + ": " + response);
             } catch (Exception e) {
                 System.err.println("Failed to create AI comment reply: " + e.getMessage());
-            }finally {
-                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+            } finally {
+                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료.
             }
-        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+        }, startTime);
     }
 
     // AI 댓글에 대댓글이 생긴 경우 답장 생성
     @Transactional
-    public void scheduleCommentReplyCreationAtCommentReply(Long replyId){
+    public void scheduleCommentReplyCreationAtCommentReply(Long replyId) {
         taskScheduler.initialize();
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(60, 180); // 1분 ~ 3분 사이 딜레이
         System.out.println("Comment reply - reply Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        // 실행할 시점을 Date 객체로 변환
+        Date startTime = Date.from(Instant.now().plusSeconds(delayInSeconds));
 
         taskScheduler.schedule(() -> {
             try {
@@ -163,23 +173,27 @@ public class AiScheduler {
                 String aiPersonalId = commentService.getPersonalIdById(comment.getId());
 
                 String response = restTemplate.getForObject(
-                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT + "?originId=" + comment.getId() + "&commentId=" + replyId + "&personalId=" + aiPersonalId +"&isBoard=false",
+                        ec2ServerUrl + AI_COMMENT_REPLY_ENDPOINT
+                                + "?originId=" + comment.getId()
+                                + "&commentId=" + replyId
+                                + "&personalId=" + aiPersonalId
+                                + "&isBoard=false",
                         String.class
                 );
                 System.out.println("AI Comment reply Created by " + aiPersonalId + ": " + response);
             } catch (Exception e) {
                 System.err.println("Failed to create AI comment reply: " + e.getMessage());
-            }finally {
-                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+            } finally {
+                taskScheduler.shutdown(); // 작업 완료 후 스케줄러 종료.
             }
-        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+        }, startTime);
     }
 
     // like 랜덤생성
-    @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
+    @Scheduled(fixedDelay = 3 * MINUTE) // 5분마다 실행
     public void callGenerateAiLikeController() {
         // 랜덤한 지연 시간 생성
-        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1~3분 딜레이
 
         try{
             System.out.println("Waiting for " + (delay + 5 * 60) + " seconds before like triggering...");
@@ -195,10 +209,11 @@ public class AiScheduler {
     // 사용자(personalId)가 게시글 업로드 후 AI 좋아요 자동 생성
     public void scheduleLikeCreation(Long boardId, String personalId) {
         likeScheduler.initialize();
-
-        int delayInSeconds = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1분 ~ 3분 사이 딜레이
-
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(60, 180); // 1분 ~ 3분 사이 딜레이
         System.out.println("First Comment Task scheduled to execute after " + delayInSeconds + " seconds");
+
+        // 실행할 시점을 Date 객체로 변환
+        Date startTime = Date.from(Instant.now().plusSeconds(delayInSeconds));
 
         likeScheduler.schedule(() -> {
             try {
@@ -211,17 +226,18 @@ public class AiScheduler {
                 }
 
                 String response = restTemplate.getForObject(
-                        ec2ServerUrl + AI_LIKE_ENDPOINT + "?boardId=" + boardId + "&personalId=" + randomPersonalId,
+                        ec2ServerUrl + AI_LIKE_ENDPOINT
+                                + "?boardId=" + boardId
+                                + "&personalId=" + randomPersonalId,
                         String.class
                 );
-
                 System.out.println("AI Like Created by " + randomPersonalId + ": " + response);
             } catch (Exception e) {
                 System.err.println("Failed to create AI Like: " + e.getMessage());
             } finally {
-                likeScheduler.shutdown(); // 작업 완료 후 스케줄러 종료. 없으면 반복.
+                likeScheduler.shutdown(); // 작업 완료 후 스케줄러 종료.
             }
-        }, triggerContext -> Instant.now().plusSeconds(delayInSeconds));
+        }, startTime);
     }
 
     @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
@@ -239,15 +255,6 @@ public class AiScheduler {
             System.out.println("Response from EC2: " + response);
         } catch (Exception e) {
             System.err.println("Follow Failed to call EC2` controller: " + e.getMessage());
-        }
-    }
-
-    @Scheduled(fixedDelay = MINUTE)
-    public void test() {
-        try{
-            System.out.println("1분 테스트용 스케줄러: 랜덤값" + random.nextInt(MINUTE));
-        } catch (Exception e) {
-            System.err.println("like Failed to call EC2` controller: " + e.getMessage());
         }
     }
 }
