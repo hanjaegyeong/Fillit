@@ -22,7 +22,7 @@ const ArticleDetailContainer = ({ article }: ArticleDetailContainerProps) => {
   return (
     <div className="w-full overflow-auto overflow-x-hidden">
       <div className="m-5 bg-white border border-black rounded-md">
-        <div className="p-5 space-y-6">
+        <div className="p-5 space-y-6 whitespace-pre-wrap">
           {article && <ArticleContent article={article} isDetail />}
         </div>
         <hr className="border-t border-black" />
