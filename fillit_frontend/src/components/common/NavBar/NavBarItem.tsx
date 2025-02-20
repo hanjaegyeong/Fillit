@@ -7,6 +7,7 @@ interface NavBarItemProps {
   activeIcon: string;
   alt: string;
   to: string;
+  isActiveOverride: boolean;
 }
 
 const NavBarItem = ({
@@ -15,17 +16,17 @@ const NavBarItem = ({
   activeIcon,
   alt,
   to,
+  isActiveOverride,
 }: NavBarItemProps) => {
-  const { activeNavItem, setActiveNavItem } = useNavStore();
+  const { setActiveNavItem } = useNavStore();
 
   return (
     <NavLink to={to} onClick={() => setActiveNavItem(navItemId)}>
-      {({ isActive }) => {
-        const finalActive = isActive || activeNavItem === navItemId;
+      {({}) => {
         return (
           <div>
             <img
-              src={finalActive ? activeIcon : inactiveIcon}
+              src={isActiveOverride ? activeIcon : inactiveIcon}
               alt={alt}
               className="max-w-16"
             />
