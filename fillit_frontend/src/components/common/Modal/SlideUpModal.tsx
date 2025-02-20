@@ -7,12 +7,11 @@ interface SlideUpModalProps {
   height?: string;
 }
 
-// 높이를 h-[  vh]로 조정
 const SlideUpModal = ({
   open,
   onClose,
   children,
-  height = 'h-[90vh]',
+  height = 'h-[90dvh]',
 }: SlideUpModalProps) => {
   useEffect(() => {
     if (open) {
