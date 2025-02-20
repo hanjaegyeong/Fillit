@@ -73,10 +73,10 @@ public class AiScheduler {
 
     // 랜덤 게시글에 랜덤 AI 댓글 생성 컨트롤러 자동 호출
     // 본인이 댓글 단 게시글 / 본인 게시글 제외
-    @Scheduled(fixedDelay = 5 * MINUTE) // 5분마다 실행
+    @Scheduled(fixedDelay = 3 * MINUTE) // 3분마다 실행
     public void callGenerateAiCommentController() {
         // 랜덤한 지연 시간 생성
-        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 5 * 60); // 1~5분 딜레이
+        int delay = ThreadLocalRandom.current().nextInt(1 * 60, 3 * 60); // 1~3분 딜레이
 
         try {
             System.out.println("Waiting for " + (delay + 5 * 60) + " seconds before comment triggering...");
