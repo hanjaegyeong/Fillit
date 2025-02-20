@@ -11,7 +11,6 @@ export interface User {
   followerCount: number;
   followeeCount: number;
   follow: boolean | null;
-  interests: string[];
 }
 
 export interface UserUpdateForm {

@@ -16,7 +16,7 @@ export const useProfile = () => {
     name: currentUser.name || '',
     introduction: currentUser.introduction || '',
     profileImageUrl: currentUser.profileImageUrl || null,
-    interests: currentUser.interests || [],
+    interests: [''],
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
@@ -55,7 +55,6 @@ export const useProfile = () => {
       if (profileImageFile) {
         updateForm.profileImage = profileImageFile;
       }
-
       await patchUserProfile(updateForm);
 
       const response = await getUserInfo();
