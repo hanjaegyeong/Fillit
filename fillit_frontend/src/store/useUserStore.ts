@@ -19,6 +19,7 @@ const initialUser: User = {
   followerCount: 0,
   followeeCount: 0,
   follow: false,
+  interests: [],
 };
 
 export const useUserStore = create<UserStore>()(
