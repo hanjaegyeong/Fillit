@@ -3,6 +3,7 @@ import { sound, playIcon2, soundWave, NoProfile } from '@/assets/assets';
 import VoiceBaseModal from '@/components/Voice/Modals/VoiceBaseModal';
 import { useVoiceControl } from '@/hooks/useVoiceControl';
 import { VoiceReply } from '@/types/voice';
+import VoiceButton from '@/components/common/Button/VoiceButton';
 
 interface VoiceReplyModalProps {
   replyData: VoiceReply | undefined;
@@ -67,21 +68,31 @@ const VoiceReplyModal = ({
           />
         </div>
 
-        {/* 재생 버튼 */}
-        <motion.button
-          onClick={handlePlay}
-          className="w-[46px] h-[47px]"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <img
-            src={isPlaying ? sound : playIcon2}
-            alt={isPlaying ? 'sound' : 'play'}
-            className="w-full h-full"
-          />
-        </motion.button>
+        {isFinished ? (
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <VoiceButton onClick={handleClose} text="Close" />
+          </motion.div>
+        ) : (
+          <motion.button
+            onClick={handlePlay}
+            className="w-[46px] h-[47px]"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <img
+              src={isPlaying ? sound : playIcon2}
+              alt={isPlaying ? 'sound' : 'play'}
+              className="w-full h-full"
+            />
+          </motion.button>
+        )}
       </div>
     </VoiceBaseModal>
   );
