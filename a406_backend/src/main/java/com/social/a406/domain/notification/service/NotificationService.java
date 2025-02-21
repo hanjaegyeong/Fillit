@@ -170,7 +170,7 @@ public class NotificationService {
     public void generateReplyLikeNotification(ReplyLike like) {
         User receiver = like.getReply().getUser(); // 대댓글 작성자
         User sender = like.getUser(); // 좋아요 누른사람
-        Long referenceId = like.getReply().getId();
+        Long referenceId = like.getReply().getComment().getId();
         createNotification(receiver, sender, NotificationType.REPLYLIKE, referenceId);
         System.out.println("Generate notification about reply like");
     }
