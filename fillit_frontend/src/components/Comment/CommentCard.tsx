@@ -36,7 +36,7 @@ const CommentCard = ({
           : 'w-[19rem] min-h-[12.5rem]'
       } flex items-center -mt-10 ${
         position === 'left' ? '-translate-x-7' : 'translate-x-5'
-      }`}
+      } drop-shadow-[0px_0px_1px_rgba(0,0,0,0.1)]`}
       style={{
         backgroundImage: `url(${CommentImage})`,
       }}

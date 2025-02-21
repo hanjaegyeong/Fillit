@@ -123,7 +123,7 @@ const UserList = ({ type, personalId }: UserListProps) => {
           className="scale-[1.7] origin-top row-start-1 col-start-1"
           alt="follow background"
         />
-        <div className="row-start-1 col-start-1 z-10 mt-[6rem] overflow-y-auto h-[calc(100vh-23rem)] hide-scrollbar">
+        <div className="row-start-1 col-start-1 z-10 mt-[6rem] overflow-y-auto h-[calc(100dvh-23rem)] hide-scrollbar">
           {filteredUsers.map((userData) => (
             <UserItem
               key={userData.personalId}
