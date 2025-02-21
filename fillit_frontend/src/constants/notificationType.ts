@@ -6,4 +6,5 @@ export enum NotificationType {
   VOICEREPLY = 'VOICEREPLY',
   BOARDLIKE = 'BOARDLIKE',
   COMMENTLIKE = 'COMMENTLIKE',
+  REPLYLIKE = 'REPLYLIKE',
 }
