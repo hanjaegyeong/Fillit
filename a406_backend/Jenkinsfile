@@ -90,6 +90,10 @@ pipeline {
                     sh 'kubectl rollout status deployment/fillit-deployment'
                     // Deployment 강제 재시작 추가 (새로운 Pod가 생성되도록 강제)
                     sh 'kubectl rollout restart deployment fillit-deployment'
+
+                    // HPA 적용 (최소 1개, 최대 10개, CPU 사용률 50% 기준 확장)
+                    sh 'kubectl autoscale deployment fillit-deployment --cpu-percent=50 --min=1 --max=10'
+
                     // Prometheus, Grafana
                     sh 'kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/prometheus.yaml -n monitoring'

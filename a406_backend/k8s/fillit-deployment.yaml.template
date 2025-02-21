@@ -26,4 +26,10 @@ spec:
           - name: metrics
             containerPort: 8080
             hostPort: 8090
-
+        resources:
+          requests:
+            cpu: "200m"  # 최소 요청 CPU
+            memory: "256Mi"  # 최소 요청 메모리
+          limits:
+            cpu: "500m"  # 최대 사용 가능 CPU
+            memory: "512Mi"  # 최대 사용 가능 메모리
