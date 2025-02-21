@@ -13,6 +13,10 @@ export const NOTIFICATION_CONFIG: Record<
     url: (id) => `/comment/${id}`,
     message: 'liked your comment.',
   },
+  REPLYLIKE: {
+    url: (id) => `/comment/${id}`,
+    message: 'liked your reply.',
+  },
   CHAT: { url: (id) => `/message/${id}`, message: 'sent you a message.' },
   VOICEREPLY: {
     url: () => '/voice',
