@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { NotificationOnIcon } from '@/assets/assets';
+import { NotificationOffIcon } from '@/assets/assets';
 
 const NotificationButton = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const NotificationButton = () => {
 
   return (
     <button onClick={handleGoNotification}>
-      <img src={NotificationOnIcon} alt="notification icon" />
+      <img src={NotificationOffIcon} alt="notification icon" />
     </button>
   );
 };
