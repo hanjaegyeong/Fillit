@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  serviceMonitorNamespaceSelector: {}  # 모든 네임스페이스 선택
+  serviceMonitorSelector: {}
+  podMonitorNamespaceSelector: {}        # 모든 네임스페이스 선택
+  podMonitorSelector: {}
+  replicas: 1
+  resources:
+    requests:
+      memory: 400Mi
+      cpu: 200m
