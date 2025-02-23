@@ -84,7 +84,4 @@ https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE
 # 와이어 프레임
 ![와이어프레임](img/wireframe.png)
 
-# 프로토타입 (진행중)
-![프로토타입](img/concept.png)
-
 
