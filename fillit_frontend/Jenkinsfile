@@ -1,0 +1,92 @@
+pipeline {
+    agent any
+    environment {
+        // Git 관련 설정
+        GIT_BRANCH = 'dev_front'
+        GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        // Docker 관련 설정
+        DOCKER_IMAGE_NAME = 'fillit-front'
+        DOCKER_CONTAINER_NAME = 'fillit-front-container'
+        DOCKER_PORT = '3000'
+        // 빌드 시 사용할 환경 변수 (Jenkins Global Properties 또는 파라미터에서 미리 설정)
+        VITE_API_BASE_URL = "${env.VITE_API_BASE_URL}"
+        VITE_WS_URL = "${env.VITE_WS_URL}"
+        // WORKSPACE를 HOME으로 지정하여 npm 캐시 관련 권한 문제 회피
+        HOME = "${env.WORKSPACE}"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Git 저장소에서 코드를 체크아웃합니다.
+                // "*/dev_front"를 사용하면 원격 브랜치(예: origin/dev_front)를 올바르게 찾습니다.
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${GIT_BRANCH}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    userRemoteConfigs: [[
+                        url: "${GITLAB_REPO_URL}",
+                        credentialsId: 'gitlab-credentials-id'
+                    ]]
+                ])
+            }
+        }
+        stage('Install & Build') {
+            agent {
+                // Node.js와 npm이 포함된 공식 이미지 사용 (node:22)
+                docker { 
+                    image 'node:22'
+                    args '-u root'  // 루트 권한으로 실행하도록 추가
+                }
+            }
+            steps {
+                // 프로젝트 폴더가 "fillit_frontend"에 있다고 가정합니다.
+                dir('fillit_frontend') {
+                    sh '''
+                        echo "Using npm at: $(which npm) and version: $(npm -v)"
+                        npm install --unsafe-perm=true
+                        VITE_API_BASE_URL=''' + "${VITE_API_BASE_URL}" + ''' VITE_WS_URL=''' + "${VITE_WS_URL}" + ''' npm run build
+                    '''
+                }
+
+            }
+        }
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    // Docker CLI가 포함된 이미지 사용 (docker:20.10)  
+                    // --user root 옵션을 추가하여 docker 명령어를 root 권한으로 실행함
+                    image 'docker:20.10'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock --user root'
+                }
+            }
+            steps {
+                // Dockerfile이 "fillit_frontend" 폴더 내에 있다고 가정합니다.
+                dir('fillit_frontend') {
+                    sh '''
+                        docker build -t ''' + "${DOCKER_IMAGE_NAME}:latest" + ''' \
+                                     -t ''' + "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}" + ''' \
+                                     -f Dockerfile .
+                    '''
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'docker:20.10'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock --user root'
+                }
+            }
+            steps {
+                // 하나의 sh 블록에 컨테이너 중지, 삭제 및 실행 명령어를 순차적으로 실행합니다.
+                sh '''
+                    docker stop ${DOCKER_CONTAINER_NAME} || true
+                    docker rm ${DOCKER_CONTAINER_NAME} || true
+                    docker run -d -p ${DOCKER_PORT}:3000 --name ${DOCKER_CONTAINER_NAME} \
+                        -e VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+                        ${DOCKER_IMAGE_NAME}:latest
+                '''
+            }
+        }
+    }
+}
