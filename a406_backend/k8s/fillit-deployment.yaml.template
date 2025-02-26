@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fillit-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: fillit
+  template:
+    metadata:
+      labels:
+        app: fillit
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: fillit-container
+        image: jaegyeong223/fillit:${BUILD_NUMBER}
+        imagePullPolicy: Always
+        ports:
+          - name: metrics
+            containerPort: 8080
+            hostPort: 8090
+        resources:
+          requests:
+            cpu: "200m"  # 최소 요청 CPU
+            memory: "256Mi"  # 최소 요청 메모리
+          limits:
+            cpu: "500m"  # 최대 사용 가능 CPU
+            memory: "512Mi"  # 최대 사용 가능 메모리
