@@ -1,10 +1,8 @@
 package com.social.a406.domain.ai.service;
 
-import com.social.a406.domain.board.dto.BoardRequest;
-import com.social.a406.domain.board.dto.BoardResponse;
+import com.social.a406.domain.board.dto.*;
 import com.social.a406.domain.board.service.BoardService;
-import com.social.a406.domain.comment.dto.CommentRequest;
-import com.social.a406.domain.comment.dto.CommentResponse;
+import com.social.a406.domain.comment.dto.*;
 import com.social.a406.domain.comment.service.CommentService;
 import com.social.a406.domain.commentReply.dto.ReplyRequest;
 import com.social.a406.domain.commentReply.dto.ReplyResponse;
@@ -12,7 +10,6 @@ import com.social.a406.domain.commentReply.service.ReplyService;
 import com.social.a406.domain.follow.service.FollowService;
 import com.social.a406.domain.interest.dto.InterestResponse;
 import com.social.a406.domain.interest.service.InterestService;
-import com.social.a406.domain.like.entity.BoardLike;
 import com.social.a406.domain.like.repository.BoardLikeRepository;
 import com.social.a406.domain.like.service.BoardLikeService;
 import com.social.a406.domain.user.repository.UserRepository;
@@ -21,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -34,164 +29,130 @@ public class AIFacadeService {
     private final UserService userService;
     private final BoardService boardService;
     private final CommentService commentService;
+    private final ReplyService replyService;
+    private final FollowService followService;
     private final SubredditService subredditService;
     private final YoutubeService youtubeService;
     private final FlickrService flickrService;
     private final InterestService interestService;
     private final BoardLikeService boardLikeService;
-    private final UserRepository userRepository;
     private final BoardLikeRepository boardLikeRepository;
-    private final ReplyService replyService;
-    private final FollowService followService;
+    private final UserRepository userRepository;
 
-    /**
-     * 랜덤 방식으로 AI 게시글 생성
-     */
+    /* ---------- 1. 게시글 생성 ---------- */
+    private interface BoardGenerator {
+        BoardResponse generate(String personalId, boolean includeImage);
+    }
+    private final BoardGenerator[] RANDOM_GENERATORS = {
+            this::generateAndSaveBoard,
+            this::generateBoardUsingSubreddit,
+            this::generateBoardUsingYoutube
+    };
+
     public BoardResponse generateAndSaveRandomBoard(boolean includeImage) {
         String personalId = userService.getRandomUserWithMainPrompt();
-        BoardResponse response = generateBoardWithRandomMethod(personalId, includeImage);
-        return response;
+        BoardGenerator pick = RANDOM_GENERATORS[
+                ThreadLocalRandom.current().nextInt(RANDOM_GENERATORS.length)];
+        return pick.generate(personalId, includeImage);
     }
 
-    /**
-     * 랜덤한 방식으로 게시글 생성
-     */
-    private BoardResponse generateBoardWithRandomMethod(String personalId, boolean includeImage) {
-        return switch (new Random().nextInt(3)) {
-            case 0 -> generateBoardUsingSubreddit(personalId, includeImage);
-            case 1 -> generateBoardUsingYoutube(personalId, includeImage);
-            default -> generateAndSaveBoard(personalId, includeImage);
-        };
-    }
-
-    /**
-     * AI가 일반 게시글 생성 후 저장
-     */
     public BoardResponse generateAndSaveBoard(String personalId, boolean includeImage) {
         String content = aiService.generateContent(aiService.createBoardPrompt(personalId));
-        return createBoardWithKeywordAndImage(personalId, content, includeImage);
+        return buildAndSaveBoard(personalId, content, includeImage);
     }
 
-    /**
-     * AI가 서브레딧 기반 게시글 생성
-     */
     public BoardResponse generateBoardUsingSubreddit(String personalId, boolean includeImage) {
         String content = aiService.generateContent(subredditService.createSubredditPrompt(personalId));
-        return createBoardWithKeywordAndImage(personalId, content, includeImage);
+        return buildAndSaveBoard(personalId, content, includeImage);
     }
 
-    /**
-     * AI가 유튜브 기반 게시글 생성
-     */
     public BoardResponse generateBoardUsingYoutube(String personalId, boolean includeImage) {
         String content = aiService.generateContent(youtubeService.createYoutubePrompt());
-        return createBoardWithKeywordAndImage(personalId, content, includeImage);
+        return buildAndSaveBoard(personalId, content, includeImage);
     }
 
-    /**
-     * AI 게시글 생성 - boardService.createAiBoard() 호출
-     */
-    private BoardResponse createBoardWithKeywordAndImage(String personalId, String content, boolean includeImage) {
-        // 키워드 분리 및 정리
-        String[] parsedContent = parseKeywordAndUpdateContent(content);
-        String updatedContent = parsedContent[0];
-        String keyword = parsedContent[1];
+    /* 실제 저장 로직은 여기서 공통 처리 */
+    private BoardResponse buildAndSaveBoard(String personalId, String raw, boolean includeImage) {
+        String[] parts = splitContentAndKeyword(raw);
+        String content = parts[0];
+        String keyword = parts[1];
 
-        // 이미지 추출
-        String imageUrl = null;
-        if (includeImage && !keyword.isEmpty()) {
-            imageUrl = flickrService.getRandomImageUrl(keyword);
-        }
+        String imageUrl = (includeImage && !keyword.isBlank())
+                ? flickrService.getRandomImageUrl(keyword)
+                : null;
 
-        // 게시글 요청 DTO 생성
-        BoardRequest request = buildBoardRequest(updatedContent, keyword);
+        BoardRequest request = BoardRequest.builder()
+                .content(content)
+                .keyword(keyword)
+                .x(randPos()) .y(randPos()) .z(randPos())
+                .pageNumber(ThreadLocalRandom.current().nextInt(0, 5))
+                .build();
 
-        // request에 interests 세팅
-        List<String> userInterests = interestService.getUserInterests(personalId).stream()
-                .map(InterestResponse::getContent)
-                .collect(Collectors.toList());
-
-        request.setInterests(userInterests);
-
-        // 게시글 생성 및 응답 반환
+        request.setInterests(fetchUserInterests(personalId));
         return boardService.createAiBoard(request, personalId, imageUrl);
     }
 
-    /**
-     * AI가 특정 게시글에 댓글 생성 후 저장
-     */
+    /* ---------- 2. 댓글 / 대댓글 ---------- */
+
     public CommentResponse generateAndSaveComment(Long boardId, String personalId) {
-        String content = aiService.generateContent(aiService.createCommentPrompt(
+        String prompt = aiService.createCommentPrompt(
                 boardService.getBoardContentById(boardId),
                 boardService.getBoardAuthorPersonalIdById(boardId),
-                userService.getUserByPersonalId(personalId)
-        ));
+                userService.getUserByPersonalId(personalId));
+        String content = aiService.generateContent(prompt);
+
         return commentService.addAiComment(boardId, new CommentRequest(content), personalId);
     }
 
-    /**
-     * AI가 특정 게시글에 좋아요 생성
-     */
-    public void generateAndSaveLike(Long boardId, String personalId){
-        String userId = userRepository.findByPersonalId(personalId).get().getId();
+    public ReplyResponse generateAndSaveCommentReply(Long originId,
+                                                     Long commentId,
+                                                     String personalId,
+                                                     boolean isBoard) {
+        String originText   = isBoard
+                ? boardService.getBoardContentById(originId)
+                : commentService.getComment(originId).getContent();
+        String targetText   = isBoard
+                ? commentService.getComment(commentId).getContent()
+                : replyService.getReply(commentId);
 
-        Optional<BoardLike> boardLike = boardLikeRepository.findByBoard_IdAndUser_Id(boardId, userId);
-        if(boardLike.isPresent()){
-            System.out.println("Ai User already liked this board");
-            return;
+        String prompt = aiService.createCommentReplyPrompt(originText, targetText, personalId);
+        String reply  = aiService.generateContent(prompt);
+
+        ReplyRequest dto = ReplyRequest.builder().content(reply).build();
+        return replyService.saveReply(commentId, dto, personalId);
+    }
+
+    /* ---------- 3. 좋아요 / 팔로우 ---------- */
+
+    public void generateAndSaveLike(Long boardId, String personalId) {
+        String userId = userRepository.findByPersonalId(personalId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"))
+                .getId();
+
+        if (boardLikeRepository.findByBoard_IdAndUser_Id(boardId, userId).isEmpty()) {
+            boardLikeService.addLike(personalId, boardId);
         }
-
-        boardLikeService.addLike(personalId, boardId);
     }
 
-    /**
-     * 게시글 요청 DTO 생성
-     */
-    private BoardRequest buildBoardRequest(String content, String keyword) {
-        return BoardRequest.builder()
-                .content(content)
-                .x(ThreadLocalRandom.current().nextDouble(0, 10))
-                .y(ThreadLocalRandom.current().nextDouble(0, 10))
-                .z(ThreadLocalRandom.current().nextDouble(0, 10))
-                .pageNumber(ThreadLocalRandom.current().nextInt(0, 5))
-                .keyword(keyword)
-                .build();
+    public void generateAndSaveFollow(String followerId, String followeeId) {
+        followService.followUser(followerId, followeeId);
     }
 
-    /**
-     * '!@@@'을 기준으로 본문과 키워드를 분리
-     */
-    private String[] parseKeywordAndUpdateContent(String content) {
-        if (content == null || !content.contains("!@@@")) {
-            return new String[]{content != null ? content.trim() : "", ""}; // null 방지
+    /* ---------- 헬퍼 ---------- */
+
+    private String[] splitContentAndKeyword(String raw) {
+        if (raw == null || !raw.contains("!@@@")) {
+            return new String[]{ raw == null ? "" : raw.trim(), "" };
         }
-
-        String[] parts = content.split("!@@@", 2);
-        String updatedContent = parts[0].trim(); // 본문
-        String keyword = parts[1].trim(); // 키워드
-
-        return new String[]{updatedContent, keyword};
+        String[] arr = raw.split("!@@@", 2);
+        return new String[]{ arr[0].trim(), arr[1].trim() };
     }
 
-    public ReplyResponse generateAndSaveCommentReply(Long originId, Long commentId, String personalId, boolean isBoard) {
-        String content = null;
-        String origin = null;
-        if(isBoard){
-            content = commentService.getComment(commentId).getContent();
-            origin = boardService.getBoardContentById(originId);
-        }else{
-            content = replyService.getReply(commentId);
-            origin = commentService.getComment(originId).getContent();
-        }
-        String prompt = aiService.createCommentReplyPrompt(origin, content, personalId);
-        String generateContent = aiService.generateContent(prompt);
-        ReplyRequest replyRequest = ReplyRequest.builder()
-                .content(generateContent)
-                .build();
-        return replyService.saveReply(commentId, replyRequest, personalId);
+    private List<String> fetchUserInterests(String personalId) {
+        return interestService.getUserInterests(personalId).stream()
+                .map(InterestResponse::getContent)
+                .collect(Collectors.toList());
     }
 
-    public void generateAndSaveFollow(String followerPersonalId, String followeePersonalId) {
-        followService.followUser(followerPersonalId, followeePersonalId);
-    }
+    private double randPos() { return ThreadLocalRandom.current().nextDouble(0, 10); }
 }
