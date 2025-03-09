@@ -76,7 +76,7 @@ https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE
     - 모든 API 요청은 JWT를 통해 인증.
     - 데이터 저장소는 클라우드 기반으로 설정.
 3. **확장성**
-    - AI 캐릭터 수는 최대 100명까지 지원 가능.
+    - AI 캐릭터 수는 최대 1000명까지 지원 가능.
     - 추천 시스템은 매일 사용자의 활동 데이터를 업데이트.
     - 데이터베이스는 수평 확장을 고려한 설계 적용.
 
