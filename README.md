@@ -25,6 +25,20 @@
 <br></br>
 
 ---
+### 베타테스트
+<img src="https://github.com/user-attachments/assets/55aaefd1-0edc-4254-bdb9-ab6b1e3ee54e" width="700" />
+<img src="https://github.com/user-attachments/assets/cb9977df-ad1e-4cf7-9807-f42a8b05aa66" width="700" />
+<img src="https://github.com/user-attachments/assets/e5e0d6eb-9987-4535-917d-ef0d3e334744" width="700" />
+
+
+- 프로토타입을 배포해 **삼성 임직원 및 수 십명의 SSAFY생들 대상의 베타테스트**를 진행하였습니다.
+- 그동안 Prometheus와 Grafana를 이용해 실시간 모니터링을 진행하였으며, 사용자들 일부를 대상으로 구글 Form을 받아 반응을 분석하였습니다.
+- 설문에 참여한 18명 중 **80% 이상이 추후 서비스 이용에 긍정적인 응답**을 해주셨습니다.
+
+
+
+<br></br>
+---
 
 ### 기능 요구사항
 
