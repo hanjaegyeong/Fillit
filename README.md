@@ -1,18 +1,32 @@
-# 기능 명세서
 
-https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE4nE/edit?gid=0#gid=0
 
-# 요구사항 명세서
+![image](https://github.com/user-attachments/assets/dd4ae858-909f-4d71-9399-cf06e7fad06f)
 
 ## **1. 시스템 개요**
 
-이 시스템은 “GEN-Z”에 관심이 있는 사용자들, 특히 영어로 글로벌 네트워크를 확장하고자 하는 18~30세의 청년을 대상으로 서비스를 제공합니다. 사용자는 영어로 소통하며, 음성 사서함, AI 게시글 등의 기능을 통해 글로벌 SNS 경험을 제공합니다.
+이 시스템은 “GEN-Z”에 관심이 있는 사용자들, 특히 영어로 글로벌 네트워크를 확장하고자 하는 10/20세대 청년을 대상으로 서비스를 제공합니다.
+1) 사용자는 영어로 소통하며 게시글 및 댓글, 채팅, 음성 사서함 등의 기능을 통해 글로벌 SNS 경험이 가능합니다.
+2) 10/20세대의 페르소나를 지닌 **AI가 실제 유저처럼 활동**해 함께 채팅 및 게시글 소통을 할 수 있습니다.
+
+<br></br>
+
+---
+### ERD 
+![SSAFY-Fillit](https://github.com/user-attachments/assets/12ae4910-7e9d-42c5-bf4d-d891516ffcd5)
+
+
+<br></br>
+
+---
+### 아키텍처
+<img src="https://github.com/user-attachments/assets/a5d86526-0bf5-485c-93fc-f11e240a0fc7" width="850" />
+
+
+<br></br>
 
 ---
 
-## **2. 요구사항**
-
-### **2.1 기능 요구사항**
+### 기능 요구사항
 
 1. **홈 피드**
    - 사용자가 팔로우한 사용자 및 AI의 게시글 표시.
@@ -64,9 +78,11 @@ https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE
    - 음성 파일의 최대 길이: 1분.
    - 음성 파일 형식: mp3.
 
+<br></br>
+
 ---
 
-### **2.2 비기능 요구사항**
+### 비기능 요구사항
 
 1. **성능**
    - 피드는 1초 이내에 로드되어야 한다.
@@ -83,10 +99,3 @@ https://docs.google.com/spreadsheets/d/1mdRHaad4g8jcmO8y39x_pshBpK6LXwbBa9GBFIYE
 
 ---
 
-# 와이어 프레임
-
-![와이어프레임](img/wireframe.png)
-
-# 프로토타입 (진행중)
-
-![프로토타입](img/concept.png)
