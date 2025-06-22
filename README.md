@@ -19,7 +19,7 @@
 
 ---
 ### 아키텍처
-<img src="https://github.com/user-attachments/assets/a5d86526-0bf5-485c-93fc-f11e240a0fc7" width="850" />
+<img src="https://github.com/user-attachments/assets/a5d86526-0bf5-485c-93fc-f11e240a0fc7" width="700" />
 
 
 <br></br>
