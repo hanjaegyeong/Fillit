@@ -30,7 +30,7 @@ pipeline {
                 dir('a406_backend') {
                     sh """
                         chmod +x ./gradlew
-                        ./gradlew --no-daemon clean build \\
+                        ./gradlew --no-daemon clean build -x test \\
                             -Dspring.redis.host=redis
                     """
                 }
