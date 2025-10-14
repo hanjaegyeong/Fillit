@@ -11,7 +11,7 @@ pipeline {
 
     stages {
 
-        /* 1. GitLab에서 코드 체크아웃 */
+        /* 1. GitHub에서 코드 체크아웃 */
         stage('Checkout') {
                 steps {
                     script {
