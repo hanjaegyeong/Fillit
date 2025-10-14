@@ -10,6 +10,8 @@ pipeline {
     }
 
     stages {
+
+        /* 1. GitLab에서 코드 체크아웃 */
         stage('Checkout') {
             steps {
                 script {
@@ -22,25 +24,20 @@ pipeline {
             }
         }
 
-        // 애플리케이션 빌드 및 테스트 (Redis가 실행 중이어야 테스트가 성공함)
+        /* 2. Gradle 빌드 */
         stage('Build') {
             steps {
                 dir('a406_backend') {
                     sh """
                         chmod +x ./gradlew
                         ./gradlew --no-daemon clean build \\
-                            -Djwt.secret-key="$JWT_SECRET_KEY" \\
-                            -Dspring.datasource.url="$DB_URL" \\
-                            -Dspring.datasource.username="$DB_USERNAME" \\
-                            -Dspring.datasource.password="$DB_PASSWORD" \\
-                            -Dspring.mail.password="$MAIL_PASSWORD" \\
                             -Dspring.redis.host=redis
                     """
                 }
             }
         }
 
-        // Docker 이미지 빌드
+        /* 3. Docker 이미지 빌드 */
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -50,7 +47,7 @@ pipeline {
             }
         }
 
-        // Docker Hub 로그인
+        /* 4. Docker Hub 로그인 */
         stage('Docker Hub Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
@@ -59,7 +56,7 @@ pipeline {
             }
         }
 
-        // Docker Hub에 이미지 푸시
+        /* 5. Docker Hub에 이미지 푸시 */
         stage('Push Docker Image') {
             steps {
                 sh """
@@ -69,78 +66,44 @@ pipeline {
             }
         }
 
-        // Kubernetes 클러스터에 Redis 배포
+        /* 6. Redis 배포 */
         stage('Deploy Redis to Kubernetes') {
             steps {
                 echo 'Deploying Redis to Kubernetes...'
-                // a406_backend/k8s/redis.yaml 파일에는 Deployment와 Service가 모두 포함.
                 sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
             }
         }
-        // Kubernetes 클러스터에 애플리케이션 배포
+
+        /* 7. 애플리케이션 배포 */
         stage('Deploy Application to Kubernetes') {
             steps {
                 script {
                     echo 'Deploying application to Kubernetes...'
-                    // 환경변수 치환을 통해 deployment 템플릿 파일 생성
+
+                    // Jenkins Secret file -> K8s Secret 생성
+                    withCredentials([file(credentialsId: 'fillit-secret-file', variable: 'ENVF')]) {
+                        sh 'kubectl create secret generic fillit-secret --from-env-file="$ENVF" --dry-run=client -o yaml | kubectl apply -f -'
+                    }
+
+                    // 비민감 env 파일 -> K8s ConfigMap 생성
+                    sh 'kubectl create configmap fillit-config --from-env-file=a406_backend/k8s/fillit-config.env --dry-run=client -o yaml | kubectl apply -f -'
+
+                    // Deployment 템플릿 치환 후 적용
                     sh 'envsubst < a406_backend/k8s/fillit-deployment.yaml.template > a406_backend/k8s/fillit-deployment.yaml'
-                    // 애플리케이션 Deployment
                     sh 'kubectl apply -f a406_backend/k8s/fillit-deployment.yaml'
-                    // Deployment가 완료될 때까지 대기
+
+                    // 배포 완료 대기 + 재시작
                     sh 'kubectl rollout status deployment/fillit-deployment'
-                    // Deployment 강제 재시작 추가 (새로운 Pod가 생성되도록 강제)
                     sh 'kubectl rollout restart deployment fillit-deployment'
 
-                    // HPA 적용 (최소 1개, 최대 10개, CPU 사용률 50% 기준 확장)
+                    // HPA 설정
                     sh 'kubectl autoscale deployment fillit-deployment --cpu-percent=50 --min=1 --max=10'
 
-                    // Prometheus, Grafana
+                    // 모니터링 리소스 적용
                     sh 'kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/prometheus.yaml -n monitoring'
                     sh 'kubectl apply -f a406_backend/k8s/grafana-ingress.yaml'
                     sh 'kubectl apply -f a406_backend/k8s/fillit-podmonitor.yaml'
-
-//                     sh 'kubectl apply -f a406_backend/k8s/fillit-service.yaml'
-//                     sh 'kubectl apply --server-side --validate=false -f a406_backend/k8s/clusterissuer.yaml'
-//                     sh 'kubectl apply -f a406_backend/k8s/certificate.yaml'
-//                     sh 'kubectl apply -f a406_backend/k8s/fillit-ingress.yaml'
-                    sh """
-                        kubectl set env deployment/fillit-deployment \\
-                            JWT_SECRET_KEY="$JWT_SECRET_KEY" \\
-                            DB_URL="$DB_URL" \\
-                            DB_USERNAME="$DB_USERNAME" \\
-                            DB_PASSWORD="$DB_PASSWORD" \\
-                            MAIL_PASSWORD="$MAIL_PASSWORD" \\
-                            GOOGLE_ACCESS_TOKEN_API="$GOOGLE_ACCESS_TOKEN_API" \\
-                            GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \\
-                            GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \\
-                            GOOGLE_GET_USER_INFO_API="$GOOGLE_GET_USER_INFO_API" \\
-                            GOOGLE_REDIRECT_URI="$GOOGLE_REDIRECT_URI" \\
-                            GOOGLE_SCOPE="$GOOGLE_SCOPE" \\
-                            KAKAO_ACCESS_TOKEN_API="$KAKAO_ACCESS_TOKEN_API" \\
-                            KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \\
-                            KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \\
-                            KAKAO_GET_USER_INFO_API="$KAKAO_GET_USER_INFO_API" \\
-                            KAKAO_REDIRECT_URI="$KAKAO_REDIRECT_URI" \\
-                            NAVER_ACCESS_TOKEN_API="$NAVER_ACCESS_TOKEN_API" \\
-                            NAVER_CLIENT_ID="$NAVER_CLIENT_ID" \\
-                            NAVER_CLIENT_SECRET="$NAVER_CLIENT_SECRET" \\
-                            NAVER_GET_USER_INFO_API="$NAVER_GET_USER_INFO_API" \\
-                            NAVER_REDIRECT_URI="$NAVER_REDIRECT_URI" \\
-                            AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \\
-                            AWS_REGION="$AWS_REGION" \\
-                            AWS_S3_BUCKET_NAME="$AWS_S3_BUCKET_NAME" \\
-                            AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \\
-                            YOUTUBE_API_KEY="$YOUTUBE_API_KEY" \\
-                            YOUTUBE_API_URL="$YOUTUBE_API_URL" \\
-                            GEMINI_API_KEY="$GEMINI_API_KEY" \\
-                            EC2_SERVER_URL="$EC2_SERVER_URL" \\
-                            FLICKR_API_KEY="$FLICKR_API_KEY" \\
-                            REDIS_HOST="$REDIS_HOST" \\
-                            RABBITMQ_HOST="$RABBITMQ_HOST"\\
-                            RABBITMQ_USERNAME="$RABBITMQ_USERNAME"\\
-                            RABBITMQ_PASSWORD="$RABBITMQ_PASSWORD"
-                    """
                 }
             }
         }

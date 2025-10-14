@@ -23,13 +23,33 @@ spec:
         image: jaegyeong223/fillit:${BUILD_NUMBER}
         imagePullPolicy: Always
         ports:
-          - name: metrics
+          - name: http
             containerPort: 8080
-            hostPort: 8090
         resources:
           requests:
-            cpu: "200m"  # 최소 요청 CPU
-            memory: "256Mi"  # 최소 요청 메모리
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            cpu: "500m"  # 최대 사용 가능 CPU
-            memory: "512Mi"  # 최대 사용 가능 메모리
+            cpu: "500m"
+            memory: "512Mi"
+
+        # Secret과 ConfigMap에서 환경변수 로드
+        envFrom:
+          - secretRef:
+              name: fillit-secret
+          - configMapRef:
+              name: fillit-config
+
+        # 헬스체크 추가
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 20
