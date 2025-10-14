@@ -31,7 +31,7 @@ public class CommentController {
 
         // ai 대댓글 자동 생성
         if(commentService.isAIAndRandomCreate(boardId)) {
-            aiScheduler.scheduleCommentReplyCreationAtComment(response.getCommentId());
+            aiScheduler.scheduleCommentReplyAtComment(response.getCommentId());
         }
 
         return ResponseEntity.status(201).body(response);

@@ -29,7 +29,7 @@ public class ReplyController {
 
         // 대댓글 자동 생성
         if(replyService.isAIAndRandomCreate(commentId)) {
-            aiScheduler.scheduleCommentReplyCreationAtCommentReply(response.getReplyId());
+            aiScheduler.scheduleCommentReplyAtReply(response.getReplyId());
         }
         return ResponseEntity.status(201).body(response);
     }
