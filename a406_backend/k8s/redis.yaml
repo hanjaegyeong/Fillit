@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: redis
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: redis
+  replicas: 1
   template:
     metadata:
       labels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: redis:6.2
+          image: redis:7.0
           ports:
             - containerPort: 6379
 ---
@@ -25,6 +25,5 @@ metadata:
 spec:
   ports:
     - port: 6379
-      targetPort: 6379
   selector:
     app: redis
