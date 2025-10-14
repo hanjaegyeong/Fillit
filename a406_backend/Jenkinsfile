@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        GIT_BRANCH = 'dev_back'
-        GITLAB_REPO_URL = 'https://lab.ssafy.com/s12-webmobile2-sub1/S12P11A406.git'
+        GIT_BRANCH = 'main'
+        GITHUB_REPO_URL = 'https://github.com/hanjaegyeong/Fillit.git'
         DOCKER_IMAGE_NAME = 'fillit'
         DOCKER_CONTAINER_NAME = 'fillit-container'
         DOCKER_PORT = '8081'
@@ -13,16 +13,16 @@ pipeline {
 
         /* 1. GitLab에서 코드 체크아웃 */
         stage('Checkout') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials-id', usernameVariable: 'GITLAB_USERNAME', passwordVariable: 'GITLAB_PASSWORD')]) {
-                        git branch: "${GIT_BRANCH}",
-                            credentialsId: 'gitlab-credentials-id',
-                            url: "${GITLAB_REPO_URL}"
+                steps {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                            git branch: "${GIT_BRANCH}",
+                                credentialsId: 'github-credentials',
+                                url: "${GITHUB_REPO_URL}"
+                        }
                     }
                 }
             }
-        }
 
         /* 2. Gradle 빌드 */
         stage('Build') {
