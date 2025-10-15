@@ -38,17 +38,22 @@ pipeline {
             }
         }
 
-        /* 3. Docker 이미지 빌드 & 푸시 */
+        /* 3. Docker 이미지 빌드 & 푸시 (빌드번호+커밋SHA로 고유 태그) */
         stage('Build & Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
                     sh '''
                         set -eu
-                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}"
+                        COMMIT_SHORT=$(git rev-parse --short=7 HEAD)
+                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-${COMMIT_SHORT}"
+
                         docker build -t "$IMAGE" -f a406_backend/Dockerfile a406_backend
                         echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
                         docker push "$IMAGE"
+
+                        # 배포 단계에서 envsubst에 주입할 이미지 값 저장
                         echo "FILLIT_IMAGE=$IMAGE" > /tmp/fillit-image.env
+                        echo "[INFO] Built & pushed image: $IMAGE"
                     '''
                 }
             }
@@ -99,6 +104,7 @@ pipeline {
                             kubectl rollout status deployment/fillit-deployment --timeout=5m
 
                             # 실제 적용된 이미지 확인
+                            echo -n "[INFO] Deployed image: "
                             kubectl get deploy fillit-deployment -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
                         '''
                     }
