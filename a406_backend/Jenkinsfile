@@ -65,16 +65,7 @@ pipeline {
                 """
             }
         }
-
-        /* 6. MySQL 배포 */
-        stage('Deploy MySQL to Kubernetes') {
-            steps {
-                echo 'Deploying MySQL to Kubernetes...'
-                sh 'kubectl apply -f a406_backend/k8s/mysql.yaml'
-            }
-        }
-
-        /* 7. Redis 배포 */
+        /* 6. Redis 배포 */
         stage('Deploy Redis to Kubernetes') {
             steps {
                 echo 'Deploying Redis to Kubernetes...'
@@ -82,7 +73,7 @@ pipeline {
             }
         }
 
-        /* 8. 애플리케이션 배포 */
+        /* 7. 애플리케이션 배포 */
         stage('Deploy Application to Kubernetes') {
             steps {
                 script {
