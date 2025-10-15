@@ -29,7 +29,7 @@ pipeline {
             steps {
                 dir('a406_backend') {
                     sh '''
-                        set -euo pipefail
+                        set -eu
                         chmod +x ./gradlew
                         ./gradlew --no-daemon clean build -x test \
                             -Dspring.redis.host=redis
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
                     sh '''
-                        set -euo pipefail
+                        set -eu
                         IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}"
                         docker build -t "$IMAGE" -f a406_backend/Dockerfile a406_backend
                         echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
@@ -58,7 +58,10 @@ pipeline {
         stage('Deploy Redis to Kubernetes') {
             steps {
                 echo 'Deploying Redis to Kubernetes...'
-                sh 'kubectl apply -f a406_backend/k8s/redis.yaml'
+                sh '''
+                    set -eu
+                    kubectl apply -f a406_backend/k8s/redis.yaml
+                '''
             }
         }
 
@@ -67,7 +70,7 @@ pipeline {
             steps {
                 echo 'Deploying RabbitMQ to Kubernetes...'
                 sh '''
-                    set -euo pipefail
+                    set -eu
                     kubectl apply -f a406_backend/k8s/rabbitmq-deploy.yaml
                     kubectl apply -f a406_backend/k8s/rabbitmq-service.yaml
                     kubectl rollout status deployment/rabbitmq --timeout=5m
@@ -82,7 +85,7 @@ pipeline {
                     echo 'Deploying application to Kubernetes...'
                     withCredentials([file(credentialsId: 'fillit-secret-file', variable: 'ENVF')]) {
                         sh '''
-                            set -euo pipefail
+                            set -eu
 
                             # Secret/ConfigMap 생성
                             kubectl create secret generic fillit-secret --from-env-file="$ENVF" --dry-run=client -o yaml | kubectl apply -f -
@@ -107,7 +110,7 @@ pipeline {
         stage('Configure HPA') {
             steps {
                 sh '''
-                    set -euo pipefail
+                    set -eu
                     kubectl autoscale deployment fillit-deployment --cpu-percent=50 --min=1 --max=10 || true
                     kubectl get hpa
                 '''
@@ -118,7 +121,7 @@ pipeline {
         stage('Deploy Monitoring Resources') {
             steps {
                 sh '''
-                    set -euo pipefail
+                    set -eu
                     kubectl get ns monitoring >/dev/null 2>&1 || kubectl create ns monitoring
 
                     kubectl apply -f a406_backend/k8s/prometheus-configmap.yaml -n monitoring
