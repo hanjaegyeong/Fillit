@@ -7,6 +7,9 @@ pipeline {
         DOCKER_IMAGE_NAME = 'fillit'
         DOCKER_CONTAINER_NAME = 'fillit-container'
         DOCKER_PORT = '8081'
+
+        /* Gradle 캐시 보존을 위한 사용자 홈(워크스페이스 내) */
+        GRADLE_USER_HOME = "${WORKSPACE}/.gradle"
     }
 
     stages {
@@ -30,8 +33,19 @@ pipeline {
                 dir('a406_backend') {
                     sh '''
                         set -eu
+                        mkdir -p "$GRADLE_USER_HOME"
+
+                        # Gradle 빌드 튜닝(콜드스타트/과도한 병렬 방지)
+                        cat > gradle.properties <<'EOF'
+                            org.gradle.daemon=true
+                            org.gradle.caching=true
+                            org.gradle.parallel=false
+                            org.gradle.workers.max=1
+                            org.gradle.jvmargs=-Xmx1g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8
+                            EOF
+
                         chmod +x ./gradlew
-                        ./gradlew --no-daemon clean build -x test \
+                        ./gradlew clean build -x test \
                             -Dspring.redis.host=redis
                     '''
                 }
@@ -44,11 +58,20 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
                     sh '''
                         set -eu
-                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-$(git rev-parse --short=7 HEAD)"
 
-                        echo "▶ Building multi-arch image: $IMAGE"
-                        docker buildx create --use --name multiarch || true
-                        docker buildx build --platform linux/amd64,linux/arm64 \
+                        # Docker Hub 로그인
+                        echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+
+                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-$(git rev-parse --short=7 HEAD)"
+                        CACHE_REF="jaegyeong223/fillit:buildcache"
+
+                        echo "▶ Building single-arch image for ARM64 cluster: $IMAGE"
+                        docker buildx create --name builder-ci --use || true
+                        docker buildx build \
+                            --platform linux/arm64 \
+                            --provenance=false \
+                            --cache-from=type=registry,ref=$CACHE_REF \
+                            --cache-to=type=registry,ref=$CACHE_REF,mode=max \
                             -t "$IMAGE" -f a406_backend/Dockerfile a406_backend \
                             --push
 
@@ -133,6 +156,19 @@ pipeline {
                     kubectl apply -f a406_backend/k8s/prometheus.yaml -n monitoring
                     kubectl apply -f a406_backend/k8s/grafana-ingress.yaml
                     kubectl apply -f a406_backend/k8s/fillit-podmonitor.yaml
+                '''
+            }
+        }
+
+        /* 9. 빌드/이미지 캐시 및 BuildKit 정리 */
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    set +e
+                    docker buildx rm builder-ci
+                    pkill -f buildkitd
+                    docker system prune -af
+                    exit 0
                 '''
             }
         }
