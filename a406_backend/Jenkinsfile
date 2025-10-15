@@ -44,16 +44,15 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
                     sh '''
                         set -eu
-                        COMMIT_SHORT=$(git rev-parse --short=7 HEAD)
-                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-${COMMIT_SHORT}"
+                        IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-$(git rev-parse --short=7 HEAD)"
 
-                        docker build -t "$IMAGE" -f a406_backend/Dockerfile a406_backend
-                        echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
-                        docker push "$IMAGE"
+                        echo "▶ Building multi-arch image: $IMAGE"
+                        docker buildx create --use --name multiarch || true
+                        docker buildx build --platform linux/amd64,linux/arm64 \
+                            -t "$IMAGE" -f a406_backend/Dockerfile a406_backend \
+                            --push
 
-                        # 배포 단계에서 envsubst에 주입할 이미지 값 저장
                         echo "FILLIT_IMAGE=$IMAGE" > /tmp/fillit-image.env
-                        echo "[INFO] Built & pushed image: $IMAGE"
                     '''
                 }
             }
