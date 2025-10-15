@@ -73,7 +73,17 @@ pipeline {
             }
         }
 
-        /* 7. 애플리케이션 배포 */
+        /* 7 RabbitMQ 배포 */
+        stage('Deploy RabbitMQ to Kubernetes') {
+            steps {
+                echo 'Deploying RabbitMQ to Kubernetes...'
+                sh 'kubectl apply -f a406_backend/k8s/rabbitmq-deploy.yaml'
+                sh 'kubectl apply -f a406_backend/k8s/rabbitmq-service.yaml'
+                sh 'kubectl rollout status deployment/rabbitmq'
+            }
+        }
+
+        /* 8. 애플리케이션 배포 */
         stage('Deploy Application to Kubernetes') {
             steps {
                 script {
