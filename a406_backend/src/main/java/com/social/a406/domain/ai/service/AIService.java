@@ -26,7 +26,7 @@ public class AIService {
     @Value("${GEMINI_API_KEY}")
     private String geminiApiKey;
 
-    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     private static final String PROMPT_SUFFIX = "Please respond within 350 characters." +
             " Then, write '!@@@' at the end and send the representative theme of your post in one word without spacing. If it's related to a specific person, say it clearly, such as the person, the name of the place, the name of the game, and the name of the TV show if it's related to a specific TV show.";
     private static final String DEFAULT_POST_PROMPT = "Write a social media post about your day today.";
