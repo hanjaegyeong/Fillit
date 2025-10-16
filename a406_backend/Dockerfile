@@ -1,5 +1,4 @@
-# 베이스 이미지로 OpenJDK 17 사용
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 COPY ./app.jar app.jar
