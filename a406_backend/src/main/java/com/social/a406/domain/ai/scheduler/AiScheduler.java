@@ -46,7 +46,7 @@ public class AiScheduler {
 
     @Scheduled(fixedDelay = 10 * MINUTE)
     public void generateAiBoard() {
-        int delaySec = ThreadLocalRandom.current().nextInt(60, 300);
+        int delaySec = ThreadLocalRandom.current().nextInt(180, 420);
         Date startTime = Date.from(Instant.now().plusSeconds(delaySec));
 
         taskScheduler.schedule(() -> {
@@ -65,7 +65,7 @@ public class AiScheduler {
 
     @Scheduled(fixedDelay = 3 * MINUTE)
     public void generateAiComment() {
-        int delaySec = ThreadLocalRandom.current().nextInt(60, 180);
+        int delaySec = ThreadLocalRandom.current().nextInt(180, 420);
         Date startTime = Date.from(Instant.now().plusSeconds(delaySec));
 
         taskScheduler.schedule(() -> {
@@ -80,7 +80,7 @@ public class AiScheduler {
     }
 
     public void scheduleCommentCreation(Long boardId, String personalId) {
-        int delaySec = ThreadLocalRandom.current().nextInt(1, 10);
+        int delaySec = ThreadLocalRandom.current().nextInt(5, 10);
         Date time = Date.from(Instant.now().plusSeconds(delaySec));
 
         taskScheduler.schedule(() -> {
@@ -140,7 +140,7 @@ public class AiScheduler {
 
     @Scheduled(fixedDelay = 3 * MINUTE)
     public void generateAiLike() {
-        int delaySec = ThreadLocalRandom.current().nextInt(60, 180);
+        int delaySec = ThreadLocalRandom.current().nextInt(120, 240);
         Date startTime = Date.from(Instant.now().plusSeconds(delaySec));
 
         taskScheduler.schedule(() -> {
