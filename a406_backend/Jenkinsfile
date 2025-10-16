@@ -35,14 +35,6 @@ pipeline {
                         set -eu
                         mkdir -p "$GRADLE_USER_HOME"
 
-                        # Gradle 빌드 튜닝
-                        cat > gradle.properties <<'EOF'
-                            org.gradle.daemon=true
-                            org.gradle.caching=true
-                            org.gradle.parallel=true
-                            org.gradle.jvmargs=-Xmx1g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8
-                            EOF
-
                         chmod +x ./gradlew
                         ./gradlew clean build -x test \
                             -Dspring.redis.host=redis
