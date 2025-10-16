@@ -86,7 +86,7 @@ pipeline {
                     set -eu
                     kubectl apply -f a406_backend/k8s/rabbitmq-deploy.yaml
                     kubectl apply -f a406_backend/k8s/rabbitmq-service.yaml
-                    kubectl rollout status deployment/rabbitmq --timeout=5m
+                    kubectl rollout status deployment/rabbitmq --timeout=10m
                 '''
             }
         }
