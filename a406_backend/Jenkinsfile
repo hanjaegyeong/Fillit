@@ -48,6 +48,10 @@ pipeline {
                             -Dspring.redis.host=redis
                     '''
                 }
+                sh '''
+                    # a406_backend 디렉토리 명시 위해 작성
+                    cp a406_backend/build/libs/*.jar a406_backend/app.jar
+                '''
             }
         }
 
