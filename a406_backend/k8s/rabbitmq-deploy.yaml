@@ -20,3 +20,10 @@ spec:
           ports:
             - containerPort: 5672    # AMQP
             - containerPort: 15672   # Web UI
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom: { secretKeyRef: { name: rabbit-secret, key: RABBIT_USER } }
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom: { secretKeyRef: { name: rabbit-secret, key: RABBIT_PASS } }
+            - name: RABBITMQ_DEFAULT_VHOST
+              value: "/"
