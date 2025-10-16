@@ -22,8 +22,14 @@ spec:
             - containerPort: 15672   # Web UI
           env:
             - name: RABBITMQ_DEFAULT_USER
-              valueFrom: { secretKeyRef: { name: rabbit-secret, key: RABBIT_USER } }
+              valueFrom:
+                secretKeyRef:
+                  name: fillit-secret
+                  key: RABBITMQ_USERNAME
             - name: RABBITMQ_DEFAULT_PASS
-              valueFrom: { secretKeyRef: { name: rabbit-secret, key: RABBIT_PASS } }
+              valueFrom:
+                secretKeyRef:
+                  name: fillit-secret
+                  key: RABBITMQ_PASSWORD
             - name: RABBITMQ_DEFAULT_VHOST
               value: "/"
