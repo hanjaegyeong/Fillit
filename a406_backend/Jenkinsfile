@@ -31,19 +31,17 @@ pipeline {
         stage('Build') {
             steps {
                 dir('a406_backend') {
-                    sh '''
-                        set -eu
-                        mkdir -p "$GRADLE_USER_HOME"
+                  sh '''
+                      set -eu
+                      mkdir -p "$GRADLE_USER_HOME"
 
-                        chmod +x ./gradlew
-                        ./gradlew clean build -x test \
-                            -Dspring.redis.host=redis
-                    '''
+                      chmod +x ./gradlew
+                      # 실행 가능한 부트 JAR만 만들기
+                      ./gradlew clean bootJar -x test -Dspring.redis.host=redis
+
+                      cp build/libs/*.jar app.jar
+                  '''
                 }
-                sh '''
-                    # a406_backend 디렉토리 명시 위해 작성
-                    cp a406_backend/build/libs/*.jar a406_backend/app.jar
-                '''
             }
         }
 
