@@ -1,8 +1,8 @@
 # 베이스 이미지로 OpenJDK 17 사용
 FROM openjdk:17-jdk-slim
+WORKDIR /app
 
-# JAR 파일 복사 (실제 빌드된 파일명으로 변경)
-COPY build/libs/a406-0.0.1-SNAPSHOT.jar app.jar
+# build/libs 안의 JAR 한 개를 app.jar로
+COPY build/libs/*.jar app.jar
 
-# 애플리케이션 실행
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
