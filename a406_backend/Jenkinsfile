@@ -35,12 +35,11 @@ pipeline {
                         set -eu
                         mkdir -p "$GRADLE_USER_HOME"
 
-                        # Gradle 빌드 튜닝(콜드스타트/과도한 병렬 방지)
+                        # Gradle 빌드 튜닝
                         cat > gradle.properties <<'EOF'
                             org.gradle.daemon=true
                             org.gradle.caching=true
-                            org.gradle.parallel=false
-                            org.gradle.workers.max=1
+                            org.gradle.parallel=true
                             org.gradle.jvmargs=-Xmx1g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8
                             EOF
 
@@ -63,17 +62,10 @@ pipeline {
                         echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
 
                         IMAGE="jaegyeong223/fillit:${BUILD_NUMBER}-$(git rev-parse --short=7 HEAD)"
-                        CACHE_REF="jaegyeong223/fillit:buildcache"
 
-                        echo "▶ Building single-arch image for ARM64 cluster: $IMAGE"
-                        docker buildx create --name builder-ci --use || true
-                        docker buildx build \
-                            --platform linux/arm64 \
-                            --provenance=false \
-                            --cache-from=type=registry,ref=$CACHE_REF \
-                            --cache-to=type=registry,ref=$CACHE_REF,mode=max \
-                            -t "$IMAGE" -f a406_backend/Dockerfile a406_backend \
-                            --push
+                        echo "▶ Building single-arch image for ARM64 cluster (no buildx): $IMAGE"
+                        docker build -t "$IMAGE" -f a406_backend/Dockerfile a406_backend
+                        docker push "$IMAGE"
 
                         echo "FILLIT_IMAGE=$IMAGE" > /tmp/fillit-image.env
                     '''
@@ -160,14 +152,14 @@ pipeline {
             }
         }
 
-        /* 9. 빌드/이미지 캐시 및 BuildKit 정리 */
+        /* 9. 빌드/이미지 캐시 정리 */
         stage('Cleanup') {
             steps {
                 sh '''
                     set +e
-                    docker buildx rm builder-ci
-                    pkill -f buildkitd
-                    docker system prune -af
+                    # 사용 안 하는 컨테이너/이미지만 정리
+                    docker container prune -f
+                    docker image prune -f
                     exit 0
                 '''
             }
